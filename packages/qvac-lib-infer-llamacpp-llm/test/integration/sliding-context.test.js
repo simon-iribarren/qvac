@@ -1,6 +1,7 @@
 'use strict'
 
 const test = require('brittle')
+const path = require('bare-path')
 const FilesystemDL = require('@qvac/dl-filesystem')
 const LlmLlamacpp = require('../../index.js')
 const { ensureModel } = require('./utils')
@@ -10,7 +11,6 @@ const os = require('bare-os')
 const platform = os.platform()
 const arch = os.arch()
 const isDarwinX64 = platform === 'darwin' && arch === 'x64'
-const isMobile = platform === 'ios' || platform === 'android'
 const isLinuxArm64 = platform === 'linux' && arch === 'arm64'
 const useCpu = isDarwinX64 || isLinuxArm64
 
@@ -19,11 +19,20 @@ const DEFAULT_MODEL = {
   url: 'https://huggingface.co/bartowski/Llama-3.2-1B-Instruct-GGUF/resolve/main/Llama-3.2-1B-Instruct-Q4_0.gguf'
 }
 
+// ── Constants ────────────────────────────────────────────────────────────────
+const N_CTX = 256
+const PROMPT_TOKENS = 44 // STORY_PROMPT tokenizes to 44 tokens with Llama 3.2 1B
+// Free generation slots before first slide: N_CTX - PROMPT_TOKENS = 212
+
 // Prompt designed to elicit long output so generation hits the context limit
 const STORY_PROMPT = [
   { role: 'system', content: 'You are a storyteller. Write extremely long, detailed stories with many characters.' },
   { role: 'user', content: 'Tell a very long story about a brave knight on many adventures.' }
 ]
+
+const FOLLOW_UP_MSG = { role: 'user', content: 'Continue the story with more details about the knight.' }
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
 
 function createTestLogger () {
   return {
@@ -52,7 +61,7 @@ async function setupModel (t, overrides = {}) {
   const baseConfig = {
     device: useCpu ? 'cpu' : 'gpu',
     gpu_layers: '999',
-    ctx_size: '128',
+    ctx_size: String(N_CTX),
     n_predict: '512',
     temp: '0.9',
     top_p: '0.95',
@@ -93,46 +102,47 @@ async function runAndCollect (model, prompt) {
   return { text: chunks.join(''), stats: response.stats }
 }
 
+function buildPrompt (sessionPath, messages) {
+  if (!sessionPath) return messages
+  return [{ role: 'session', content: sessionPath }, ...messages]
+}
+
 function countDiscardLogs (logs) {
   return logs.filter(entry =>
     entry.includes('discarded') && entry.includes('tokens after the first message')
   ).length
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Test 1: With n_discarded > 0, generation slides past the context limit
-// instead of throwing a context overflow error.
-//
-// Note: llama.cpp may round up ctx_size (e.g. 128 → 256 actual n_ctx).
-// With ~42 prompt tokens, n_predict must exceed available generation space
-// to trigger sliding. n_predict=512 ensures overflow regardless of rounding.
-// ──────────────────────────────────────────────────────────────────────────────
-test('Sliding context allows generation beyond context limit', {
-  timeout: 900_000,
+function countPrefillDiscardLogs (logs) {
+  return logs.filter(entry =>
+    entry.includes('Prefill step: discarded')
+  ).length
+}
+
+// n_discarded=32, n_predict=512
+// slides = ceil((512 - 212) / 32) = ceil(300/32) = 10
+test('Basic generation sliding', {
+  timeout: 900_000
 }, async t => {
   const { model, logs } = await setupModel(t, {
-    ctx_size: '128',
     n_predict: '512',
     n_discarded: '32'
   })
 
-  const { text } = await runAndCollect(model, STORY_PROMPT)
+  const { stats } = await runAndCollect(model, STORY_PROMPT)
 
-  t.ok(text.length > 0, `produced output (length=${text.length})`)
+  t.is(stats.promptTokens, PROMPT_TOKENS, `prompt tokenizes to ${PROMPT_TOKENS} tokens`)
+  t.is(stats.generatedTokens, 512, 'model generated exactly n_predict tokens')
 
   const discardCount = countDiscardLogs(logs)
-  t.ok(discardCount > 0, `sliding context activated (${discardCount} discard events)`)
+  t.is(discardCount, 10, 'exact slide count: ceil(300/32) = 10')
 })
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Test 2: With n_discarded=0 (disabled), generation that exceeds ctx_size
-// triggers a context overflow error from the C++ layer.
-// ──────────────────────────────────────────────────────────────────────────────
-test('Generation fails with context overflow when sliding context is disabled', {
-  timeout: 900_000,
+// n_discarded=0, n_predict=512
+test('Generation fails with context overflow when sliding disabled', {
+  timeout: 900_000
 }, async t => {
   const { model, logs } = await setupModel(t, {
-    ctx_size: '128',
     n_predict: '512',
     n_discarded: '0'
   })
@@ -149,106 +159,235 @@ test('Generation fails with context overflow when sliding context is disabled', 
   }
 
   t.is(countDiscardLogs(logs), 0, 'no discard events when n_discarded=0')
+
+  // sleep for 10 seconds to allow the model to cleanup
+  await new Promise(resolve => setTimeout(resolve, 10000))
 })
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Test 3: With a small n_discarded relative to n_predict, sliding activates
-// many times during a single generation. Each activation discards 16 tokens,
-// so with n_predict=1024, sliding must activate at least twice.
-// ──────────────────────────────────────────────────────────────────────────────
-test('Sliding context activates multiple times during long generation', {
-  timeout: 900_000,
+// n_discarded=16, n_predict=1024
+// slides = ceil((1024 - 212) / 16) = ceil(812/16) = 51
+test('Many slides with small n_discarded', {
+  timeout: 900_000
 }, async t => {
   const { model, logs } = await setupModel(t, {
-    ctx_size: '128',
     n_predict: '1024',
     n_discarded: '16'
   })
 
-  const { text } = await runAndCollect(model, STORY_PROMPT)
+  const { stats } = await runAndCollect(model, STORY_PROMPT)
 
-  t.ok(text.length > 0, 'generated output despite multiple context slides')
+  t.is(stats.promptTokens, PROMPT_TOKENS, `prompt tokenizes to ${PROMPT_TOKENS} tokens`)
+  t.is(stats.generatedTokens, 1024, 'model generated exactly n_predict tokens')
 
   const discardCount = countDiscardLogs(logs)
-  t.ok(discardCount >= 2, `multiple sliding activations (${discardCount} discard events)`)
+  t.is(discardCount, 51, 'exact slide count: ceil(812/16) = 51')
 })
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Test 4: When n_discarded exceeds the available context space (ctx_size -
-// firstMsgTokens), the C++ layer clamps it to (ctx_size - firstMsgTokens - 1)
-// so that at least one token remains after discarding. The inference must
-// succeed without crashing.
-// ──────────────────────────────────────────────────────────────────────────────
+// n_discarded=99999, clamped to n_ctx - firstMsgTokens - 1 = 256 - 44 - 1 = 211
+// slides = ceil((512 - 212) / 211) = ceil(300/211) = 2
 test('Large n_discarded is clamped to fit available context space', {
-  timeout: 900_000,
+  timeout: 900_000
 }, async t => {
   const { model, logs } = await setupModel(t, {
-    ctx_size: '128',
     n_predict: '512',
     n_discarded: '99999'
   })
 
-  const { text } = await runAndCollect(model, STORY_PROMPT)
+  const { stats } = await runAndCollect(model, STORY_PROMPT)
 
-  t.ok(text.length > 0, 'inference succeeded with oversized n_discarded (auto-clamped)')
+  t.is(stats.promptTokens, PROMPT_TOKENS, `prompt tokenizes to ${PROMPT_TOKENS} tokens`)
+  t.is(stats.generatedTokens, 512, 'model generated exactly n_predict tokens')
 
-  // Clamped value still allows sliding when generation exceeds available space
   const discardCount = countDiscardLogs(logs)
-  t.ok(discardCount > 0, `sliding activated after clamping (${discardCount} discard events)`)
+  t.is(discardCount, 2, 'exact slide count: ceil(300/211) = 2 (clamped n_discarded)')
 })
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Test 5: The n_discarded setting persists across resetState calls. Running
-// two consecutive inferences on the same model instance (without session
-// caching, so state resets between runs) should trigger sliding in both runs.
-// ──────────────────────────────────────────────────────────────────────────────
-test('Sliding context persists across consecutive inference runs', {
-  timeout: 900_000,
+// n_discarded=32, n_predict=512
+// Each run: 10 slides: total after two runs = 20
+test('Sliding context persists across consecutive inference runs: total = 20 slides', {
+  timeout: 900_000
 }, async t => {
   const { model, logs } = await setupModel(t, {
-    ctx_size: '128',
     n_predict: '512',
     n_discarded: '32'
   })
 
-  // First inference
   const first = await runAndCollect(model, STORY_PROMPT)
-  t.ok(first.text.length > 0, 'first inference produced output')
+  t.is(first.stats.promptTokens, PROMPT_TOKENS, 'first run: prompt tokens match')
+  t.is(first.stats.generatedTokens, 512, 'first run: generated exactly n_predict tokens')
 
   const discardCountAfterFirst = countDiscardLogs(logs)
-  t.ok(discardCountAfterFirst > 0, `first run triggered sliding (${discardCountAfterFirst} discards)`)
+  t.is(discardCountAfterFirst, 10, 'first run: 10 slides')
 
-  // Second inference on same instance — n_discarded survives resetState
   const second = await runAndCollect(model, STORY_PROMPT)
-  t.ok(second.text.length > 0, 'second inference produced output')
+  t.is(second.stats.promptTokens, PROMPT_TOKENS, 'second run: prompt tokens match')
+  t.is(second.stats.generatedTokens, 512, 'second run: generated exactly n_predict tokens')
 
   const discardCountAfterSecond = countDiscardLogs(logs)
-  t.ok(
-    discardCountAfterSecond > discardCountAfterFirst,
-    `second run also triggered sliding (total ${discardCountAfterSecond} discards)`
-  )
+  t.is(discardCountAfterSecond, 20, 'total after both runs = 20 slides')
 })
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Test 6: Edge case with n_discarded=1 (minimal sliding). Each time the
-// context fills, only 1 token is discarded. This exercises the sliding path
-// under maximum repetition with minimum freed space per activation.
-// ──────────────────────────────────────────────────────────────────────────────
+// slides = ceil((512 - 212) / 1) = 300
 test('Sliding context works with minimal n_discarded of 1', {
-  timeout: 900_000,
+  timeout: 900_000
 }, async t => {
   const { model, logs } = await setupModel(t, {
-    ctx_size: '128',
     n_predict: '512',
     n_discarded: '1'
   })
 
-  const { text } = await runAndCollect(model, STORY_PROMPT)
+  const { stats } = await runAndCollect(model, STORY_PROMPT)
 
-  t.ok(text.length > 0, 'inference succeeded with n_discarded=1')
+  t.is(stats.promptTokens, PROMPT_TOKENS, `prompt tokenizes to ${PROMPT_TOKENS} tokens`)
+  t.is(stats.generatedTokens, 512, 'model generated exactly n_predict tokens')
 
-  // With n_discarded=1, the sliding path fires once per generated token
-  // after the context fills, resulting in many more discard events
   const discardCount = countDiscardLogs(logs)
-  t.ok(discardCount > 0, `minimal sliding activated (${discardCount} discard events)`)
+  t.is(discardCount, 300, 'exact slide count: ceil(300/1) = 300')
+})
+
+// n_discarded=64, n_predict=200
+// First run: n_past = 44 + 200 = 244, firstMsgTokens = 44
+// Second run follow-up (~20 tokens):
+//   n_past + nTokens = 244 + ~20 = ~264 >= 256 (outer condition)
+//   leftTokens = 244 - 44 - 64 = 136 >= 0
+//   n_past + nTokens - n_discarded = ~264 - 64 = ~200 < 256
+// :> discards n_discarded (64) tokens after first message
+test('Cached follow-up discards middle tokens to fit new message', {
+  timeout: 900_000
+}, async t => {
+  const cachePath = path.join(
+    (await ensureModel({ modelName: DEFAULT_MODEL.name, downloadUrl: DEFAULT_MODEL.url }))[1],
+    'sliding-prefill-branch1.bin'
+  )
+
+  const { model, logs } = await setupModel(t, {
+    n_predict: '200',
+    n_discarded: '64'
+  })
+
+  // First run: accumulate n_past with cache
+  const first = await runAndCollect(model, buildPrompt(cachePath, STORY_PROMPT))
+  t.is(first.stats.promptTokens, PROMPT_TOKENS, 'first run: prompt tokens match')
+  t.ok(first.stats.generatedTokens > 0, 'first run: generated output')
+
+  const generationSlides = countDiscardLogs(logs)
+
+  // Second run: follow-up message triggers prefill discard
+  const second = await runAndCollect(model, buildPrompt(cachePath, [FOLLOW_UP_MSG]))
+  t.ok(second.stats.generatedTokens > 0, 'second run: generated output after prefill discard')
+
+  const prefillDiscards = countPrefillDiscardLogs(logs)
+  t.ok(prefillDiscards > 0, 'prefill discard log appeared')
+
+  const totalDiscards = countDiscardLogs(logs)
+  t.ok(totalDiscards >= generationSlides, 'total discards include prefill discard')
+})
+
+// n_discarded=250 (clamped to 211), n_predict=200
+// First run: n_past = 244, firstMsgTokens = 44, n_discarded = 211
+// Second run follow-up (~20 tokens):
+//   leftTokens = 244 - 44 - 211 = -11 < 0
+//   firstMsgTokens + nTokens = 44 + ~20 = ~64 < 256
+//   n_discarded = 211 > 0
+// :> removes all middle tokens from pos 44 to 244
+test('Cached follow-up clears all middle tokens when discard window is exhausted', {
+  timeout: 900_000
+}, async t => {
+  const cachePath = path.join(
+    (await ensureModel({ modelName: DEFAULT_MODEL.name, downloadUrl: DEFAULT_MODEL.url }))[1],
+    'sliding-prefill-branch2.bin'
+  )
+
+  const { model, logs } = await setupModel(t, {
+    n_predict: '200',
+    n_discarded: '250'
+  })
+
+  // First run: accumulate n_past with cache
+  const first = await runAndCollect(model, buildPrompt(cachePath, STORY_PROMPT))
+  t.is(first.stats.promptTokens, PROMPT_TOKENS, 'first run: prompt tokens match')
+  t.ok(first.stats.generatedTokens > 0, 'first run: generated output')
+
+  // Second run: follow-up triggers full middle token discard
+  const second = await runAndCollect(model, buildPrompt(cachePath, [FOLLOW_UP_MSG]))
+  t.ok(second.stats.generatedTokens > 0, 'second run: generated output after full middle token discard')
+
+  const prefillDiscards = countPrefillDiscardLogs(logs)
+  t.ok(prefillDiscards > 0, 'prefill discard log appeared')
+})
+
+// n_discarded=0, n_predict=200
+// First run: n_past = 244, firstMsgTokens = 44, n_discarded = 0
+// Second run follow-up (~20 tokens):
+//   n_past + nTokens = ~264 >= 256 (outer condition)
+//   leftTokens = 244 - 44 - 0 = 200 >= 0
+//   normal discard: n_past + nTokens - 0 = ~264 >= 256 (fails)
+//   full middle discard: leftTokens >= 0 (first condition fails)
+// :> no recovery possible, throws ContextOverflow
+test('Cached follow-up overflows when sliding is disabled and context is full', {
+  timeout: 900_000
+}, async t => {
+  const cachePath = path.join(
+    (await ensureModel({ modelName: DEFAULT_MODEL.name, downloadUrl: DEFAULT_MODEL.url }))[1],
+    'sliding-prefill-branch3.bin'
+  )
+
+  const { model, logs } = await setupModel(t, {
+    n_predict: '200',
+    n_discarded: '0'
+  })
+
+  // First run: accumulate n_past with cache (no overflow since 244 < 256)
+  const first = await runAndCollect(model, buildPrompt(cachePath, STORY_PROMPT))
+  t.is(first.stats.promptTokens, PROMPT_TOKENS, 'first run: prompt tokens match')
+  t.ok(first.stats.generatedTokens > 0, 'first run: generated output')
+
+  // Second run: follow-up triggers context overflow (no discard possible)
+  try {
+    await runAndCollect(model, buildPrompt(cachePath, [FOLLOW_UP_MSG]))
+    t.fail('expected context overflow error but follow-up completed without error')
+  } catch (err) {
+    const msg = err?.message || String(err)
+    t.ok(
+      /context|overflow/i.test(msg),
+      `context overflow error surfaced: "${msg.slice(0, 120)}"`
+    )
+  }
+
+  t.is(countPrefillDiscardLogs(logs), 0, 'no prefill discard logs when n_discarded=0')
+
+  // sleep for 10 seconds to allow the model to cleanup
+  await new Promise(resolve => setTimeout(resolve, 10000))
+})
+
+// nTokens >= n_ct:> ContextOverflow before any sliding logic
+test('Single prompt exceeding context triggers overflow at prefill', {
+  timeout: 900_000
+}, async t => {
+  const { model } = await setupModel(t, {
+    n_predict: '512',
+    n_discarded: '32'
+  })
+
+  // Build a prompt that tokenizes to more than N_CTX (256) tokens
+  // Repeat enough text to exceed 256 tokens (rough estimate: ~1.3 tokens per word)
+  const longContent = 'The brave knight ventured through the enchanted forest searching for the ancient treasure. '.repeat(50)
+  const longPrompt = [
+    { role: 'system', content: 'You are a storyteller. Write extremely long, detailed stories with many characters.' },
+    { role: 'user', content: longContent }
+  ]
+
+  try {
+    await runAndCollect(model, longPrompt)
+    t.fail('expected context overflow error but generation completed without error')
+  } catch (err) {
+    const msg = err?.message || String(err)
+    t.ok(
+      /context|overflow/i.test(msg),
+      `prompt overflow error surfaced: "${msg.slice(0, 120)}"`
+    )
+  }
+
+  // sleep for 10 seconds to allow the model to cleanup
+  await new Promise(resolve => setTimeout(resolve, 10000))
 })
