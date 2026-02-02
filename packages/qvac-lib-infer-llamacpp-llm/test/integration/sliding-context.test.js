@@ -109,7 +109,6 @@ function countDiscardLogs (logs) {
 // ──────────────────────────────────────────────────────────────────────────────
 test('Sliding context allows generation beyond context limit', {
   timeout: 900_000,
-  skip: isMobile
 }, async t => {
   const { model, logs } = await setupModel(t, {
     ctx_size: '128',
@@ -131,7 +130,6 @@ test('Sliding context allows generation beyond context limit', {
 // ──────────────────────────────────────────────────────────────────────────────
 test('Generation fails with context overflow when sliding context is disabled', {
   timeout: 900_000,
-  skip: isMobile
 }, async t => {
   const { model, logs } = await setupModel(t, {
     ctx_size: '128',
@@ -160,7 +158,6 @@ test('Generation fails with context overflow when sliding context is disabled', 
 // ──────────────────────────────────────────────────────────────────────────────
 test('Sliding context activates multiple times during long generation', {
   timeout: 900_000,
-  skip: isMobile
 }, async t => {
   const { model, logs } = await setupModel(t, {
     ctx_size: '128',
@@ -184,7 +181,6 @@ test('Sliding context activates multiple times during long generation', {
 // ──────────────────────────────────────────────────────────────────────────────
 test('Large n_discarded is clamped to fit available context space', {
   timeout: 900_000,
-  skip: isMobile
 }, async t => {
   const { model, logs } = await setupModel(t, {
     ctx_size: '128',
@@ -208,7 +204,6 @@ test('Large n_discarded is clamped to fit available context space', {
 // ──────────────────────────────────────────────────────────────────────────────
 test('Sliding context persists across consecutive inference runs', {
   timeout: 900_000,
-  skip: isMobile
 }, async t => {
   const { model, logs } = await setupModel(t, {
     ctx_size: '128',
@@ -241,7 +236,6 @@ test('Sliding context persists across consecutive inference runs', {
 // ──────────────────────────────────────────────────────────────────────────────
 test('Sliding context works with minimal n_discarded of 1', {
   timeout: 900_000,
-  skip: isMobile
 }, async t => {
   const { model, logs } = await setupModel(t, {
     ctx_size: '128',
