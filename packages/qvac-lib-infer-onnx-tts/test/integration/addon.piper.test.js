@@ -10,7 +10,7 @@ const { ensureTTSModelPair, ensureEspeakData, ensureWhisperModel } = require('..
 const platform = os.platform()
 const isLinux = platform === 'linux'
 const isMobile = platform === 'ios' || platform === 'android'
-const shouldRunWhisper = !isLinux && !isMobile
+const shouldRunWhisper = !isLinux
 
 // Returns base directory for models - uses global.testDir on mobile, current dir otherwise
 function getBaseDir () {
