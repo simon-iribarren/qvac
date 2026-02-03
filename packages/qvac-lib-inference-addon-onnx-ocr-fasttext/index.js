@@ -91,8 +91,27 @@ class ONNXOcr extends ONNXBase {
       onnxOcrParams.recognizerBatchSize = this.params.recognizerBatchSize
     }
 
-    this.addon = this._createAddon(OcrFasttextInterface, onnxOcrParams, this._outputCallback.bind(this), console.log)
+    this.addon = this._createAddon(OcrFasttextInterface, onnxOcrParams, this._addonOutputCallback.bind(this), console.log)
     await this.addon.activate()
+  }
+
+  _addonOutputCallback (addon, event, data, error) {
+    // Map C++ mangled type names to expected event names
+    // Check stats FIRST (before other checks, since stats event name may contain other type names)
+    if (typeof data === 'object' && data !== null && 'LastProcessingTime' in data) {
+      // Stats object received - this signals job completion
+      // Pass stats with JobEnded event (base class expects stats in JobEnded data)
+      return this._outputCallback(addon, 'JobEnded', 'job', data, null)
+    }
+
+    let mappedEvent = event
+    if (event.includes('Error')) {
+      mappedEvent = 'Error'
+    } else if (Array.isArray(data)) {
+      // Pipeline output is an array of InferredText
+      mappedEvent = 'Output'
+    }
+    return this._outputCallback(addon, mappedEvent, 'job', data, error)
   }
 
   async unload () {
@@ -104,15 +123,16 @@ class ONNXOcr extends ONNXBase {
 
   async _runInternal (input) {
     const imageInput = this.getImage(input.path)
-    const jobId = await this.addon.append({
+    await this.addon.runJob({
       type: 'image',
       input: imageInput,
       options: input.options
     })
 
-    const response = this._createResponse(jobId)
+    // Only one job is supported at the moment, with hardcoded jobId 'job'
+    const response = this._createResponse('job')
 
-    this._saveJobToResponseMapping(jobId, response)
+    this._saveJobToResponseMapping('job', response)
     return response
   }
 
