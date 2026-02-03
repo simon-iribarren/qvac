@@ -83,13 +83,11 @@ int main(int argc, char* argv[]) {
   config_files["device"] = device;
   config_files["jinja"] = ""; // enable jinja to support tool calls in the
                               // prompt
-  config_files["ctx_size"] = "8124";
+  config_files["ctx_size"] = "1024";
   config_files["gpu_layers"] = "99";
   try {
     // Create LlamaModel instance with the correct constructor
     LlamaModel model(model_path, projector_path, config_files);
-
-    model.waitForLoadInitialization();
 
     // Process the prompt with json
     std::cout << "--------------Prompt------------" << "\n";

@@ -9,14 +9,12 @@
 
 #include "addon/LlmErrors.hpp"
 #include "qvac-lib-inference-addon-cpp/Logger.hpp"
-#include "utils/ChatTemplateUtils.hpp"
 #include "utils/LoggingMacros.hpp"
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 
 using namespace qvac_lib_inference_addon_llama::errors;
 using namespace qvac_lib_inference_addon_cpp::logger;
-using namespace qvac_lib_inference_addon_llama::utils;
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 MtmdLlmContext::MtmdLlmContext(
@@ -39,9 +37,7 @@ MtmdLlmContext::MtmdLlmContext(
   }
 
   vocab = llama_model_get_vocab(model);
-
-  std::string chat_template = getChatTemplate(model, params);
-  tmpls = common_chat_templates_init(model, chat_template);
+  tmpls = common_chat_templates_init(model, params.chat_template);
 
   smpl.reset(common_sampler_init(model, params.sampling));
   if (!smpl) {
@@ -102,10 +98,11 @@ void MtmdLlmContext::init_vision_context() {
   const char* clipPath = params.mmproj.path.c_str();
   mtmd_context_params mparams = mtmd_context_params_default();
   mparams.use_gpu = params.mmproj_use_gpu;
-  mparams.backend_device =
-      params.mmproj_backend.empty() ? nullptr : params.mmproj_backend.c_str();
   mparams.print_timings = true;
   mparams.n_threads = params.cpuparams.n_threads;
+  mparams.verbosity =
+      params.verbosity > 0 ? GGML_LOG_LEVEL_DEBUG : GGML_LOG_LEVEL_INFO;
+
   ctx_vision.reset(mtmd_init_from_file(clipPath, model, mparams));
   if (ctx_vision.get() == nullptr) {
     std::string errorMsg = string_format(
@@ -152,7 +149,7 @@ void MtmdLlmContext::TokenizeChat(
     const std::vector<common_chat_tool>& tools, mtmd::input_chunks& chunks,
     bool isCacheLoaded) {
   common_chat_templates_inputs inputs;
-  std::string formattedChat;
+  common_chat_params formattedChat;
 
   bool isLastMessageFromUser = false;
   bool addSpecial = false;
@@ -172,21 +169,23 @@ void MtmdLlmContext::TokenizeChat(
 
   if (!tools.empty()) {
     inputs.tools = tools;
-  }
-  formattedChat = getPrompt(tmpls.get(), inputs);
 
-  if (formattedChat.empty()) {
-    std::string errorMsg = string_format(
-        "[MtmdLlm] %s: formatted chat prompt is empty\n", __func__);
-    throw qvac_errors::StatusError(AddonID, toString(EmptyPrompt), errorMsg);
+    try {
+      formattedChat = common_chat_templates_apply(tmpls.get(), inputs);
+    } catch (...) {
+      // Catching known issue when a model does not support tools
+      inputs.use_jinja = false;
+      formattedChat = common_chat_templates_apply(tmpls.get(), inputs);
+      QLOG_IF(
+          Priority::ERROR,
+          "[MtmdLlm] model does not support tools. Tools will be ignored.\n");
+    }
+  } else {
+    formattedChat = common_chat_templates_apply(tmpls.get(), inputs);
   }
-
-  QLOG_IF(
-      Priority::DEBUG,
-      string_format("[MtmdLlm] formatted prompt: %s\n", formattedChat.c_str()));
 
   mtmd_input_text text;
-  text.text = formattedChat.c_str();
+  text.text = formattedChat.prompt.c_str();
   text.add_special = addSpecial;
   text.parse_special = true;
 
@@ -208,13 +207,13 @@ void MtmdLlmContext::TokenizeChat(
 }
 
 bool MtmdLlmContext::evalMessage(
-    const std::vector<common_chat_msg>& chatMsgs, bool isCacheLoaded) {
+    std::vector<common_chat_msg> chatMsgs, bool isCacheLoaded) {
   return evalMessageWithTools(chatMsgs, {}, isCacheLoaded);
 }
 
 bool MtmdLlmContext::evalMessageWithTools(
-    const std::vector<common_chat_msg>& chatMsgs,
-    const std::vector<common_chat_tool>& tools, bool isCacheLoaded) {
+    std::vector<common_chat_msg> chatMsgs, std::vector<common_chat_tool> tools,
+    bool isCacheLoaded) {
   mtmd::input_chunks chunks(mtmd_input_chunks_init());
 
   TokenizeChat(chatMsgs, tools, chunks, isCacheLoaded);
@@ -317,7 +316,7 @@ bool MtmdLlmContext::evalMessageWithTools(
 }
 
 bool MtmdLlmContext::generateResponse(
-    const std::function<void(const std::string&)>& outputCallback) {
+    std::function<void(const std::string&)> outputCallback) {
 
   int nRemain = params.n_predict;
   BatchPtr batchPtr = BatchPtr(new llama_batch(
@@ -404,17 +403,18 @@ bool MtmdLlmContext::generateResponse(
       outputCallback(remaining);
     }
   }
+
   return true;
 }
 
 void MtmdLlmContext::stop() { stop_generation.store(true); }
 
-llama_context* MtmdLlmContext::getCtx() { 
+llama_context* MtmdLlmContext::getCtx() {
     return lctx;
 }
 
 llama_pos MtmdLlmContext::getNPast() const {
-    return n_past; 
+    return n_past;
 }
 
 void MtmdLlmContext::setNPast(llama_pos nPast) { this->n_past = nPast; }

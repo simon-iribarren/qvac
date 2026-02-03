@@ -20,7 +20,6 @@ struct BatchDeleter {
   void operator()(llama_batch* ptr) {
     if (ptr != nullptr) { // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
       llama_batch_free(*ptr);
-      delete ptr;
     }
   }
 };
@@ -72,8 +71,8 @@ public:
    * @param is_cache_loaded - whether the cache is loaded.
    * @return - true if successful, false if inference is stopped.
    */
-  virtual bool evalMessage(
-      const std::vector<common_chat_msg>& chatMsgs, bool is_cache_loaded) = 0;
+  virtual bool
+  evalMessage(std::vector<common_chat_msg> chatMsgs, bool is_cache_loaded) = 0;
 
   /**
    * The eval message with tools method. It evaluates the message with tools and
@@ -85,8 +84,8 @@ public:
    * @return - true if successful, false if inference is stopped.
    */
   virtual bool evalMessageWithTools(
-      const std::vector<common_chat_msg>& chatMsgs,
-      const std::vector<common_chat_tool>& tools, bool is_cache_loaded) = 0;
+      std::vector<common_chat_msg> chatMsgs,
+      std::vector<common_chat_tool> tools, bool is_cache_loaded) = 0;
 
   /**
    * The generate response method. It generates the response token by token.
@@ -94,8 +93,8 @@ public:
    * @param output_callback - the output callback.
    * @return - true if successful, false if context overflow.
    */
-  virtual bool generateResponse(
-      const std::function<void(const std::string&)>& output_callback) = 0;
+  virtual bool
+  generateResponse(std::function<void(const std::string&)> output_callback) = 0;
 
   /**
    * The stop method. It stops the model inference.
@@ -108,6 +107,17 @@ public:
    * @return - the context.
    */
   virtual llama_context* getCtx() = 0;
+
+  /**
+   * The get model method. It returns the underlying llama_model pointer.
+   */
+  virtual llama_model* getModel() = 0;
+
+  /**
+   * The get params method. It returns a reference to the common parameters
+   * associated with this context.
+   */
+  virtual common_params& getParams() = 0;
 
   /**
    * The get n_past method. It returns the n_past.

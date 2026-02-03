@@ -2,16 +2,17 @@
 
 const Corestore = require('corestore')
 const HyperDriveDL = require('@qvac/dl-hyperdrive')
+
+// 1. Import the LlmLlamacpp class
 const LlmLlamacpp = require('../index')
 const { setLogger, releaseLogger } = require('../addonLogging')
 
 const process = require('bare-process')
 
 async function main () {
-  console.log('Native Logging Example: Demonstrates C++ addon logging integration')
-  console.log('==================================================================')
+  console.log('=== C++ Logger Example ===')
 
-  // 1. Setting up C++ logger - must be done before creating any addon instances
+  // IMPORTANT: Set up the logger FIRST, before creating any addon instances
   console.log('Setting up C++ logger...')
 
   setLogger((priority, message) => {
@@ -19,7 +20,8 @@ async function main () {
       0: 'ERROR',
       1: 'WARNING',
       2: 'INFO',
-      3: 'DEBUG'
+      3: 'DEBUG',
+      4: 'OFF'
     }
 
     const priorityName = priorityNames[priority] || 'UNKNOWN'
@@ -31,52 +33,39 @@ async function main () {
   console.log('Logger setup complete. C++ logging is now active.')
   console.log('Now creating addon instances...\n')
 
-  // 2. Initializing data loader
   const store = new Corestore('./store')
-  const hdStore = store.namespace('hd')
 
-  const hdKey = 'afa79ee07c0a138bb9f11bfaee771fb1bdfca8c82d961cff0474e49827bd1de3'
+  // 2. Create a Hyperdrive Data Loader
   const hdDL = new HyperDriveDL({
-    key: `hd://${hdKey}`,
-    store: hdStore
+    key: 'hd://b11388de0e9214d8c2181eae30e31bcd49c48b26d621b353ddc7f01972dddd76',
+    store
   })
 
-  // 3. Configuring model settings
+  // 3. Configure the `args` object
   const args = {
     loader: hdDL,
     opts: { stats: true },
     logger: console,
-    modelName: 'Llama-3.2-1B-Instruct-Q4_0.gguf',
-    diskPath: './models'
+    // saveWeightsToDisk: true, this is the default usage until we implement load method in addon.
+    diskPath: './models/',
+    modelName: 'medgemma-4b-it-Q4_1.gguf'
   }
 
+  // 4. Create the `config` object
+  // an example of possible configuration
   const config = {
-    device: 'gpu',
-    gpu_layers: '99',
-    ctx_size: '1024',
-    verbosity: '2'
+    gpu_layers: '99', // number of model layers offloaded to GPU.
+    ctx_size: '1024', // context length
+    device: 'gpu' // must be specified: 'gpu' or 'cpu'
   }
 
-  // 4. Loading model
-  await hdDL.ready()
+  // 5. Create Model instance
   const model = new LlmLlamacpp(args, config)
-  const closeLoader = true
-  let totalProgress = 0
-  const reportProgressCallback = (report) => {
-    if (typeof report === 'object' && Number(report.overallProgress) > totalProgress) {
-      process.stdout.write(
-        `\r${report.overallProgress}%: ${report.action} [${report.filesProcessed}/${report.totalFiles}] ${report.currentFileProgress}% ${report.currentFile}`
-      )
-      if (Number(report.currentFileProgress) === 100) {
-        process.stdout.write('\n')
-      }
-      totalProgress = Number(report.overallProgress)
-    }
-  }
-  await model.load(closeLoader, reportProgressCallback)
+
+  // 6. Load Model
+  await model.load()
 
   try {
-    // 5. Running inference with conversation prompt
     const prompt = [
       {
         role: 'system',
@@ -96,27 +85,23 @@ async function main () {
       }
     ]
 
+    // 7. Run Inference
     const response = await model.run(prompt)
-    let fullResponse = ''
+    const buffer = []
 
     await response
       .onUpdate(data => {
         process.stdout.write(data)
-        fullResponse += data
+        buffer.push(data)
       })
       .await()
 
     console.log('\n')
-    console.log('Full response:\n', fullResponse)
+    console.log('Full response:\n', buffer.join(''))
     console.log(`Inference stats: ${JSON.stringify(response.stats)}`)
-  } catch (error) {
-    const errorMessage = error?.message || error?.toString() || String(error)
-    console.error('Error occurred:', errorMessage)
-    console.error('Error details:', error)
   } finally {
-    // 6. Cleaning up resources
+    // 8. Release Resources
     await store.close()
-    await hdDL.close()
     await model.unload()
     releaseLogger()
   }

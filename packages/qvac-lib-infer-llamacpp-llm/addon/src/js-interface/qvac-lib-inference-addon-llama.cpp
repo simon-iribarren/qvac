@@ -3,6 +3,7 @@
 #include <qvac-lib-inference-addon-cpp/Errors.hpp>
 
 #include "addon/Addon.hpp"
+#include "addon/FinetuneParamStore.hpp"
 #include "qvac-lib-inference-addon-cpp/JsInterface.hpp"
 #include "qvac-lib-inference-addon-cpp/JsUtils.hpp"
 using JsIfLlama = qvac_lib_inference_addon_cpp::JsInterface<
@@ -102,42 +103,86 @@ js_value_t* JsIfLlama::append(js_env_t* env, js_callback_info_t* info) try {
   throw qvac_errors::StatusError(
       qvac_errors::general_error::InvalidArgument, "Invalid type");
 }
+
 JSCATCH
+template <>
+js_value_t* JsIfLlama::finetune(js_env_t* env, js_callback_info_t* info) try {
+  auto args = js::getArguments(env, info);
+
+  constexpr size_t K_MIN_ARGS = 1;
+  constexpr size_t K_MAX_ARGS = 2;
+  if (args.size() < K_MIN_ARGS || args.size() > K_MAX_ARGS) {
+    throw qvac_errors::StatusError(
+        qvac_errors::general_error::InvalidArgument,
+        "Expected handle and optional finetuning parameters");
+  }
+
+  if (!qvac_lib_inference_addon_llama::Addon::supportsFinetuning()) {
+    throw qvac_errors::StatusError(
+        qvac_errors::general_error::InvalidArgument,
+        "Addon does not support finetuning.");
+  }
+
+  auto& instance = getInstance(env, args[0]);
+
+  if (args.size() == K_MAX_ARGS && !js::is<js::Undefined>(env, args[1]) &&
+      !js::is<js::Null>(env, args[1])) {
+    if (!js::is<js::Object>(env, args[1])) {
+      throw qvac_errors::StatusError(
+          qvac_errors::general_error::InvalidArgument,
+          "Expected finetuning parameters as an object.");
+    }
+    auto finetuningParametersObj = js::Object{env, args[1]};
+    FinetuningParameters finetuningArgs(env, finetuningParametersObj);
+    qvac_lib_inference_addon_llama_detail::put(
+        &instance, finetuningArgs);
+  }
+
+  instance.finetune();
+
+  return nullptr;
+}
+JSCATCH
+
 } // namespace qvac_lib_inference_addon_cpp
 namespace qvac_lib_inference_addon_llama
 {
-  js_value_t* createInstance(js_env_t* env, js_callback_info_t* info) { 
-    return JsIfLlama::createInstance(env, info); 
-  } 
-  
-  js_value_t* loadWeights(js_env_t* env, js_callback_info_t* info) { 
+  js_value_t* createInstance(js_env_t* env, js_callback_info_t* info) {
+    return JsIfLlama::createInstance(env, info);
+  }
+
+  js_value_t* loadWeights(js_env_t* env, js_callback_info_t* info) {
     return JsIfLlama::loadWeights(env, info);
-  } 
-  
-  js_value_t* activate(js_env_t* env, js_callback_info_t* info) { 
-    return JsIfLlama::activate(env, info); 
-  } 
-  
-  js_value_t* append(js_env_t* env, js_callback_info_t* info) { 
-    return JsIfLlama::append(env, info); 
-  } 
-  
-  js_value_t* status(js_env_t* env, js_callback_info_t* info) { 
-    return JsIfLlama::status(env, info); 
-  } 
-  
-  js_value_t* pause(js_env_t* env, js_callback_info_t* info) { 
-    return JsIfLlama::pause(env, info); 
-  } 
-  
-  js_value_t* stop(js_env_t* env, js_callback_info_t* info) { 
-    return JsIfLlama::stop(env, info); 
-  } 
-  
-  js_value_t* cancel(js_env_t* env, js_callback_info_t* info) { 
-    return JsIfLlama::cancel(env, info); 
-  } 
-  
+  }
+
+  js_value_t* activate(js_env_t* env, js_callback_info_t* info) {
+    return JsIfLlama::activate(env, info);
+  }
+
+  js_value_t* append(js_env_t* env, js_callback_info_t* info) {
+    return JsIfLlama::append(env, info);
+  }
+
+  js_value_t* finetune(js_env_t* env, js_callback_info_t* info) {
+    return JsIfLlama::finetune(env, info);
+  }
+
+  js_value_t* status(js_env_t* env, js_callback_info_t* info) {
+    return JsIfLlama::status(env, info);
+  }
+
+  js_value_t* pause(js_env_t* env, js_callback_info_t* info) {
+    return JsIfLlama::pause(env, info);
+  }
+
+  js_value_t* stop(js_env_t* env, js_callback_info_t* info) {
+    return JsIfLlama::stop(env, info);
+  }
+
+  js_value_t* cancel(js_env_t* env, js_callback_info_t* info) {
+    return JsIfLlama::cancel(env, info);
+  }
+
   js_value_t* destroyInstance(js_env_t* env, js_callback_info_t* info) {
     return JsIfLlama::destroyInstance(env, info);
   }

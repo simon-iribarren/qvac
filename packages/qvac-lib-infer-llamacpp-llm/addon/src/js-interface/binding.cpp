@@ -18,14 +18,15 @@ js_value_t *qvac_lib_inference_addon_llama_exports(js_env_t *env, js_value_t *ex
     } \
   }
 
-  V("createInstance", qvac_lib_inference_addon_llama::createInstance) 
-  V("loadWeights", qvac_lib_inference_addon_llama::loadWeights) 
-  V("activate", qvac_lib_inference_addon_llama::activate) 
-  V("append", qvac_lib_inference_addon_llama::append) 
-  V("status", qvac_lib_inference_addon_llama::status) 
-  V("pause", qvac_lib_inference_addon_llama::pause) 
-  V("stop", qvac_lib_inference_addon_llama::stop) 
-  V("cancel", qvac_lib_inference_addon_llama::cancel) 
+  V("createInstance", qvac_lib_inference_addon_llama::createInstance)
+  V("loadWeights", qvac_lib_inference_addon_llama::loadWeights)
+  V("activate", qvac_lib_inference_addon_llama::activate)
+  V("append", qvac_lib_inference_addon_llama::append)
+  V("finetune", qvac_lib_inference_addon_llama::finetune)
+  V("status", qvac_lib_inference_addon_llama::status)
+  V("pause", qvac_lib_inference_addon_llama::pause)
+  V("stop", qvac_lib_inference_addon_llama::stop)
+  V("cancel", qvac_lib_inference_addon_llama::cancel)
   V("destroyInstance", qvac_lib_inference_addon_llama::destroyInstance)
   V("setLogger", qvac_lib_inference_addon_llama::setLogger)
   V("releaseLogger", qvac_lib_inference_addon_llama::releaseLogger)

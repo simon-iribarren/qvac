@@ -2,36 +2,17 @@
   "dependencies": [
     {
       "name": "llama-cpp",
-      "version>=": "7248.1.1#0"
-    },
-    {
-      "name": "opencl",
-      "platform": "android"
+      "version>=": "6435.2.1"
     },
     "picojson",
     {
       "name": "qvac-lib-inference-addon-cpp",
-      "version>=": "0.12.2"
+      "version>=": "0.12.0"
     },
-    "qvac-lint-cpp"
-  ],
-  "features": {
-    "tests": {
-      "description": "Build tests",
-      "dependencies": [
-        "gtest"
-      ]
-    },
-    "vk-profiling": {
-      "description": "Force vk performance logging in llama-cpp",
-      "dependencies": [
-        {
-          "name": "llama-cpp",
-          "features": [
-            "force-profiler"
-          ]
-        }
-      ]
+    "qvac-lint-cpp",
+    {
+      "name": "opencl",
+      "platform": "android"
     }
-  }
+  ]
 }

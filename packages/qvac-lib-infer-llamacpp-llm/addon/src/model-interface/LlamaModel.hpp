@@ -2,7 +2,6 @@
 // NOLINTBEGIN(readability-identifier-naming)
 
 #include <functional>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -10,8 +9,7 @@
 #include <llama.h>
 #include <picojson/picojson.h>
 
-#include "CacheManager.hpp"
-#include "LlamaLazyInitializeBackend.hpp"
+#include "LlamaFinetuningHelpers.hpp"
 #include "LlmContext.hpp"
 #include "common/chat.h"
 #include "qvac-lib-inference-addon-cpp/BlobsStream.hpp"
@@ -32,8 +30,8 @@ public:
 
   /**
    * The Constructor for llama model.
-   * @param modelPath - path to the model file.
-   * @param projectionPath - path to the projector file.
+   * @param model_path - path to the model file.
+   * @param projectorPath - path to the projector file.
    * @param configFilemap - map of configuration files.
    */
   LlamaModel(
@@ -43,10 +41,8 @@ public:
 
   /**
    * The Destructor for llama model.
-   * Members are destroyed in reverse order of declaration, ensuring
-   * llmContext is destroyed before backendsHandle_.
    */
-  ~LlamaModel() = default;
+  ~LlamaModel();
 
   /// @brief Call for asynchronous loading of file shards.
   void set_weights_for_file(
@@ -81,19 +77,34 @@ public:
   /**
    * Initialize backend (llama.cpp setup).
    */
-  void initializeBackend(const std::string& backendsDir = "");
+  void initializeBackend();
 
-  /**
-   * Check if model is loaded.
-   */
-  bool isLoaded();
+    /**
+     * Check if model is loaded.
+     */
+    bool isLoaded();
 
-  /**
-   * Ensure model is initialized
-   */
-  inline void waitForLoadInitialization() {
-    initLoader.waitForLoadInitialization();
-  }
+    /**
+     * Ensure model is initialized
+     */
+    inline void waitForLoadInitialization() {
+      initLoader.waitForLoadInitialization();
+    }
+
+        /**
+         * Access the underlying llama context pointer.
+         */
+        llama_context* getContext();
+
+        /**
+         * Access the underlying llama model pointer.
+         */
+        llama_model* getModel();
+
+        /**
+         * Access the mutable common parameters associated with the active context.
+         */
+        common_params& getCommonParams();
 
     /**
      * The Runtime stats method. It outputs the runtime infernce stats per job.
@@ -108,11 +119,33 @@ public:
     static void
     llamaLogCallback(ggml_log_level level, const char* text, void* user_data);
 
+    /**
+     * Finetune the model using LoRA.
+     *
+     * @param params - finetuning parameters
+     * @param logCallback - callback function for logging messages
+     */
+    void finetune(
+        const qvac_lib_inference_addon_cpp::FinetuningParameters& params,
+        std::function<void(const std::string&)> logCallback = {},
+        bool allowResumeFromPause = false);
+
+    /**
+     * Request pause of finetuning (sets pause flag in checkpoint state).
+     * Returns true if pause was requested, false if not finetuning.
+     */
+    bool requestPause();
+
+    /**
+     * Clear pause request flag (for resume).
+     */
+    void clearPauseRequest();
+
   private:
     /**
      * The Common params parse method. It parses the common params.
      *
-     * @param modelPath - model path.
+     * @param model_path - model path.
      * @param configFilemap - config file map.
      * @param params - common params.
      */
@@ -131,14 +164,38 @@ public:
     FormatPrompt(const std::string& input);
 
     /**
+     * The Handle cache method. It handles the cache of the chat session.
+     *
+     * @param chatMsgs - chat messages.
+     * @param tools - tools.
+     * @param inputPrompt - input prompt.
+     * @return true if the cache is loaded, false otherwise.
+     */
+    bool HandleCache(
+        std::vector<common_chat_msg>& chatMsgs,
+        std::vector<common_chat_tool>& tools, const std::string& inputPrompt);
+
+    /**
+     * The Load cache method. It loads the cache of the chat session.
+     *
+     * @param embd_inp - input tokens.
+     */
+    bool LoadCache();
+
+    /**
+     * The Save cache method. It saves the cache of the chat session.
+     *
+     */
+    void SaveCache();
+
+    /**
      * The Reset state method. It resets the model state.
      */
     void ResetState(bool resetStats = true);
 
     /**
      * Create the appropriate context based on model type and projector path
-     * @param projectionPath - path to the projector file (for multimodal
-     * models)
+     * @param model_path - path to the model file
      * @param params - common parameters
      * @param common_init_result - Result of loading/initializing model from
      * .gguf file(s)
@@ -160,28 +217,66 @@ public:
         const std::string& modelPath, const std::string& projectionPath,
         std::unordered_map<std::string, std::string>& configFilemap);
 
+    // Finetuning private methods
+    void validateFinetuningParams(
+        const qvac_lib_inference_addon_cpp::FinetuningParameters& params);
+    ggml_opt_dataset_t prepareTrainingDataset(
+        const qvac_lib_inference_addon_cpp::FinetuningParameters& params);
+    void initializeLoraAdapter(
+        const qvac_lib_inference_addon_cpp::FinetuningParameters& params,
+        uint32_t targetModules, llama_adapter_lora*& adapter);
+    llama_finetuning_helpers::LoraLrSchedulerState createLrScheduler(
+        const qvac_lib_inference_addon_cpp::FinetuningParameters& params,
+        int64_t totalSteps);
+    std::unique_ptr<llama_finetuning_helpers::TrainingCheckpointState>
+    initializeCheckpointing(
+        const qvac_lib_inference_addon_cpp::FinetuningParameters& params,
+        llama_adapter_lora* adapter,
+        llama_finetuning_helpers::LoraLrSchedulerState* scheduler,
+        std::function<void(const std::string&)> logFn);
+    void configureOptimizer(
+        const qvac_lib_inference_addon_cpp::FinetuningParameters& params,
+        llama_adapter_lora* adapter,
+        llama_finetuning_helpers::LoraLrSchedulerState& scheduler,
+        llama_finetuning_helpers::TrainingCheckpointState* checkpointState,
+        bool loadOptimizerState = false);
+    void executeTrainingLoop(
+        const qvac_lib_inference_addon_cpp::FinetuningParameters& params,
+        ggml_opt_dataset_t dataset, int64_t trainSplit,
+        llama_finetuning_helpers::LoraLrSchedulerState& scheduler,
+        llama_finetuning_helpers::TrainingCheckpointState* checkpointState,
+        std::function<void(const std::string&)> logCallback,
+        uint32_t startEpoch = 0, bool resumingFromPause = false);
+    void saveLoraAdapter(
+        llama_adapter_lora* adapter,
+        const qvac_lib_inference_addon_cpp::FinetuningParameters& params);
+
     // private members
+    std::string _sessionPath;
+    bool _cache_disabled = true;
+
+    // Store the appropriate context (TextLlmContext or MtmdLlmContext)
+    std::unique_ptr<LlmContext> llmContext;
+
     const std::string loading_context;
     const GGUFShards _shards;
     friend class InitLoader;
     InitLoader initLoader;
 
     bool isTextLlm = false;
+    bool backendInitialized = false;
     bool isStreaming = false;
     std::map<std::string, std::unique_ptr<std::basic_streambuf<char>>>
         singleGgufStreamedFiles;
 
-    // Backend handle must be declared before llmContext to ensure
-    // llmContext is destroyed first (members destroyed in reverse order)
-    std::optional<LlamaBackendsHandle> backendsHandle_;
-
-    // Store the appropriate context (TextLlmContext or MtmdLlmContext)
-    // Destroyed before backendsHandle_ to avoid use-after-free
-    std::unique_ptr<LlmContext> llmContext;
-
     // configuration values parsed from configFilemap
     llama_pos configured_n_discarded = 0;
-    std::optional<CacheManager> cacheManager;
+
+    // Finetuning state
+    llama_finetuning_helpers::TrainingCheckpointState* currentCheckpointState_ =
+        nullptr;
+    bool optimizerInitialized_ =
+        false; // Track if optimizer has been initialized for this context
 };
 
 // NOLINTEND(readability-identifier-naming)

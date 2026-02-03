@@ -27,7 +27,11 @@ class LlmLlamacpp extends BaseInference {
    * @param {string} args.projectionModel - Name of the projection model directory or file
    * @param {Object} config - Model-specific configuration settings
    */
-  constructor ({ opts = {}, loader, logger = null, diskPath = '.', modelName, projectionModel }, config) {
+  constructor (
+    { opts = {}, loader, logger = null, diskPath = '.', modelName, projectionModel },
+    config,
+    finetuningParams = null
+  ) {
     super({ logger, opts })
     this._config = config
     this._diskPath = diskPath
@@ -37,6 +41,7 @@ class LlmLlamacpp extends BaseInference {
     this._shards = WeightsProvider.expandGGUFIntoShards(this._modelName)
     this.weightsProvider = new WeightsProvider(loader, this.logger)
     this._runQueueWaiter = Promise.resolve()
+    this._defaultFinetuneParams = finetuningParams ?? null
   }
 
   /**
@@ -49,14 +54,24 @@ class LlmLlamacpp extends BaseInference {
     this.logger.info('Starting model load')
 
     try {
+      const configForLoad = { ...this._config }
+      const shouldDisableFlashAttn = this._defaultFinetuneParams !== null
+      if (shouldDisableFlashAttn) {
+        const hasFlashSetting = Object.prototype.hasOwnProperty.call(configForLoad, 'flash_attn')
+        const requestedValue = hasFlashSetting ? configForLoad.flash_attn : undefined
+        if (requestedValue !== 'off') {
+          configForLoad.flash_attn = 'off'
+        }
+      }
+
       const configurationParams = {
         path: path.join(this._diskPath, this._modelName),
         projectionPath: this._projectionModel ? path.join(this._diskPath, this._projectionModel) : '',
-        config: this._config
+        config: configForLoad
       }
 
       this.logger.info('Creating addon with configuration:', configurationParams)
-      this.addon = this._createAddon(configurationParams)
+      this.addon = this._createAddon(configurationParams, this._defaultFinetuneParams)
 
       if (this._shards !== null) {
         await this._loadWeights(onDownloadProgress)
@@ -104,17 +119,36 @@ class LlmLlamacpp extends BaseInference {
    * @param {Object} configurationParams.settings - LLM-specific settings
    * @returns {Addon} The instantiated addon interface
    */
-  _createAddon (configurationParams) {
+  _createAddon (configurationParams, finetuningParams = null) {
     this.logger.info(
       'Creating Llama interface with configuration:',
       configurationParams
     )
     const binding = require('./binding')
+    const transitionCb = this.logger && typeof this.logger.info === 'function'
+      ? this.logger.info.bind(this.logger)
+      : null
+
+    // Wrap _outputCallback to capture log messages
+    const originalOutputCb = this._outputCallback?.bind(this)
+    const wrappedOutputCb = (instance, eventType, jobId, data, extra) => {
+      if (eventType === 'LogMsg') {
+        const logMsg = typeof data === 'string' ? data : (data?.message || JSON.stringify(data))
+        this.logger?.info?.(logMsg)
+        // Don't call originalOutputCb for LogMsg to avoid duplicate logging
+        return
+      }
+      if (originalOutputCb) {
+        return originalOutputCb(instance, eventType, jobId, data, extra)
+      }
+    }
+
     return new LlamaInterface(
       binding,
       configurationParams,
-      this._outputCallback.bind(this),
-      this.logger.info.bind(this.logger)
+      wrappedOutputCb,
+      transitionCb,
+      finetuningParams
     )
   }
 
@@ -171,6 +205,82 @@ class LlmLlamacpp extends BaseInference {
 
       return response
     })
+  }
+
+  async finetune (finetuningOptions = undefined) {
+    this.logger?.info?.('finetune() called')
+    const params = finetuningOptions ?? this._defaultFinetuneParams
+    if (!params) {
+      throw new Error('Finetuning parameters are required but not provided.')
+    }
+
+    this._defaultFinetuneParams = params
+    this.logger?.info?.('Finetuning parameters:', params)
+
+    if (!this.addon) {
+      this.logger?.info?.('Addon not loaded, calling load()...')
+      await this.load()
+      this.logger?.info?.('Addon loaded')
+    }
+
+    return this._withExclusiveRun(async () => {
+      this.logger?.info?.('Calling addon.finetune()...')
+      await this.addon.finetune(params)
+      this.logger?.info?.('addon.finetune() returned, waiting for completion...')
+      const finalStatus = await this._waitForFinetuneCompletion()
+      this.logger?.info?.(`Finetuning completed with status: ${finalStatus}`)
+      return { status: finalStatus }
+    })
+  }
+
+  async _waitForFinetuneCompletion ({ pollIntervalMs = 500, timeoutMs = 100000000000 } = {}) {
+    const deadline = Date.now() + timeoutMs
+    let sawFinetuneState = false
+
+    while (Date.now() <= deadline) {
+      const status = await this.addon.status()
+      if (status === 'FINETUNING') {
+        sawFinetuneState = true
+      } else if (sawFinetuneState) {
+        // Only return on terminal states (IDLE = completion, not PAUSED)
+        // PAUSED is a temporary state - training can resume, so keep waiting
+        if (status === 'PAUSED') {
+          // Continue waiting - training may resume
+          await new Promise(resolve => setTimeout(resolve, pollIntervalMs))
+          continue
+        }
+        // Return on other terminal states (IDLE, ERROR, etc.)
+        return status
+      } else if (status !== 'LOADING') {
+        return status
+      }
+
+      await new Promise(resolve => setTimeout(resolve, pollIntervalMs))
+    }
+
+    throw new Error('Time out')
+  }
+
+  /**
+   * Pause finetuning. Saves checkpoint and pauses training.
+   * @returns {Promise<void>}
+   */
+  async pauseFinetune () {
+    if (!this.addon) {
+      throw new Error('Addon not initialized')
+    }
+    await this.addon.pause()
+  }
+
+  /**
+   * Resume finetuning from pause checkpoint.
+   * @returns {Promise<void>}
+   */
+  async resumeFinetune () {
+    if (!this.addon) {
+      throw new Error('Addon not initialized')
+    }
+    await this.addon.activate()
   }
 }
 

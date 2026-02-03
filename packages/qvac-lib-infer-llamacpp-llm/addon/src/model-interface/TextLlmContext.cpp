@@ -1,7 +1,6 @@
 #include "TextLlmContext.hpp"
 
 #include <algorithm>
-#include <cmath>
 #include <cstddef>
 
 #include <llama.h>
@@ -11,13 +10,10 @@
 #include "common/common.h"
 #include "common/log.h"
 #include "qvac-lib-inference-addon-cpp/Logger.hpp"
-#include "utils/ChatTemplateUtils.hpp"
 #include "utils/LoggingMacros.hpp"
-#include "utils/Qwen3ReasoningUtils.hpp"
 
 using namespace qvac_lib_inference_addon_llama::errors;
 using namespace qvac_lib_inference_addon_cpp::logger;
-using namespace qvac_lib_inference_addon_llama::utils;
 // NOLINTNEXTLINE(readability-identifier-naming,readability-function-cognitive-complexity)
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 
@@ -40,16 +36,7 @@ TextLlmContext::TextLlmContext(
     }
 
     vocab = llama_model_get_vocab(model);
-
-    is_qwen3_model_ =
-        qvac_lib_inference_addon_llama::utils::isQwen3Model(model);
-    if (is_qwen3_model_) {
-      qvac_lib_inference_addon_llama::utils::initializeQwen3ReasoningState(
-          lctx, reasoning_state_);
-    }
-
-    std::string chat_template = getChatTemplate(model, params);
-    tmpls = common_chat_templates_init(model, chat_template);
+    tmpls = common_chat_templates_init(model, params.chat_template);
 
     smpl.reset(common_sampler_init(model, params.sampling));
     if (!smpl) {
@@ -206,18 +193,26 @@ void TextLlmContext::tokenizeChat(
 
   if (!tools.empty()) {
     inputs.tools = tools;
-  }
-  prompt = getPrompt(tmpls.get(), inputs);
 
-  QLOG_IF(
-      Priority::DEBUG,
-      string_format("[TextLlm] formatted prompt: %s\n", prompt.c_str()));
+    try {
+      prompt = common_chat_templates_apply(tmpls.get(), inputs).prompt;
+    } catch (...) {
+      // Catching known issue when a model does not support tools
+      inputs.use_jinja = false;
+      prompt = common_chat_templates_apply(tmpls.get(), inputs).prompt;
+      QLOG_IF(
+          Priority::ERROR,
+          "[TextLlm] model does not support tools. Tools will be ignored.\n");
+    }
+  } else {
+    prompt = common_chat_templates_apply(tmpls.get(), inputs).prompt;
+  }
 
   if (!prompt.empty()) {
     inputTokens = common_tokenize(lctx, prompt, addSpecial, true);
   } else {
-    std::string errorMsg = string_format(
-        "[TextLlm] %s: formatted chat prompt is empty\n", __func__);
+    std::string errorMsg =
+        string_format("[TextLlm] %s: prompt is empty\n", __func__);
     throw qvac_errors::StatusError(AddonID, toString(EmptyPrompt), errorMsg);
   }
 
@@ -252,13 +247,13 @@ void TextLlmContext::tokenizeChat(
 };
 
 bool TextLlmContext::evalMessage(
-    const std::vector<common_chat_msg>& chatMsgs, bool isCacheLoaded) {
+    std::vector<common_chat_msg> chatMsgs, bool isCacheLoaded) {
   return evalMessageWithTools(chatMsgs, {}, isCacheLoaded);
 }
 
 bool TextLlmContext::evalMessageWithTools(
-    const std::vector<common_chat_msg>& chatMsgs,
-    const std::vector<common_chat_tool>& tools, bool isCacheLoaded) {
+    std::vector<common_chat_msg> chatMsgs, std::vector<common_chat_tool> tools,
+    bool isCacheLoaded) {
   std::vector<llama_token> inputTokens;
   tokenizeChat(chatMsgs, tools, inputTokens, isCacheLoaded);
 
@@ -310,7 +305,7 @@ bool TextLlmContext::evalMessageWithTools(
           AddonID, toString(ContextOverflow), errorMsg);
     }
   }
-  BatchPtr textBatchPtr =
+  BatchPtr textBatch =
       BatchPtr(new llama_batch(llama_batch_init(params.n_batch, 0, 1)));
 
   llama_pos count = n_past;
@@ -322,27 +317,26 @@ bool TextLlmContext::evalMessageWithTools(
       stop_generation.store(false);
       return false;
     }
-    textBatchPtr->n_tokens = 0; // clear the batch
+    textBatch->n_tokens = 0; // clear the batch
     // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic,bugprone-narrowing-conversions,readability-implicit-bool-conversion,readability-identifier-naming)
-    for (; tokenIndex < nTokens && textBatchPtr->n_tokens < params.n_batch;
+    for (; tokenIndex < nTokens && textBatch->n_tokens < params.n_batch;
          tokenIndex++) {
-      llama_pos batchTokenIndex = textBatchPtr->n_tokens;
+      llama_pos batchTokenIndex = textBatch->n_tokens;
       // NOLINTNEXTLINE(clang-analyzer-core.NullDereference)
-      textBatchPtr->token[batchTokenIndex] = inputTokens[tokenIndex];
-      textBatchPtr->pos[batchTokenIndex] = static_cast<llama_pos>(count++);
-      textBatchPtr->n_seq_id[batchTokenIndex] = 1;
-      textBatchPtr->seq_id[batchTokenIndex][0] = 0;
-      textBatchPtr->logits[batchTokenIndex] = static_cast<int8_t>(false);
+      textBatch->token[batchTokenIndex] = inputTokens[tokenIndex];
+      textBatch->pos[batchTokenIndex] = static_cast<llama_pos>(count++);
+      textBatch->n_seq_id[batchTokenIndex] = 1;
+      textBatch->seq_id[batchTokenIndex][0] = 0;
+      textBatch->logits[batchTokenIndex] = static_cast<int8_t>(false);
 
-      textBatchPtr->n_tokens++;
+      textBatch->n_tokens++;
     }
     bool isLastToken = (tokenIndex == nTokens);
     if (isLastToken) {
-      textBatchPtr->logits[textBatchPtr->n_tokens - 1] =
-          static_cast<int8_t>(true);
+      textBatch->logits[textBatch->n_tokens - 1] = static_cast<int8_t>(true);
     }
     // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
-    int ret = llama_decode(lctx, *textBatchPtr);
+    int ret = llama_decode(lctx, *textBatch);
     if (ret != 0) {
       std::string errorMsg = string_format(
           "[TextLlm] %s: failed to decode input tokens\n", __func__);
@@ -350,7 +344,7 @@ bool TextLlmContext::evalMessageWithTools(
           AddonID, toString(FailedToDecode), errorMsg);
     }
 
-    n_past += textBatchPtr->n_tokens;
+    n_past += textBatch->n_tokens;
     // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic,bugprone-narrowing-conversions,readability-implicit-bool-conversion,readability-identifier-naming)
   }
 
@@ -364,15 +358,11 @@ bool TextLlmContext::evalMessageWithTools(
 }
 
 bool TextLlmContext::generateResponse(
-    const std::function<void(const std::string&)>& outputCallback) {
+    std::function<void(const std::string&)> outputCallback) {
 
   int nRemain = params.n_predict;
   BatchPtr batchPtr = BatchPtr(new llama_batch(
       llama_batch_init(1, 0, 1))); // batch for next token generation
-
-  // Reset reasoning state at start of generation (preserve cached tokens)
-  reasoning_state_.inside_reasoning = false;
-  reasoning_state_.recent_output_buffer.clear();
 
   while (nRemain != 0) {
     if (n_past + 1 > llama_n_ctx(lctx) && n_discarded == 0) {
@@ -398,7 +388,6 @@ bool TextLlmContext::generateResponse(
 
     // send text to JS callback with UTF-8 buffering
     std::string tokenStr = common_token_to_piece(lctx, tokenId, params.special);
-
     if (outputCallback) {
       // Use buffer to accumulate tokens until complete UTF-8 sequences
       std::string completeChars = utf8_buffer_.addToken(tokenStr);
@@ -407,20 +396,7 @@ bool TextLlmContext::generateResponse(
       }
     }
 
-    if (is_qwen3_model_) {
-      qvac_lib_inference_addon_llama::utils::updateQwen3ReasoningBuffer(
-          tokenStr, reasoning_state_);
-    }
-
-    bool isEos = llama_vocab_is_eog(vocab, tokenId);
-    if (isEos && is_qwen3_model_) {
-      if (handleQwen3ReasoningEOS(
-              tokenId, tokenStr, batchPtr.get(), n_past, outputCallback)) {
-        continue;
-      }
-    }
-
-    if (isEos || checkAntiprompt()) {
+    if (llama_vocab_is_eog(vocab, tokenId) || checkAntiprompt()) {
       // Flush any remaining UTF-8 bytes before ending generation
       if (outputCallback && utf8_buffer_.hasPendingBytes()) {
         std::string remaining = utf8_buffer_.flush();
@@ -470,6 +446,7 @@ bool TextLlmContext::generateResponse(
       outputCallback(remaining);
     }
   }
+
   return true;
 }
 
@@ -547,74 +524,4 @@ llama_pos TextLlmContext::removeLastNTokens(llama_pos count) {
   // future sampling since they're no longer in the KV cache.
 
   return tokensToRemove;
-}
-
-bool TextLlmContext::handleQwen3ReasoningEOS(
-    llama_token& tokenId, std::string& tokenStr, llama_batch* batchPtr,
-    llama_pos& n_past,
-    const std::function<void(const std::string&)>& outputCallback) {
-
-  if (!reasoning_state_.inside_reasoning) {
-    return false;
-  }
-
-  if (reasoning_state_.cached_close_tag_token == LLAMA_TOKEN_NULL) {
-    QLOG_IF(
-        Priority::WARNING,
-        "[TextLlm] EOS detected inside reasoning but no cached closing tag!\n");
-    return false;
-  }
-
-  // Replace EOS with closing tag
-  tokenId = reasoning_state_.cached_close_tag_token;
-  tokenStr = common_token_to_piece(lctx, tokenId, params.special);
-  reasoning_state_.inside_reasoning = false;
-
-  // Stream closing tag to user
-  if (outputCallback) {
-    std::string completeChars = utf8_buffer_.addToken(tokenStr);
-    if (!completeChars.empty()) {
-      outputCallback(completeChars);
-    }
-  }
-
-  // Decode closing tag
-  common_batch_clear(*batchPtr);
-  common_batch_add(*batchPtr, tokenId, n_past++, {0}, true);
-  if (llama_decode(lctx, *batchPtr) != 0) {
-    QLOG_IF(
-        Priority::ERROR,
-        "[TextLlm] Failed to decode closing tag during replacement\n");
-  }
-
-  // Inject 2 newlines after closing tag
-  if (reasoning_state_.cached_newline_token != LLAMA_TOKEN_NULL) {
-    for (int i = 0; i < 2; i++) {
-      common_batch_clear(*batchPtr);
-      common_batch_add(
-          *batchPtr,
-          reasoning_state_.cached_newline_token,
-          n_past++,
-          {0},
-          true);
-
-      if (llama_decode(lctx, *batchPtr) != 0) {
-        QLOG_IF(
-            Priority::ERROR,
-            "[TextLlm] Failed to decode newline token during forced "
-            "injection\n");
-      }
-
-      std::string newlineStr = common_token_to_piece(
-          lctx, reasoning_state_.cached_newline_token, params.special);
-      if (outputCallback) {
-        std::string completeChars = utf8_buffer_.addToken(newlineStr);
-        if (!completeChars.empty()) {
-          outputCallback(completeChars);
-        }
-      }
-    }
-  }
-
-  return true;
 }

@@ -1,15 +1,47 @@
 #include "Addon.hpp"
 
+#include <atomic>
+#include <chrono>
+#include <iostream>
 #include <sstream>
+#include <string>
+#include <thread>
 #include <utility>
 
-#include "common/common.h"
+#include <qvac-lib-inference-addon-cpp/FinetuningParameters.hpp>
+
+#include "FinetuneParamStore.hpp"
 #include "model-interface/LlamaModel.hpp"
 #include "qvac-lib-inference-addon-cpp/Logger.hpp"
 #include "utils/LoggingMacros.hpp"
 
+extern "C" void qvac_lib_inference_addon_llama_put_finetune_params(
+    void* key,
+    const qvac_lib_inference_addon_cpp::FinetuningParameters& params) {
+  qvac_lib_inference_addon_llama_detail::put(key, params);
+}
+
 namespace qvac_lib_inference_addon_cpp {
-// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
+template <>
+bool Addon<LlamaModel>::supportsFinetuning() {
+  return true;
+}
+
+// Static atomic variable to track if we should resume from pause
+// This is set when activate() is called from PAUSED state
+// Using atomic to ensure thread-safe access across the process loop and
+// activate() calls
+namespace {
+std::atomic<bool> shouldResumeFromPause{false};
+// Thread-local variable to pass the resume flag from process loop to
+// doFinetuning() This ensures the flag value is preserved even if
+// doFinetuning() is called multiple times
+thread_local bool currentResumeFlag = false;
+} // namespace
+
+template <>
+void Addon<LlamaModel>::doFinetuning();
+
 template <>
 template <>
 Addon<LlamaModel>::Addon(
@@ -28,10 +60,9 @@ Addon<LlamaModel>::Addon(
   QLOG_IF(logger::Priority::INFO, "LlamaModel addon initialized successfully");
 }
 
-// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
 template <>
 template <>
-Addon<LlamaModel>::Addon(// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-init)
+Addon<LlamaModel>::Addon(
 
     js_env_t *env, std::reference_wrapper<const std::string> modelPath,
     std::reference_wrapper<std::unordered_map<std::string, std::string>>
@@ -39,6 +70,22 @@ Addon<LlamaModel>::Addon(// NOLINTNEXTLINE(cppcoreguidelines-pro-type-member-ini
     js_value_t *jsHandle, js_value_t *outputCb, js_value_t *transitionCb)
     : env_{env}, transitionCb_{transitionCb},
       model_{modelPath, "", configFilemap} {
+  initializeProcessingThread(env, jsHandle, outputCb, transitionCb);
+}
+
+template <>
+template <>
+Addon<LlamaModel>::Addon(
+
+    js_env_t *env, std::reference_wrapper<const std::string> modelPath,
+    std::reference_wrapper<std::unordered_map<std::string, std::string>>
+      configFilemap,
+    std::reference_wrapper<const qvac_lib_inference_addon_cpp::FinetuningParameters>
+      finetuningArgs,
+    js_value_t *jsHandle, js_value_t *outputCb, js_value_t *transitionCb)
+    : env_{env}, transitionCb_{transitionCb},
+      model_{modelPath, "", configFilemap} {
+  this->finetuningParameters_ = finetuningArgs.get();
   initializeProcessingThread(env, jsHandle, outputCb, transitionCb);
 }
 
@@ -101,7 +148,6 @@ uint32_t qvac_lib_inference_addon_llama::Addon::append(
   // complete responses. This specialization handles the streaming nature of LLaMA's output
   // by processing input in pieces and handling the incremental token generation.
 template <>
-// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void Addon<LlamaModel>::process() {
 
   std::unique_ptr<Job<LlamaModel::Input>> currentJob;
@@ -132,12 +178,36 @@ void Addon<LlamaModel>::process() {
   while (running_) {
     std::unique_lock uniqueLock(mtx_);
     constexpr int K_PROCESS_WAIT_MS = 100;
+
     processCv_.wait_for(
         uniqueLock, std::chrono::milliseconds{K_PROCESS_WAIT_MS});
+
+    // CRITICAL: Process signals FIRST, before checking status
+    // This ensures that when activate() sets a signal from PAUSED state,
+    // the signal is processed and status is updated before the status check
     if (signal_ != ProcessSignals::None) {
       switch (signal_) {
       case ProcessSignals::Activate:
-        status_ = AddonStatus::Processing;
+        // Don't overwrite Finetuning status - if we're resuming, status is
+        // already Finetuning
+        if (status_ != AddonStatus::Finetuning) {
+          status_ = AddonStatus::Processing;
+        }
+        break;
+      case ProcessSignals::Finetune:
+        // CRITICAL: Only ignore the signal if training completed AND we're not
+        // resuming from pause If shouldResumeFromPause is true, we MUST process
+        // the signal to resume training The flag is set by activate() when
+        // resuming from PAUSED state
+        if (this->finetuningFinished_ && !shouldResumeFromPause.load()) {
+          // Training completed and we're not resuming - ignore the signal to
+          // prevent restart
+          break;
+        }
+        status_ = AddonStatus::Finetuning;
+        // Reset finetuningFinished_ flag when starting new training session
+        this->finetuningFinished_ = false;
+        // Force the loop to process finetuning even if it was in Loading state
         break;
       case ProcessSignals::Stop:
         status_ = AddonStatus::Stopped;
@@ -152,19 +222,8 @@ void Addon<LlamaModel>::process() {
         status_ = AddonStatus::Paused;
         break;
       case ProcessSignals::Cancel:
-        QLOG_IF(
-            logger::Priority::INFO,
-            string_format(
-                "[C++] Addon::process() processing Cancel signal, "
-                "cancelJobId_=%u\n",
-                cancelJobId_));
         if (currentJob &&
             (cancelJobId_ == 0 || currentJob->id == cancelJobId_)) {
-          QLOG_IF(
-              logger::Priority::INFO,
-              string_format(
-                  "[C++] Addon::process() canceling job %u, queuing JobEnded\n",
-                  currentJob->id));
           queueOutput(
               ModelOutput{
                   OutputEvent::JobEnded,
@@ -173,26 +232,10 @@ void Addon<LlamaModel>::process() {
           model_.reset();
           if (currentJob.get() == lastAppendedJob_) {
             lastAppendedJob_ = nullptr;
-            QLOG_IF(
-                logger::Priority::INFO,
-                string_format("[C++] Addon::process() cleared lastAppendedJob_ "
-                              "during cancel\n"));
           }
           currentJob.reset();
           cancelJobId_ = 0;
           clearInput(input);
-          QLOG_IF(
-              logger::Priority::INFO,
-              string_format(
-                  "[C++] Addon::process() cancel processing complete\n"));
-        } else {
-          QLOG_IF(
-              logger::Priority::INFO,
-              string_format(
-                  "[C++] Addon::process() cancel signal ignored "
-                  "(currentJob=%p, cancelJobId_=%u)\n",
-                  currentJob.get(),
-                  cancelJobId_));
         }
         break;
       default:
@@ -201,8 +244,113 @@ void Addon<LlamaModel>::process() {
       }
       signal_ = ProcessSignals::None;
     }
+
     if (status_ == AddonStatus::Stopped || status_ == AddonStatus::Paused ||
         status_ == AddonStatus::Loading) {
+      continue;
+    }
+
+    if (status_ == AddonStatus::Finetuning) {
+      // CRITICAL: Only call doFinetuning() if finetuningFinished_ is false OR
+      // we're resuming from pause
+      if (this->finetuningFinished_ && !shouldResumeFromPause.load()) {
+        continue;
+      }
+
+      // Read and reset the flag atomically while holding the lock
+      bool resumeFlag = shouldResumeFromPause.exchange(false);
+      bool wasResuming =
+          resumeFlag; // Save for use after doFinetuning() returns
+
+      uniqueLock.unlock();
+      try {
+        currentResumeFlag = resumeFlag;
+        doFinetuning();
+      } catch (const std::exception& e) {
+        std::scoped_lock logLock{this->mtx_};
+        this->queueOutput(ModelOutput{
+            OutputEvent::LogMsg,
+            0,
+            typename ModelOutput::LogMsg{
+                std::string{"Finetuning error: "} + e.what()}});
+      }
+
+      auto logMsg = this->getLogMessage();
+      if (!logMsg.empty()) {
+        std::scoped_lock logLock{this->mtx_};
+        this->queueOutput(
+            ModelOutput{
+                OutputEvent::LogMsg,
+                0,
+                typename ModelOutput::LogMsg{std::move(logMsg)}});
+      }
+      uniqueLock.lock();
+      // doFinetuning() sets finetuningFinished_ = true when it completes
+      // We don't need to set it again here - it's already set
+
+      // CRITICAL: Use the saved resume flag value, not the atomic flag
+      // The atomic flag was consumed by exchange(false) above, so reading it
+      // now would always be false We saved wasResuming before calling
+      // doFinetuning() to know if we were resuming
+      bool isResuming = wasResuming;
+
+      // CRITICAL: After doFinetuning() completes, training is done (either
+      // normally or after resume) We should ALWAYS transition to Idle (unless
+      // paused), regardless of whether we were resuming The "resume" flag only
+      // matters for determining if we should load a checkpoint, not for
+      // completion handling
+
+      // If we're resuming, clear the signal to prevent duplicate processing
+      if (isResuming) {
+        if (signal_ == ProcessSignals::Finetune) {
+          signal_ = ProcessSignals::None;
+        }
+      }
+
+      // CRITICAL: Always transition from Finetuning to Idle after completion
+      // (whether resuming or not) This prevents the loop from re-entering the
+      // Finetuning block on the next iteration Note: If paused, status would
+      // have been changed to Paused by pause() during doFinetuning(), in which
+      // case we keep it as Paused (handled by the finetuningFinished_ block
+      // below)
+      if (status_ == AddonStatus::Finetuning) {
+        // Training completed - set status to Idle (regardless of whether we
+        // were resuming)
+        status_ = AddonStatus::Idle;
+        this->finetuningFinished_ =
+            false; // Reset flag now that we've handled completion
+        // Clear Finetune signal if present
+        if (signal_ == ProcessSignals::Finetune) {
+          signal_ = ProcessSignals::None;
+        }
+        // Notify waiting threads (e.g., JavaScript status() calls) that status
+        // has changed
+        uniqueLock.unlock();
+        processCv_.notify_all();
+        uniqueLock.lock();
+      }
+      // If status is not Finetuning (e.g., it was changed to Paused during
+      // doFinetuning()), the finetuningFinished_ block below will handle it
+      continue;
+    }
+    if (this->finetuningFinished_) {
+      // This block handles completion from previous iterations
+      // Only mark as complete if not paused (pause is temporary, training can
+      // resume)
+      if (status_ != AddonStatus::Paused) {
+        this->finetuningFinished_ = false;
+        status_ = AddonStatus::Idle;
+        // Clear any pending Finetune signal to prevent restarting training
+        if (signal_ == ProcessSignals::Finetune) {
+          signal_ = ProcessSignals::None;
+        }
+        // Note: LoRA adapter is already saved in LlamaModel::finetune()
+        // No need to call saveWeights() here
+      } else {
+        // If paused, keep status as PAUSED and don't save weights yet
+        // Training can resume, so don't treat this as completion
+        this->finetuningFinished_ = false; // Reset flag for potential resume
+      }
       continue;
     }
     if (currentJob == nullptr) {
@@ -214,11 +362,6 @@ void Addon<LlamaModel>::process() {
       currentJob = std::move(jobQueue_.top().job);
       jobQueue_.pop();
       status_ = AddonStatus::Processing;
-      QLOG_IF(
-          logger::Priority::INFO,
-          string_format(
-              "[C++] Addon::process() starting job %u, queuing JobStarted\n",
-              currentJob->id));
       queueOutput(ModelOutput{OutputEvent::JobStarted, currentJob->id});
     }
     if (isInputEmpty(input)) {
@@ -261,82 +404,90 @@ void Addon<LlamaModel>::process() {
     } catch (const std::exception& e) {
       // Error, cancel current job
       auto jobId = currentJob->id;
-      QLOG_IF(
-          logger::Priority::INFO,
-          string_format(
-              "[C++] Addon::process() caught exception for job %u: %s\n",
-              jobId,
-              e.what()));
       uniqueLock.lock();
-      QLOG_IF(
-          logger::Priority::INFO,
-          string_format(
-              "[C++] Addon::process() queuing Error event for job %u\n",
-              jobId));
-      queueOutput(ModelOutput{
-          OutputEvent::Error, jobId, typename ModelOutput::Error{e.what()}});
-      QLOG_IF(
-          logger::Priority::INFO,
-          string_format(
-              "[C++] Addon::process() Error event queued for job %u\n", jobId));
-      QLOG_IF(
-          logger::Priority::INFO,
-          string_format(
-              "[C++] Addon::process() queuing JobEnded event for job %u\n",
-              jobId));
+      queueOutput(
+          ModelOutput{
+              OutputEvent::Error,
+              jobId,
+              typename ModelOutput::Error{e.what()}});
       queueOutput(
           ModelOutput{OutputEvent::JobEnded, jobId, model_.runtimeStats()});
-      QLOG_IF(
-          logger::Priority::INFO,
-          string_format(
-              "[C++] Addon::process() JobEnded event queued for job %u\n",
-              jobId));
-      QLOG_IF(
-          logger::Priority::INFO,
-          string_format(
-              "[C++] Addon::process() resetting model and clearing job %u\n",
-              jobId));
       model_.reset();
       if (currentJob.get() == lastAppendedJob_) {
         lastAppendedJob_ = nullptr;
-        QLOG_IF(
-            logger::Priority::INFO,
-            string_format(
-                "[C++] Addon::process() cleared lastAppendedJob_ for job %u\n",
-                jobId));
       }
       currentJob.reset();
       clearInput(input);
-      QLOG_IF(
-          logger::Priority::INFO,
-          string_format(
-              "[C++] Addon::process() error handling complete for job %u\n",
-              jobId));
     }
   }
 }
 
+template <>
+void Addon<LlamaModel>::doFinetuning() {
+  this->finetuningFinished_ = false;
+  qvac_lib_inference_addon_cpp::FinetuningParameters tmp;
+  if (qvac_lib_inference_addon_llama_detail::take(this, tmp)) {
+    this->finetuningParameters_ = tmp;
+  }
+
+  if (!this->finetuningParameters_.has_value()) {
+    this->finetuningFinished_ = true;
+    return;
+  }
+
+  const auto& params = this->finetuningParameters_.value();
+
+  std::ostringstream paramsLog;
+  paramsLog << "Finetuning parameters: {"
+            << "outputParametersDir=\"" << params.outputParametersDir << "\", "
+            << "trainDatasetDir=\"" << params.trainDatasetDir << "\", "
+            << "evalDatasetDir=\"" << params.evalDatasetDir << "\", "
+            << "numberOfEpochs=" << params.numberOfEpochs << ", "
+            << "learningRate=" << params.learningRate << "}";
+  const auto formattedParams = paramsLog.str();
+  QLOG_IF(logger::Priority::INFO, formattedParams);
+  {
+    std::scoped_lock logLock{this->mtx_};
+    this->queueOutput(
+        ModelOutput{
+            OutputEvent::LogMsg,
+            0,
+            typename ModelOutput::LogMsg{formattedParams}});
+  }
+
+  auto enqueueLog = [this](std::string message) {
+    std::scoped_lock logLock{this->mtx_};
+    this->queueOutput(
+        ModelOutput{
+            OutputEvent::LogMsg,
+            0,
+            typename ModelOutput::LogMsg{std::move(message)}});
+  };
+
+  try {
+    // Check if we should resume from pause checkpoint
+    // Use thread-local variable set by the process loop to preserve the flag
+    // value
+    bool allowResume = currentResumeFlag;
+    currentResumeFlag = false; // Reset after use
+
+    this->model_.finetune(params, enqueueLog, allowResume);
+  } catch (const std::exception& e) {
+    enqueueLog(std::string{"Finetune error: "} + e.what());
+  }
+
+  this->finetuningFinished_ = true;
+}
+
 // Override cancel methods to immediately stop model processing
 template <> void Addon<LlamaModel>::cancel(uint32_t jobId) {
-  QLOG_IF(
-      logger::Priority::INFO,
-      string_format("[C++] Addon::cancel() called for job %u\n", jobId));
   {
     std::scoped_lock lock{mtx_};
     cancelJobId_ = jobId;
     signal_ = ProcessSignals::Cancel;
     model_.stop();
-    QLOG_IF(
-        logger::Priority::INFO,
-        string_format(
-            "[C++] Addon::cancel() set signal and stopped model for job %u\n",
-            jobId));
   }
   processCv_.notify_one();
-  QLOG_IF(
-      logger::Priority::INFO,
-      string_format(
-          "[C++] Addon::cancel() notified process loop for job %u\n", jobId));
 }
 
 template <> void Addon<LlamaModel>::cancelAll() {
@@ -350,6 +501,66 @@ template <> void Addon<LlamaModel>::cancelAll() {
     signal_ = ProcessSignals::Cancel;
     // Immediately stop any ongoing model processing
     model_.stop();
+  }
+  processCv_.notify_one();
+}
+
+template <> void Addon<LlamaModel>::pause() {
+  {
+    std::scoped_lock lock{mtx_};
+    // If finetuning, request pause via model and set status immediately
+    if (status_ == AddonStatus::Finetuning) {
+      model_.requestPause();
+      // Set status to PAUSED immediately so it's preserved when doFinetuning()
+      // returns
+      status_ = AddonStatus::Paused;
+
+      // CRITICAL: Reset the resume flag when pausing
+      // This ensures clean state - when we pause, we're not resuming
+      // The flag will be set to true by activate() when resuming
+      shouldResumeFromPause.store(false);
+    }
+    signal_ = ProcessSignals::Pause;
+  }
+  processCv_.notify_one();
+}
+
+template <> void Addon<LlamaModel>::activate() {
+  // Wait for model initialization to complete (if supported)
+  if constexpr (requires { model_.waitForLoadInitialization(); }) {
+    model_.waitForLoadInitialization();
+  }
+
+  {
+    std::scoped_lock lock{mtx_};
+    if (status_ == AddonStatus::Paused) {
+      model_.clearPauseRequest();
+      // If we were finetuning, restart it and set status immediately
+      if (this->finetuningParameters_.has_value()) {
+        shouldResumeFromPause.store(
+            true); // Mark that we should resume from pause checkpoint
+        this->finetuningFinished_ =
+            false; // Reset so doFinetuning() can be called again
+        status_ =
+            AddonStatus::Finetuning; // Set status immediately like pause does
+        signal_ = ProcessSignals::Finetune;
+      } else {
+        signal_ = ProcessSignals::Activate;
+      }
+    } else {
+      signal_ = ProcessSignals::Activate;
+    }
+  }
+
+  processCv_.notify_one();
+}
+
+template <> void Addon<LlamaModel>::finetune() {
+  // Follow the same pattern as pause() and activate() - simple scoped_lock
+  // The process loop releases the lock during wait_for(), so we can acquire it
+  {
+    std::scoped_lock lock{mtx_};
+    signal_ = ProcessSignals::Finetune;
   }
   processCv_.notify_one();
 }
