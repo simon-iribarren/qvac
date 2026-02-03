@@ -32,6 +32,10 @@ on:
 
 run-name: Delete NPM Versions (llm-llamacpp) ${{ inputs.version }} ${{ inputs.pr-number }} ${{ inputs.dry-run }}
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   print-context-trigger:
     runs-on: ubuntu-latest
@@ -47,7 +51,6 @@ jobs:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
 
   delete-npm-versions-trigger:
-    uses: tetherto/qvac-devops/.github/workflows/public-delete-npm-versions.yml@monorepo_update
     with:
       version: ${{ inputs.version }}
       pr-number: ${{ inputs.pr-number }}
