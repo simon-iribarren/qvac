@@ -310,8 +310,7 @@ bool TextLlmContext::evalMessageWithTools(
           AddonID, toString(ContextOverflow), errorMsg);
     }
   }
-  BatchPtr textBatchPtr =
-      BatchPtr(new llama_batch(llama_batch_init(params.n_batch, 0, 1)));
+  LlamaBatch textBatch(params.n_batch, 0, 1);
 
   llama_pos count = n_past;
   llama_pos tokenIndex = 0;
@@ -322,27 +321,26 @@ bool TextLlmContext::evalMessageWithTools(
       stop_generation.store(false);
       return false;
     }
-    textBatchPtr->n_tokens = 0; // clear the batch
+    textBatch->n_tokens = 0; // clear the batch
     // NOLINTBEGIN(cppcoreguidelines-pro-bounds-pointer-arithmetic,bugprone-narrowing-conversions,readability-implicit-bool-conversion,readability-identifier-naming)
-    for (; tokenIndex < nTokens && textBatchPtr->n_tokens < params.n_batch;
+    for (; tokenIndex < nTokens && textBatch->n_tokens < params.n_batch;
          tokenIndex++) {
-      llama_pos batchTokenIndex = textBatchPtr->n_tokens;
+      llama_pos batchTokenIndex = textBatch->n_tokens;
       // NOLINTNEXTLINE(clang-analyzer-core.NullDereference)
-      textBatchPtr->token[batchTokenIndex] = inputTokens[tokenIndex];
-      textBatchPtr->pos[batchTokenIndex] = static_cast<llama_pos>(count++);
-      textBatchPtr->n_seq_id[batchTokenIndex] = 1;
-      textBatchPtr->seq_id[batchTokenIndex][0] = 0;
-      textBatchPtr->logits[batchTokenIndex] = static_cast<int8_t>(false);
+      textBatch->token[batchTokenIndex] = inputTokens[tokenIndex];
+      textBatch->pos[batchTokenIndex] = static_cast<llama_pos>(count++);
+      textBatch->n_seq_id[batchTokenIndex] = 1;
+      textBatch->seq_id[batchTokenIndex][0] = 0;
+      textBatch->logits[batchTokenIndex] = static_cast<int8_t>(false);
 
-      textBatchPtr->n_tokens++;
+      textBatch->n_tokens++;
     }
     bool isLastToken = (tokenIndex == nTokens);
     if (isLastToken) {
-      textBatchPtr->logits[textBatchPtr->n_tokens - 1] =
-          static_cast<int8_t>(true);
+      textBatch->logits[textBatch->n_tokens - 1] = static_cast<int8_t>(true);
     }
     // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
-    int ret = llama_decode(lctx, *textBatchPtr);
+    int ret = llama_decode(lctx, *textBatch);
     if (ret != 0) {
       std::string errorMsg = string_format(
           "[TextLlm] %s: failed to decode input tokens\n", __func__);
@@ -350,7 +348,7 @@ bool TextLlmContext::evalMessageWithTools(
           AddonID, toString(FailedToDecode), errorMsg);
     }
 
-    n_past += textBatchPtr->n_tokens;
+    n_past += textBatch->n_tokens;
     // NOLINTEND(cppcoreguidelines-pro-bounds-pointer-arithmetic,bugprone-narrowing-conversions,readability-implicit-bool-conversion,readability-identifier-naming)
   }
 
@@ -367,8 +365,7 @@ bool TextLlmContext::generateResponse(
     const std::function<void(const std::string&)>& outputCallback) {
 
   int nRemain = params.n_predict;
-  BatchPtr batchPtr = BatchPtr(new llama_batch(
-      llama_batch_init(1, 0, 1))); // batch for next token generation
+  LlamaBatch batch(1, 0, 1); // batch for next token generation
 
   // Reset reasoning state at start of generation (preserve cached tokens)
   reasoning_state_.inside_reasoning = false;
@@ -415,7 +412,7 @@ bool TextLlmContext::generateResponse(
     bool isEos = llama_vocab_is_eog(vocab, tokenId);
     if (isEos && is_qwen3_model_) {
       if (handleQwen3ReasoningEOS(
-              tokenId, tokenStr, batchPtr.get(), n_past, outputCallback)) {
+              tokenId, tokenStr, *batch, n_past, outputCallback)) {
         continue;
       }
     }
@@ -431,22 +428,22 @@ bool TextLlmContext::generateResponse(
       break; // end of generation
     }
 
-    common_batch_clear(*batchPtr);
+    common_batch_clear(*batch);
     // Check for stop generation request
     if (!stop_generation.load()) {
-      common_batch_add(*batchPtr, tokenId, n_past++, {0}, true);
+      common_batch_add(*batch, tokenId, n_past++, {0}, true);
     } else {
       stop_generation.store(false);
       // Generation stopped by request - add EOT token and exit
       llama_token eot = llama_vocab_eot(vocab);
       common_batch_add(
-          *batchPtr,
+          *batch,
           eot == LLAMA_TOKEN_NULL ? llama_vocab_eos(vocab) : eot,
           n_past++,
           {0},
           true);
       // Decode the EOT token
-      if (llama_decode(lctx, *batchPtr) != 0) {
+      if (llama_decode(lctx, *batch) != 0) {
         const char* errorMsg = "[TextLlm] failed to decode EOT token\n";
         throw qvac_errors::StatusError(
             AddonID, toString(FailedToDecode), errorMsg);
@@ -456,7 +453,7 @@ bool TextLlmContext::generateResponse(
 
     // eval the token
     // NOLINT(clang-analyzer-core.CallAndMessage)
-    if (llama_decode(lctx, *batchPtr) != 0) {
+    if (llama_decode(lctx, *batch) != 0) {
       const char* errorMsg = "[TextLlm] failed to decode next token\n";
       throw qvac_errors::StatusError(
           AddonID, toString(FailedToDecode), errorMsg);
@@ -550,7 +547,7 @@ llama_pos TextLlmContext::removeLastNTokens(llama_pos count) {
 }
 
 bool TextLlmContext::handleQwen3ReasoningEOS(
-    llama_token& tokenId, std::string& tokenStr, llama_batch* batchPtr,
+    llama_token& tokenId, std::string& tokenStr, llama_batch& batch,
     llama_pos& n_past,
     const std::function<void(const std::string&)>& outputCallback) {
 
@@ -579,9 +576,9 @@ bool TextLlmContext::handleQwen3ReasoningEOS(
   }
 
   // Decode closing tag
-  common_batch_clear(*batchPtr);
-  common_batch_add(*batchPtr, tokenId, n_past++, {0}, true);
-  if (llama_decode(lctx, *batchPtr) != 0) {
+  common_batch_clear(batch);
+  common_batch_add(batch, tokenId, n_past++, {0}, true);
+  if (llama_decode(lctx, batch) != 0) {
     QLOG_IF(
         Priority::ERROR,
         "[TextLlm] Failed to decode closing tag during replacement\n");
@@ -590,15 +587,11 @@ bool TextLlmContext::handleQwen3ReasoningEOS(
   // Inject 2 newlines after closing tag
   if (reasoning_state_.cached_newline_token != LLAMA_TOKEN_NULL) {
     for (int i = 0; i < 2; i++) {
-      common_batch_clear(*batchPtr);
+      common_batch_clear(batch);
       common_batch_add(
-          *batchPtr,
-          reasoning_state_.cached_newline_token,
-          n_past++,
-          {0},
-          true);
+          batch, reasoning_state_.cached_newline_token, n_past++, {0}, true);
 
-      if (llama_decode(lctx, *batchPtr) != 0) {
+      if (llama_decode(lctx, batch) != 0) {
         QLOG_IF(
             Priority::ERROR,
             "[TextLlm] Failed to decode newline token during forced "
