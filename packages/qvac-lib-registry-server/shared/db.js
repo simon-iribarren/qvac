@@ -75,6 +75,65 @@ class RegistryDatabase extends ReadyResource {
     return this.db.find(`@${QVAC_MAIN_REGISTRY}/models-by-quantization`, query)
   }
 
+  /**
+   * Find models with optional filters using the most efficient index.
+   * @param {Object} params - Filter parameters
+   * @param {string} [params.name] - Filter by name (partial match, case-insensitive)
+   * @param {string} [params.engine] - Filter by engine (exact match)
+   * @param {string} [params.quantization] - Filter by quantization (partial match, case-insensitive)
+   * @param {boolean} [params.includeDeprecated=false] - Include deprecated models
+   * @returns {Promise<Array>} Array of matching models
+   */
+  async findBy (params = {}) {
+    if (!this.opened) await this.ready()
+
+    const { name, engine, quantization, includeDeprecated = false } = params
+
+    let models
+
+    // Use the most selective index based on provided params
+    if (engine) {
+      // Engine is typically the most selective - use engine index
+      models = await this.db.find(`@${QVAC_MAIN_REGISTRY}/models-by-engine`, {
+        gte: { engine },
+        lte: { engine }
+      }).toArray()
+    } else if (name) {
+      // Use name index with prefix matching
+      models = await this.db.find(`@${QVAC_MAIN_REGISTRY}/models-by-name`, {
+        gte: { name },
+        lte: { name: name + '\uffff' }
+      }).toArray()
+    } else if (quantization) {
+      // Use quantization index with prefix matching
+      models = await this.db.find(`@${QVAC_MAIN_REGISTRY}/models-by-quantization`, {
+        gte: { quantization },
+        lte: { quantization: quantization + '\uffff' }
+      }).toArray()
+    } else {
+      // No filters - return all models
+      models = await this.db.find(`@${QVAC_MAIN_REGISTRY}/model`, {}).toArray()
+    }
+
+    // Apply additional filters in memory when multiple params provided
+    if (engine && name) {
+      models = models.filter(m => m.name?.toLowerCase().includes(name.toLowerCase()))
+    }
+    if (engine && quantization) {
+      models = models.filter(m => m.quantization?.toLowerCase().includes(quantization.toLowerCase()))
+    }
+    if (name && quantization && !engine) {
+      models = models.filter(m => m.quantization?.toLowerCase().includes(quantization.toLowerCase()))
+    }
+
+    // Filter out deprecated models unless explicitly requested
+    if (!includeDeprecated) {
+      models = models.filter(m => !m.deprecated)
+    }
+
+    return models
+  }
+
   async putLicense (record) {
     if (!this.opened) await this.ready()
     const tx = this.db.transaction()
