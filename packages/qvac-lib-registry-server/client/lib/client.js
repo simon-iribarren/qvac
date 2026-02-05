@@ -157,6 +157,60 @@ class QVACRegistryClient extends ReadyResource {
     return models
   }
 
+  /**
+   * Find models by path using HyperDB range query.
+   * @param {Object} query - HyperDB range query ({ gte, lte, gt, lt })
+   * @param {Object} opts - Options
+   * @param {boolean} [opts.includeDeprecated=false] - Include deprecated models
+   * @returns {Promise<Array>} Array of matching models
+   */
+  async findModels (query = {}, opts = {}) {
+    await this.ready()
+    const { includeDeprecated = false } = opts
+    this.logger.debug('findModels called', { query, includeDeprecated })
+
+    let models = await this.db.findModelsByPath(query).toArray()
+
+    if (!includeDeprecated) {
+      models = models.filter(m => !m.deprecated)
+    }
+
+    return models
+  }
+
+  /**
+   * Find models by engine using HyperDB range query.
+   * @param {Object} query - HyperDB range query ({ gte, lte, gt, lt })
+   * @returns {Promise<Array>} Array of matching models
+   */
+  async findModelsByEngine (query = {}) {
+    await this.ready()
+    this.logger.debug('findModelsByEngine called', { query })
+    return this.db.findModelsByEngine(query).toArray()
+  }
+
+  /**
+   * Find models by name using HyperDB range query.
+   * @param {Object} query - HyperDB range query ({ gte, lte, gt, lt })
+   * @returns {Promise<Array>} Array of matching models
+   */
+  async findModelsByName (query = {}) {
+    await this.ready()
+    this.logger.debug('findModelsByName called', { query })
+    return this.db.findModelsByName(query).toArray()
+  }
+
+  /**
+   * Find models by quantization using HyperDB range query.
+   * @param {Object} query - HyperDB range query ({ gte, lte, gt, lt })
+   * @returns {Promise<Array>} Array of matching models
+   */
+  async findModelsByQuantization (query = {}) {
+    await this.ready()
+    this.logger.debug('findModelsByQuantization called', { query })
+    return this.db.findModelsByQuantization(query).toArray()
+  }
+
   _validateString (value, name) {
     if (typeof value !== 'string' || value.length === 0) {
       throw new Error(`Invalid ${name}: ${value}`)

@@ -23,9 +23,12 @@ async function example () {
   console.log('View core discovery key (DHT topic):', IdEnc.normalize(viewCore.discoveryKey))
   console.log('View core length:', viewCore.length)
 
-  // --- findBy() examples ---
+  // ========================================
+  // NEW SIMPLIFIED API: findBy()
+  // ========================================
 
   // List all models (no filters)
+  console.log('\n=== NEW API: findBy() ===')
   console.log('\n--- findBy() with no params (list all) ---')
   const allModels = await client.findBy()
   console.log('Total models found:', allModels.length)
@@ -67,6 +70,33 @@ async function example () {
   console.log('\n--- findBy({ includeDeprecated: true }) ---')
   const allIncludingDeprecated = await client.findBy({ includeDeprecated: true })
   console.log('Total models (including deprecated):', allIncludingDeprecated.length)
+
+  // ========================================
+  // LEGACY API: findModels*, findModelsByEngine, etc.
+  // ========================================
+
+  console.log('\n=== LEGACY API ===')
+
+  // Find all models using legacy API
+  console.log('\n--- findModels({}) ---')
+  const allModelsLegacy = await client.findModels({})
+  console.log('Total models found (legacy):', allModelsLegacy.length)
+
+  // Find by engine using legacy API
+  console.log('\n--- findModelsByEngine() ---')
+  const modelsByEngine = await client.findModelsByEngine({
+    gte: { engine: '@qvac/transcription-whispercpp' },
+    lte: { engine: '@qvac/transcription-whispercpp' }
+  })
+  console.log('Found models by engine (legacy):', modelsByEngine.length)
+
+  // Find by quantization using legacy API
+  console.log('\n--- findModelsByQuantization() ---')
+  const modelsByQuant = await client.findModelsByQuantization({
+    gte: { quantization: 'q4_0' },
+    lte: { quantization: 'q4_0' }
+  })
+  console.log('Found models by quantization "q4_0" (legacy):', modelsByQuant.length)
 
   // Client-side filtering for non-indexed fields
   console.log('\n--- Client-side filtering ---')
