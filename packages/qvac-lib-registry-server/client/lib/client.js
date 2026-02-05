@@ -97,36 +97,64 @@ class QVACRegistryClient extends ReadyResource {
     }
   }
 
-  async findModels (query = {}, opts = {}) {
+  /**
+   * Find models with optional filters.
+   * @param {Object} params - Filter parameters
+   * @param {string} [params.name] - Filter by name (partial match)
+   * @param {string} [params.engine] - Filter by engine (exact match)
+   * @param {string} [params.quantization] - Filter by quantization (partial match)
+   * @param {boolean} [params.includeDeprecated=false] - Include deprecated models
+   * @returns {Promise<Array>} Array of matching models
+   */
+  async findBy (params = {}) {
     await this.ready()
-    const { includeDeprecated = false } = opts
-    this.logger.debug('findModels called', { query, includeDeprecated })
+    this.logger.debug('findBy called', { params })
 
-    let models = await this.db.findModelsByPath(query).toArray()
+    const { name, engine, quantization, includeDeprecated = false } = params
 
+    let models
+
+    // Use the most selective index based on provided params
+    if (engine) {
+      // Engine is typically the most selective - use engine index
+      models = await this.db.findModelsByEngine({
+        gte: { engine },
+        lte: { engine }
+      }).toArray()
+    } else if (name) {
+      // Use name index with prefix matching
+      models = await this.db.findModelsByName({
+        gte: { name },
+        lte: { name: name + '\uffff' }
+      }).toArray()
+    } else if (quantization) {
+      // Use quantization index with prefix matching
+      models = await this.db.findModelsByQuantization({
+        gte: { quantization },
+        lte: { quantization: quantization + '\uffff' }
+      }).toArray()
+    } else {
+      // No filters - return all models
+      models = await this.db.findModelsByPath({}).toArray()
+    }
+
+    // Apply additional filters in memory when multiple params provided
+    if (engine && name) {
+      models = models.filter(m => m.name?.toLowerCase().includes(name.toLowerCase()))
+    }
+    if (engine && quantization) {
+      models = models.filter(m => m.quantization?.toLowerCase().includes(quantization.toLowerCase()))
+    }
+    if (name && quantization && !engine) {
+      models = models.filter(m => m.quantization?.toLowerCase().includes(quantization.toLowerCase()))
+    }
+
+    // Filter out deprecated models unless explicitly requested
     if (!includeDeprecated) {
       models = models.filter(m => !m.deprecated)
     }
 
     return models
-  }
-
-  async findModelsByEngine (query = {}) {
-    await this.ready()
-    this.logger.debug('findModelsByEngine called', { query })
-    return this.db.findModelsByEngine(query).toArray()
-  }
-
-  async findModelsByName (query = {}) {
-    await this.ready()
-    this.logger.debug('findModelsByName called', { query })
-    return this.db.findModelsByName(query).toArray()
-  }
-
-  async findModelsByQuantization (query = {}) {
-    await this.ready()
-    this.logger.debug('findModelsByQuantization called', { query })
-    return this.db.findModelsByQuantization(query).toArray()
   }
 
   _validateString (value, name) {

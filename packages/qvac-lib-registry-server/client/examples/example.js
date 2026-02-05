@@ -23,66 +23,53 @@ async function example () {
   console.log('View core discovery key (DHT topic):', IdEnc.normalize(viewCore.discoveryKey))
   console.log('View core length:', viewCore.length)
 
-  const allModels = await client.findModels({})
+  // --- findBy() examples ---
+
+  // List all models (no filters)
+  console.log('\n--- findBy() with no params (list all) ---')
+  const allModels = await client.findBy()
   console.log('Total models found:', allModels.length)
   const totalBytes = allModels.reduce((sum, m) => sum + (m.blobBinding?.byteLength || 0), 0)
   console.log('Total size:', totalBytes, 'bytes', (totalBytes / 1024 / 1024 / 1024).toFixed(2), 'GB')
 
+  // Get a specific model
   if (allModels.length > 0) {
+    console.log('\n--- getModel() ---')
     const { path: modelPath, source: modelSource } = allModels[0]
     const model = await client.getModel(modelPath, modelSource)
-    console.log('Found model:', model)
+    console.log('Found model:', model?.path, model?.engine)
   }
 
-  const modelsByEngine = await client.findModelsByEngine({
-    gte: { engine: '@qvac/transcription-whispercpp' },
-    lte: { engine: '@qvac/transcription-whispercpp' }
+  // Find by engine
+  console.log('\n--- findBy({ engine }) ---')
+  const whisperModels = await client.findBy({ engine: '@qvac/transcription-whispercpp' })
+  console.log('Found whisper models:', whisperModels.length)
+
+  // Find by name (partial match)
+  console.log('\n--- findBy({ name }) ---')
+  const llamaModels = await client.findBy({ name: 'llama' })
+  console.log('Found llama models:', llamaModels.length)
+
+  // Find by quantization
+  console.log('\n--- findBy({ quantization }) ---')
+  const q4Models = await client.findBy({ quantization: 'q4' })
+  console.log('Found q4 quantized models:', q4Models.length)
+
+  // Combined filters
+  console.log('\n--- findBy({ engine, quantization }) ---')
+  const llmQ4Models = await client.findBy({
+    engine: '@qvac/llm-llamacpp',
+    quantization: 'q4'
   })
-  console.log('Found models by engine:', modelsByEngine.length)
+  console.log('Found LLM models with q4 quantization:', llmQ4Models.length)
 
-  if (allModels.length > 0) {
-    const modelName = allModels[0].path.split('/').pop()
-    const modelsByName = await client.findModelsByName({
-      gte: modelName,
-      lte: modelName
-    })
-    console.log('Found models by name:', modelsByName.length)
-  }
+  // Include deprecated models
+  console.log('\n--- findBy({ includeDeprecated: true }) ---')
+  const allIncludingDeprecated = await client.findBy({ includeDeprecated: true })
+  console.log('Total models (including deprecated):', allIncludingDeprecated.length)
 
-  const modelsByQuant = await client.findModelsByQuantization({
-    gte: { quantization: 'q4_0' },
-    lte: { quantization: 'q4_0' }
-  })
-  console.log('Found models by quantization "q4_0":', modelsByQuant.length)
-
-  console.log('\n--- Fetching model shards by path prefix ---')
-
-  if (allModels.length > 0) {
-    const exampleModel = allModels.find(m => m.path.includes('-00001-of-') || m.path.includes('-00002-of-'))
-    if (exampleModel) {
-      const basePath = exampleModel.path.replace(/-\d{5}-of-\d{5}\./, '.')
-      const pathPrefix = basePath.substring(0, basePath.lastIndexOf('.'))
-      console.log(`Looking for all shards with path prefix: ${pathPrefix}`)
-
-      const shards = await client.findModels({
-        gte: { path: pathPrefix },
-        lte: { path: pathPrefix + '\uffff' }
-      })
-
-      console.log(`Found ${shards.length} shard(s):`)
-      shards.forEach(shard => {
-        console.log(`  - ${shard.path} (${shard.blobBinding.byteLength} bytes)`)
-      })
-
-      const totalSize = shards.reduce((sum, shard) => sum + shard.blobBinding.byteLength, 0)
-      console.log(`Total size across all shards: ${totalSize} bytes (${(totalSize / 1024 / 1024).toFixed(2)} MB)`)
-    } else {
-      console.log('No sharded models found in registry')
-    }
-  }
-
-  console.log('\n--- Searching by non-indexed fields (client-side filtering) ---')
-
+  // Client-side filtering for non-indexed fields
+  console.log('\n--- Client-side filtering ---')
   const modelsBySource = allModels.filter(m => m.source === 'hf')
   console.log('Found models by source "hf":', modelsBySource.length)
 

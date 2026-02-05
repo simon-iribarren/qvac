@@ -49,11 +49,15 @@ export interface QVACRegistryClientOptions {
   logger?: any
 }
 
-export interface QVACModelQuery {
-  gte?: Record<string, any>
-  lte?: Record<string, any>
-  gt?: Record<string, any>
-  lt?: Record<string, any>
+export interface FindByParams {
+  /** Filter by name (partial match, case-insensitive) */
+  name?: string
+  /** Filter by engine (exact match) */
+  engine?: string
+  /** Filter by quantization (partial match, case-insensitive) */
+  quantization?: string
+  /** Include deprecated models (default: false) */
+  includeDeprecated?: boolean
 }
 
 export class QVACRegistryClient {
@@ -64,8 +68,5 @@ export class QVACRegistryClient {
 
   getModel (path: string, source: string): Promise<QVACModelEntry | null>
   downloadModel (path: string, source: string, options?: QVACDownloadOptions): Promise<QVACDownloadResult>
-  findModels (query?: QVACModelQuery): Promise<QVACModelEntry[]>
-  findModelsByEngine (query?: QVACModelQuery): Promise<QVACModelEntry[]>
-  findModelsByName (query?: QVACModelQuery): Promise<QVACModelEntry[]>
-  findModelsByQuantization (query?: QVACModelQuery): Promise<QVACModelEntry[]>
+  findBy (params?: FindByParams): Promise<QVACModelEntry[]>
 }
