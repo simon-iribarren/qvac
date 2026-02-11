@@ -17,7 +17,7 @@ const qvacModelRegistryEntryAddonSchema = z.enum([
 // additional registry-only engines (e.g. onnx-vad).
 // The SDK resolves legacy engine names (e.g. @qvac/* package names) to canonical form
 // via schemas/engine-addon-map.ts.
-const modelTypeValues = Object.values(ModelType) as [string, ...string[]];
+const modelTypeValues = Object.values(ModelType);
 export const qvacModelRegistryEngineSchema = z.enum([
   ...modelTypeValues,
   "onnx-vad",
