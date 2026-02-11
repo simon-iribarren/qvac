@@ -75,7 +75,8 @@ export const models = [
     modelId: "gte-large_fp16.gguf",
     addon: "embeddings",
     expectedSize: 669603712,
-    sha256Checksum: "",
+    sha256Checksum:
+      "939f1fb3fcc70f2a250a7e7ad7c2fbdc1397d46f9a8055d053e451829c5293fb",
     engine: "llamacpp-embedding",
     quantization: "fp16",
     params: "",
@@ -93,7 +94,8 @@ export const models = [
     modelId: "gte-large_fp16-00001-of-00005.gguf",
     addon: "embeddings",
     expectedSize: 669604320,
-    sha256Checksum: "",
+    sha256Checksum:
+      "81c871b0433ed75adb4b1888f4396248c0a587f509f45050b2b65de9b8e86a3b",
     engine: "llamacpp-embedding",
     quantization: "fp16",
     params: "335M",
@@ -101,7 +103,8 @@ export const models = [
       {
         filename: "gte-large_fp16-00001-of-00005.gguf",
         expectedSize: 156815424,
-        sha256Checksum: "",
+        sha256Checksum:
+          "81c871b0433ed75adb4b1888f4396248c0a587f509f45050b2b65de9b8e86a3b",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 470544,
@@ -111,7 +114,8 @@ export const models = [
       {
         filename: "gte-large_fp16-00002-of-00005.gguf",
         expectedSize: 159721216,
-        sha256Checksum: "",
+        sha256Checksum:
+          "da7f5a2e0ba4f6769599cb7d2735f19a8022eb065973d7584081cf67617a064d",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 472937,
@@ -121,7 +125,8 @@ export const models = [
       {
         filename: "gte-large_fp16-00003-of-00005.gguf",
         expectedSize: 159737792,
-        sha256Checksum: "",
+        sha256Checksum:
+          "d95b830af36d2dfa1d4c7c156ac59be767a5f9b5d37288533d3add7a90ec3822",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 475375,
@@ -131,7 +136,8 @@ export const models = [
       {
         filename: "gte-large_fp16-00004-of-00005.gguf",
         expectedSize: 159721120,
-        sha256Checksum: "",
+        sha256Checksum:
+          "6def2c28f1b6314403a39c54250d870333d273e31446717f8670a4e1d5861d20",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 477813,
@@ -141,7 +147,8 @@ export const models = [
       {
         filename: "gte-large_fp16-00005-of-00005.gguf",
         expectedSize: 33608768,
-        sha256Checksum: "",
+        sha256Checksum:
+          "f5ff10900f675900a1838536746d23ccc6adcfed074f89f7a4ac4d3167401d08",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 480251,
@@ -163,7 +170,8 @@ export const models = [
     modelId: "gte-large_fp16.tensors.txt",
     addon: "embeddings",
     expectedSize: 8966,
-    sha256Checksum: "",
+    sha256Checksum:
+      "d2142d8ae97857656b227fef6733ea46e82da3b7546cd944dec88ba280aadfeb",
     engine: "llamacpp-embedding",
     quantization: "fp16",
     params: "335M",
@@ -181,7 +189,8 @@ export const models = [
     modelId: "embeddinggemma-300M-BF16.gguf",
     addon: "embeddings",
     expectedSize: 612429792,
-    sha256Checksum: "",
+    sha256Checksum:
+      "95a1f284251f78a1409a9c9e52dd4026c2180b13a90a5ede2a878bb8141fba08",
     engine: "llamacpp-embedding",
     quantization: "BF16",
     params: "300M",
@@ -199,7 +208,8 @@ export const models = [
     modelId: "embeddinggemma-300M-F32.gguf",
     addon: "embeddings",
     expectedSize: 1217982432,
-    sha256Checksum: "",
+    sha256Checksum:
+      "a3125072128fc76d1c1d8d19f7b095c7e3bfbf00594dcf8a8bd3bcb334935d57",
     engine: "llamacpp-embedding",
     quantization: "F32",
     params: "300M",
@@ -217,7 +227,8 @@ export const models = [
     modelId: "embeddinggemma-300m-Q4_0.gguf",
     addon: "embeddings",
     expectedSize: 277852192,
-    sha256Checksum: "",
+    sha256Checksum:
+      "edc6015cb15694c27be7d1d33f1bc015db9a358ff51ed524628c027504907ba9",
     engine: "llamacpp-embedding",
     quantization: "q4_0",
     params: "300M",
@@ -235,7 +246,8 @@ export const models = [
     modelId: "embeddinggemma-300M-Q8_0.gguf",
     addon: "embeddings",
     expectedSize: 328577056,
-    sha256Checksum: "",
+    sha256Checksum:
+      "a0f7b4e13c397a6e1b32c2de75b1f65a14c92ec524d5f674d94a4290a1c4969b",
     engine: "llamacpp-embedding",
     quantization: "q8_0",
     params: "300M",
@@ -253,7 +265,8 @@ export const models = [
     modelId: "mmproj-Qwen2.5-Omni-3B-Q8_0.gguf",
     addon: "llm",
     expectedSize: 1538031328,
-    sha256Checksum: "",
+    sha256Checksum:
+      "4e6c816cd33f7298d07cb780c136a396631e50e62f6501660271f8c6e302e565",
     engine: "llamacpp-completion",
     quantization: "",
     params: "3B",
@@ -271,7 +284,8 @@ export const models = [
     modelId: "Qwen2.5-Omni-3B-Q4_K_M.gguf",
     addon: "llm",
     expectedSize: 2104931648,
-    sha256Checksum: "",
+    sha256Checksum:
+      "4b0bd358c1e9ec55dd3055ef6d71c958c821533d85916a10cfa89c4552a86e29",
     engine: "llamacpp-completion",
     quantization: "",
     params: "3B",
@@ -289,7 +303,8 @@ export const models = [
     modelId: "mmproj-SmolVLM2-500M-Video-Instruct-Q8_0.gguf",
     addon: "llm",
     expectedSize: 108785184,
-    sha256Checksum: "",
+    sha256Checksum:
+      "921dc7e259f308e5b027111fa185efcbf33db13f6e35749ddf7f5cdb60ef520b",
     engine: "llamacpp-completion",
     quantization: "q8_0",
     params: "500M",
@@ -307,7 +322,8 @@ export const models = [
     modelId: "SmolVLM2-500M-Video-Instruct-Q8_0.gguf",
     addon: "llm",
     expectedSize: 436808704,
-    sha256Checksum: "",
+    sha256Checksum:
+      "6f67b8036b2469fcd71728702720c6b51aebd759b78137a8120733b4d66438bc",
     engine: "llamacpp-completion",
     quantization: "q8_0",
     params: "500M",
@@ -325,7 +341,8 @@ export const models = [
     modelId: "dolphin-mixtral-2x7b-dop-Q2_K.gguf",
     addon: "llm",
     expectedSize: 4760823264,
-    sha256Checksum: "",
+    sha256Checksum:
+      "35a4fa1142dbacb42656f7a9e7ae59e3ae8b3b8f6ee370e64e5e1023ddd19510",
     engine: "llamacpp-completion",
     quantization: "Q2_K",
     params: "2x7B",
@@ -343,7 +360,8 @@ export const models = [
     modelId: "dolphin-mixtral-2x7b-dop-Q2_K-00001-of-00005.gguf",
     addon: "llm",
     expectedSize: 4760823808,
-    sha256Checksum: "",
+    sha256Checksum:
+      "d7b900fae41cd466dd16a4b1fbf8083b8f00578deb59a2d0619a52672d872493",
     engine: "llamacpp-completion",
     quantization: "Q2_K",
     params: "2x7B",
@@ -351,7 +369,8 @@ export const models = [
       {
         filename: "dolphin-mixtral-2x7b-dop-Q2_K-00001-of-00005.gguf",
         expectedSize: 1121068864,
-        sha256Checksum: "",
+        sha256Checksum:
+          "d7b900fae41cd466dd16a4b1fbf8083b8f00578deb59a2d0619a52672d872493",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 889055,
@@ -361,7 +380,8 @@ export const models = [
       {
         filename: "dolphin-mixtral-2x7b-dop-Q2_K-00002-of-00005.gguf",
         expectedSize: 1113805728,
-        sha256Checksum: "",
+        sha256Checksum:
+          "086236731567ca7c27047bcbcffc4acaddff3825101337e34269413ea2b9bd18",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 906162,
@@ -371,7 +391,8 @@ export const models = [
       {
         filename: "dolphin-mixtral-2x7b-dop-Q2_K-00003-of-00005.gguf",
         expectedSize: 1101927488,
-        sha256Checksum: "",
+        sha256Checksum:
+          "1208536e6b934638b51764485c5a76c17bd27893d8187d755dcc526a3a2f364c",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 923158,
@@ -381,7 +402,8 @@ export const models = [
       {
         filename: "dolphin-mixtral-2x7b-dop-Q2_K-00004-of-00005.gguf",
         expectedSize: 1135924064,
-        sha256Checksum: "",
+        sha256Checksum:
+          "6987ae5a392e9682e70d5ec6c7af6139895a886ad7e9d781308d70a8cf2f0772",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 939973,
@@ -391,7 +413,8 @@ export const models = [
       {
         filename: "dolphin-mixtral-2x7b-dop-Q2_K-00005-of-00005.gguf",
         expectedSize: 288097664,
-        sha256Checksum: "",
+        sha256Checksum:
+          "47e84383b16ad16c159cb4edc2cbc52e8b1be369053805e722a2318bc5645587",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 957306,
@@ -413,7 +436,8 @@ export const models = [
     modelId: "dolphin-mixtral-2x7b-dop-Q2_K.tensors.txt",
     addon: "llm",
     expectedSize: 7791,
-    sha256Checksum: "",
+    sha256Checksum:
+      "ed622129ba8da77af4fd21976dc442365724cde643fd8cbeadc92c7f047ab245",
     engine: "llamacpp-completion",
     quantization: "Q2_K",
     params: "2x7B",
@@ -431,7 +455,8 @@ export const models = [
     modelId: "Llama-3.2-1B-Instruct-Q4_0-00001-of-00008.gguf",
     addon: "llm",
     expectedSize: 773026848,
-    sha256Checksum: "",
+    sha256Checksum:
+      "fafc6166dc5e7a9791b053cda2e71924c037b16f09fa41d69383cedd37cd91d8",
     engine: "llamacpp-completion",
     quantization: "q4_0",
     params: "1B",
@@ -439,7 +464,8 @@ export const models = [
       {
         filename: "Llama-3.2-1B-Instruct-Q4_0-00001-of-00008.gguf",
         expectedSize: 7823136,
-        sha256Checksum: "",
+        sha256Checksum:
+          "fafc6166dc5e7a9791b053cda2e71924c037b16f09fa41d69383cedd37cd91d8",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 480765,
@@ -449,7 +475,8 @@ export const models = [
       {
         filename: "Llama-3.2-1B-Instruct-Q4_0-00002-of-00008.gguf",
         expectedSize: 215470272,
-        sha256Checksum: "",
+        sha256Checksum:
+          "a74db7a0871a97b2f82bff0e8bcd675b47f1b71b2604ae532d53e830d8929128",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 480885,
@@ -459,7 +486,8 @@ export const models = [
       {
         filename: "Llama-3.2-1B-Instruct-Q4_0-00003-of-00008.gguf",
         expectedSize: 99468800,
-        sha256Checksum: "",
+        sha256Checksum:
+          "ef6bf88818090ae955c9701ebd1c20e182abf52bbf2b57c06aeebaf98db9b764",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 484173,
@@ -469,7 +497,8 @@ export const models = [
       {
         filename: "Llama-3.2-1B-Instruct-Q4_0-00004-of-00008.gguf",
         expectedSize: 92644896,
-        sha256Checksum: "",
+        sha256Checksum:
+          "8370dbdbbf6ad993971a1270e34b6648b6a238b2e177e8c2361a5e1976bd803e",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 485691,
@@ -479,7 +508,8 @@ export const models = [
       {
         filename: "Llama-3.2-1B-Instruct-Q4_0-00005-of-00008.gguf",
         expectedSize: 93243008,
-        sha256Checksum: "",
+        sha256Checksum:
+          "924cae739e6fc9bcf613cfcd92ffd6b8e766cf3fc90a62a8cd49a02ccd30383b",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 487105,
@@ -489,7 +519,8 @@ export const models = [
       {
         filename: "Llama-3.2-1B-Instruct-Q4_0-00006-of-00008.gguf",
         expectedSize: 93242976,
-        sha256Checksum: "",
+        sha256Checksum:
+          "4eb85c7c807d593fd9e91dad6fb7b18c715ddfa667a3b47cee1176b3331921f0",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 488528,
@@ -499,7 +530,8 @@ export const models = [
       {
         filename: "Llama-3.2-1B-Instruct-Q4_0-00007-of-00008.gguf",
         expectedSize: 99722752,
-        sha256Checksum: "",
+        sha256Checksum:
+          "ad86b62f5270613771fb5c3dd69e9f94103beb4b74f8d63687f7f0578b728788",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 489951,
@@ -509,7 +541,8 @@ export const models = [
       {
         filename: "Llama-3.2-1B-Instruct-Q4_0-00008-of-00008.gguf",
         expectedSize: 71411008,
-        sha256Checksum: "",
+        sha256Checksum:
+          "51ca922125a8a543daea7fb30a71e6d683e025148ce6a4c335accbdec0f7a2ad",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 491473,
@@ -531,7 +564,8 @@ export const models = [
     modelId: "Llama-3.2-1B-Instruct-Q4_0.tensors.txt",
     addon: "llm",
     expectedSize: 3213,
-    sha256Checksum: "",
+    sha256Checksum:
+      "94d891c22bca7700d422a3974b6aaa8095a4b2f132a53c89e7312b8435412cbf",
     engine: "llamacpp-completion",
     quantization: "q4_0",
     params: "1B",
@@ -549,7 +583,8 @@ export const models = [
     modelId: "medgemma-4b-it-Q4_1-00001-of-00005.gguf",
     addon: "llm",
     expectedSize: 2564053312,
-    sha256Checksum: "",
+    sha256Checksum:
+      "df8f007c52173c7ffd4a385205805f1f0b8312bec7548460b42c20b74b00c344",
     engine: "llamacpp-completion",
     quantization: "q4_1",
     params: "4B",
@@ -557,7 +592,8 @@ export const models = [
       {
         filename: "medgemma-4b-it-Q4_1-00001-of-00005.gguf",
         expectedSize: 617838720,
-        sha256Checksum: "",
+        sha256Checksum:
+          "df8f007c52173c7ffd4a385205805f1f0b8312bec7548460b42c20b74b00c344",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 368389,
@@ -567,7 +603,8 @@ export const models = [
       {
         filename: "medgemma-4b-it-Q4_1-00002-of-00005.gguf",
         expectedSize: 598455104,
-        sha256Checksum: "",
+        sha256Checksum:
+          "6c24b60b160420f9c6d3b243d0283e57a7aced67142f17e32e0418aef8e29cef",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 377817,
@@ -577,7 +614,8 @@ export const models = [
       {
         filename: "medgemma-4b-it-Q4_1-00003-of-00005.gguf",
         expectedSize: 606646016,
-        sha256Checksum: "",
+        sha256Checksum:
+          "65d97e751eb0cbb6900cec6960c54d3ac402a12f49eaf6453b458da17489ceb8",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 386949,
@@ -587,7 +625,8 @@ export const models = [
       {
         filename: "medgemma-4b-it-Q4_1-00004-of-00005.gguf",
         expectedSize: 606656320,
-        sha256Checksum: "",
+        sha256Checksum:
+          "ab081005a0db7bd37c78ecfa6d0b58f8d811a5f6e3e87531d51338c011209a9f",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 396206,
@@ -597,7 +636,8 @@ export const models = [
       {
         filename: "medgemma-4b-it-Q4_1-00005-of-00005.gguf",
         expectedSize: 134457152,
-        sha256Checksum: "",
+        sha256Checksum:
+          "7738264eb3d1846419c71cdf2f5a628a93b4801092da56806957a8dd207f7f4d",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 405463,
@@ -619,7 +659,8 @@ export const models = [
     modelId: "medgemma-4b-it-Q4_1.tensors.txt",
     addon: "llm",
     expectedSize: 10685,
-    sha256Checksum: "",
+    sha256Checksum:
+      "188c42777d3b107623b5e8f1c3601fee86bb6ba8f9dfa0a576a2b11ca4dc9838",
     engine: "llamacpp-completion",
     quantization: "q4_1",
     params: "4B",
@@ -637,7 +678,8 @@ export const models = [
     modelId: "medgemma-4b-it-Q8_0-00001-of-00005.gguf",
     addon: "llm",
     expectedSize: 4130403424,
-    sha256Checksum: "",
+    sha256Checksum:
+      "eee391a8709570399797a48490ff123a86e82e9ed46e54f301c89b0cd8a87c24",
     engine: "llamacpp-completion",
     quantization: "q8_1",
     params: "4B",
@@ -645,7 +687,8 @@ export const models = [
       {
         filename: "medgemma-4b-it-Q8_0-00001-of-00005.gguf",
         expectedSize: 964936608,
-        sha256Checksum: "",
+        sha256Checksum:
+          "eee391a8709570399797a48490ff123a86e82e9ed46e54f301c89b0cd8a87c24",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 407516,
@@ -655,7 +698,8 @@ export const models = [
       {
         filename: "medgemma-4b-it-Q8_0-00002-of-00005.gguf",
         expectedSize: 975285792,
-        sha256Checksum: "",
+        sha256Checksum:
+          "39cc15b09ddd54518b95f7f663ee427cb381a9eaf87ce63c011391a78bfdaee3",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 422240,
@@ -665,7 +709,8 @@ export const models = [
       {
         filename: "medgemma-4b-it-Q8_0-00003-of-00005.gguf",
         expectedSize: 958540928,
-        sha256Checksum: "",
+        sha256Checksum:
+          "da3a9079e8bd787e9bca72f6e31af0e08bc84ff4bc855c0516ffe800ef06a16f",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 437122,
@@ -675,7 +720,8 @@ export const models = [
       {
         filename: "medgemma-4b-it-Q8_0-00004-of-00005.gguf",
         expectedSize: 975275616,
-        sha256Checksum: "",
+        sha256Checksum:
+          "3d107beef3ef34e3d284881932ce1709e04fd8f8a790d32074db0832613bbbba",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 451749,
@@ -685,7 +731,8 @@ export const models = [
       {
         filename: "medgemma-4b-it-Q8_0-00005-of-00005.gguf",
         expectedSize: 256364480,
-        sha256Checksum: "",
+        sha256Checksum:
+          "4a343ee2e0d440de96379deaedb82157c2b102dcb0429bc3a642f84956664479",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 466631,
@@ -693,24 +740,6 @@ export const models = [
         blobByteOffset: 30579863111,
       },
     ],
-  },
-  {
-    name: "Q8_1",
-    registryPath:
-      "qvac_models_compiled/ggml/medgemma-4b-it-Q8/2025-08-21/medgemma-4b-it-Q8_0.tensors.txt",
-    registrySource: "s3",
-    blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 470543,
-    blobBlockLength: 1,
-    blobByteOffset: 30836227591,
-    modelId: "medgemma-4b-it-Q8_0.tensors.txt",
-    addon: "llm",
-    expectedSize: 10685,
-    sha256Checksum: "",
-    engine: "llamacpp-completion",
-    quantization: "q8_1",
-    params: "4B",
   },
   {
     name: "Q4_SHARD",
@@ -725,7 +754,8 @@ export const models = [
     modelId: "Qwen3-1.7B-Q4_0-00001-of-00005.gguf",
     addon: "llm",
     expectedSize: 1056783456,
-    sha256Checksum: "",
+    sha256Checksum:
+      "3c431cbd66b097bca68e2445e94398092e4bbacba1b1fce1a82bb0c7c4548163",
     engine: "llamacpp-completion",
     quantization: "q4",
     params: "1.7B",
@@ -733,7 +763,8 @@ export const models = [
       {
         filename: "Qwen3-1.7B-Q4_0-00001-of-00005.gguf",
         expectedSize: 262374368,
-        sha256Checksum: "",
+        sha256Checksum:
+          "3c431cbd66b097bca68e2445e94398092e4bbacba1b1fce1a82bb0c7c4548163",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 590473,
@@ -743,7 +774,8 @@ export const models = [
       {
         filename: "Qwen3-1.7B-Q4_0-00002-of-00005.gguf",
         expectedSize: 249068160,
-        sha256Checksum: "",
+        sha256Checksum:
+          "be625ac56ec660a1e57096ff4cb708e5b0bf48de8881af0de7b63ff97e77500e",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 594477,
@@ -753,7 +785,8 @@ export const models = [
       {
         filename: "Qwen3-1.7B-Q4_0-00003-of-00005.gguf",
         expectedSize: 247880416,
-        sha256Checksum: "",
+        sha256Checksum:
+          "7a38d01c2c44b7d3cbe5c5e81c9bbd24049e5401afbe7d8d3bd21cb534e1c05a",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 598278,
@@ -763,7 +796,8 @@ export const models = [
       {
         filename: "Qwen3-1.7B-Q4_0-00004-of-00005.gguf",
         expectedSize: 247888672,
-        sha256Checksum: "",
+        sha256Checksum:
+          "943d1ad1cbe8bf581ff4ea2ea6a9009b76d7ab5594ed0c771d3fee392956c1c5",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 602061,
@@ -773,7 +807,8 @@ export const models = [
       {
         filename: "Qwen3-1.7B-Q4_0-00005-of-00005.gguf",
         expectedSize: 49571840,
-        sha256Checksum: "",
+        sha256Checksum:
+          "2febc30e9f6152ad0d077e6f6b932db865384ab6324d5ccc2210d17875c294d3",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 605844,
@@ -795,7 +830,8 @@ export const models = [
     modelId: "Qwen3-1.7B-Q4_0.tensors.txt",
     addon: "llm",
     expectedSize: 7067,
-    sha256Checksum: "",
+    sha256Checksum:
+      "c10b950a18ec75d3ee61b55ed1ba5b4c3ff3d7afd726651b813d48165bd5847a",
     engine: "llamacpp-completion",
     quantization: "q4",
     params: "1.7B",
@@ -813,7 +849,8 @@ export const models = [
     modelId: "Qwen3-4B-Q4_K_M.gguf",
     addon: "llm",
     expectedSize: 2497280256,
-    sha256Checksum: "",
+    sha256Checksum:
+      "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
     engine: "llamacpp-completion",
     quantization: "q4",
     params: "4B",
@@ -831,7 +868,8 @@ export const models = [
     modelId: "Qwen3-4B-Q4_0-00001-of-00005.gguf",
     addon: "llm",
     expectedSize: 2497280864,
-    sha256Checksum: "",
+    sha256Checksum:
+      "44855a5795d7cc494e1bc45d023b9fa1ba99e59a937859d3227d00bcf8d4bf09",
     engine: "llamacpp-completion",
     quantization: "q4",
     params: "4B",
@@ -839,7 +877,8 @@ export const models = [
       {
         filename: "Qwen3-4B-Q4_0-00001-of-00005.gguf",
         expectedSize: 595322272,
-        sha256Checksum: "",
+        sha256Checksum:
+          "44855a5795d7cc494e1bc45d023b9fa1ba99e59a937859d3227d00bcf8d4bf09",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 492564,
@@ -849,7 +888,8 @@ export const models = [
       {
         filename: "Qwen3-4B-Q4_0-00002-of-00005.gguf",
         expectedSize: 589216192,
-        sha256Checksum: "",
+        sha256Checksum:
+          "22fbb31f804bb7dae0c46423675f37fdde82ff473b45a21266a97049c2ba75fa",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 501648,
@@ -859,7 +899,8 @@ export const models = [
       {
         filename: "Qwen3-4B-Q4_0-00003-of-00005.gguf",
         expectedSize: 589892096,
-        sha256Checksum: "",
+        sha256Checksum:
+          "45cd8d3b40d72fd2f5afd3f013ef59b59626f3489ac39bb91565783eb1cf67cb",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 510639,
@@ -869,7 +910,8 @@ export const models = [
       {
         filename: "Qwen3-4B-Q4_0-00004-of-00005.gguf",
         expectedSize: 595072096,
-        sha256Checksum: "",
+        sha256Checksum:
+          "ff24652aac8790c5f5810057710bec19a6872d4f29b2f61663b05fe7c57605a4",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 519641,
@@ -879,7 +921,8 @@ export const models = [
       {
         filename: "Qwen3-4B-Q4_0-00005-of-00005.gguf",
         expectedSize: 127778208,
-        sha256Checksum: "",
+        sha256Checksum:
+          "edecb6b27de377761d97ab88c75709b2b6cc8466bde4a43baf9744ff9a3ed19e",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 528722,
@@ -901,7 +944,8 @@ export const models = [
     modelId: "Qwen3-4B-Q4_0.tensors.txt",
     addon: "llm",
     expectedSize: 9107,
-    sha256Checksum: "",
+    sha256Checksum:
+      "4168384d4ab9eb0d773b31da5f8cd13747e3a45f3bbcff14485a5cc7679e7ed4",
     engine: "llamacpp-completion",
     quantization: "q4",
     params: "4B",
@@ -919,7 +963,8 @@ export const models = [
     modelId: "Llama-3.2-1B-Instruct-Q4_0.gguf",
     addon: "llm",
     expectedSize: 773025824,
-    sha256Checksum: "",
+    sha256Checksum:
+      "66bfbb2d48bdb77cd56bd03ef820deff3c4a74b1a09de3b917ae13e72c1a70c2",
     engine: "llamacpp-completion",
     quantization: "q4_0",
     params: "1B",
@@ -937,7 +982,8 @@ export const models = [
     modelId: "medgemma-4b-it-Q4_1.gguf",
     addon: "llm",
     expectedSize: 2564052800,
-    sha256Checksum: "",
+    sha256Checksum:
+      "8e1a72c5dc9e89cde340114ad1d7915686b16bcb6fef1372a2c3ee564fb721e0",
     engine: "llamacpp-completion",
     quantization: "q4_1",
     params: "4B",
@@ -955,7 +1001,8 @@ export const models = [
     modelId: "medgemma-4b-it-Q8_0.gguf",
     addon: "llm",
     expectedSize: 4130402880,
-    sha256Checksum: "",
+    sha256Checksum:
+      "d49d917bccd3e569ddf282ea597f1e255eb3b891254cc5c931d669e646bd77cf",
     engine: "llamacpp-completion",
     quantization: "q8_0",
     params: "4B",
@@ -973,7 +1020,8 @@ export const models = [
     modelId: "Qwen3-0.6B-Q4_0.gguf",
     addon: "llm",
     expectedSize: 382156480,
-    sha256Checksum: "",
+    sha256Checksum:
+      "33bcc57074ec7b6eada5a90651ee546ec0c2b271002c22baf9f1b2dd1e8f75cb",
     engine: "llamacpp-completion",
     quantization: "q4",
     params: "600M",
@@ -991,7 +1039,8 @@ export const models = [
     modelId: "Qwen3-1.7B-Q4_0.gguf",
     addon: "llm",
     expectedSize: 1056782912,
-    sha256Checksum: "",
+    sha256Checksum:
+      "c876f159707a4e4f70e045106c69db15bfc935a4981706fd4f65c6e7ea1e81c5",
     engine: "llamacpp-completion",
     quantization: "q4",
     params: "1.7B",
@@ -1009,7 +1058,8 @@ export const models = [
     modelId: "salamandrata_2b_inst_q4.gguf",
     addon: "nmt",
     expectedSize: 1517617504,
-    sha256Checksum: "",
+    sha256Checksum:
+      "15238732917ba7151857dbce6f8c547a0d1bbd77663508522ae2d6a788cee3a5",
     engine: "nmtcpp-translation",
     quantization: "q4",
     params: "2B",
@@ -1027,7 +1077,8 @@ export const models = [
     modelId: "salamandrata_2b_inst_q8.gguf",
     addon: "nmt",
     expectedSize: 2401075552,
-    sha256Checksum: "",
+    sha256Checksum:
+      "9cfebb63cd7e6b6d1755ea8ef001fcdadfa17831da1db96eafe3fc554913d5e1",
     engine: "nmtcpp-translation",
     quantization: "q8",
     params: "2B",
@@ -1045,7 +1096,8 @@ export const models = [
     modelId: "mmproj-SmolVLM2-500M-Video-Instruct-f16.gguf",
     addon: "nmt",
     expectedSize: 199470624,
-    sha256Checksum: "",
+    sha256Checksum:
+      "b5dc8ebe7cbeab66a5369693960a52515d7824f13d4063ceca78431f2a6b59b0",
     engine: "nmtcpp-translation",
     quantization: "f16",
     params: "500M",
@@ -1063,7 +1115,8 @@ export const models = [
     modelId: "SmolVLM2-500M-Video-Instruct-f16.gguf",
     addon: "nmt",
     expectedSize: 820424704,
-    sha256Checksum: "",
+    sha256Checksum:
+      "80f7e3f04bc2d3324ac1a9f52f5776fe13a69912adf74f8e7edacf773d140d77",
     engine: "nmtcpp-translation",
     quantization: "f16",
     params: "500M",
@@ -1081,7 +1134,8 @@ export const models = [
     modelId: "ggml-indictrans2-en-indic-1B-q0f16.bin",
     addon: "nmt",
     expectedSize: 2239757219,
-    sha256Checksum: "",
+    sha256Checksum:
+      "76763bab9e6c7f90d0a202a91a21a678dd65d9cfc1cfcd4f3c80f5a83a531444",
     engine: "nmtcpp-translation",
     quantization: "q0f16",
     params: "1B",
@@ -1099,7 +1153,8 @@ export const models = [
     modelId: "ggml-indictrans2-en-indic-dist-200M-q0f16.bin",
     addon: "nmt",
     expectedSize: 431338529,
-    sha256Checksum: "",
+    sha256Checksum:
+      "0448976882eaf62300b294abc7d6696bceed51c1a83308e68575698f9bf1d910",
     engine: "nmtcpp-translation",
     quantization: "q0f16",
     params: "200M",
@@ -1117,7 +1172,8 @@ export const models = [
     modelId: "ggml-indictrans2-indic-en-1B-q0f16.bin",
     addon: "nmt",
     expectedSize: 2054322154,
-    sha256Checksum: "",
+    sha256Checksum:
+      "97e1dd56b9b68ad56bdf9c49949dc2cb9d7d27cb0c4ff84c3dda9113be43417b",
     engine: "nmtcpp-translation",
     quantization: "q0f16",
     params: "1B",
@@ -1135,7 +1191,8 @@ export const models = [
     modelId: "ggml-indictrans2-indic-en-dist-200M-q0f16.bin",
     addon: "nmt",
     expectedSize: 430985320,
-    sha256Checksum: "",
+    sha256Checksum:
+      "e914f157a92018fb5601be9e546dff480ae5ec1a9a1ba49078ad3ef371ff4c44",
     engine: "nmtcpp-translation",
     quantization: "q0f16",
     params: "200M",
@@ -1153,7 +1210,8 @@ export const models = [
     modelId: "ggml-indictrans2-indic-indic-1B-q0f16.bin",
     addon: "nmt",
     expectedSize: 2429270859,
-    sha256Checksum: "",
+    sha256Checksum:
+      "c4e9eafc03f9ac7aac35b494dfea02feda9797b5f69b682bd3bb9f565ec4ba2e",
     engine: "nmtcpp-translation",
     quantization: "q0f16",
     params: "1B",
@@ -1171,7 +1229,8 @@ export const models = [
     modelId: "ggml-indictrans2-indic-indic-dist-320M-q0f16.bin",
     addon: "nmt",
     expectedSize: 653915115,
-    sha256Checksum: "",
+    sha256Checksum:
+      "292f376b75b164ec3700da5b376675c79bd48f43dd2e28d1b54040020acc28b9",
     engine: "nmtcpp-translation",
     quantization: "q0f16",
     params: "320M",
@@ -1189,7 +1248,8 @@ export const models = [
     modelId: "ggml-indictrans2-en-indic-1B-q4_0.bin",
     addon: "nmt",
     expectedSize: 637229091,
-    sha256Checksum: "",
+    sha256Checksum:
+      "4cd28a8b4159f4ba45b00b6ee61bf5b2f7f0c374d258afb5ac7a810ee7d5365d",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "1B",
@@ -1207,7 +1267,8 @@ export const models = [
     modelId: "ggml-indictrans2-en-indic-dist-200M-q4_0.bin",
     addon: "nmt",
     expectedSize: 127339617,
-    sha256Checksum: "",
+    sha256Checksum:
+      "d091bf149cc393689bc0cc50d2c3e38ea4fa11db327c8d26ac3316aa383c9a99",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "200M",
@@ -1225,7 +1286,8 @@ export const models = [
     modelId: "ggml-indictrans2-indic-en-1B-q4_0.bin",
     addon: "nmt",
     expectedSize: 584815722,
-    sha256Checksum: "",
+    sha256Checksum:
+      "a642e9c9bbe2069628bb585071a138b794d04dae588823d183aa27af76698ef3",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "1B",
@@ -1243,7 +1305,8 @@ export const models = [
     modelId: "ggml-indictrans2-indic-en-dist-200M-q4_0.bin",
     addon: "nmt",
     expectedSize: 126980520,
-    sha256Checksum: "",
+    sha256Checksum:
+      "8ed3cefac12693b9312910a5bb3be59bf3eb5bb2903dfe954a1ff1b4beaf80ff",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "200M",
@@ -1261,7 +1324,8 @@ export const models = [
     modelId: "ggml-indictrans2-indic-indic-1B-q4_0.bin",
     addon: "nmt",
     expectedSize: 693697483,
-    sha256Checksum: "",
+    sha256Checksum:
+      "dc0112f728fc58cea43cd44d61ddd4be7e4174527d311b5982ae23e87c0f288e",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "1B",
@@ -1279,7 +1343,8 @@ export const models = [
     modelId: "ggml-indictrans2-indic-indic-dist-320M-q4_0.bin",
     addon: "nmt",
     expectedSize: 193106987,
-    sha256Checksum: "",
+    sha256Checksum:
+      "6a0e913967af1a90ea11d1cf7a697d0c4fe5f168a08017f4b7f8ac510d2727a2",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "320M",
@@ -1297,7 +1362,8 @@ export const models = [
     modelId: "ggml-opus-de-fr.bin",
     addon: "nmt",
     expectedSize: 281161529,
-    sha256Checksum: "",
+    sha256Checksum:
+      "04785d44520852ccc04eaebf9143fb6e6f1f3a6241ffe290c9d3e9341db0d3c2",
     engine: "nmtcpp-translation",
     quantization: "q0f16",
     params: "",
@@ -1315,7 +1381,8 @@ export const models = [
     modelId: "ggml-opus-en-fr.bin",
     addon: "nmt",
     expectedSize: 275965354,
-    sha256Checksum: "",
+    sha256Checksum:
+      "35fdc5c45d47a6f65b3a774dc2c6db726de2717d09d10dd8b35effc3df976cae",
     engine: "nmtcpp-translation",
     quantization: "q0f16",
     params: "",
@@ -1333,7 +1400,8 @@ export const models = [
     modelId: "ggml-opus-mt-en-roa-f16.bin",
     addon: "nmt",
     expectedSize: 267197483,
-    sha256Checksum: "",
+    sha256Checksum:
+      "d1012b5c5864e132a848623535298a1cf87bee44463e4b9c0be25b7812a5e55a",
     engine: "nmtcpp-translation",
     quantization: "q0f16",
     params: "",
@@ -1351,7 +1419,8 @@ export const models = [
     modelId: "ggml-opus-en-ru.bin",
     addon: "nmt",
     expectedSize: 285850960,
-    sha256Checksum: "",
+    sha256Checksum:
+      "2bac8d720cc518ac1fed2e9e843ca5219ff9403c653347d08918727dd4ef2099",
     engine: "nmtcpp-translation",
     quantization: "q0f16",
     params: "",
@@ -1369,7 +1438,8 @@ export const models = [
     modelId: "ggml-opus-es-fr.bin",
     addon: "nmt",
     expectedSize: 323544954,
-    sha256Checksum: "",
+    sha256Checksum:
+      "04fbdd8e6a14345cd6156c87cee0fba2aecbadbe3a8ddac18c0380c23882795f",
     engine: "nmtcpp-translation",
     quantization: "q0f16",
     params: "",
@@ -1387,7 +1457,8 @@ export const models = [
     modelId: "ggml-opus-fr-de.bin",
     addon: "nmt",
     expectedSize: 281161529,
-    sha256Checksum: "",
+    sha256Checksum:
+      "9b0010366e5c413ebe863bd22b5ac9bf053aa66c01836fa10aba71b3a097eddc",
     engine: "nmtcpp-translation",
     quantization: "q0f16",
     params: "",
@@ -1405,7 +1476,8 @@ export const models = [
     modelId: "ggml-opus-fr-en.bin",
     addon: "nmt",
     expectedSize: 275965354,
-    sha256Checksum: "",
+    sha256Checksum:
+      "b8074032d99d8c3ba392f75032c1eef6a556af68026b545007fda9eb655ef3ec",
     engine: "nmtcpp-translation",
     quantization: "q0f16",
     params: "",
@@ -1423,7 +1495,8 @@ export const models = [
     modelId: "ggml-opus-fr-es.bin",
     addon: "nmt",
     expectedSize: 323544954,
-    sha256Checksum: "",
+    sha256Checksum:
+      "520cea574d49ce35802834b40cdc48bcadffb23c54bf09e38c7f52128ff25194",
     engine: "nmtcpp-translation",
     quantization: "q0f16",
     params: "",
@@ -1441,7 +1514,8 @@ export const models = [
     modelId: "ggml-opus-mt-roa-en-f16.bin",
     addon: "nmt",
     expectedSize: 292900034,
-    sha256Checksum: "",
+    sha256Checksum:
+      "f5e4e921132df9be5a55c097aa3ba9047e2188bad98304b11d3fea19b5dd7b14",
     engine: "nmtcpp-translation",
     quantization: "q0f16",
     params: "",
@@ -1459,7 +1533,8 @@ export const models = [
     modelId: "ggml-opus-ru-en.bin",
     addon: "nmt",
     expectedSize: 285850960,
-    sha256Checksum: "",
+    sha256Checksum:
+      "9aa879d7fa02be20c30224499cee5f8c7ccda6eeb24cd37996f6afc370207467",
     engine: "nmtcpp-translation",
     quantization: "q0f16",
     params: "",
@@ -1477,7 +1552,8 @@ export const models = [
     modelId: "ggml-opus-ar-en.bin",
     addon: "nmt",
     expectedSize: 84462871,
-    sha256Checksum: "",
+    sha256Checksum:
+      "725e6e08b72d09cff4f0d929e862339d9f1bed5ddbdf8948f8153007af5a6b07",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1495,7 +1571,8 @@ export const models = [
     modelId: "ggml-opus-de-en.bin",
     addon: "nmt",
     expectedSize: 79986254,
-    sha256Checksum: "",
+    sha256Checksum:
+      "2cd19ac1421c4f4b3c3640da0391b65eb5d714bebc71973800c2c948e01cadc2",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1513,7 +1590,8 @@ export const models = [
     modelId: "ggml-opus-de-fr.bin",
     addon: "nmt",
     expectedSize: 82827941,
-    sha256Checksum: "",
+    sha256Checksum:
+      "fb8a01de8a0815853f57ff7ff122f7406d7d7634c5875882a2080d6c1bc0d8a7",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1531,7 +1609,8 @@ export const models = [
     modelId: "ggml-opus-en-ar.bin",
     addon: "nmt",
     expectedSize: 84422166,
-    sha256Checksum: "",
+    sha256Checksum:
+      "6920f7c46fbadd955cc0ec8ff8625acdf9c03e8611fa18a82264571ce234970f",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1549,7 +1628,8 @@ export const models = [
     modelId: "ggml-opus-en-de.bin",
     addon: "nmt",
     expectedSize: 79986254,
-    sha256Checksum: "",
+    sha256Checksum:
+      "72d6fbfb11a3e8f15680599d970c9c39c9b61a1b1d7af77e031cb65ec2fa4f29",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1567,7 +1647,8 @@ export const models = [
     modelId: "ggml-opus-en-es.bin",
     addon: "nmt",
     expectedSize: 86186269,
-    sha256Checksum: "",
+    sha256Checksum:
+      "cf1916fff3dd797aa15e85adbb165840874e4c63736c043a6785d698cc53ce94",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1585,7 +1666,8 @@ export const models = [
     modelId: "ggml-opus-en-fr.bin",
     addon: "nmt",
     expectedSize: 81250678,
-    sha256Checksum: "",
+    sha256Checksum:
+      "d02990f1a9308105dc1303ae0d7d83c8297bf902df959c478e0d21c90d008589",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1603,7 +1685,8 @@ export const models = [
     modelId: "ggml-opus-en-it.bin",
     addon: "nmt",
     expectedSize: 99571033,
-    sha256Checksum: "",
+    sha256Checksum:
+      "8b98e4db3b57ab767fd26e1575fbe855c674b919819dcd8587f9d76403be9d16",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1621,7 +1704,8 @@ export const models = [
     modelId: "ggml-opus-en-pt.bin",
     addon: "nmt",
     expectedSize: 197125444,
-    sha256Checksum: "",
+    sha256Checksum:
+      "90f32b905c2aa7134c137bd0c9a4ff953b3e6d4c97d45720f49c7c07c60875d4",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1639,7 +1723,8 @@ export const models = [
     modelId: "ggml-opus-en-roa.bin",
     addon: "nmt",
     expectedSize: 78760139,
-    sha256Checksum: "",
+    sha256Checksum:
+      "5b4fd1a2f1683b1e390aa7c62b04bd0a72d54c5881c85bf089d1fd0df50e7322",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1657,7 +1742,8 @@ export const models = [
     modelId: "ggml-opus-en-ru.bin",
     addon: "nmt",
     expectedSize: 84503440,
-    sha256Checksum: "",
+    sha256Checksum:
+      "575721b3216cbf0d549ee9ac5068f32f1e1d17e9243b72c2a1bb273d06e01de6",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1675,7 +1761,8 @@ export const models = [
     modelId: "ggml-opus-en-zh.bin",
     addon: "nmt",
     expectedSize: 86130069,
-    sha256Checksum: "",
+    sha256Checksum:
+      "0e08e1c0428bb99e5b5e5ff393e91edfb11438f9413c6533b224de2cf31da9b7",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1693,7 +1780,8 @@ export const models = [
     modelId: "ggml-opus-es-en.bin",
     addon: "nmt",
     expectedSize: 86186269,
-    sha256Checksum: "",
+    sha256Checksum:
+      "7c62479e63430b4d4744bd7f35dbe0566501fe0c408b4285b3e9897cdd355aa9",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1711,7 +1799,8 @@ export const models = [
     modelId: "ggml-opus-es-fr.bin",
     addon: "nmt",
     expectedSize: 95030214,
-    sha256Checksum: "",
+    sha256Checksum:
+      "471d47e937f8cdb4460e4aecc6348af964ca26b1015dcd8b9467e3762a68f56b",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1729,7 +1818,8 @@ export const models = [
     modelId: "ggml-opus-fr-de.bin",
     addon: "nmt",
     expectedSize: 82827941,
-    sha256Checksum: "",
+    sha256Checksum:
+      "5a90b47684a43147107724f700c74cf4d367b35969dd445a34f758e31601e7aa",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1747,7 +1837,8 @@ export const models = [
     modelId: "ggml-opus-fr-en.bin",
     addon: "nmt",
     expectedSize: 81250678,
-    sha256Checksum: "",
+    sha256Checksum:
+      "362daefe06cc36dab7169233cd2dce940e7b656f1da8637c9bc4ba6a405b077b",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1765,7 +1856,8 @@ export const models = [
     modelId: "ggml-opus-fr-es.bin",
     addon: "nmt",
     expectedSize: 95030214,
-    sha256Checksum: "",
+    sha256Checksum:
+      "e7e721929e5ae75d2ee7bc26a7c25e5d5b32d478d78d0b92154644677f34594d",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1783,7 +1875,8 @@ export const models = [
     modelId: "ggml-opus-it-en.bin",
     addon: "nmt",
     expectedSize: 99875821,
-    sha256Checksum: "",
+    sha256Checksum:
+      "7328984797f982f9835056efc49197b8076614b1d7aaa14b40fff04bdb29d3a1",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1801,7 +1894,8 @@ export const models = [
     modelId: "ggml-opus-ja-en.bin",
     addon: "nmt",
     expectedSize: 82325057,
-    sha256Checksum: "",
+    sha256Checksum:
+      "f5325e97c64e79e830bd8d2e1b5a9c4b961e3a2c998b587052e6324fef62374d",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1819,7 +1913,8 @@ export const models = [
     modelId: "ggml-opus-roa-en.bin",
     addon: "nmt",
     expectedSize: 86070050,
-    sha256Checksum: "",
+    sha256Checksum:
+      "153272a7c2213604c88378ae1f2dc4b683f684af93681a671fd4bfba5c846660",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1837,7 +1932,8 @@ export const models = [
     modelId: "ggml-opus-ru-en.bin",
     addon: "nmt",
     expectedSize: 84503440,
-    sha256Checksum: "",
+    sha256Checksum:
+      "5a57ba08fb4a0a5276690dbf62a93595924f7c4f888ab7402be337a6cefbf994",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1855,7 +1951,8 @@ export const models = [
     modelId: "ggml-opus-zh-en.bin",
     addon: "nmt",
     expectedSize: 86130364,
-    sha256Checksum: "",
+    sha256Checksum:
+      "df9d96e85a2d036ff26936390b9e6fbee24586e329a2eef79476af096692561f",
     engine: "nmtcpp-translation",
     quantization: "q4_0",
     params: "",
@@ -1873,7 +1970,8 @@ export const models = [
     modelId: "salamandrata_2b_inst_q4-00001-of-00003.gguf",
     addon: "nmt",
     expectedSize: 1517617856,
-    sha256Checksum: "",
+    sha256Checksum:
+      "f682eeb7c52b55328c84c9e6a6775b7be8cade81493f0f3399b67e29fccbd5e6",
     engine: "nmtcpp-translation",
     quantization: "q4",
     params: "2B",
@@ -1881,7 +1979,8 @@ export const models = [
       {
         filename: "salamandrata_2b_inst_q4-00001-of-00003.gguf",
         expectedSize: 766824416,
-        sha256Checksum: "",
+        sha256Checksum:
+          "f682eeb7c52b55328c84c9e6a6775b7be8cade81493f0f3399b67e29fccbd5e6",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 530673,
@@ -1891,7 +1990,8 @@ export const models = [
       {
         filename: "salamandrata_2b_inst_q4-00002-of-00003.gguf",
         expectedSize: 454328000,
-        sha256Checksum: "",
+        sha256Checksum:
+          "05c6e127c41391dbbfe06a508c2eadf0ec80e9fe713c306a88cdd39e46c832d6",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 542374,
@@ -1901,7 +2001,8 @@ export const models = [
       {
         filename: "salamandrata_2b_inst_q4-00003-of-00003.gguf",
         expectedSize: 296465440,
-        sha256Checksum: "",
+        sha256Checksum:
+          "06f750c9e82485f89d0aeaac8830c57cfde107de522371bb0b6d7a6d9935ea25",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 549307,
@@ -1923,7 +2024,8 @@ export const models = [
     modelId: "salamandrata_2b_inst_q4.tensors.txt",
     addon: "nmt",
     expectedSize: 4833,
-    sha256Checksum: "",
+    sha256Checksum:
+      "70a5b9f52d53b14d8c00240b2ca9752c0e9578b5faaedc6911b7ba21c273c858",
     engine: "nmtcpp-translation",
     quantization: "q4",
     params: "2B",
@@ -1941,7 +2043,8 @@ export const models = [
     modelId: "salamandrata_2b_inst_q8-00001-of-00004.gguf",
     addon: "nmt",
     expectedSize: 2401076000,
-    sha256Checksum: "",
+    sha256Checksum:
+      "2bff3b74fd628d009a0a7e63ca7c5141322ab1dbdcae48b5c51846c8d115e769",
     engine: "nmtcpp-translation",
     quantization: "q8",
     params: "2B",
@@ -1949,7 +2052,8 @@ export const models = [
       {
         filename: "salamandrata_2b_inst_q8-00001-of-00004.gguf",
         expectedSize: 1125011424,
-        sha256Checksum: "",
+        sha256Checksum:
+          "2bff3b74fd628d009a0a7e63ca7c5141322ab1dbdcae48b5c51846c8d115e769",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 553832,
@@ -1959,7 +2063,8 @@ export const models = [
       {
         filename: "salamandrata_2b_inst_q8-00002-of-00004.gguf",
         expectedSize: 570611392,
-        sha256Checksum: "",
+        sha256Checksum:
+          "044dd6b733e45f05e47009a1cdb8f78437fa8b879a09429b9d8bb65c76a2759b",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 570999,
@@ -1969,7 +2074,8 @@ export const models = [
       {
         filename: "salamandrata_2b_inst_q8-00003-of-00004.gguf",
         expectedSize: 563222240,
-        sha256Checksum: "",
+        sha256Checksum:
+          "c1ddbd27c401f049dbe6adae996aadd3309da91d58d97851f9ab6725653a1feb",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 579706,
@@ -1979,7 +2085,8 @@ export const models = [
       {
         filename: "salamandrata_2b_inst_q8-00004-of-00004.gguf",
         expectedSize: 142230944,
-        sha256Checksum: "",
+        sha256Checksum:
+          "a47c2287be8bfa4575f4ea2d5065452d254dacff2b9a07eea43f34de31c44120",
         blobCoreKey:
           "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
         blobBlockOffset: 588301,
@@ -1987,24 +2094,6 @@ export const models = [
         blobByteOffset: 38552639339,
       },
     ],
-  },
-  {
-    name: "SALAMANDRA_Q8",
-    registryPath:
-      "qvac_models_compiled/ggml/salamandrata_2b_inst_q8/2025-08-21/salamandrata_2b_inst_q8.tensors.txt",
-    registrySource: "s3",
-    blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 590472,
-    blobBlockLength: 1,
-    blobByteOffset: 38694870283,
-    modelId: "salamandrata_2b_inst_q8.tensors.txt",
-    addon: "nmt",
-    expectedSize: 4833,
-    sha256Checksum: "",
-    engine: "nmtcpp-translation",
-    quantization: "q8",
-    params: "2B",
   },
   {
     name: "OCR_OCR_DETECTOR",
@@ -2018,7 +2107,8 @@ export const models = [
     modelId: "detector_craft.onnx",
     addon: "ocr",
     expectedSize: 83058594,
-    sha256Checksum: "",
+    sha256Checksum:
+      "0ca3aed5da83250025bc01eb3ad1fc21482d3cee814fae22343de13c221e02e9",
     engine: "onnx-ocr",
     quantization: "",
     params: "",
@@ -2035,7 +2125,8 @@ export const models = [
     modelId: "recognizer_english.onnx",
     addon: "ocr",
     expectedSize: 15143612,
-    sha256Checksum: "",
+    sha256Checksum:
+      "d962883812953aaafd165f2a815aa0fb95ff9c35d29807e6ceae7dd4cd5c64aa",
     engine: "onnx-ocr",
     quantization: "",
     params: "",
@@ -2053,7 +2144,8 @@ export const models = [
     modelId: "de_DE-thorsten-medium.onnx",
     addon: "tts",
     expectedSize: 63201294,
-    sha256Checksum: "",
+    sha256Checksum:
+      "7e64762d8e5118bb578f2eea6207e1a35a8e0c30595010b666f983fc87bb7819",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2071,7 +2163,8 @@ export const models = [
     modelId: "de_DE-thorsten-medium.onnx.json",
     addon: "tts",
     expectedSize: 4819,
-    sha256Checksum: "",
+    sha256Checksum:
+      "974adee790533adb273a1ac88f49027d2a1b8f0f2cf4905954a4791e79264e85",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2089,7 +2182,8 @@ export const models = [
     modelId: "en_US-amy-low.onnx",
     addon: "tts",
     expectedSize: 63104526,
-    sha256Checksum: "",
+    sha256Checksum:
+      "a5a91abb7de0f104358a25aded480ddacf1ff0762886325886ec406a2e86aab3",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2107,7 +2201,8 @@ export const models = [
     modelId: "en_US-amy-low.onnx.json",
     addon: "tts",
     expectedSize: 4164,
-    sha256Checksum: "",
+    sha256Checksum:
+      "2250a9a605b8dc35a116717fadc5056695dd809e34a15d02f72a0f52d53d3ebb",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2125,7 +2220,8 @@ export const models = [
     modelId: "en_US-amy-medium.onnx",
     addon: "tts",
     expectedSize: 63201294,
-    sha256Checksum: "",
+    sha256Checksum:
+      "b3a6e47b57b8c7fbe6a0ce2518161a50f59a9cdd8a50835c02cb02bdd6206c18",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2143,7 +2239,8 @@ export const models = [
     modelId: "en_US-amy-medium.onnx.json",
     addon: "tts",
     expectedSize: 4882,
-    sha256Checksum: "",
+    sha256Checksum:
+      "95a23eb4d42909d38df73bb9ac7f45f597dbfcde2d1bf9526fdeaf5466977d77",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2161,7 +2258,8 @@ export const models = [
     modelId: "en_US-lessac-medium.onnx",
     addon: "tts",
     expectedSize: 63201294,
-    sha256Checksum: "",
+    sha256Checksum:
+      "5efe09e69902187827af646e1a6e9d269dee769f9877d17b16b1b46eeaaf019f",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2179,7 +2277,8 @@ export const models = [
     modelId: "en_US-lessac-medium.onnx.json",
     addon: "tts",
     expectedSize: 4885,
-    sha256Checksum: "",
+    sha256Checksum:
+      "efe19c417bed055f2d69908248c6ba650fa135bc868b0e6abb3da181dab690a0",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2197,7 +2296,8 @@ export const models = [
     modelId: "en_US-norman-medium.onnx",
     addon: "tts",
     expectedSize: 63531379,
-    sha256Checksum: "",
+    sha256Checksum:
+      "b9739443232a80a59c7d18810dd856899bf16a7964725f5ab81ea49b1351cb71",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2215,7 +2315,8 @@ export const models = [
     modelId: "en_US-norman-medium.onnx.json",
     addon: "tts",
     expectedSize: 4968,
-    sha256Checksum: "",
+    sha256Checksum:
+      "6c2db7f558a4a8deb9fe822583c1c5105f6c4e834dd0f9de8ad17a888ee9fe1d",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2233,7 +2334,8 @@ export const models = [
     modelId: "es_ES-davefx-medium.onnx",
     addon: "tts",
     expectedSize: 63201294,
-    sha256Checksum: "",
+    sha256Checksum:
+      "6658b03b1a6c316ee4c265a9896abc1393353c2d9e1bca7d66c2c442e222a917",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2251,7 +2353,8 @@ export const models = [
     modelId: "es_ES-davefx-medium.onnx.json",
     addon: "tts",
     expectedSize: 4817,
-    sha256Checksum: "",
+    sha256Checksum:
+      "0e0dda87c732f6f38771ff274a6380d9252f327dca77aa2963d5fbdf9ec54842",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2269,7 +2372,8 @@ export const models = [
     modelId: "es_ES-sharvard-medium.onnx",
     addon: "tts",
     expectedSize: 76733615,
-    sha256Checksum: "",
+    sha256Checksum:
+      "40febfb1679c69a4505ff311dc136e121e3419a13a290ef264fdf43ddedd0fb1",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2287,7 +2391,8 @@ export const models = [
     modelId: "es_ES-sharvard-medium.onnx.json",
     addon: "tts",
     expectedSize: 4903,
-    sha256Checksum: "",
+    sha256Checksum:
+      "7438c9b699c72b0c3388dae1b68d3f364dc66a2150fe554a1c11f03372957b2c",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2305,7 +2410,8 @@ export const models = [
     modelId: "fr_FR-gilles-low.onnx",
     addon: "tts",
     expectedSize: 63104526,
-    sha256Checksum: "",
+    sha256Checksum:
+      "5cd711846720e261c2a176f6924c198a7424d0a75dd4b0a5357a5fb9cb739285",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2323,7 +2429,8 @@ export const models = [
     modelId: "fr_FR-gilles-low.onnx.json",
     addon: "tts",
     expectedSize: 4158,
-    sha256Checksum: "",
+    sha256Checksum:
+      "5a47cc0789e91267d17666bbec842dd92950669271a09023eb6970ee364cf88a",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2341,7 +2448,8 @@ export const models = [
     modelId: "it_IT-paola-medium.onnx",
     addon: "tts",
     expectedSize: 63511038,
-    sha256Checksum: "",
+    sha256Checksum:
+      "6fc918b5a0ea6137382833dddfa567bffbe6a5060c02043c87192ee59c04210c",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2359,7 +2467,8 @@ export const models = [
     modelId: "it_IT-paola-medium.onnx.json",
     addon: "tts",
     expectedSize: 7099,
-    sha256Checksum: "",
+    sha256Checksum:
+      "aea19c0a7fce29fbc359b93f10e7902854401e4c95ae2ea328ae516b15d296cf",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2377,7 +2486,8 @@ export const models = [
     modelId: "pt_BR-cadu-medium.onnx",
     addon: "tts",
     expectedSize: 62950044,
-    sha256Checksum: "",
+    sha256Checksum:
+      "765f0809a6ea9035d4a6d0d008dbf8876e68b2dd32029312672fa8f405bdb535",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2395,7 +2505,8 @@ export const models = [
     modelId: "pt_BR-cadu-medium.onnx.json",
     addon: "tts",
     expectedSize: 5040,
-    sha256Checksum: "",
+    sha256Checksum:
+      "5fe03aa3d4901880554905b12075713cd552598c8a350455a1ec73f8b4e6be19",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2413,7 +2524,8 @@ export const models = [
     modelId: "pt_PT-tugão-medium.onnx",
     addon: "tts",
     expectedSize: 63201294,
-    sha256Checksum: "",
+    sha256Checksum:
+      "223a7aaca69a155c61897e8ada7c3b13bc306e16c72dbb9c2fed733e2b0927d4",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2431,7 +2543,8 @@ export const models = [
     modelId: "pt_PT-tugão-medium.onnx.json",
     addon: "tts",
     expectedSize: 5026,
-    sha256Checksum: "",
+    sha256Checksum:
+      "fe0918dfc0f1a89264a6eea4afe8e95d8e9fed3cc6c81b5c2f87fcb2b50c7320",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2449,7 +2562,8 @@ export const models = [
     modelId: "ru_RU-irina-medium.onnx",
     addon: "tts",
     expectedSize: 63201294,
-    sha256Checksum: "",
+    sha256Checksum:
+      "8ff38212d23da300bbe3705c645e6e5b9475f0bfde01558eb17813e22acaaaaa",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2467,7 +2581,8 @@ export const models = [
     modelId: "ru_RU-irina-medium.onnx.json",
     addon: "tts",
     expectedSize: 4765,
-    sha256Checksum: "",
+    sha256Checksum:
+      "c2ec28bb38e2b59e93b959b3e40348c1afebbd272f30fed5d41205d08e98a9d7",
     engine: "onnx-tts",
     quantization: "fp32",
     params: "20M",
@@ -2485,7 +2600,8 @@ export const models = [
     modelId: "ggml-base-q8_0.bin",
     addon: "whisper",
     expectedSize: 81768585,
-    sha256Checksum: "",
+    sha256Checksum:
+      "c577b9a86e7e048a0b7eada054f4dd79a56bbfa911fbdacf900ac5b567cbb7d9",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -2503,7 +2619,8 @@ export const models = [
     modelId: "ggml-base.bin",
     addon: "whisper",
     expectedSize: 147951465,
-    sha256Checksum: "",
+    sha256Checksum:
+      "60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe",
     engine: "whispercpp-transcription",
     quantization: "q0f16",
     params: "",
@@ -2521,7 +2638,8 @@ export const models = [
     modelId: "ggml-base.en-q8_0.bin",
     addon: "whisper",
     expectedSize: 81781811,
-    sha256Checksum: "",
+    sha256Checksum:
+      "a4d4a0768075e13cfd7e19df3ae2dbc4a68d37d36a7dad45e8410c9a34f8c87e",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -2539,7 +2657,8 @@ export const models = [
     modelId: "ggml-base.en.bin",
     addon: "whisper",
     expectedSize: 147964211,
-    sha256Checksum: "",
+    sha256Checksum:
+      "a03779c86df3323075f5e796cb2ce5029f00ec8869eee3fdfb897afe36c6d002",
     engine: "whispercpp-transcription",
     quantization: "q0f16",
     params: "",
@@ -2557,7 +2676,8 @@ export const models = [
     modelId: "ggml-large-v3-turbo.bin",
     addon: "whisper",
     expectedSize: 1624555275,
-    sha256Checksum: "",
+    sha256Checksum:
+      "1fc70f774d38eb169993ac391eea357ef47c88757ef72ee5943879b7e8e2bc69",
     engine: "whispercpp-transcription",
     quantization: "",
     params: "",
@@ -2575,7 +2695,8 @@ export const models = [
     modelId: "ggml-small-q8_0.bin",
     addon: "whisper",
     expectedSize: 264464607,
-    sha256Checksum: "",
+    sha256Checksum:
+      "49c8fb02b65e6049d5fa6c04f81f53b867b5ec9540406812c643f177317f779f",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -2593,7 +2714,8 @@ export const models = [
     modelId: "ggml-small.bin",
     addon: "whisper",
     expectedSize: 487601967,
-    sha256Checksum: "",
+    sha256Checksum:
+      "1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b",
     engine: "whispercpp-transcription",
     quantization: "q0f16",
     params: "",
@@ -2611,7 +2733,8 @@ export const models = [
     modelId: "ggml-small.en-q8_0.bin",
     addon: "whisper",
     expectedSize: 264477561,
-    sha256Checksum: "",
+    sha256Checksum:
+      "67a179f608ea6114bd3fdb9060e762b588a3fb3bd00c4387971be4d177958067",
     engine: "whispercpp-transcription",
     quantization: "q8",
     params: "",
@@ -2629,7 +2752,8 @@ export const models = [
     modelId: "ggml-small.en.bin",
     addon: "whisper",
     expectedSize: 487614201,
-    sha256Checksum: "",
+    sha256Checksum:
+      "c6138d6d58ecc8322097e0f987c32f1be8bb0a18532a3f88f734d1bbf9c41e5d",
     engine: "whispercpp-transcription",
     quantization: "q0f16",
     params: "",
@@ -2647,7 +2771,8 @@ export const models = [
     modelId: "ggml-tiny-q8_0.bin",
     addon: "whisper",
     expectedSize: 43537433,
-    sha256Checksum: "",
+    sha256Checksum:
+      "c2085835d3f50733e2ff6e4b41ae8a2b8d8110461e18821b09a15c40c42d1cca",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -2665,7 +2790,8 @@ export const models = [
     modelId: "ggml-tiny.bin",
     addon: "whisper",
     expectedSize: 77691713,
-    sha256Checksum: "",
+    sha256Checksum:
+      "be07e048e1e599ad46341c8d2a135645097a538221678b7acdd1b1919c6e1b21",
     engine: "whispercpp-transcription",
     quantization: "",
     params: "",
@@ -2683,7 +2809,8 @@ export const models = [
     modelId: "ggml-tiny.en-q8_0.bin",
     addon: "whisper",
     expectedSize: 43550795,
-    sha256Checksum: "",
+    sha256Checksum:
+      "5bc2b3860aa151a4c6e7bb095e1fcce7cf12c7b020ca08dcec0c6d018bb7dd94",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -2701,7 +2828,8 @@ export const models = [
     modelId: "ggml-tiny.en.bin",
     addon: "whisper",
     expectedSize: 77704715,
-    sha256Checksum: "",
+    sha256Checksum:
+      "921e4cf8686fdd993dcd081a5da5b6c365bfde1162e72b08d75ac75289920b1f",
     engine: "whispercpp-transcription",
     quantization: "q0f16",
     params: "",
@@ -2719,49 +2847,14 @@ export const models = [
     modelId: "ggml-silero-v5.1.2.bin",
     addon: "whisper",
     expectedSize: 885098,
-    sha256Checksum: "",
+    sha256Checksum:
+      "29940d98d42b91fbd05ce489f3ecf7c72f0a42f027e4875919a28fb4c04ea2cf",
     engine: "whispercpp-transcription",
     quantization: "",
     params: "",
   },
   {
     name: "WHISPER_BASE_F16",
-    registryPath:
-      "qvac_models_compiled/ggml/whisper-english/en-base-ggml-model-f16.bin",
-    registrySource: "s3",
-    blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1985747,
-    blobBlockLength: 2258,
-    blobByteOffset: 130124214115,
-    modelId: "en-base-ggml-model-f16.bin",
-    addon: "whisper",
-    expectedSize: 147951465,
-    sha256Checksum: "",
-    engine: "whispercpp-transcription",
-    quantization: "f16",
-    params: "",
-  },
-  {
-    name: "WHISPER_BASE_Q8_0_1",
-    registryPath:
-      "qvac_models_compiled/ggml/whisper-english/en-base-ggml-model-q8_0.bin",
-    registrySource: "s3",
-    blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1988005,
-    blobBlockLength: 1248,
-    blobByteOffset: 130272165580,
-    modelId: "en-base-ggml-model-q8_0.bin",
-    addon: "whisper",
-    expectedSize: 81768585,
-    sha256Checksum: "",
-    engine: "whispercpp-transcription",
-    quantization: "q8_0",
-    params: "",
-  },
-  {
-    name: "WHISPER_BASE_F16_1",
     registryPath:
       "qvac_models_compiled/ggml/whisper-french/fr-base-ggml-model-f16.bin",
     registrySource: "s3",
@@ -2773,13 +2866,14 @@ export const models = [
     modelId: "fr-base-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 147951482,
-    sha256Checksum: "",
+    sha256Checksum:
+      "00da0a14c23e5636a4d37b605e9a6c102b546b85bd965c77fe1e5282c151695d",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
   },
   {
-    name: "WHISPER_BASE_Q8_0_2",
+    name: "WHISPER_BASE_Q8_0_1",
     registryPath:
       "qvac_models_compiled/ggml/whisper-french/fr-base-ggml-model-q8_0.bin",
     registrySource: "s3",
@@ -2791,7 +2885,8 @@ export const models = [
     modelId: "fr-base-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 81768602,
-    sha256Checksum: "",
+    sha256Checksum:
+      "ac7009de16970e0fb9d181d27bb87e48f483fc4b010f6fe6b99af99a64a25232",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -2809,7 +2904,8 @@ export const models = [
     modelId: "fr-tiny-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 77691730,
-    sha256Checksum: "",
+    sha256Checksum:
+      "16ea1031e24b40a229ca867b731f515d6e876e4dd14bc637d3ed37029d46648a",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
@@ -2827,13 +2923,14 @@ export const models = [
     modelId: "fr-tiny-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 43537450,
-    sha256Checksum: "",
+    sha256Checksum:
+      "b5c091603ca9144495005f4ecb461ff912e5aabb2599a240fba636e9b372d29d",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
   },
   {
-    name: "WHISPER_BASE_F16_2",
+    name: "WHISPER_BASE_F16_1",
     registryPath:
       "qvac_models_compiled/ggml/whisper-german/de-base-ggml-model-f16.bin",
     registrySource: "s3",
@@ -2845,13 +2942,14 @@ export const models = [
     modelId: "de-base-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 147951465,
-    sha256Checksum: "",
+    sha256Checksum:
+      "66d585a2384cb2cd305848fff06620ff3c03a5dc71d4252d9d8857fe3dbc5734",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
   },
   {
-    name: "WHISPER_BASE_Q8_0_3",
+    name: "WHISPER_BASE_Q8_0_2",
     registryPath:
       "qvac_models_compiled/ggml/whisper-german/de-base-ggml-model-q8_0.bin",
     registrySource: "s3",
@@ -2863,7 +2961,8 @@ export const models = [
     modelId: "de-base-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 81768585,
-    sha256Checksum: "",
+    sha256Checksum:
+      "8351a34c6d33b5a52dc8fbbbb81e19195b861834541a7f31e4dfce668b0193b9",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -2881,7 +2980,8 @@ export const models = [
     modelId: "de-tiny-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 77691713,
-    sha256Checksum: "",
+    sha256Checksum:
+      "3316f360e5bdcbfb61a7cb12c1f81f77c6837006014194f8e7940634b31f75d6",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
@@ -2899,13 +2999,14 @@ export const models = [
     modelId: "de-tiny-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 43537433,
-    sha256Checksum: "",
+    sha256Checksum:
+      "5eaa31087e1884d60795ab84dae529961006e8429b31aa24f31ae1757ea63148",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
   },
   {
-    name: "WHISPER_BASE_F16_3",
+    name: "WHISPER_BASE_F16_2",
     registryPath:
       "qvac_models_compiled/ggml/whisper-italian/it-base-ggml-model-f16.bin",
     registrySource: "s3",
@@ -2917,13 +3018,14 @@ export const models = [
     modelId: "it-base-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 114252906,
-    sha256Checksum: "",
+    sha256Checksum:
+      "257d55af89d092bdf2e5916cff534c0b4d30ad303993d8ed990350904b5bfa5f",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
   },
   {
-    name: "WHISPER_BASE_Q8_0_4",
+    name: "WHISPER_BASE_Q8_0_3",
     registryPath:
       "qvac_models_compiled/ggml/whisper-italian/it-base-ggml-model-q8_0.bin",
     registrySource: "s3",
@@ -2935,7 +3037,8 @@ export const models = [
     modelId: "it-base-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 63798666,
-    sha256Checksum: "",
+    sha256Checksum:
+      "25c685ba42488a70a42e530446e172da1b1853c38546e4dc05eb50d397a2a2da",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -2953,7 +3056,8 @@ export const models = [
     modelId: "it-tiny-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 77691713,
-    sha256Checksum: "",
+    sha256Checksum:
+      "203cfbb3bd247eb08a53fcaf6fb6537d608fc74f4734f49873a524ee29884f2d",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
@@ -2971,13 +3075,14 @@ export const models = [
     modelId: "it-tiny-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 43537433,
-    sha256Checksum: "",
+    sha256Checksum:
+      "b894457533d13ef25cd4a5af5e0bc25c102783a041be933c2c1e16f0b5c79ca0",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
   },
   {
-    name: "WHISPER_BASE_F16_4",
+    name: "WHISPER_BASE_F16_3",
     registryPath:
       "qvac_models_compiled/ggml/whisper-japanese/ja-base-ggml-model-f16.bin",
     registrySource: "s3",
@@ -2989,13 +3094,14 @@ export const models = [
     modelId: "ja-base-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 199069379,
-    sha256Checksum: "",
+    sha256Checksum:
+      "d8a0c0cc74464f26c997888bc0c3e0327dcd9732c037bf8639766e254cddbe12",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
   },
   {
-    name: "WHISPER_BASE_Q8_0_5",
+    name: "WHISPER_BASE_Q8_0_4",
     registryPath:
       "qvac_models_compiled/ggml/whisper-japanese/ja-base-ggml-model-q8_0.bin",
     registrySource: "s3",
@@ -3007,7 +3113,8 @@ export const models = [
     modelId: "ja-base-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 107056259,
-    sha256Checksum: "",
+    sha256Checksum:
+      "867b6f7d188d0f93389a0b1f6deaecb3b581477ca35951f507565c8a6b6a1ae5",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -3025,7 +3132,8 @@ export const models = [
     modelId: "ja-tiny-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 116029945,
-    sha256Checksum: "",
+    sha256Checksum:
+      "a6eab14d52813b860ecb34ed8aebca07b024c89b7ada7facd2b7b72910bb2fdb",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
@@ -3043,7 +3151,8 @@ export const models = [
     modelId: "ja-tiny-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 62502985,
-    sha256Checksum: "",
+    sha256Checksum:
+      "825e90cca8970378f0ed5a4e18db8e7c8bb6d4e25fac2798ac562526b41d7d93",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -3061,13 +3170,14 @@ export const models = [
     modelId: "nb-tiny-ggml-model.bin",
     addon: "whisper",
     expectedSize: 77691730,
-    sha256Checksum: "",
+    sha256Checksum:
+      "2f9dd799ee36b6a9c8d642e9b1df8ecf2135efdd5a91b1d9ca0b3c0decda535f",
     engine: "whispercpp-transcription",
     quantization: "",
     params: "",
   },
   {
-    name: "WHISPER_BASE_F16_5",
+    name: "WHISPER_BASE_F16_4",
     registryPath:
       "qvac_models_compiled/ggml/whisper-portuguese/pt-base-ggml-model-f16.bin",
     registrySource: "s3",
@@ -3079,13 +3189,14 @@ export const models = [
     modelId: "pt-base-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 147951482,
-    sha256Checksum: "",
+    sha256Checksum:
+      "cfcfbf9be6981a336ee3ab647bdd8f98b40fac4d91a5c805b8e8eedc313807b1",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
   },
   {
-    name: "WHISPER_BASE_Q8_0_6",
+    name: "WHISPER_BASE_Q8_0_5",
     registryPath:
       "qvac_models_compiled/ggml/whisper-portuguese/pt-base-ggml-model-q8_0.bin",
     registrySource: "s3",
@@ -3097,7 +3208,8 @@ export const models = [
     modelId: "pt-base-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 81768602,
-    sha256Checksum: "",
+    sha256Checksum:
+      "45098a0c89d36e132d4697048b641000d87c9173d246f3db4baa4e8458c39252",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -3115,7 +3227,8 @@ export const models = [
     modelId: "pt-tiny-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 77691730,
-    sha256Checksum: "",
+    sha256Checksum:
+      "fbda22897694f9da015f5d9e0a1e4a4e00b4ac696d378c9346088e4db2e77232",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
@@ -3133,13 +3246,14 @@ export const models = [
     modelId: "pt-tiny-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 43537450,
-    sha256Checksum: "",
+    sha256Checksum:
+      "d8da034f55bbc7adc33ab337779dce21b663b4c1b13e22bd43d430bbb9818b5e",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
   },
   {
-    name: "WHISPER_BASE_F16_6",
+    name: "WHISPER_BASE_F16_5",
     registryPath:
       "qvac_models_compiled/ggml/whisper-russian/ru-base-ggml-model-f16.bin",
     registrySource: "s3",
@@ -3151,13 +3265,14 @@ export const models = [
     modelId: "ru-base-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 199069379,
-    sha256Checksum: "",
+    sha256Checksum:
+      "676d12da762f52f8fe8201d494945a44f365d03b16f28152c8c13af208ff328a",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
   },
   {
-    name: "WHISPER_BASE_Q8_0_7",
+    name: "WHISPER_BASE_Q8_0_6",
     registryPath:
       "qvac_models_compiled/ggml/whisper-russian/ru-base-ggml-model-q8_0.bin",
     registrySource: "s3",
@@ -3169,7 +3284,8 @@ export const models = [
     modelId: "ru-base-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 107056259,
-    sha256Checksum: "",
+    sha256Checksum:
+      "8858e8bbc3503472da7111558dff6bb9fd8f10fcd26dc9a636ad1e9d67c35c2a",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -3187,7 +3303,8 @@ export const models = [
     modelId: "ru-tiny-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 116029945,
-    sha256Checksum: "",
+    sha256Checksum:
+      "458c6522c1b8466f7c77b76fd8a82c38b566df938aa1b1ceffc4fbfe11e11d6a",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
@@ -3205,7 +3322,8 @@ export const models = [
     modelId: "ru-tiny-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 62502985,
-    sha256Checksum: "",
+    sha256Checksum:
+      "0780df582b9d29443fe2640f7462e3bf86b342e978feb4dce4518c843c6a67de",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -3223,7 +3341,8 @@ export const models = [
     modelId: "es-tiny-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 77691713,
-    sha256Checksum: "",
+    sha256Checksum:
+      "263e134a1a40474850a3a7b07871e77f842fce327d2081d87637d43061cdea7f",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
@@ -3241,7 +3360,8 @@ export const models = [
     modelId: "es-tiny-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 43537433,
-    sha256Checksum: "",
+    sha256Checksum:
+      "066fed776a4209276ccf5a30e1d2f93531313a3917352dd52e2a804725bdcd59",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -3259,7 +3379,8 @@ export const models = [
     modelId: "tiny_acft_q8_0.bin",
     addon: "whisper",
     expectedSize: 43537450,
-    sha256Checksum: "",
+    sha256Checksum:
+      "07aa4d514144deacf5ffec5cacb36c93dee272fda9e64ac33a801f8cd5cbd953",
     engine: "whispercpp-transcription",
     quantization: "",
     params: "",
@@ -3277,7 +3398,8 @@ export const models = [
     modelId: "tiny_en_acft_q8_0.bin",
     addon: "whisper",
     expectedSize: 43550795,
-    sha256Checksum: "",
+    sha256Checksum:
+      "4b5480aa1b14a7efc5b578ef176510970a898049671c3cd237285b3e3f6bfbfc",
     engine: "whispercpp-transcription",
     quantization: "",
     params: "",
@@ -3628,8 +3750,8 @@ export const Q8_1_SHARD = {
   params: models[18].params,
 } as const;
 
-export const Q8_1 = {
-  name: "Q8_1",
+export const Q4_SHARD = {
+  name: "Q4_SHARD",
   src: `registry://${models[19].registrySource}/${models[19].registryPath}`,
   registryPath: models[19].registryPath,
   registrySource: models[19].registrySource,
@@ -3646,8 +3768,8 @@ export const Q8_1 = {
   params: models[19].params,
 } as const;
 
-export const Q4_SHARD = {
-  name: "Q4_SHARD",
+export const Q4 = {
+  name: "Q4",
   src: `registry://${models[20].registrySource}/${models[20].registryPath}`,
   registryPath: models[20].registryPath,
   registrySource: models[20].registrySource,
@@ -3664,8 +3786,8 @@ export const Q4_SHARD = {
   params: models[20].params,
 } as const;
 
-export const Q4 = {
-  name: "Q4",
+export const Q4_2 = {
+  name: "Q4_2",
   src: `registry://${models[21].registrySource}/${models[21].registryPath}`,
   registryPath: models[21].registryPath,
   registrySource: models[21].registrySource,
@@ -3682,8 +3804,8 @@ export const Q4 = {
   params: models[21].params,
 } as const;
 
-export const Q4_2 = {
-  name: "Q4_2",
+export const Q4_SHARD_1 = {
+  name: "Q4_SHARD_1",
   src: `registry://${models[22].registrySource}/${models[22].registryPath}`,
   registryPath: models[22].registryPath,
   registrySource: models[22].registrySource,
@@ -3700,8 +3822,8 @@ export const Q4_2 = {
   params: models[22].params,
 } as const;
 
-export const Q4_SHARD_1 = {
-  name: "Q4_SHARD_1",
+export const Q4_3 = {
+  name: "Q4_3",
   src: `registry://${models[23].registrySource}/${models[23].registryPath}`,
   registryPath: models[23].registryPath,
   registrySource: models[23].registrySource,
@@ -3718,8 +3840,8 @@ export const Q4_SHARD_1 = {
   params: models[23].params,
 } as const;
 
-export const Q4_3 = {
-  name: "Q4_3",
+export const LLAMA_3_2_1B_INST_Q4_0 = {
+  name: "LLAMA_3_2_1B_INST_Q4_0",
   src: `registry://${models[24].registrySource}/${models[24].registryPath}`,
   registryPath: models[24].registryPath,
   registrySource: models[24].registrySource,
@@ -3736,8 +3858,8 @@ export const Q4_3 = {
   params: models[24].params,
 } as const;
 
-export const LLAMA_3_2_1B_INST_Q4_0 = {
-  name: "LLAMA_3_2_1B_INST_Q4_0",
+export const MEDGEMMA_4B_IT_Q4_1 = {
+  name: "MEDGEMMA_4B_IT_Q4_1",
   src: `registry://${models[25].registrySource}/${models[25].registryPath}`,
   registryPath: models[25].registryPath,
   registrySource: models[25].registrySource,
@@ -3754,8 +3876,8 @@ export const LLAMA_3_2_1B_INST_Q4_0 = {
   params: models[25].params,
 } as const;
 
-export const MEDGEMMA_4B_IT_Q4_1 = {
-  name: "MEDGEMMA_4B_IT_Q4_1",
+export const MEDGEMMA_4B_IT_Q8_0 = {
+  name: "MEDGEMMA_4B_IT_Q8_0",
   src: `registry://${models[26].registrySource}/${models[26].registryPath}`,
   registryPath: models[26].registryPath,
   registrySource: models[26].registrySource,
@@ -3772,8 +3894,8 @@ export const MEDGEMMA_4B_IT_Q4_1 = {
   params: models[26].params,
 } as const;
 
-export const MEDGEMMA_4B_IT_Q8_0 = {
-  name: "MEDGEMMA_4B_IT_Q8_0",
+export const QWEN3_0_6B_Q4 = {
+  name: "QWEN3_0_6B_Q4",
   src: `registry://${models[27].registrySource}/${models[27].registryPath}`,
   registryPath: models[27].registryPath,
   registrySource: models[27].registrySource,
@@ -3790,8 +3912,8 @@ export const MEDGEMMA_4B_IT_Q8_0 = {
   params: models[27].params,
 } as const;
 
-export const QWEN3_0_6B_Q4 = {
-  name: "QWEN3_0_6B_Q4",
+export const QWEN3_1_7B_Q4 = {
+  name: "QWEN3_1_7B_Q4",
   src: `registry://${models[28].registrySource}/${models[28].registryPath}`,
   registryPath: models[28].registryPath,
   registrySource: models[28].registrySource,
@@ -3808,8 +3930,8 @@ export const QWEN3_0_6B_Q4 = {
   params: models[28].params,
 } as const;
 
-export const QWEN3_1_7B_Q4 = {
-  name: "QWEN3_1_7B_Q4",
+export const SALAMANDRA_SALAMANDRATA_2B_INST_Q4 = {
+  name: "SALAMANDRA_SALAMANDRATA_2B_INST_Q4",
   src: `registry://${models[29].registrySource}/${models[29].registryPath}`,
   registryPath: models[29].registryPath,
   registrySource: models[29].registrySource,
@@ -3826,8 +3948,8 @@ export const QWEN3_1_7B_Q4 = {
   params: models[29].params,
 } as const;
 
-export const SALAMANDRA_SALAMANDRATA_2B_INST_Q4 = {
-  name: "SALAMANDRA_SALAMANDRATA_2B_INST_Q4",
+export const SALAMANDRA_SALAMANDRATA_2B_INST_Q8 = {
+  name: "SALAMANDRA_SALAMANDRATA_2B_INST_Q8",
   src: `registry://${models[30].registrySource}/${models[30].registryPath}`,
   registryPath: models[30].registryPath,
   registrySource: models[30].registrySource,
@@ -3844,8 +3966,8 @@ export const SALAMANDRA_SALAMANDRATA_2B_INST_Q4 = {
   params: models[30].params,
 } as const;
 
-export const SALAMANDRA_SALAMANDRATA_2B_INST_Q8 = {
-  name: "SALAMANDRA_SALAMANDRATA_2B_INST_Q8",
+export const NMT_SMOLVLM2_500M_VIDEO_INST_F16 = {
+  name: "NMT_SMOLVLM2_500M_VIDEO_INST_F16",
   src: `registry://${models[31].registrySource}/${models[31].registryPath}`,
   registryPath: models[31].registryPath,
   registrySource: models[31].registrySource,
@@ -3862,8 +3984,8 @@ export const SALAMANDRA_SALAMANDRATA_2B_INST_Q8 = {
   params: models[31].params,
 } as const;
 
-export const NMT_SMOLVLM2_500M_VIDEO_INST_F16 = {
-  name: "NMT_SMOLVLM2_500M_VIDEO_INST_F16",
+export const NMT_SMOLVLM2_500M_VIDEO_INST_F16_1 = {
+  name: "NMT_SMOLVLM2_500M_VIDEO_INST_F16_1",
   src: `registry://${models[32].registrySource}/${models[32].registryPath}`,
   registryPath: models[32].registryPath,
   registrySource: models[32].registrySource,
@@ -3880,8 +4002,8 @@ export const NMT_SMOLVLM2_500M_VIDEO_INST_F16 = {
   params: models[32].params,
 } as const;
 
-export const NMT_SMOLVLM2_500M_VIDEO_INST_F16_1 = {
-  name: "NMT_SMOLVLM2_500M_VIDEO_INST_F16_1",
+export const INDICTRANS_EN_INDIC_1B_Q0F16 = {
+  name: "INDICTRANS_EN_INDIC_1B_Q0F16",
   src: `registry://${models[33].registrySource}/${models[33].registryPath}`,
   registryPath: models[33].registryPath,
   registrySource: models[33].registrySource,
@@ -3898,8 +4020,8 @@ export const NMT_SMOLVLM2_500M_VIDEO_INST_F16_1 = {
   params: models[33].params,
 } as const;
 
-export const INDICTRANS_EN_INDIC_1B_Q0F16 = {
-  name: "INDICTRANS_EN_INDIC_1B_Q0F16",
+export const INDICTRANS_EN_INDIC_200M_Q0F16 = {
+  name: "INDICTRANS_EN_INDIC_200M_Q0F16",
   src: `registry://${models[34].registrySource}/${models[34].registryPath}`,
   registryPath: models[34].registryPath,
   registrySource: models[34].registrySource,
@@ -3916,8 +4038,8 @@ export const INDICTRANS_EN_INDIC_1B_Q0F16 = {
   params: models[34].params,
 } as const;
 
-export const INDICTRANS_EN_INDIC_200M_Q0F16 = {
-  name: "INDICTRANS_EN_INDIC_200M_Q0F16",
+export const INDICTRANS_INDIC_EN_1B_Q0F16 = {
+  name: "INDICTRANS_INDIC_EN_1B_Q0F16",
   src: `registry://${models[35].registrySource}/${models[35].registryPath}`,
   registryPath: models[35].registryPath,
   registrySource: models[35].registrySource,
@@ -3934,8 +4056,8 @@ export const INDICTRANS_EN_INDIC_200M_Q0F16 = {
   params: models[35].params,
 } as const;
 
-export const INDICTRANS_INDIC_EN_1B_Q0F16 = {
-  name: "INDICTRANS_INDIC_EN_1B_Q0F16",
+export const INDICTRANS_INDIC_EN_200M_Q0F16 = {
+  name: "INDICTRANS_INDIC_EN_200M_Q0F16",
   src: `registry://${models[36].registrySource}/${models[36].registryPath}`,
   registryPath: models[36].registryPath,
   registrySource: models[36].registrySource,
@@ -3952,8 +4074,8 @@ export const INDICTRANS_INDIC_EN_1B_Q0F16 = {
   params: models[36].params,
 } as const;
 
-export const INDICTRANS_INDIC_EN_200M_Q0F16 = {
-  name: "INDICTRANS_INDIC_EN_200M_Q0F16",
+export const INDICTRANS_1B_Q0F16 = {
+  name: "INDICTRANS_1B_Q0F16",
   src: `registry://${models[37].registrySource}/${models[37].registryPath}`,
   registryPath: models[37].registryPath,
   registrySource: models[37].registrySource,
@@ -3970,8 +4092,8 @@ export const INDICTRANS_INDIC_EN_200M_Q0F16 = {
   params: models[37].params,
 } as const;
 
-export const INDICTRANS_1B_Q0F16 = {
-  name: "INDICTRANS_1B_Q0F16",
+export const INDICTRANS_320M_Q0F16 = {
+  name: "INDICTRANS_320M_Q0F16",
   src: `registry://${models[38].registrySource}/${models[38].registryPath}`,
   registryPath: models[38].registryPath,
   registrySource: models[38].registrySource,
@@ -3988,8 +4110,8 @@ export const INDICTRANS_1B_Q0F16 = {
   params: models[38].params,
 } as const;
 
-export const INDICTRANS_320M_Q0F16 = {
-  name: "INDICTRANS_320M_Q0F16",
+export const INDICTRANS_EN_INDIC_1B_Q4_0 = {
+  name: "INDICTRANS_EN_INDIC_1B_Q4_0",
   src: `registry://${models[39].registrySource}/${models[39].registryPath}`,
   registryPath: models[39].registryPath,
   registrySource: models[39].registrySource,
@@ -4006,8 +4128,8 @@ export const INDICTRANS_320M_Q0F16 = {
   params: models[39].params,
 } as const;
 
-export const INDICTRANS_EN_INDIC_1B_Q4_0 = {
-  name: "INDICTRANS_EN_INDIC_1B_Q4_0",
+export const INDICTRANS_EN_INDIC_200M_Q4_0 = {
+  name: "INDICTRANS_EN_INDIC_200M_Q4_0",
   src: `registry://${models[40].registrySource}/${models[40].registryPath}`,
   registryPath: models[40].registryPath,
   registrySource: models[40].registrySource,
@@ -4024,8 +4146,8 @@ export const INDICTRANS_EN_INDIC_1B_Q4_0 = {
   params: models[40].params,
 } as const;
 
-export const INDICTRANS_EN_INDIC_200M_Q4_0 = {
-  name: "INDICTRANS_EN_INDIC_200M_Q4_0",
+export const INDICTRANS_INDIC_EN_1B_Q4_0 = {
+  name: "INDICTRANS_INDIC_EN_1B_Q4_0",
   src: `registry://${models[41].registrySource}/${models[41].registryPath}`,
   registryPath: models[41].registryPath,
   registrySource: models[41].registrySource,
@@ -4042,8 +4164,8 @@ export const INDICTRANS_EN_INDIC_200M_Q4_0 = {
   params: models[41].params,
 } as const;
 
-export const INDICTRANS_INDIC_EN_1B_Q4_0 = {
-  name: "INDICTRANS_INDIC_EN_1B_Q4_0",
+export const INDICTRANS_INDIC_EN_200M_Q4_0 = {
+  name: "INDICTRANS_INDIC_EN_200M_Q4_0",
   src: `registry://${models[42].registrySource}/${models[42].registryPath}`,
   registryPath: models[42].registryPath,
   registrySource: models[42].registrySource,
@@ -4060,8 +4182,8 @@ export const INDICTRANS_INDIC_EN_1B_Q4_0 = {
   params: models[42].params,
 } as const;
 
-export const INDICTRANS_INDIC_EN_200M_Q4_0 = {
-  name: "INDICTRANS_INDIC_EN_200M_Q4_0",
+export const INDICTRANS_1B_Q4_0 = {
+  name: "INDICTRANS_1B_Q4_0",
   src: `registry://${models[43].registrySource}/${models[43].registryPath}`,
   registryPath: models[43].registryPath,
   registrySource: models[43].registrySource,
@@ -4078,8 +4200,8 @@ export const INDICTRANS_INDIC_EN_200M_Q4_0 = {
   params: models[43].params,
 } as const;
 
-export const INDICTRANS_1B_Q4_0 = {
-  name: "INDICTRANS_1B_Q4_0",
+export const INDICTRANS_320M_Q4_0 = {
+  name: "INDICTRANS_320M_Q4_0",
   src: `registry://${models[44].registrySource}/${models[44].registryPath}`,
   registryPath: models[44].registryPath,
   registrySource: models[44].registrySource,
@@ -4096,8 +4218,8 @@ export const INDICTRANS_1B_Q4_0 = {
   params: models[44].params,
 } as const;
 
-export const INDICTRANS_320M_Q4_0 = {
-  name: "INDICTRANS_320M_Q4_0",
+export const OPUS_DE_FR_Q0F16 = {
+  name: "OPUS_DE_FR_Q0F16",
   src: `registry://${models[45].registrySource}/${models[45].registryPath}`,
   registryPath: models[45].registryPath,
   registrySource: models[45].registrySource,
@@ -4114,8 +4236,8 @@ export const INDICTRANS_320M_Q4_0 = {
   params: models[45].params,
 } as const;
 
-export const OPUS_DE_FR_Q0F16 = {
-  name: "OPUS_DE_FR_Q0F16",
+export const OPUS_EN_FR_Q0F16 = {
+  name: "OPUS_EN_FR_Q0F16",
   src: `registry://${models[46].registrySource}/${models[46].registryPath}`,
   registryPath: models[46].registryPath,
   registrySource: models[46].registrySource,
@@ -4132,8 +4254,8 @@ export const OPUS_DE_FR_Q0F16 = {
   params: models[46].params,
 } as const;
 
-export const OPUS_EN_FR_Q0F16 = {
-  name: "OPUS_EN_FR_Q0F16",
+export const OPUS_Q0F16 = {
+  name: "OPUS_Q0F16",
   src: `registry://${models[47].registrySource}/${models[47].registryPath}`,
   registryPath: models[47].registryPath,
   registrySource: models[47].registrySource,
@@ -4150,8 +4272,8 @@ export const OPUS_EN_FR_Q0F16 = {
   params: models[47].params,
 } as const;
 
-export const OPUS_Q0F16 = {
-  name: "OPUS_Q0F16",
+export const OPUS_EN_RU_Q0F16 = {
+  name: "OPUS_EN_RU_Q0F16",
   src: `registry://${models[48].registrySource}/${models[48].registryPath}`,
   registryPath: models[48].registryPath,
   registrySource: models[48].registrySource,
@@ -4168,8 +4290,8 @@ export const OPUS_Q0F16 = {
   params: models[48].params,
 } as const;
 
-export const OPUS_EN_RU_Q0F16 = {
-  name: "OPUS_EN_RU_Q0F16",
+export const OPUS_ES_FR_Q0F16 = {
+  name: "OPUS_ES_FR_Q0F16",
   src: `registry://${models[49].registrySource}/${models[49].registryPath}`,
   registryPath: models[49].registryPath,
   registrySource: models[49].registrySource,
@@ -4186,8 +4308,8 @@ export const OPUS_EN_RU_Q0F16 = {
   params: models[49].params,
 } as const;
 
-export const OPUS_ES_FR_Q0F16 = {
-  name: "OPUS_ES_FR_Q0F16",
+export const OPUS_FR_DE_Q0F16 = {
+  name: "OPUS_FR_DE_Q0F16",
   src: `registry://${models[50].registrySource}/${models[50].registryPath}`,
   registryPath: models[50].registryPath,
   registrySource: models[50].registrySource,
@@ -4204,8 +4326,8 @@ export const OPUS_ES_FR_Q0F16 = {
   params: models[50].params,
 } as const;
 
-export const OPUS_FR_DE_Q0F16 = {
-  name: "OPUS_FR_DE_Q0F16",
+export const OPUS_FR_EN_Q0F16 = {
+  name: "OPUS_FR_EN_Q0F16",
   src: `registry://${models[51].registrySource}/${models[51].registryPath}`,
   registryPath: models[51].registryPath,
   registrySource: models[51].registrySource,
@@ -4222,8 +4344,8 @@ export const OPUS_FR_DE_Q0F16 = {
   params: models[51].params,
 } as const;
 
-export const OPUS_FR_EN_Q0F16 = {
-  name: "OPUS_FR_EN_Q0F16",
+export const OPUS_FR_ES_Q0F16 = {
+  name: "OPUS_FR_ES_Q0F16",
   src: `registry://${models[52].registrySource}/${models[52].registryPath}`,
   registryPath: models[52].registryPath,
   registrySource: models[52].registrySource,
@@ -4240,8 +4362,8 @@ export const OPUS_FR_EN_Q0F16 = {
   params: models[52].params,
 } as const;
 
-export const OPUS_FR_ES_Q0F16 = {
-  name: "OPUS_FR_ES_Q0F16",
+export const OPUS_Q0F16_1 = {
+  name: "OPUS_Q0F16_1",
   src: `registry://${models[53].registrySource}/${models[53].registryPath}`,
   registryPath: models[53].registryPath,
   registrySource: models[53].registrySource,
@@ -4258,8 +4380,8 @@ export const OPUS_FR_ES_Q0F16 = {
   params: models[53].params,
 } as const;
 
-export const OPUS_Q0F16_1 = {
-  name: "OPUS_Q0F16_1",
+export const OPUS_RU_EN_Q0F16 = {
+  name: "OPUS_RU_EN_Q0F16",
   src: `registry://${models[54].registrySource}/${models[54].registryPath}`,
   registryPath: models[54].registryPath,
   registrySource: models[54].registrySource,
@@ -4276,8 +4398,8 @@ export const OPUS_Q0F16_1 = {
   params: models[54].params,
 } as const;
 
-export const OPUS_RU_EN_Q0F16 = {
-  name: "OPUS_RU_EN_Q0F16",
+export const OPUS_AR_EN_Q4_0 = {
+  name: "OPUS_AR_EN_Q4_0",
   src: `registry://${models[55].registrySource}/${models[55].registryPath}`,
   registryPath: models[55].registryPath,
   registrySource: models[55].registrySource,
@@ -4294,8 +4416,8 @@ export const OPUS_RU_EN_Q0F16 = {
   params: models[55].params,
 } as const;
 
-export const OPUS_AR_EN_Q4_0 = {
-  name: "OPUS_AR_EN_Q4_0",
+export const OPUS_DE_EN_Q4_0 = {
+  name: "OPUS_DE_EN_Q4_0",
   src: `registry://${models[56].registrySource}/${models[56].registryPath}`,
   registryPath: models[56].registryPath,
   registrySource: models[56].registrySource,
@@ -4312,8 +4434,8 @@ export const OPUS_AR_EN_Q4_0 = {
   params: models[56].params,
 } as const;
 
-export const OPUS_DE_EN_Q4_0 = {
-  name: "OPUS_DE_EN_Q4_0",
+export const OPUS_DE_FR_Q4_0 = {
+  name: "OPUS_DE_FR_Q4_0",
   src: `registry://${models[57].registrySource}/${models[57].registryPath}`,
   registryPath: models[57].registryPath,
   registrySource: models[57].registrySource,
@@ -4330,8 +4452,8 @@ export const OPUS_DE_EN_Q4_0 = {
   params: models[57].params,
 } as const;
 
-export const OPUS_DE_FR_Q4_0 = {
-  name: "OPUS_DE_FR_Q4_0",
+export const OPUS_EN_AR_Q4_0 = {
+  name: "OPUS_EN_AR_Q4_0",
   src: `registry://${models[58].registrySource}/${models[58].registryPath}`,
   registryPath: models[58].registryPath,
   registrySource: models[58].registrySource,
@@ -4348,8 +4470,8 @@ export const OPUS_DE_FR_Q4_0 = {
   params: models[58].params,
 } as const;
 
-export const OPUS_EN_AR_Q4_0 = {
-  name: "OPUS_EN_AR_Q4_0",
+export const OPUS_EN_DE_Q4_0 = {
+  name: "OPUS_EN_DE_Q4_0",
   src: `registry://${models[59].registrySource}/${models[59].registryPath}`,
   registryPath: models[59].registryPath,
   registrySource: models[59].registrySource,
@@ -4366,8 +4488,8 @@ export const OPUS_EN_AR_Q4_0 = {
   params: models[59].params,
 } as const;
 
-export const OPUS_EN_DE_Q4_0 = {
-  name: "OPUS_EN_DE_Q4_0",
+export const OPUS_EN_ES_Q4_0 = {
+  name: "OPUS_EN_ES_Q4_0",
   src: `registry://${models[60].registrySource}/${models[60].registryPath}`,
   registryPath: models[60].registryPath,
   registrySource: models[60].registrySource,
@@ -4384,8 +4506,8 @@ export const OPUS_EN_DE_Q4_0 = {
   params: models[60].params,
 } as const;
 
-export const OPUS_EN_ES_Q4_0 = {
-  name: "OPUS_EN_ES_Q4_0",
+export const OPUS_EN_FR_Q4_0 = {
+  name: "OPUS_EN_FR_Q4_0",
   src: `registry://${models[61].registrySource}/${models[61].registryPath}`,
   registryPath: models[61].registryPath,
   registrySource: models[61].registrySource,
@@ -4402,8 +4524,8 @@ export const OPUS_EN_ES_Q4_0 = {
   params: models[61].params,
 } as const;
 
-export const OPUS_EN_FR_Q4_0 = {
-  name: "OPUS_EN_FR_Q4_0",
+export const OPUS_EN_IT_Q4_0 = {
+  name: "OPUS_EN_IT_Q4_0",
   src: `registry://${models[62].registrySource}/${models[62].registryPath}`,
   registryPath: models[62].registryPath,
   registrySource: models[62].registrySource,
@@ -4420,8 +4542,8 @@ export const OPUS_EN_FR_Q4_0 = {
   params: models[62].params,
 } as const;
 
-export const OPUS_EN_IT_Q4_0 = {
-  name: "OPUS_EN_IT_Q4_0",
+export const OPUS_EN_PT_Q4_0 = {
+  name: "OPUS_EN_PT_Q4_0",
   src: `registry://${models[63].registrySource}/${models[63].registryPath}`,
   registryPath: models[63].registryPath,
   registrySource: models[63].registrySource,
@@ -4438,8 +4560,8 @@ export const OPUS_EN_IT_Q4_0 = {
   params: models[63].params,
 } as const;
 
-export const OPUS_EN_PT_Q4_0 = {
-  name: "OPUS_EN_PT_Q4_0",
+export const OPUS_Q4_0 = {
+  name: "OPUS_Q4_0",
   src: `registry://${models[64].registrySource}/${models[64].registryPath}`,
   registryPath: models[64].registryPath,
   registrySource: models[64].registrySource,
@@ -4456,8 +4578,8 @@ export const OPUS_EN_PT_Q4_0 = {
   params: models[64].params,
 } as const;
 
-export const OPUS_Q4_0 = {
-  name: "OPUS_Q4_0",
+export const OPUS_EN_RU_Q4_0 = {
+  name: "OPUS_EN_RU_Q4_0",
   src: `registry://${models[65].registrySource}/${models[65].registryPath}`,
   registryPath: models[65].registryPath,
   registrySource: models[65].registrySource,
@@ -4474,8 +4596,8 @@ export const OPUS_Q4_0 = {
   params: models[65].params,
 } as const;
 
-export const OPUS_EN_RU_Q4_0 = {
-  name: "OPUS_EN_RU_Q4_0",
+export const OPUS_EN_ZH_Q4_0 = {
+  name: "OPUS_EN_ZH_Q4_0",
   src: `registry://${models[66].registrySource}/${models[66].registryPath}`,
   registryPath: models[66].registryPath,
   registrySource: models[66].registrySource,
@@ -4492,8 +4614,8 @@ export const OPUS_EN_RU_Q4_0 = {
   params: models[66].params,
 } as const;
 
-export const OPUS_EN_ZH_Q4_0 = {
-  name: "OPUS_EN_ZH_Q4_0",
+export const OPUS_ES_EN_Q4_0 = {
+  name: "OPUS_ES_EN_Q4_0",
   src: `registry://${models[67].registrySource}/${models[67].registryPath}`,
   registryPath: models[67].registryPath,
   registrySource: models[67].registrySource,
@@ -4510,8 +4632,8 @@ export const OPUS_EN_ZH_Q4_0 = {
   params: models[67].params,
 } as const;
 
-export const OPUS_ES_EN_Q4_0 = {
-  name: "OPUS_ES_EN_Q4_0",
+export const OPUS_ES_FR_Q4_0 = {
+  name: "OPUS_ES_FR_Q4_0",
   src: `registry://${models[68].registrySource}/${models[68].registryPath}`,
   registryPath: models[68].registryPath,
   registrySource: models[68].registrySource,
@@ -4528,8 +4650,8 @@ export const OPUS_ES_EN_Q4_0 = {
   params: models[68].params,
 } as const;
 
-export const OPUS_ES_FR_Q4_0 = {
-  name: "OPUS_ES_FR_Q4_0",
+export const OPUS_FR_DE_Q4_0 = {
+  name: "OPUS_FR_DE_Q4_0",
   src: `registry://${models[69].registrySource}/${models[69].registryPath}`,
   registryPath: models[69].registryPath,
   registrySource: models[69].registrySource,
@@ -4546,8 +4668,8 @@ export const OPUS_ES_FR_Q4_0 = {
   params: models[69].params,
 } as const;
 
-export const OPUS_FR_DE_Q4_0 = {
-  name: "OPUS_FR_DE_Q4_0",
+export const OPUS_FR_EN_Q4_0 = {
+  name: "OPUS_FR_EN_Q4_0",
   src: `registry://${models[70].registrySource}/${models[70].registryPath}`,
   registryPath: models[70].registryPath,
   registrySource: models[70].registrySource,
@@ -4564,8 +4686,8 @@ export const OPUS_FR_DE_Q4_0 = {
   params: models[70].params,
 } as const;
 
-export const OPUS_FR_EN_Q4_0 = {
-  name: "OPUS_FR_EN_Q4_0",
+export const OPUS_FR_ES_Q4_0 = {
+  name: "OPUS_FR_ES_Q4_0",
   src: `registry://${models[71].registrySource}/${models[71].registryPath}`,
   registryPath: models[71].registryPath,
   registrySource: models[71].registrySource,
@@ -4582,8 +4704,8 @@ export const OPUS_FR_EN_Q4_0 = {
   params: models[71].params,
 } as const;
 
-export const OPUS_FR_ES_Q4_0 = {
-  name: "OPUS_FR_ES_Q4_0",
+export const OPUS_IT_EN_Q4_0 = {
+  name: "OPUS_IT_EN_Q4_0",
   src: `registry://${models[72].registrySource}/${models[72].registryPath}`,
   registryPath: models[72].registryPath,
   registrySource: models[72].registrySource,
@@ -4600,8 +4722,8 @@ export const OPUS_FR_ES_Q4_0 = {
   params: models[72].params,
 } as const;
 
-export const OPUS_IT_EN_Q4_0 = {
-  name: "OPUS_IT_EN_Q4_0",
+export const OPUS_JA_EN_Q4_0 = {
+  name: "OPUS_JA_EN_Q4_0",
   src: `registry://${models[73].registrySource}/${models[73].registryPath}`,
   registryPath: models[73].registryPath,
   registrySource: models[73].registrySource,
@@ -4618,8 +4740,8 @@ export const OPUS_IT_EN_Q4_0 = {
   params: models[73].params,
 } as const;
 
-export const OPUS_JA_EN_Q4_0 = {
-  name: "OPUS_JA_EN_Q4_0",
+export const OPUS_Q4_0_1 = {
+  name: "OPUS_Q4_0_1",
   src: `registry://${models[74].registrySource}/${models[74].registryPath}`,
   registryPath: models[74].registryPath,
   registrySource: models[74].registrySource,
@@ -4636,8 +4758,8 @@ export const OPUS_JA_EN_Q4_0 = {
   params: models[74].params,
 } as const;
 
-export const OPUS_Q4_0_1 = {
-  name: "OPUS_Q4_0_1",
+export const OPUS_RU_EN_Q4_0 = {
+  name: "OPUS_RU_EN_Q4_0",
   src: `registry://${models[75].registrySource}/${models[75].registryPath}`,
   registryPath: models[75].registryPath,
   registrySource: models[75].registrySource,
@@ -4654,8 +4776,8 @@ export const OPUS_Q4_0_1 = {
   params: models[75].params,
 } as const;
 
-export const OPUS_RU_EN_Q4_0 = {
-  name: "OPUS_RU_EN_Q4_0",
+export const OPUS_ZH_EN_Q4_0 = {
+  name: "OPUS_ZH_EN_Q4_0",
   src: `registry://${models[76].registrySource}/${models[76].registryPath}`,
   registryPath: models[76].registryPath,
   registrySource: models[76].registrySource,
@@ -4672,8 +4794,8 @@ export const OPUS_RU_EN_Q4_0 = {
   params: models[76].params,
 } as const;
 
-export const OPUS_ZH_EN_Q4_0 = {
-  name: "OPUS_ZH_EN_Q4_0",
+export const SALAMANDRA_Q4_SHARD = {
+  name: "SALAMANDRA_Q4_SHARD",
   src: `registry://${models[77].registrySource}/${models[77].registryPath}`,
   registryPath: models[77].registryPath,
   registrySource: models[77].registrySource,
@@ -4690,8 +4812,8 @@ export const OPUS_ZH_EN_Q4_0 = {
   params: models[77].params,
 } as const;
 
-export const SALAMANDRA_Q4_SHARD = {
-  name: "SALAMANDRA_Q4_SHARD",
+export const SALAMANDRA_Q4 = {
+  name: "SALAMANDRA_Q4",
   src: `registry://${models[78].registrySource}/${models[78].registryPath}`,
   registryPath: models[78].registryPath,
   registrySource: models[78].registrySource,
@@ -4708,8 +4830,8 @@ export const SALAMANDRA_Q4_SHARD = {
   params: models[78].params,
 } as const;
 
-export const SALAMANDRA_Q4 = {
-  name: "SALAMANDRA_Q4",
+export const SALAMANDRA_Q8_SHARD = {
+  name: "SALAMANDRA_Q8_SHARD",
   src: `registry://${models[79].registrySource}/${models[79].registryPath}`,
   registryPath: models[79].registryPath,
   registrySource: models[79].registrySource,
@@ -4726,8 +4848,8 @@ export const SALAMANDRA_Q4 = {
   params: models[79].params,
 } as const;
 
-export const SALAMANDRA_Q8_SHARD = {
-  name: "SALAMANDRA_Q8_SHARD",
+export const OCR_OCR_DETECTOR = {
+  name: "OCR_OCR_DETECTOR",
   src: `registry://${models[80].registrySource}/${models[80].registryPath}`,
   registryPath: models[80].registryPath,
   registrySource: models[80].registrySource,
@@ -4744,8 +4866,8 @@ export const SALAMANDRA_Q8_SHARD = {
   params: models[80].params,
 } as const;
 
-export const SALAMANDRA_Q8 = {
-  name: "SALAMANDRA_Q8",
+export const OCR_OCR_RECOGNIZER = {
+  name: "OCR_OCR_RECOGNIZER",
   src: `registry://${models[81].registrySource}/${models[81].registryPath}`,
   registryPath: models[81].registryPath,
   registrySource: models[81].registrySource,
@@ -4762,8 +4884,8 @@ export const SALAMANDRA_Q8 = {
   params: models[81].params,
 } as const;
 
-export const OCR_OCR_DETECTOR = {
-  name: "OCR_OCR_DETECTOR",
+export const TTS_PIPER_VOICES = {
+  name: "TTS_PIPER_VOICES",
   src: `registry://${models[82].registrySource}/${models[82].registryPath}`,
   registryPath: models[82].registryPath,
   registrySource: models[82].registrySource,
@@ -4780,8 +4902,8 @@ export const OCR_OCR_DETECTOR = {
   params: models[82].params,
 } as const;
 
-export const OCR_OCR_RECOGNIZER = {
-  name: "OCR_OCR_RECOGNIZER",
+export const TTS_PIPER_VOICES_1 = {
+  name: "TTS_PIPER_VOICES_1",
   src: `registry://${models[83].registrySource}/${models[83].registryPath}`,
   registryPath: models[83].registryPath,
   registrySource: models[83].registrySource,
@@ -4798,8 +4920,8 @@ export const OCR_OCR_RECOGNIZER = {
   params: models[83].params,
 } as const;
 
-export const TTS_PIPER_VOICES = {
-  name: "TTS_PIPER_VOICES",
+export const TTS_PIPER_VOICES_2 = {
+  name: "TTS_PIPER_VOICES_2",
   src: `registry://${models[84].registrySource}/${models[84].registryPath}`,
   registryPath: models[84].registryPath,
   registrySource: models[84].registrySource,
@@ -4816,8 +4938,8 @@ export const TTS_PIPER_VOICES = {
   params: models[84].params,
 } as const;
 
-export const TTS_PIPER_VOICES_1 = {
-  name: "TTS_PIPER_VOICES_1",
+export const TTS_PIPER_VOICES_3 = {
+  name: "TTS_PIPER_VOICES_3",
   src: `registry://${models[85].registrySource}/${models[85].registryPath}`,
   registryPath: models[85].registryPath,
   registrySource: models[85].registrySource,
@@ -4834,8 +4956,8 @@ export const TTS_PIPER_VOICES_1 = {
   params: models[85].params,
 } as const;
 
-export const TTS_PIPER_VOICES_2 = {
-  name: "TTS_PIPER_VOICES_2",
+export const TTS_PIPER_VOICES_4 = {
+  name: "TTS_PIPER_VOICES_4",
   src: `registry://${models[86].registrySource}/${models[86].registryPath}`,
   registryPath: models[86].registryPath,
   registrySource: models[86].registrySource,
@@ -4852,8 +4974,8 @@ export const TTS_PIPER_VOICES_2 = {
   params: models[86].params,
 } as const;
 
-export const TTS_PIPER_VOICES_3 = {
-  name: "TTS_PIPER_VOICES_3",
+export const TTS_PIPER_VOICES_5 = {
+  name: "TTS_PIPER_VOICES_5",
   src: `registry://${models[87].registrySource}/${models[87].registryPath}`,
   registryPath: models[87].registryPath,
   registrySource: models[87].registrySource,
@@ -4870,8 +4992,8 @@ export const TTS_PIPER_VOICES_3 = {
   params: models[87].params,
 } as const;
 
-export const TTS_PIPER_VOICES_4 = {
-  name: "TTS_PIPER_VOICES_4",
+export const TTS_PIPER_VOICES_6 = {
+  name: "TTS_PIPER_VOICES_6",
   src: `registry://${models[88].registrySource}/${models[88].registryPath}`,
   registryPath: models[88].registryPath,
   registrySource: models[88].registrySource,
@@ -4888,8 +5010,8 @@ export const TTS_PIPER_VOICES_4 = {
   params: models[88].params,
 } as const;
 
-export const TTS_PIPER_VOICES_5 = {
-  name: "TTS_PIPER_VOICES_5",
+export const TTS_PIPER_VOICES_7 = {
+  name: "TTS_PIPER_VOICES_7",
   src: `registry://${models[89].registrySource}/${models[89].registryPath}`,
   registryPath: models[89].registryPath,
   registrySource: models[89].registrySource,
@@ -4906,8 +5028,8 @@ export const TTS_PIPER_VOICES_5 = {
   params: models[89].params,
 } as const;
 
-export const TTS_PIPER_VOICES_6 = {
-  name: "TTS_PIPER_VOICES_6",
+export const TTS_PIPER_VOICES_8 = {
+  name: "TTS_PIPER_VOICES_8",
   src: `registry://${models[90].registrySource}/${models[90].registryPath}`,
   registryPath: models[90].registryPath,
   registrySource: models[90].registrySource,
@@ -4924,8 +5046,8 @@ export const TTS_PIPER_VOICES_6 = {
   params: models[90].params,
 } as const;
 
-export const TTS_PIPER_VOICES_7 = {
-  name: "TTS_PIPER_VOICES_7",
+export const TTS_PIPER_VOICES_9 = {
+  name: "TTS_PIPER_VOICES_9",
   src: `registry://${models[91].registrySource}/${models[91].registryPath}`,
   registryPath: models[91].registryPath,
   registrySource: models[91].registrySource,
@@ -4942,8 +5064,8 @@ export const TTS_PIPER_VOICES_7 = {
   params: models[91].params,
 } as const;
 
-export const TTS_PIPER_VOICES_8 = {
-  name: "TTS_PIPER_VOICES_8",
+export const TTS_PIPER_VOICES_10 = {
+  name: "TTS_PIPER_VOICES_10",
   src: `registry://${models[92].registrySource}/${models[92].registryPath}`,
   registryPath: models[92].registryPath,
   registrySource: models[92].registrySource,
@@ -4960,8 +5082,8 @@ export const TTS_PIPER_VOICES_8 = {
   params: models[92].params,
 } as const;
 
-export const TTS_PIPER_VOICES_9 = {
-  name: "TTS_PIPER_VOICES_9",
+export const TTS_PIPER_VOICES_11 = {
+  name: "TTS_PIPER_VOICES_11",
   src: `registry://${models[93].registrySource}/${models[93].registryPath}`,
   registryPath: models[93].registryPath,
   registrySource: models[93].registrySource,
@@ -4978,8 +5100,8 @@ export const TTS_PIPER_VOICES_9 = {
   params: models[93].params,
 } as const;
 
-export const TTS_PIPER_VOICES_10 = {
-  name: "TTS_PIPER_VOICES_10",
+export const TTS_PIPER_VOICES_12 = {
+  name: "TTS_PIPER_VOICES_12",
   src: `registry://${models[94].registrySource}/${models[94].registryPath}`,
   registryPath: models[94].registryPath,
   registrySource: models[94].registrySource,
@@ -4996,8 +5118,8 @@ export const TTS_PIPER_VOICES_10 = {
   params: models[94].params,
 } as const;
 
-export const TTS_PIPER_VOICES_11 = {
-  name: "TTS_PIPER_VOICES_11",
+export const TTS_PIPER_VOICES_13 = {
+  name: "TTS_PIPER_VOICES_13",
   src: `registry://${models[95].registrySource}/${models[95].registryPath}`,
   registryPath: models[95].registryPath,
   registrySource: models[95].registrySource,
@@ -5014,8 +5136,8 @@ export const TTS_PIPER_VOICES_11 = {
   params: models[95].params,
 } as const;
 
-export const TTS_PIPER_VOICES_12 = {
-  name: "TTS_PIPER_VOICES_12",
+export const TTS_PIPER_VOICES_14 = {
+  name: "TTS_PIPER_VOICES_14",
   src: `registry://${models[96].registrySource}/${models[96].registryPath}`,
   registryPath: models[96].registryPath,
   registrySource: models[96].registrySource,
@@ -5032,8 +5154,8 @@ export const TTS_PIPER_VOICES_12 = {
   params: models[96].params,
 } as const;
 
-export const TTS_PIPER_VOICES_13 = {
-  name: "TTS_PIPER_VOICES_13",
+export const TTS_PIPER_VOICES_15 = {
+  name: "TTS_PIPER_VOICES_15",
   src: `registry://${models[97].registrySource}/${models[97].registryPath}`,
   registryPath: models[97].registryPath,
   registrySource: models[97].registrySource,
@@ -5050,8 +5172,8 @@ export const TTS_PIPER_VOICES_13 = {
   params: models[97].params,
 } as const;
 
-export const TTS_PIPER_VOICES_14 = {
-  name: "TTS_PIPER_VOICES_14",
+export const TTS_PIPER_VOICES_16 = {
+  name: "TTS_PIPER_VOICES_16",
   src: `registry://${models[98].registrySource}/${models[98].registryPath}`,
   registryPath: models[98].registryPath,
   registrySource: models[98].registrySource,
@@ -5068,8 +5190,8 @@ export const TTS_PIPER_VOICES_14 = {
   params: models[98].params,
 } as const;
 
-export const TTS_PIPER_VOICES_15 = {
-  name: "TTS_PIPER_VOICES_15",
+export const TTS_PIPER_VOICES_17 = {
+  name: "TTS_PIPER_VOICES_17",
   src: `registry://${models[99].registrySource}/${models[99].registryPath}`,
   registryPath: models[99].registryPath,
   registrySource: models[99].registrySource,
@@ -5086,8 +5208,8 @@ export const TTS_PIPER_VOICES_15 = {
   params: models[99].params,
 } as const;
 
-export const TTS_PIPER_VOICES_16 = {
-  name: "TTS_PIPER_VOICES_16",
+export const TTS_PIPER_VOICES_18 = {
+  name: "TTS_PIPER_VOICES_18",
   src: `registry://${models[100].registrySource}/${models[100].registryPath}`,
   registryPath: models[100].registryPath,
   registrySource: models[100].registrySource,
@@ -5104,8 +5226,8 @@ export const TTS_PIPER_VOICES_16 = {
   params: models[100].params,
 } as const;
 
-export const TTS_PIPER_VOICES_17 = {
-  name: "TTS_PIPER_VOICES_17",
+export const TTS_PIPER_VOICES_19 = {
+  name: "TTS_PIPER_VOICES_19",
   src: `registry://${models[101].registrySource}/${models[101].registryPath}`,
   registryPath: models[101].registryPath,
   registrySource: models[101].registrySource,
@@ -5122,8 +5244,8 @@ export const TTS_PIPER_VOICES_17 = {
   params: models[101].params,
 } as const;
 
-export const TTS_PIPER_VOICES_18 = {
-  name: "TTS_PIPER_VOICES_18",
+export const TTS_PIPER_VOICES_20 = {
+  name: "TTS_PIPER_VOICES_20",
   src: `registry://${models[102].registrySource}/${models[102].registryPath}`,
   registryPath: models[102].registryPath,
   registrySource: models[102].registrySource,
@@ -5140,8 +5262,8 @@ export const TTS_PIPER_VOICES_18 = {
   params: models[102].params,
 } as const;
 
-export const TTS_PIPER_VOICES_19 = {
-  name: "TTS_PIPER_VOICES_19",
+export const TTS_PIPER_VOICES_21 = {
+  name: "TTS_PIPER_VOICES_21",
   src: `registry://${models[103].registrySource}/${models[103].registryPath}`,
   registryPath: models[103].registryPath,
   registrySource: models[103].registrySource,
@@ -5158,8 +5280,8 @@ export const TTS_PIPER_VOICES_19 = {
   params: models[103].params,
 } as const;
 
-export const TTS_PIPER_VOICES_20 = {
-  name: "TTS_PIPER_VOICES_20",
+export const TTS_PIPER_VOICES_22 = {
+  name: "TTS_PIPER_VOICES_22",
   src: `registry://${models[104].registrySource}/${models[104].registryPath}`,
   registryPath: models[104].registryPath,
   registrySource: models[104].registrySource,
@@ -5176,8 +5298,8 @@ export const TTS_PIPER_VOICES_20 = {
   params: models[104].params,
 } as const;
 
-export const TTS_PIPER_VOICES_21 = {
-  name: "TTS_PIPER_VOICES_21",
+export const TTS_PIPER_VOICES_23 = {
+  name: "TTS_PIPER_VOICES_23",
   src: `registry://${models[105].registrySource}/${models[105].registryPath}`,
   registryPath: models[105].registryPath,
   registrySource: models[105].registrySource,
@@ -5194,8 +5316,8 @@ export const TTS_PIPER_VOICES_21 = {
   params: models[105].params,
 } as const;
 
-export const TTS_PIPER_VOICES_22 = {
-  name: "TTS_PIPER_VOICES_22",
+export const WHISPER_BASE_Q8_0 = {
+  name: "WHISPER_BASE_Q8_0",
   src: `registry://${models[106].registrySource}/${models[106].registryPath}`,
   registryPath: models[106].registryPath,
   registrySource: models[106].registrySource,
@@ -5212,8 +5334,8 @@ export const TTS_PIPER_VOICES_22 = {
   params: models[106].params,
 } as const;
 
-export const TTS_PIPER_VOICES_23 = {
-  name: "TTS_PIPER_VOICES_23",
+export const WHISPER_BASE_Q0F16 = {
+  name: "WHISPER_BASE_Q0F16",
   src: `registry://${models[107].registrySource}/${models[107].registryPath}`,
   registryPath: models[107].registryPath,
   registrySource: models[107].registrySource,
@@ -5230,8 +5352,8 @@ export const TTS_PIPER_VOICES_23 = {
   params: models[107].params,
 } as const;
 
-export const WHISPER_BASE_Q8_0 = {
-  name: "WHISPER_BASE_Q8_0",
+export const WHISPER_BASE_EN_Q8_0 = {
+  name: "WHISPER_BASE_EN_Q8_0",
   src: `registry://${models[108].registrySource}/${models[108].registryPath}`,
   registryPath: models[108].registryPath,
   registrySource: models[108].registrySource,
@@ -5248,8 +5370,8 @@ export const WHISPER_BASE_Q8_0 = {
   params: models[108].params,
 } as const;
 
-export const WHISPER_BASE_Q0F16 = {
-  name: "WHISPER_BASE_Q0F16",
+export const WHISPER_BASE_EN_Q0F16 = {
+  name: "WHISPER_BASE_EN_Q0F16",
   src: `registry://${models[109].registrySource}/${models[109].registryPath}`,
   registryPath: models[109].registryPath,
   registrySource: models[109].registrySource,
@@ -5266,8 +5388,8 @@ export const WHISPER_BASE_Q0F16 = {
   params: models[109].params,
 } as const;
 
-export const WHISPER_BASE_EN_Q8_0 = {
-  name: "WHISPER_BASE_EN_Q8_0",
+export const WHISPER_LARGE_V3_TURBO = {
+  name: "WHISPER_LARGE_V3_TURBO",
   src: `registry://${models[110].registrySource}/${models[110].registryPath}`,
   registryPath: models[110].registryPath,
   registrySource: models[110].registrySource,
@@ -5284,8 +5406,8 @@ export const WHISPER_BASE_EN_Q8_0 = {
   params: models[110].params,
 } as const;
 
-export const WHISPER_BASE_EN_Q0F16 = {
-  name: "WHISPER_BASE_EN_Q0F16",
+export const WHISPER_SMALL_Q8_0 = {
+  name: "WHISPER_SMALL_Q8_0",
   src: `registry://${models[111].registrySource}/${models[111].registryPath}`,
   registryPath: models[111].registryPath,
   registrySource: models[111].registrySource,
@@ -5302,8 +5424,8 @@ export const WHISPER_BASE_EN_Q0F16 = {
   params: models[111].params,
 } as const;
 
-export const WHISPER_LARGE_V3_TURBO = {
-  name: "WHISPER_LARGE_V3_TURBO",
+export const WHISPER_SMALL_Q0F16 = {
+  name: "WHISPER_SMALL_Q0F16",
   src: `registry://${models[112].registrySource}/${models[112].registryPath}`,
   registryPath: models[112].registryPath,
   registrySource: models[112].registrySource,
@@ -5320,8 +5442,8 @@ export const WHISPER_LARGE_V3_TURBO = {
   params: models[112].params,
 } as const;
 
-export const WHISPER_SMALL_Q8_0 = {
-  name: "WHISPER_SMALL_Q8_0",
+export const WHISPER_SMALL_EN_Q8 = {
+  name: "WHISPER_SMALL_EN_Q8",
   src: `registry://${models[113].registrySource}/${models[113].registryPath}`,
   registryPath: models[113].registryPath,
   registrySource: models[113].registrySource,
@@ -5338,8 +5460,8 @@ export const WHISPER_SMALL_Q8_0 = {
   params: models[113].params,
 } as const;
 
-export const WHISPER_SMALL_Q0F16 = {
-  name: "WHISPER_SMALL_Q0F16",
+export const WHISPER_SMALL_EN_Q0F16 = {
+  name: "WHISPER_SMALL_EN_Q0F16",
   src: `registry://${models[114].registrySource}/${models[114].registryPath}`,
   registryPath: models[114].registryPath,
   registrySource: models[114].registrySource,
@@ -5356,8 +5478,8 @@ export const WHISPER_SMALL_Q0F16 = {
   params: models[114].params,
 } as const;
 
-export const WHISPER_SMALL_EN_Q8 = {
-  name: "WHISPER_SMALL_EN_Q8",
+export const WHISPER_TINY_Q8_0 = {
+  name: "WHISPER_TINY_Q8_0",
   src: `registry://${models[115].registrySource}/${models[115].registryPath}`,
   registryPath: models[115].registryPath,
   registrySource: models[115].registrySource,
@@ -5374,8 +5496,8 @@ export const WHISPER_SMALL_EN_Q8 = {
   params: models[115].params,
 } as const;
 
-export const WHISPER_SMALL_EN_Q0F16 = {
-  name: "WHISPER_SMALL_EN_Q0F16",
+export const WHISPER_TINY = {
+  name: "WHISPER_TINY",
   src: `registry://${models[116].registrySource}/${models[116].registryPath}`,
   registryPath: models[116].registryPath,
   registrySource: models[116].registrySource,
@@ -5392,8 +5514,8 @@ export const WHISPER_SMALL_EN_Q0F16 = {
   params: models[116].params,
 } as const;
 
-export const WHISPER_TINY_Q8_0 = {
-  name: "WHISPER_TINY_Q8_0",
+export const WHISPER_TINY_EN_Q8_0 = {
+  name: "WHISPER_TINY_EN_Q8_0",
   src: `registry://${models[117].registrySource}/${models[117].registryPath}`,
   registryPath: models[117].registryPath,
   registrySource: models[117].registrySource,
@@ -5410,8 +5532,8 @@ export const WHISPER_TINY_Q8_0 = {
   params: models[117].params,
 } as const;
 
-export const WHISPER_TINY = {
-  name: "WHISPER_TINY",
+export const WHISPER_TINY_EN_Q0F16 = {
+  name: "WHISPER_TINY_EN_Q0F16",
   src: `registry://${models[118].registrySource}/${models[118].registryPath}`,
   registryPath: models[118].registryPath,
   registrySource: models[118].registrySource,
@@ -5428,8 +5550,8 @@ export const WHISPER_TINY = {
   params: models[118].params,
 } as const;
 
-export const WHISPER_TINY_EN_Q8_0 = {
-  name: "WHISPER_TINY_EN_Q8_0",
+export const WHISPER = {
+  name: "WHISPER",
   src: `registry://${models[119].registrySource}/${models[119].registryPath}`,
   registryPath: models[119].registryPath,
   registrySource: models[119].registrySource,
@@ -5446,8 +5568,8 @@ export const WHISPER_TINY_EN_Q8_0 = {
   params: models[119].params,
 } as const;
 
-export const WHISPER_TINY_EN_Q0F16 = {
-  name: "WHISPER_TINY_EN_Q0F16",
+export const WHISPER_BASE_F16 = {
+  name: "WHISPER_BASE_F16",
   src: `registry://${models[120].registrySource}/${models[120].registryPath}`,
   registryPath: models[120].registryPath,
   registrySource: models[120].registrySource,
@@ -5464,8 +5586,8 @@ export const WHISPER_TINY_EN_Q0F16 = {
   params: models[120].params,
 } as const;
 
-export const WHISPER = {
-  name: "WHISPER",
+export const WHISPER_BASE_Q8_0_1 = {
+  name: "WHISPER_BASE_Q8_0_1",
   src: `registry://${models[121].registrySource}/${models[121].registryPath}`,
   registryPath: models[121].registryPath,
   registrySource: models[121].registrySource,
@@ -5482,8 +5604,8 @@ export const WHISPER = {
   params: models[121].params,
 } as const;
 
-export const WHISPER_BASE_F16 = {
-  name: "WHISPER_BASE_F16",
+export const WHISPER_TINY_F16 = {
+  name: "WHISPER_TINY_F16",
   src: `registry://${models[122].registrySource}/${models[122].registryPath}`,
   registryPath: models[122].registryPath,
   registrySource: models[122].registrySource,
@@ -5500,8 +5622,8 @@ export const WHISPER_BASE_F16 = {
   params: models[122].params,
 } as const;
 
-export const WHISPER_BASE_Q8_0_1 = {
-  name: "WHISPER_BASE_Q8_0_1",
+export const WHISPER_TINY_Q8_0_1 = {
+  name: "WHISPER_TINY_Q8_0_1",
   src: `registry://${models[123].registrySource}/${models[123].registryPath}`,
   registryPath: models[123].registryPath,
   registrySource: models[123].registrySource,
@@ -5554,8 +5676,8 @@ export const WHISPER_BASE_Q8_0_2 = {
   params: models[125].params,
 } as const;
 
-export const WHISPER_TINY_F16 = {
-  name: "WHISPER_TINY_F16",
+export const WHISPER_TINY_F16_1 = {
+  name: "WHISPER_TINY_F16_1",
   src: `registry://${models[126].registrySource}/${models[126].registryPath}`,
   registryPath: models[126].registryPath,
   registrySource: models[126].registrySource,
@@ -5572,8 +5694,8 @@ export const WHISPER_TINY_F16 = {
   params: models[126].params,
 } as const;
 
-export const WHISPER_TINY_Q8_0_1 = {
-  name: "WHISPER_TINY_Q8_0_1",
+export const WHISPER_TINY_Q8_0_2 = {
+  name: "WHISPER_TINY_Q8_0_2",
   src: `registry://${models[127].registrySource}/${models[127].registryPath}`,
   registryPath: models[127].registryPath,
   registrySource: models[127].registrySource,
@@ -5626,8 +5748,8 @@ export const WHISPER_BASE_Q8_0_3 = {
   params: models[129].params,
 } as const;
 
-export const WHISPER_TINY_F16_1 = {
-  name: "WHISPER_TINY_F16_1",
+export const WHISPER_TINY_F16_2 = {
+  name: "WHISPER_TINY_F16_2",
   src: `registry://${models[130].registrySource}/${models[130].registryPath}`,
   registryPath: models[130].registryPath,
   registrySource: models[130].registrySource,
@@ -5644,8 +5766,8 @@ export const WHISPER_TINY_F16_1 = {
   params: models[130].params,
 } as const;
 
-export const WHISPER_TINY_Q8_0_2 = {
-  name: "WHISPER_TINY_Q8_0_2",
+export const WHISPER_TINY_Q8_0_3 = {
+  name: "WHISPER_TINY_Q8_0_3",
   src: `registry://${models[131].registrySource}/${models[131].registryPath}`,
   registryPath: models[131].registryPath,
   registrySource: models[131].registrySource,
@@ -5698,8 +5820,8 @@ export const WHISPER_BASE_Q8_0_4 = {
   params: models[133].params,
 } as const;
 
-export const WHISPER_TINY_F16_2 = {
-  name: "WHISPER_TINY_F16_2",
+export const WHISPER_TINY_F16_3 = {
+  name: "WHISPER_TINY_F16_3",
   src: `registry://${models[134].registrySource}/${models[134].registryPath}`,
   registryPath: models[134].registryPath,
   registrySource: models[134].registrySource,
@@ -5716,8 +5838,8 @@ export const WHISPER_TINY_F16_2 = {
   params: models[134].params,
 } as const;
 
-export const WHISPER_TINY_Q8_0_3 = {
-  name: "WHISPER_TINY_Q8_0_3",
+export const WHISPER_TINY_Q8_0_4 = {
+  name: "WHISPER_TINY_Q8_0_4",
   src: `registry://${models[135].registrySource}/${models[135].registryPath}`,
   registryPath: models[135].registryPath,
   registrySource: models[135].registrySource,
@@ -5734,8 +5856,8 @@ export const WHISPER_TINY_Q8_0_3 = {
   params: models[135].params,
 } as const;
 
-export const WHISPER_BASE_F16_4 = {
-  name: "WHISPER_BASE_F16_4",
+export const WHISPER_TINY_1 = {
+  name: "WHISPER_TINY_1",
   src: `registry://${models[136].registrySource}/${models[136].registryPath}`,
   registryPath: models[136].registryPath,
   registrySource: models[136].registrySource,
@@ -5752,8 +5874,8 @@ export const WHISPER_BASE_F16_4 = {
   params: models[136].params,
 } as const;
 
-export const WHISPER_BASE_Q8_0_5 = {
-  name: "WHISPER_BASE_Q8_0_5",
+export const WHISPER_BASE_F16_4 = {
+  name: "WHISPER_BASE_F16_4",
   src: `registry://${models[137].registrySource}/${models[137].registryPath}`,
   registryPath: models[137].registryPath,
   registrySource: models[137].registrySource,
@@ -5770,8 +5892,8 @@ export const WHISPER_BASE_Q8_0_5 = {
   params: models[137].params,
 } as const;
 
-export const WHISPER_TINY_F16_3 = {
-  name: "WHISPER_TINY_F16_3",
+export const WHISPER_BASE_Q8_0_5 = {
+  name: "WHISPER_BASE_Q8_0_5",
   src: `registry://${models[138].registrySource}/${models[138].registryPath}`,
   registryPath: models[138].registryPath,
   registrySource: models[138].registrySource,
@@ -5788,8 +5910,8 @@ export const WHISPER_TINY_F16_3 = {
   params: models[138].params,
 } as const;
 
-export const WHISPER_TINY_Q8_0_4 = {
-  name: "WHISPER_TINY_Q8_0_4",
+export const WHISPER_TINY_F16_4 = {
+  name: "WHISPER_TINY_F16_4",
   src: `registry://${models[139].registrySource}/${models[139].registryPath}`,
   registryPath: models[139].registryPath,
   registrySource: models[139].registrySource,
@@ -5806,8 +5928,8 @@ export const WHISPER_TINY_Q8_0_4 = {
   params: models[139].params,
 } as const;
 
-export const WHISPER_TINY_1 = {
-  name: "WHISPER_TINY_1",
+export const WHISPER_TINY_Q8_0_5 = {
+  name: "WHISPER_TINY_Q8_0_5",
   src: `registry://${models[140].registrySource}/${models[140].registryPath}`,
   registryPath: models[140].registryPath,
   registrySource: models[140].registrySource,
@@ -5860,8 +5982,8 @@ export const WHISPER_BASE_Q8_0_6 = {
   params: models[142].params,
 } as const;
 
-export const WHISPER_TINY_F16_4 = {
-  name: "WHISPER_TINY_F16_4",
+export const WHISPER_TINY_F16_5 = {
+  name: "WHISPER_TINY_F16_5",
   src: `registry://${models[143].registrySource}/${models[143].registryPath}`,
   registryPath: models[143].registryPath,
   registrySource: models[143].registrySource,
@@ -5878,8 +6000,8 @@ export const WHISPER_TINY_F16_4 = {
   params: models[143].params,
 } as const;
 
-export const WHISPER_TINY_Q8_0_5 = {
-  name: "WHISPER_TINY_Q8_0_5",
+export const WHISPER_TINY_Q8_0_6 = {
+  name: "WHISPER_TINY_Q8_0_6",
   src: `registry://${models[144].registrySource}/${models[144].registryPath}`,
   registryPath: models[144].registryPath,
   registrySource: models[144].registrySource,
@@ -5896,8 +6018,8 @@ export const WHISPER_TINY_Q8_0_5 = {
   params: models[144].params,
 } as const;
 
-export const WHISPER_BASE_F16_6 = {
-  name: "WHISPER_BASE_F16_6",
+export const WHISPER_TINY_F16_6 = {
+  name: "WHISPER_TINY_F16_6",
   src: `registry://${models[145].registrySource}/${models[145].registryPath}`,
   registryPath: models[145].registryPath,
   registrySource: models[145].registrySource,
@@ -5914,8 +6036,8 @@ export const WHISPER_BASE_F16_6 = {
   params: models[145].params,
 } as const;
 
-export const WHISPER_BASE_Q8_0_7 = {
-  name: "WHISPER_BASE_Q8_0_7",
+export const WHISPER_TINY_Q8_0_7 = {
+  name: "WHISPER_TINY_Q8_0_7",
   src: `registry://${models[146].registrySource}/${models[146].registryPath}`,
   registryPath: models[146].registryPath,
   registrySource: models[146].registrySource,
@@ -5932,8 +6054,8 @@ export const WHISPER_BASE_Q8_0_7 = {
   params: models[146].params,
 } as const;
 
-export const WHISPER_TINY_F16_5 = {
-  name: "WHISPER_TINY_F16_5",
+export const WHISPER_1 = {
+  name: "WHISPER_1",
   src: `registry://${models[147].registrySource}/${models[147].registryPath}`,
   registryPath: models[147].registryPath,
   registrySource: models[147].registrySource,
@@ -5950,8 +6072,8 @@ export const WHISPER_TINY_F16_5 = {
   params: models[147].params,
 } as const;
 
-export const WHISPER_TINY_Q8_0_6 = {
-  name: "WHISPER_TINY_Q8_0_6",
+export const WHISPER_2 = {
+  name: "WHISPER_2",
   src: `registry://${models[148].registrySource}/${models[148].registryPath}`,
   registryPath: models[148].registryPath,
   registrySource: models[148].registrySource,
@@ -5966,78 +6088,6 @@ export const WHISPER_TINY_Q8_0_6 = {
   engine: models[148].engine,
   quantization: models[148].quantization,
   params: models[148].params,
-} as const;
-
-export const WHISPER_TINY_F16_6 = {
-  name: "WHISPER_TINY_F16_6",
-  src: `registry://${models[149].registrySource}/${models[149].registryPath}`,
-  registryPath: models[149].registryPath,
-  registrySource: models[149].registrySource,
-  blobCoreKey: models[149].blobCoreKey,
-  blobBlockOffset: models[149].blobBlockOffset,
-  blobBlockLength: models[149].blobBlockLength,
-  blobByteOffset: models[149].blobByteOffset,
-  modelId: models[149].modelId,
-  expectedSize: models[149].expectedSize,
-  sha256Checksum: models[149].sha256Checksum,
-  addon: models[149].addon,
-  engine: models[149].engine,
-  quantization: models[149].quantization,
-  params: models[149].params,
-} as const;
-
-export const WHISPER_TINY_Q8_0_7 = {
-  name: "WHISPER_TINY_Q8_0_7",
-  src: `registry://${models[150].registrySource}/${models[150].registryPath}`,
-  registryPath: models[150].registryPath,
-  registrySource: models[150].registrySource,
-  blobCoreKey: models[150].blobCoreKey,
-  blobBlockOffset: models[150].blobBlockOffset,
-  blobBlockLength: models[150].blobBlockLength,
-  blobByteOffset: models[150].blobByteOffset,
-  modelId: models[150].modelId,
-  expectedSize: models[150].expectedSize,
-  sha256Checksum: models[150].sha256Checksum,
-  addon: models[150].addon,
-  engine: models[150].engine,
-  quantization: models[150].quantization,
-  params: models[150].params,
-} as const;
-
-export const WHISPER_1 = {
-  name: "WHISPER_1",
-  src: `registry://${models[151].registrySource}/${models[151].registryPath}`,
-  registryPath: models[151].registryPath,
-  registrySource: models[151].registrySource,
-  blobCoreKey: models[151].blobCoreKey,
-  blobBlockOffset: models[151].blobBlockOffset,
-  blobBlockLength: models[151].blobBlockLength,
-  blobByteOffset: models[151].blobByteOffset,
-  modelId: models[151].modelId,
-  expectedSize: models[151].expectedSize,
-  sha256Checksum: models[151].sha256Checksum,
-  addon: models[151].addon,
-  engine: models[151].engine,
-  quantization: models[151].quantization,
-  params: models[151].params,
-} as const;
-
-export const WHISPER_2 = {
-  name: "WHISPER_2",
-  src: `registry://${models[152].registrySource}/${models[152].registryPath}`,
-  registryPath: models[152].registryPath,
-  registrySource: models[152].registrySource,
-  blobCoreKey: models[152].blobCoreKey,
-  blobBlockOffset: models[152].blobBlockOffset,
-  blobBlockLength: models[152].blobBlockLength,
-  blobByteOffset: models[152].blobByteOffset,
-  modelId: models[152].modelId,
-  expectedSize: models[152].expectedSize,
-  sha256Checksum: models[152].sha256Checksum,
-  addon: models[152].addon,
-  engine: models[152].engine,
-  quantization: models[152].quantization,
-  params: models[152].params,
 } as const;
 
 // Helper function to get model by name
