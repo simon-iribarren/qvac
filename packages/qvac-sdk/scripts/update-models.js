@@ -14,24 +14,54 @@ const HISTORY_DIR = fileURLToPath(
   new URL("../models/history", import.meta.url),
 );
 
-// Map registry engine names to addon types
+// Canonical engine names (engine-usecase format) → addon alias
+// These are the preferred values for the registry engine field.
+const CANONICAL_ENGINE_TO_ADDON = {
+  "llamacpp-completion": "llm",
+  "whispercpp-transcription": "whisper",
+  "llamacpp-embedding": "embeddings",
+  "nmtcpp-translation": "nmt",
+  "onnx-tts": "tts",
+  "onnx-ocr": "ocr",
+  "onnx-vad": "vad",
+};
+
+// Legacy engine names → canonical engine name (backward compat)
+const LEGACY_ENGINE_TO_CANONICAL = {
+  "@qvac/llm-llamacpp": "llamacpp-completion",
+  "@qvac/transcription-whispercpp": "whispercpp-transcription",
+  "@qvac/embed-llamacpp": "llamacpp-embedding",
+  "@qvac/translation-nmtcpp": "nmtcpp-translation",
+  "@qvac/translation-llamacpp": "nmtcpp-translation", // LLM-based translation (Salamandra)
+  "@qvac/vad-silero": "onnx-vad",
+  "@qvac/tts-onnx": "onnx-tts",
+  "@qvac/tts": "onnx-tts",
+  "@qvac/ocr-onnx": "onnx-ocr",
+  // Tag-style alternative names
+  generation: "llamacpp-completion",
+  transcription: "whispercpp-transcription",
+  embedding: "llamacpp-embedding",
+  translation: "nmtcpp-translation",
+  vad: "onnx-vad",
+  tts: "onnx-tts",
+  ocr: "onnx-ocr",
+};
+
+// Combined lookup: canonical + legacy → addon
 const ENGINE_TO_ADDON = {
-  "@qvac/llm-llamacpp": "llm",
-  "@qvac/transcription-whispercpp": "whisper",
-  "@qvac/embed-llamacpp": "embeddings",
-  "@qvac/translation-nmtcpp": "nmt",
-  "@qvac/translation-llamacpp": "nmt", // LLM-based translation
-  "@qvac/vad-silero": "vad",
-  "@qvac/tts-onnx": "tts",
-  "@qvac/ocr-onnx": "ocr",
-  // Alternative engine names
-  generation: "llm",
-  transcription: "whisper",
-  embedding: "embeddings",
-  translation: "nmt",
-  vad: "vad",
-  tts: "tts",
-  ocr: "ocr",
+  ...CANONICAL_ENGINE_TO_ADDON,
+  ...Object.fromEntries(
+    Object.entries(LEGACY_ENGINE_TO_CANONICAL).map(([legacy, canonical]) => [
+      legacy,
+      CANONICAL_ENGINE_TO_ADDON[canonical] || "other",
+    ]),
+  ),
+};
+
+const resolveCanonicalEngine = (engine) => {
+  if (!engine) return "";
+  if (CANONICAL_ENGINE_TO_ADDON[engine]) return engine;
+  return LEGACY_ENGINE_TO_CANONICAL[engine] || engine;
 };
 
 const detectShardedModel = (filename) => {
@@ -384,7 +414,7 @@ const processRegistryModel = (model) => {
   // Actual registry model structure:
   // - path: registry path (e.g., 'hf/repo/blob/hash/model.gguf')
   // - source: source identifier (e.g., 'hf')
-  // - engine: the engine type (e.g., '@qvac/llm-llamacpp')
+  // - engine: the engine type (e.g., 'llamacpp-completion' or legacy '@qvac/llm-llamacpp')
   // - quantization: quantization type (e.g., 'q4')
   // - params: model parameters (e.g., '2B')
   // - blobBinding: {
@@ -421,7 +451,7 @@ const processRegistryModel = (model) => {
     addon,
     expectedSize,
     sha256Checksum,
-    engine: model.engine || "",
+    engine: resolveCanonicalEngine(model.engine),
     modelName: extractModelName(model.path),
     quantization: model.quantization || "",
     params: model.params || "",

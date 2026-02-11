@@ -7,6 +7,10 @@ import type {
   QvacModelRegistryEntry,
 } from "@/schemas";
 import { REGISTRY_ERROR_CODES } from "@/schemas/sdk-errors-registry";
+import {
+  getAddonFromEngine,
+  resolveCanonicalEngine,
+} from "@/schemas/engine-addon-map";
 import { getRegistryClient } from "@/server/bare/registry/registry-client";
 import { getServerLogger } from "@/logging";
 import { QvacModelRegistryQueryFailedError } from "@/utils/errors-server";
@@ -16,49 +20,6 @@ interface QvacError extends Error {
 }
 
 const logger = getServerLogger();
-
-// Map registry engine names to addon types
-// NOTE: Keep in sync with plugins when merging
-const ENGINE_TO_ADDON: Record<string, QvacModelRegistryEntry["addon"]> = {
-  "@qvac/llm-llamacpp": "llm",
-  "@qvac/transcription-whispercpp": "whisper",
-  "@qvac/embed-llamacpp": "embeddings",
-  "@qvac/translation-nmtcpp": "nmt",
-  "@qvac/translation-llamacpp": "nmt",
-  "@qvac/vad-silero": "vad",
-  "@qvac/tts-onnx": "tts",
-  "@qvac/ocr-onnx": "ocr",
-  generation: "llm",
-  transcription: "whisper",
-  embedding: "embeddings",
-  translation: "nmt",
-  vad: "vad",
-  tts: "tts",
-  ocr: "ocr",
-};
-
-function getAddonFromEngine(
-  engine: string | undefined,
-): QvacModelRegistryEntry["addon"] {
-  if (!engine) return "other";
-
-  if (ENGINE_TO_ADDON[engine]) {
-    return ENGINE_TO_ADDON[engine];
-  }
-
-  const engineLower = engine.toLowerCase();
-  if (ENGINE_TO_ADDON[engineLower]) {
-    return ENGINE_TO_ADDON[engineLower];
-  }
-
-  for (const [key, value] of Object.entries(ENGINE_TO_ADDON)) {
-    if (engine.includes(key) || key.includes(engine)) {
-      return value;
-    }
-  }
-
-  return "other";
-}
 
 function toHexString(
   value: Buffer | string | { data: number[] } | undefined,
@@ -120,7 +81,7 @@ function processRegistryModel(model: RegistryModelRaw): QvacModelRegistryEntry {
     addon,
     expectedSize,
     sha256Checksum,
-    engine: model.engine || "",
+    engine: resolveCanonicalEngine(model.engine || ""),
     quantization: model.quantization || "",
     params: model.params || "",
   };

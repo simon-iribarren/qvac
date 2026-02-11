@@ -12,6 +12,19 @@ const qvacModelRegistryEntryAddonSchema = z.enum([
   "other",
 ]);
 
+// Canonical engine names follow `engine-usecase` format (see schemas/model-types.ts).
+// The SDK resolves legacy engine names (e.g. @qvac/* package names) to canonical form
+// via schemas/engine-addon-map.ts.
+export const qvacModelRegistryEngineSchema = z.enum([
+  "llamacpp-completion",
+  "whispercpp-transcription",
+  "llamacpp-embedding",
+  "nmtcpp-translation",
+  "onnx-tts",
+  "onnx-ocr",
+  "onnx-vad",
+]);
+
 export const qvacModelRegistryEntrySchema = z.object({
   name: z.string(),
   registryPath: z.string(),
@@ -24,7 +37,7 @@ export const qvacModelRegistryEntrySchema = z.object({
   addon: qvacModelRegistryEntryAddonSchema,
   expectedSize: z.number(),
   sha256Checksum: z.string(),
-  engine: z.string(),
+  engine: z.string(), // Canonical engine-usecase name (see qvacModelRegistryEngineSchema)
   quantization: z.string(),
   params: z.string(),
 });
@@ -34,6 +47,9 @@ export type QvacModelRegistryEntry = z.infer<
 >;
 export type QvacModelRegistryEntryAddon = z.infer<
   typeof qvacModelRegistryEntryAddonSchema
+>;
+export type QvacModelRegistryEngine = z.infer<
+  typeof qvacModelRegistryEngineSchema
 >;
 
 // QVAC Model Registry list request/response
