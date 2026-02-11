@@ -2,6 +2,12 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { execSync } from "child_process";
 import { QVACRegistryClient } from "@tetherto/qvac-lib-registry-client";
+import type { QVACModelEntry } from "@tetherto/qvac-lib-registry-client";
+import {
+  getAddonFromEngine,
+  resolveCanonicalEngine,
+} from "../schemas/engine-addon-map";
+import type { QvacModelRegistryEntryAddon } from "../schemas/registry";
 
 // Default QVAC Registry core key - this is the public registry that contains all QVAC models
 const DEFAULT_REGISTRY_CORE_KEY =
@@ -14,105 +20,96 @@ const HISTORY_DIR = fileURLToPath(
   new URL("../models/history", import.meta.url),
 );
 
-// Canonical engine names (engine-usecase format) → addon alias
-// These are the preferred values for the registry engine field.
-const CANONICAL_ENGINE_TO_ADDON = {
-  "llamacpp-completion": "llm",
-  "whispercpp-transcription": "whisper",
-  "llamacpp-embedding": "embeddings",
-  "nmtcpp-translation": "nmt",
-  "onnx-tts": "tts",
-  "onnx-ocr": "ocr",
-  "onnx-vad": "vad",
-};
+// --- Types ---
 
-// Legacy engine names → canonical engine name (backward compat)
-const LEGACY_ENGINE_TO_CANONICAL = {
-  "@qvac/llm-llamacpp": "llamacpp-completion",
-  "@qvac/transcription-whispercpp": "whispercpp-transcription",
-  "@qvac/embed-llamacpp": "llamacpp-embedding",
-  "@qvac/translation-nmtcpp": "nmtcpp-translation",
-  "@qvac/translation-llamacpp": "nmtcpp-translation", // LLM-based translation (Salamandra)
-  "@qvac/vad-silero": "onnx-vad",
-  "@qvac/tts-onnx": "onnx-tts",
-  "@qvac/tts": "onnx-tts",
-  "@qvac/ocr-onnx": "onnx-ocr",
-  // Tag-style alternative names
-  generation: "llamacpp-completion",
-  transcription: "whispercpp-transcription",
-  embedding: "llamacpp-embedding",
-  translation: "nmtcpp-translation",
-  vad: "onnx-vad",
-  tts: "onnx-tts",
-  ocr: "onnx-ocr",
-};
+interface ShardInfo {
+  isSharded: true;
+  baseFilename: string;
+  currentShard: number;
+  totalShards: number;
+  extension: string;
+}
 
-// Combined lookup: canonical + legacy → addon
-const ENGINE_TO_ADDON = {
-  ...CANONICAL_ENGINE_TO_ADDON,
-  ...Object.fromEntries(
-    Object.entries(LEGACY_ENGINE_TO_CANONICAL).map(([legacy, canonical]) => [
-      legacy,
-      CANONICAL_ENGINE_TO_ADDON[canonical] || "other",
-    ]),
-  ),
-};
+interface NotSharded {
+  isSharded: false;
+}
 
-const resolveCanonicalEngine = (engine) => {
-  if (!engine) return "";
-  if (CANONICAL_ENGINE_TO_ADDON[engine]) return engine;
-  return LEGACY_ENGINE_TO_CANONICAL[engine] || engine;
-};
+type ShardDetection = ShardInfo | NotSharded;
 
-const detectShardedModel = (filename) => {
+interface ShardMetadataEntry {
+  filename: string;
+  expectedSize: number;
+  sha256Checksum: string;
+  blobCoreKey: string;
+  blobBlockOffset: number;
+  blobBlockLength: number;
+  blobByteOffset: number;
+}
+
+interface ProcessedModel {
+  registryPath: string;
+  registrySource: string;
+  blobCoreKey: string;
+  blobBlockOffset: number;
+  blobBlockLength: number;
+  blobByteOffset: number;
+  modelId: string;
+  addon: QvacModelRegistryEntryAddon;
+  expectedSize: number;
+  sha256Checksum: string;
+  engine: string;
+  modelName: string;
+  quantization: string;
+  params: string;
+  isShardPart?: boolean;
+  shardInfo?: ShardInfo;
+  shardMetadata?: ShardMetadataEntry[];
+  name?: string;
+}
+
+interface CurrentModel {
+  name: string;
+  registryPath: string;
+}
+
+interface CollectOptions {
+  showDuplicates?: boolean;
+  noDedup?: boolean;
+}
+
+// --- Helpers ---
+
+function detectShardedModel(filename: string): ShardDetection {
   const shardPattern = /^(.+)-(\d{5})-of-(\d{5})(\.\w+)$/;
   const match = filename.match(shardPattern);
 
   if (match) {
     return {
       isSharded: true,
-      baseFilename: match[1],
-      currentShard: parseInt(match[2], 10),
-      totalShards: parseInt(match[3], 10),
-      extension: match[4],
+      baseFilename: match[1]!,
+      currentShard: parseInt(match[2]!, 10),
+      totalShards: parseInt(match[3]!, 10),
+      extension: match[4]!,
     };
   }
 
   return { isSharded: false };
-};
+}
 
-const getAddonFromEngine = (engine) => {
-  if (!engine) return null;
-
-  // Try direct match first
-  if (ENGINE_TO_ADDON[engine]) {
-    return ENGINE_TO_ADDON[engine];
-  }
-
-  // Try lowercase
-  const engineLower = engine.toLowerCase();
-  if (ENGINE_TO_ADDON[engineLower]) {
-    return ENGINE_TO_ADDON[engineLower];
-  }
-
-  // Try extracting from engine name (e.g., "@qvac/llm-llamacpp" -> "llm")
-  for (const [key, value] of Object.entries(ENGINE_TO_ADDON)) {
-    if (engine.includes(key) || key.includes(engine)) {
-      return value;
-    }
-  }
-
-  return null;
-};
-
-const generateExportName = ({
-  path,
+function generateExportName({
+  path: registryPath,
   engine,
   name,
   quantization,
   usedNames,
-}) => {
-  const cleanPart = (p) => {
+}: {
+  path: string;
+  engine: string;
+  name: string;
+  quantization: string;
+  usedNames: Set<string>;
+}): string {
+  function cleanPart(p: string): string {
     if (!p) return "";
     return p
       .replace(/ggml-?/gi, "")
@@ -121,111 +118,93 @@ const generateExportName = ({
       .replace(/^-+|-+$/g, "")
       .toUpperCase()
       .replace(/[^A-Z0-9]+/g, "_");
-  };
+  }
 
   const addon = getAddonFromEngine(engine);
   let exportName = "";
 
-  // Extract filename from path for additional context
-  const filename = path.split("/").pop() || path;
+  const filename = registryPath.split("/").pop() || registryPath;
 
   if (addon === "whisper") {
-    // WHISPER models: WHISPER_<size>_<quantization> or WHISPER_<size>_<lang>_<quantization>
-    // Extract size (tiny, base, small, medium, large) from filename
     const sizeMatch = filename.match(
       /\b(tiny|base|small|medium|large(?:-v[0-9]+)?(?:-turbo)?)\b/i,
     );
-    const modelSize = sizeMatch ? sizeMatch[1] : "";
+    const modelSize = sizeMatch ? sizeMatch[1]! : "";
 
-    // Check for language variant (e.g., "base.en" -> "en")
     const langMatch = filename.match(/\.(en)\b/i);
-    const lang = langMatch ? langMatch[1] : "";
+    const lang = langMatch ? langMatch[1]! : "";
 
     const nameParts = [modelSize, lang, quantization].filter(
       (p) => p && p !== "",
     );
     exportName = `WHISPER_${nameParts.map(cleanPart).join("_")}`;
   } else if (addon === "vad") {
-    // VAD models: VAD_<name>
     const nameParts = [name].filter((p) => p && p !== "");
     exportName = `VAD_${nameParts.map(cleanPart).join("_")}`;
   } else if (addon === "nmt") {
-    // Translation models - distinguish between different types
     const lowerFilename = filename.toLowerCase();
-    const lowerPath = path.toLowerCase();
+    const lowerPath = registryPath.toLowerCase();
 
-    // Check for Salamandra (LLM-based Spanish translation)
     if (
       lowerPath.includes("salamandra") ||
       lowerFilename.includes("salamandra")
     ) {
       const nameParts = [name, quantization].filter((p) => p && p !== "");
       exportName = `SALAMANDRA_${nameParts.map(cleanPart).join("_")}`;
-    }
-    // Check for IndicTrans2
-    else if (
+    } else if (
       lowerPath.includes("indictrans") ||
       lowerFilename.includes("indictrans")
     ) {
-      // Extract language direction from filename (e.g., "en-indic" or "indic-en")
       const langMatch = filename.match(/(en-indic|indic-en)/i);
       const langDir = langMatch
-        ? langMatch[1].toUpperCase().replace("-", "_")
+        ? langMatch[1]!.toUpperCase().replace("-", "_")
         : "";
       const sizeMatch = filename.match(/(\d+[MB])/i);
-      const size = sizeMatch ? sizeMatch[1] : "";
+      const size = sizeMatch ? sizeMatch[1]! : "";
       const nameParts = [langDir, size, quantization].filter(
         (p) => p && p !== "",
       );
       exportName = `INDICTRANS_${nameParts.map(cleanPart).join("_")}`;
-    }
-    // Check for OPUS models
-    else if (lowerPath.includes("opus") || lowerFilename.includes("opus")) {
-      // Extract language pair from filename (e.g., "en-de", "en-it")
+    } else if (
+      lowerPath.includes("opus") ||
+      lowerFilename.includes("opus")
+    ) {
       const langMatch = filename.match(/-([a-z]{2})-([a-z]{2})\./i);
       const langPair = langMatch
-        ? `${langMatch[1].toUpperCase()}_${langMatch[2].toUpperCase()}`
+        ? `${langMatch[1]!.toUpperCase()}_${langMatch[2]!.toUpperCase()}`
         : "";
       const nameParts = [langPair, quantization].filter((p) => p && p !== "");
       exportName = `OPUS_${nameParts.map(cleanPart).join("_")}`;
-    }
-    // Check for Bergamot models
-    else if (
+    } else if (
       lowerPath.includes("bergamot") ||
       lowerFilename.includes("bergamot")
     ) {
       const langMatch = filename.match(/\.([a-z]{2})-([a-z]{2})\./i);
       const langPair = langMatch
-        ? `${langMatch[1].toUpperCase()}_${langMatch[2].toUpperCase()}`
+        ? `${langMatch[1]!.toUpperCase()}_${langMatch[2]!.toUpperCase()}`
         : "";
       const nameParts = [langPair].filter((p) => p && p !== "");
       exportName = `BERGAMOT_${nameParts.map(cleanPart).join("_")}`;
-    }
-    // Generic NMT fallback
-    else {
+    } else {
       const nameParts = [name, quantization].filter((p) => p && p !== "");
       exportName = `NMT_${nameParts.map(cleanPart).join("_")}`;
     }
   } else if (addon === "llm") {
-    // LLM models: <name>_<quantization>
     const nameParts = [name, quantization].filter((p) => p && p !== "");
     exportName = nameParts.map(cleanPart).join("_");
     if (filename.includes("mmproj")) {
       exportName = "MMPROJ_" + exportName;
     }
   } else if (addon === "embeddings") {
-    // Embeddings: <name>_<quantization>
     const nameParts = [name, quantization].filter((p) => p && p !== "");
     exportName = nameParts.map(cleanPart).join("_");
   } else if (addon === "tts") {
-    // TTS models: TTS_<name>
     const nameParts = [name].filter((p) => p && p !== "");
     exportName = `TTS_${nameParts.map(cleanPart).join("_")}`;
     if (filename.includes("config.json")) {
       exportName = exportName + "_CONFIG";
     }
   } else if (addon === "ocr") {
-    // OCR models: OCR_<name>_<DETECTOR|RECOGNIZER>
     let fileType = "";
     if (filename.includes("detector")) {
       fileType = "DETECTOR";
@@ -235,19 +214,15 @@ const generateExportName = ({
     const nameParts = [name, fileType].filter((p) => p && p !== "");
     exportName = `OCR_${nameParts.map(cleanPart).join("_")}`;
   } else {
-    // Generic fallback using path
     exportName = cleanPart(filename.replace(/\.\w+$/, ""));
   }
 
-  // Clean up the name
   exportName = exportName.replace(/^_+|_+$/g, "").replace(/_+/g, "_");
 
-  // Add SHARD suffix for sharded models
   if (detectShardedModel(filename).isSharded) {
     exportName = `${exportName}_SHARD`;
   }
 
-  // Ensure uniqueness
   let finalName = exportName || "UNKNOWN_MODEL";
   let counter = 1;
   while (usedNames.has(finalName)) {
@@ -256,12 +231,13 @@ const generateExportName = ({
   usedNames.add(finalName);
 
   return finalName;
-};
+}
 
-const generateModelsFileContent = (models) => {
-  const usedNames = new Set();
+// --- Code generation ---
 
-  // Generate names first pass to add to model objects
+function generateModelsFileContent(models: ProcessedModel[]): string {
+  const usedNames = new Set<string>();
+
   const modelsWithNames = models.map((m) => ({
     ...m,
     name: generateExportName({
@@ -274,12 +250,13 @@ const generateModelsFileContent = (models) => {
   }));
 
   return generateFileContentWithNames(modelsWithNames);
-};
+}
 
-const generateFileContentWithNames = (modelsWithNames) => {
+function generateFileContentWithNames(
+  modelsWithNames: (ProcessedModel & { name: string })[],
+): string {
   const entries = modelsWithNames
     .map((m) => {
-      // addon is already in short form (llm, whisper, etc.) from ENGINE_TO_ADDON
       const addonAlias = m.addon;
       let entry = `  {
     name: "${m.name}",
@@ -328,7 +305,7 @@ const generateFileContentWithNames = (modelsWithNames) => {
     })
     .join("\n\n");
 
-  return `// THIS FILE IS AUTO-GENERATED BY scripts/update-models.js
+  return `// THIS FILE IS AUTO-GENERATED BY scripts/update-models.ts
 // DO NOT MODIFY MANUALLY
 
 export type RegistryItem = {
@@ -398,49 +375,36 @@ export function getModelBySrc(modelId: string, blobCoreKey: string): RegistryIte
   return models.find((model) => model.modelId === modelId && model.blobCoreKey === blobCoreKey);
 }
 `;
-};
+}
 
-// Helper to convert Buffer or hex string to hex string
-const toHexString = (value) => {
+// --- Registry processing ---
+
+function toHexString(
+  value: Buffer | string | { data: number[] } | undefined,
+): string {
   if (!value) return "";
   if (Buffer.isBuffer(value)) return value.toString("hex");
   if (typeof value === "string") return value;
-  if (value.data) return Buffer.from(value.data).toString("hex");
+  if (typeof value === "object" && "data" in value) {
+    return Buffer.from(value.data).toString("hex");
+  }
   return "";
-};
+}
 
-const processRegistryModel = (model) => {
-  // Extract model information from registry entry
-  // Actual registry model structure:
-  // - path: registry path (e.g., 'hf/repo/blob/hash/model.gguf')
-  // - source: source identifier (e.g., 'hf')
-  // - engine: the engine type (e.g., 'llamacpp-completion' or legacy '@qvac/llm-llamacpp')
-  // - quantization: quantization type (e.g., 'q4')
-  // - params: model parameters (e.g., '2B')
-  // - blobBinding: {
-  //     coreKey: Buffer,
-  //     blockOffset: number,
-  //     blockLength: number,
-  //     byteOffset: number,
-  //     byteLength: number (file size),
-  //     sha256: string (checksum)
-  //   }
-
+function processRegistryModel(model: QVACModelEntry): ProcessedModel {
   const filename = model.path.split("/").pop() || model.path;
-  const blobBinding = model.blobBinding || {};
+  const blobBinding = model.blobBinding;
 
-  // Extract blob info
-  const blobCoreKey = toHexString(blobBinding.coreKey);
-  const blobBlockOffset = blobBinding.blockOffset ?? 0;
-  const blobBlockLength = blobBinding.blockLength ?? 0;
-  const blobByteOffset = blobBinding.byteOffset ?? 0;
-  const expectedSize = blobBinding.byteLength ?? 0;
-  const sha256Checksum = blobBinding.sha256 || "";
+  const blobCoreKey = toHexString(blobBinding?.coreKey);
+  const blobBlockOffset = blobBinding?.blockOffset ?? 0;
+  const blobBlockLength = blobBinding?.blockLength ?? 0;
+  const blobByteOffset = blobBinding?.byteOffset ?? 0;
+  const expectedSize = blobBinding?.byteLength ?? 0;
+  const sha256Checksum = model.sha256 || "";
 
-  // Get addon from engine, default to "other" if unknown
-  const addon = getAddonFromEngine(model.engine) || "other";
+  const addon = getAddonFromEngine(model.engine);
 
-  const result = {
+  const result: ProcessedModel = {
     registryPath: model.path,
     registrySource: model.source,
     blobCoreKey,
@@ -457,57 +421,54 @@ const processRegistryModel = (model) => {
     params: model.params || "",
   };
 
-  // Handle sharded models
-  const shardInfo = detectShardedModel(filename);
-  if (shardInfo.isSharded) {
+  const shardDetection = detectShardedModel(filename);
+  if (shardDetection.isSharded) {
     result.isShardPart = true;
-    result.shardInfo = shardInfo;
+    result.shardInfo = shardDetection;
   }
 
   return result;
-};
+}
 
-// Extract a readable model name from the path
-const extractModelName = (path) => {
-  // Path format: 'source/repo/blob/hash/filename.gguf'
-  // Try to extract repo name as model name
-  const parts = path.split("/");
+function extractModelName(registryPath: string): string {
+  const parts = registryPath.split("/");
   if (parts.length >= 2) {
-    // Return the second part (repo name) or first meaningful part
-    return parts[1] || parts[0];
+    return parts[1] || parts[0] || "";
   }
   return (
-    path
+    registryPath
       .split("/")
       .pop()
       ?.replace(/\.\w+$/, "") || ""
   );
-};
+}
 
-const groupShardedModels = (models) => {
-  const shardGroups = new Map();
-  const nonShardedModels = [];
+// --- Shard grouping ---
+
+function groupShardedModels(models: ProcessedModel[]): ProcessedModel[] {
+  const shardGroups = new Map<string, ProcessedModel[]>();
+  const nonShardedModels: ProcessedModel[] = [];
 
   for (const model of models) {
-    if (model.isShardPart) {
+    if (model.isShardPart && model.shardInfo) {
       const baseKey = `${model.registrySource}:${model.shardInfo.baseFilename}`;
       if (!shardGroups.has(baseKey)) {
         shardGroups.set(baseKey, []);
       }
-      shardGroups.get(baseKey).push(model);
+      shardGroups.get(baseKey)!.push(model);
     } else {
       nonShardedModels.push(model);
     }
   }
 
-  // Process shard groups
-  const processedShards = [];
+  const processedShards: ProcessedModel[] = [];
   for (const [baseKey, shards] of shardGroups) {
-    // Sort shards by number
-    shards.sort((a, b) => a.shardInfo.currentShard - b.shardInfo.currentShard);
+    shards.sort(
+      (a, b) => (a.shardInfo?.currentShard ?? 0) - (b.shardInfo?.currentShard ?? 0),
+    );
 
-    const firstShard = shards[0];
-    const totalExpectedShards = firstShard.shardInfo.totalShards;
+    const firstShard = shards[0]!;
+    const totalExpectedShards = firstShard.shardInfo?.totalShards ?? 0;
 
     if (shards.length !== totalExpectedShards) {
       console.warn(
@@ -515,11 +476,9 @@ const groupShardedModels = (models) => {
       );
     }
 
-    // Calculate total size
     const totalSize = shards.reduce((sum, s) => sum + s.expectedSize, 0);
 
-    // Build shard metadata
-    const shardMetadata = shards.map((s) => ({
+    const shardMetadata: ShardMetadataEntry[] = shards.map((s) => ({
       filename: s.modelId,
       expectedSize: s.expectedSize,
       sha256Checksum: s.sha256Checksum,
@@ -529,61 +488,58 @@ const groupShardedModels = (models) => {
       blobByteOffset: s.blobByteOffset,
     }));
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { isShardPart: _shard, shardInfo: _info, ...rest } = firstShard;
     processedShards.push({
-      ...firstShard,
+      ...rest,
       expectedSize: totalSize,
       shardMetadata,
-      isShardPart: undefined,
-      shardInfo: undefined,
     });
   }
 
   return [...nonShardedModels, ...processedShards];
-};
+}
 
-const collectModels = async (options = {}) => {
+// --- Collection & dedup ---
+
+async function collectModels(
+  options: CollectOptions = {},
+): Promise<ProcessedModel[]> {
   const { showDuplicates = false, noDedup = false } = options;
-  const models = [];
+  const models: ProcessedModel[] = [];
 
-  const client = new QVACRegistryClient({
-    registryCoreKey:
-      process.env.QVAC_REGISTRY_CORE_KEY || DEFAULT_REGISTRY_CORE_KEY,
-  });
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const registryCoreKey: string =
+    process.env["QVAC_REGISTRY_CORE_KEY"] ?? DEFAULT_REGISTRY_CORE_KEY;
+  const client = new QVACRegistryClient({ registryCoreKey });
 
   try {
-    // Wait for client to be ready
     await client.ready();
 
-    // Fetch all models from registry
     const registryModels = await client.findModels({});
 
     console.log(`📦 Found ${registryModels.length} entries in registry`);
 
     for (const registryModel of registryModels) {
       const processed = processRegistryModel(registryModel);
-      if (!processed) continue;
       models.push(processed);
     }
   } finally {
     await client.close();
   }
 
-  // Group sharded models
   const groupedModels = groupShardedModels(models);
 
-  // Skip deduplication if --no-dedup flag is set
   if (noDedup) {
     console.log(`\n⏭️  Skipping deduplication (--no-dedup flag set)`);
     return groupedModels;
   }
 
-  // Deduplicate models by checksum (only if checksum is non-empty)
-  const seenChecksums = new Map();
-  const dedupedModels = [];
-  const skipped = [];
+  const seenChecksums = new Map<string, string>();
+  const dedupedModels: ProcessedModel[] = [];
+  const skipped: { name: string; checksum: string; reason: string }[] = [];
 
   for (const model of groupedModels) {
-    // Skip deduplication for models without a valid checksum
     if (!model.sha256Checksum || model.sha256Checksum === "") {
       dedupedModels.push(model);
       continue;
@@ -616,9 +572,11 @@ const collectModels = async (options = {}) => {
   }
 
   return dedupedModels;
-};
+}
 
-const loadCurrentModels = () => {
+// --- Current model loading ---
+
+function loadCurrentModels(): CurrentModel[] {
   try {
     if (!fs.existsSync(OUTPUT_FILE)) {
       return [];
@@ -629,42 +587,45 @@ const loadCurrentModels = () => {
       /export const models = \[([\s\S]*?)\] as const/,
     );
 
-    if (!modelsMatch) {
+    if (!modelsMatch?.[1]) {
       return [];
     }
 
-    // Extract model entries
     const modelsArrayContent = modelsMatch[1];
-    const models = [];
+    const currentModels: CurrentModel[] = [];
 
-    // Match each model object - look for registryPath (new format) or hyperbeeKey (old format)
     const modelRegex =
       /\{[^}]+name:\s*"([^"]+)"[^}]+(?:registryPath|hyperbeeKey):\s*"([^"]+)"[^}]+\}/g;
     let match;
 
     while ((match = modelRegex.exec(modelsArrayContent)) !== null) {
-      models.push({
-        name: match[1],
-        registryPath: match[2],
-      });
+      if (match[1] && match[2]) {
+        currentModels.push({
+          name: match[1],
+          registryPath: match[2],
+        });
+      }
     }
 
-    return models;
+    return currentModels;
   } catch (error) {
-    console.warn("⚠️  Could not load current models:", error.message);
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.warn("⚠️  Could not load current models:", message);
     return [];
   }
-};
+}
 
-const formatSize = (bytes) => {
+// --- Utilities ---
+
+function formatSize(bytes: number): string {
   if (bytes < 1024) return `${bytes}B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`;
   if (bytes < 1024 * 1024 * 1024)
     return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)}GB`;
-};
+}
 
-const getCommitHash = (short = false) => {
+function getCommitHash(short = false): string {
   try {
     const cmd = short ? "git rev-parse --short HEAD" : "git rev-parse HEAD";
     return execSync(cmd, { encoding: "utf-8" }).trim();
@@ -673,9 +634,15 @@ const getCommitHash = (short = false) => {
       cause: error,
     });
   }
-};
+}
 
-const createHistoryFile = (added, removed, currentModels) => {
+// --- History ---
+
+function createHistoryFile(
+  added: (ProcessedModel & { name: string })[],
+  removed: CurrentModel[],
+  currentModels: CurrentModel[],
+): string | null {
   if (added.length === 0 && removed.length === 0) {
     return null;
   }
@@ -713,23 +680,35 @@ const createHistoryFile = (added, removed, currentModels) => {
 
   fs.writeFileSync(filepath, content);
   return filepath;
-};
+}
 
-const compareModels = (remoteModels, currentModels) => {
+// --- Comparison ---
+
+function compareModels(
+  remoteModels: ProcessedModel[],
+  currentModels: CurrentModel[],
+): { added: ProcessedModel[]; removed: CurrentModel[] } {
   const currentPaths = new Set(currentModels.map((m) => m.registryPath));
   const remotePaths = new Set(remoteModels.map((m) => m.registryPath));
 
   const added = remoteModels.filter((m) => !currentPaths.has(m.registryPath));
-  const removed = currentModels.filter((m) => !remotePaths.has(m.registryPath));
+  const removed = currentModels.filter(
+    (m) => !remotePaths.has(m.registryPath),
+  );
 
   return { added, removed };
-};
+}
 
-const checkOnly = async (nonBlocking = false, showDuplicates = false) => {
+// --- Commands ---
+
+async function checkOnly(
+  nonBlocking = false,
+  showDuplicates = false,
+): Promise<void> {
   const timeoutMs = 30000;
   let timedOut = false;
 
-  const timeoutPromise = new Promise((resolve) => {
+  const timeoutPromise = new Promise<null>((resolve) => {
     setTimeout(() => {
       timedOut = true;
       console.log("⏱️  Model check timed out");
@@ -741,9 +720,7 @@ const checkOnly = async (nonBlocking = false, showDuplicates = false) => {
   try {
     const result = await Promise.race([
       (async () => {
-        const remoteModels = await collectModels({
-          showDuplicates,
-        });
+        const remoteModels = await collectModels({ showDuplicates });
         const currentModels = loadCurrentModels();
 
         remoteModels.sort(
@@ -776,16 +753,18 @@ const checkOnly = async (nonBlocking = false, showDuplicates = false) => {
       console.log(
         `✨ ${added.length} new model${added.length === 1 ? "" : "s"} available:`,
       );
-      const usedNames = new Set();
+      const usedNames = new Set<string>();
       added.slice(0, 10).forEach((m) => {
-        const name = generateExportName({
+        const exportName = generateExportName({
           path: m.registryPath,
           engine: m.engine,
           name: m.modelName,
           quantization: m.quantization,
           usedNames,
         });
-        console.log(`  + ${name} (${m.addon}, ${formatSize(m.expectedSize)})`);
+        console.log(
+          `  + ${exportName} (${m.addon}, ${formatSize(m.expectedSize)})`,
+        );
       });
       if (added.length > 10) {
         console.log(`  ... and ${added.length - 10} more`);
@@ -813,48 +792,43 @@ const checkOnly = async (nonBlocking = false, showDuplicates = false) => {
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     console.log("");
 
-    // In non-blocking mode, exit 0 even if updates exist
-    // In normal mode, exit 1 to indicate updates available
     process.exit(nonBlocking ? 0 : 1);
   } catch (error) {
-    console.error("❌ Model check failed:", error.message);
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("❌ Model check failed:", message);
     process.exit(nonBlocking ? 0 : 1);
   }
-};
+}
 
-const updateModels = async (showDuplicates = false, noDedup = false) => {
+async function updateModels(
+  showDuplicates = false,
+  noDedup = false,
+): Promise<void> {
   console.log("🔄 Fetching models from QVAC Registry...\n");
 
-  // Load current models to track changes
   const currentModels = loadCurrentModels();
 
-  const models = await collectModels({
-    showDuplicates,
-    noDedup,
-  });
+  const models = await collectModels({ showDuplicates, noDedup });
 
-  // Compare to find added/removed for history tracking
   const { added, removed } = compareModels(models, currentModels);
 
-  // Sort models by addon and then by path
   models.sort(
     (a, b) =>
       a.addon.localeCompare(b.addon) ||
       a.registryPath.localeCompare(b.registryPath),
   );
 
-  // Write models file
   fs.writeFileSync(OUTPUT_FILE, generateModelsFileContent(models));
 
-  // Format file with prettier
   try {
     execSync(`npx prettier --write "${OUTPUT_FILE}"`, { stdio: "pipe" });
-  } catch {}
+  } catch {
+    // prettier not available, skip formatting
+  }
 
   console.log(`✅ Generated ${models.length} models → ${OUTPUT_FILE}`);
 
-  // Create history file if there are changes
-  const usedNamesForHistory = new Set();
+  const usedNamesForHistory = new Set<string>();
   const addedWithNames = added.map((m) => ({
     ...m,
     name: generateExportName({
@@ -877,9 +851,11 @@ const updateModels = async (showDuplicates = false, noDedup = false) => {
       console.log(`   Added: ${added.length}, Removed: ${removed.length}`);
     }
   }
-};
+}
 
-const main = async () => {
+// --- Main ---
+
+async function main(): Promise<void> {
   const CHECK_ONLY = process.argv.includes("--check");
   const NON_BLOCKING = process.argv.includes("--non-blocking");
   const SHOW_DUPLICATES = process.argv.includes("--show-duplicates");
@@ -890,6 +866,6 @@ const main = async () => {
   } else {
     await updateModels(SHOW_DUPLICATES, NO_DEDUP);
   }
-};
+}
 
 main().catch(console.error);
