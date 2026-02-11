@@ -52,3 +52,8 @@ export {
   isModelTypeAlias,
 } from "./model-types";
 export * from "./registry";
+export {
+  ENGINE_TO_ADDON,
+  getAddonFromEngine,
+  resolveCanonicalEngine,
+} from "./engine-addon-map";
