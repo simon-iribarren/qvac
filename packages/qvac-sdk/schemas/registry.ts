@@ -14,12 +14,17 @@ const qvacModelRegistryEntryAddonSchema = z.enum([
 ]);
 
 // Canonical engine names derived from ModelType (schemas/model-types.ts) plus
-// additional registry-only engines (e.g. onnx-vad).
-// The SDK resolves legacy engine names (e.g. @qvac/* package names) to canonical form
-// via schemas/engine-addon-map.ts.
-const modelTypeValues = Object.values(ModelType);
+// registry-only engines not present in ModelType.
+// Values reference ModelType.* directly to avoid string duplication.
+// The SDK resolves legacy engine names (e.g. @qvac/* package names) to canonical
+// form via schemas/engine-addon-map.ts.
 export const qvacModelRegistryEngineSchema = z.enum([
-  ...modelTypeValues,
+  ModelType.llamacppCompletion,
+  ModelType.whispercppTranscription,
+  ModelType.llamacppEmbedding,
+  ModelType.nmtcppTranslation,
+  ModelType.onnxTts,
+  ModelType.onnxOcr,
   "onnx-vad",
 ]);
 
@@ -35,7 +40,7 @@ export const qvacModelRegistryEntrySchema = z.object({
   addon: qvacModelRegistryEntryAddonSchema,
   expectedSize: z.number(),
   sha256Checksum: z.string(),
-  engine: z.string(), // Canonical engine-usecase name (see qvacModelRegistryEngineSchema)
+  engine: qvacModelRegistryEngineSchema,
   quantization: z.string(),
   params: z.string(),
 });

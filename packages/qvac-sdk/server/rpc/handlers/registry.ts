@@ -49,7 +49,17 @@ interface RegistryModelRaw {
   };
 }
 
-function processRegistryModel(model: RegistryModelRaw): QvacModelRegistryEntry {
+function processRegistryModel(
+  model: RegistryModelRaw,
+): QvacModelRegistryEntry | null {
+  const engine = resolveCanonicalEngine(model.engine || "");
+  if (!engine) {
+    logger.warn(
+      `Skipping model with unknown engine "${model.engine}": ${model.path}`,
+    );
+    return null;
+  }
+
   const filename = model.path.split("/").pop() || model.path;
   const blobBinding = model.blobBinding || {};
 
@@ -60,7 +70,7 @@ function processRegistryModel(model: RegistryModelRaw): QvacModelRegistryEntry {
   const expectedSize = blobBinding.byteLength ?? 0;
   const sha256Checksum = blobBinding.sha256 || "";
 
-  const addon = getAddonFromEngine(model.engine);
+  const addon = getAddonFromEngine(engine);
 
   // Extract model name from path
   const parts = model.path.split("/");
@@ -81,7 +91,7 @@ function processRegistryModel(model: RegistryModelRaw): QvacModelRegistryEntry {
     addon,
     expectedSize,
     sha256Checksum,
-    engine: resolveCanonicalEngine(model.engine || ""),
+    engine,
     quantization: model.quantization || "",
     params: model.params || "",
   };
@@ -93,9 +103,9 @@ export async function handleQvacModelRegistryList(): Promise<QvacModelRegistryLi
   try {
     const client = await getRegistryClient();
     const registryModels = await client.findModels({});
-    const models = (registryModels as RegistryModelRaw[]).map(
-      processRegistryModel,
-    );
+    const models = (registryModels as RegistryModelRaw[])
+      .map(processRegistryModel)
+      .filter((m): m is QvacModelRegistryEntry => m !== null);
 
     logger.debug(`QVAC model registry list returned ${models.length} models`);
 
@@ -151,7 +161,9 @@ export async function handleQvacModelRegistrySearch(
       registryModels = await client.findModels({});
     }
 
-    let models = registryModels.map(processRegistryModel);
+    let models = registryModels
+      .map(processRegistryModel)
+      .filter((m): m is QvacModelRegistryEntry => m !== null);
 
     // Apply in-memory filters for fields not handled by native query
     if (request.filter) {
@@ -227,6 +239,12 @@ export async function handleQvacModelRegistryGetModel(
     }
 
     const model = processRegistryModel(rawModel as RegistryModelRaw);
+
+    if (!model) {
+      throw new QvacModelRegistryQueryFailedError(
+        `Model has unknown engine "${(rawModel as RegistryModelRaw).engine}": ${request.registryPath}`,
+      );
+    }
 
     logger.debug("QVAC model registry get model found:", model.name);
 

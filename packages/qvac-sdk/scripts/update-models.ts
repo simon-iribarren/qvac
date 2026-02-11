@@ -7,7 +7,10 @@ import {
   getAddonFromEngine,
   resolveCanonicalEngine,
 } from "../schemas/engine-addon-map";
-import type { QvacModelRegistryEntryAddon } from "../schemas/registry";
+import type {
+  QvacModelRegistryEntryAddon,
+  QvacModelRegistryEngine,
+} from "../schemas/registry";
 
 // Default QVAC Registry core key - this is the public registry that contains all QVAC models
 const DEFAULT_REGISTRY_CORE_KEY =
@@ -57,7 +60,7 @@ interface ProcessedModel {
   addon: QvacModelRegistryEntryAddon;
   expectedSize: number;
   sha256Checksum: string;
-  engine: string;
+  engine: QvacModelRegistryEngine;
   modelName: string;
   quantization: string;
   params: string;
@@ -104,7 +107,7 @@ function generateExportName({
   usedNames,
 }: {
   path: string;
-  engine: string;
+  engine: QvacModelRegistryEngine;
   name: string;
   quantization: string;
   usedNames: Set<string>;
@@ -270,7 +273,7 @@ function generateFileContentWithNames(
     addon: "${addonAlias}",
     expectedSize: ${m.expectedSize},
     sha256Checksum: "${m.sha256Checksum}",
-    engine: "${m.engine || ""}",
+    engine: "${m.engine}",
     quantization: "${m.quantization || ""}",
     params: "${m.params || ""}"`;
 
@@ -391,7 +394,17 @@ function toHexString(
   return "";
 }
 
-function processRegistryModel(model: QVACModelEntry): ProcessedModel {
+function processRegistryModel(
+  model: QVACModelEntry,
+): ProcessedModel | null {
+  const engine = resolveCanonicalEngine(model.engine);
+  if (!engine) {
+    console.warn(
+      `⚠️  Skipping model with unknown engine "${model.engine}": ${model.path}`,
+    );
+    return null;
+  }
+
   const filename = model.path.split("/").pop() || model.path;
   const blobBinding = model.blobBinding;
 
@@ -407,7 +420,7 @@ function processRegistryModel(model: QVACModelEntry): ProcessedModel {
     (blobBinding as unknown as Record<string, string>)?.["sha256"] ||
     "";
 
-  const addon = getAddonFromEngine(model.engine);
+  const addon = getAddonFromEngine(engine);
 
   const result: ProcessedModel = {
     registryPath: model.path,
@@ -420,7 +433,7 @@ function processRegistryModel(model: QVACModelEntry): ProcessedModel {
     addon,
     expectedSize,
     sha256Checksum,
-    engine: resolveCanonicalEngine(model.engine),
+    engine,
     modelName: extractModelName(model.path),
     quantization: model.quantization || "",
     params: model.params || "",
@@ -527,7 +540,7 @@ async function collectModels(
 
     for (const registryModel of registryModels) {
       const processed = processRegistryModel(registryModel);
-      models.push(processed);
+      if (processed) models.push(processed);
     }
   } finally {
     await client.close();
