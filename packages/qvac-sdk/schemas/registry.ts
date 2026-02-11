@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ModelType } from "./model-types";
 
 // QVAC Model Registry entry schema matching the RegistryItem from models/hyperdrive/models.ts
 const qvacModelRegistryEntryAddonSchema = z.enum([
@@ -12,16 +13,13 @@ const qvacModelRegistryEntryAddonSchema = z.enum([
   "other",
 ]);
 
-// Canonical engine names follow `engine-usecase` format (see schemas/model-types.ts).
+// Canonical engine names derived from ModelType (schemas/model-types.ts) plus
+// additional registry-only engines (e.g. onnx-vad).
 // The SDK resolves legacy engine names (e.g. @qvac/* package names) to canonical form
 // via schemas/engine-addon-map.ts.
+const modelTypeValues = Object.values(ModelType) as [string, ...string[]];
 export const qvacModelRegistryEngineSchema = z.enum([
-  "llamacpp-completion",
-  "whispercpp-transcription",
-  "llamacpp-embedding",
-  "nmtcpp-translation",
-  "onnx-tts",
-  "onnx-ocr",
+  ...modelTypeValues,
   "onnx-vad",
 ]);
 
