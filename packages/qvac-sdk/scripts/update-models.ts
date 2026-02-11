@@ -400,7 +400,12 @@ function processRegistryModel(model: QVACModelEntry): ProcessedModel {
   const blobBlockLength = blobBinding?.blockLength ?? 0;
   const blobByteOffset = blobBinding?.byteOffset ?? 0;
   const expectedSize = blobBinding?.byteLength ?? 0;
-  const sha256Checksum = model.sha256 || "";
+  // The registry client types define sha256 on QVACModelEntry, but at runtime
+  // the value lives on blobBinding (not reflected in types). Try both.
+  const sha256Checksum =
+    model.sha256 ||
+    (blobBinding as unknown as Record<string, string>)?.["sha256"] ||
+    "";
 
   const addon = getAddonFromEngine(model.engine);
 
