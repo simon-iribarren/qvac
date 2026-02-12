@@ -534,7 +534,7 @@ async function collectModels(
   try {
     await client.ready();
 
-    const registryModels = await client.findModels({});
+    const registryModels = await client.findBy();
 
     console.log(`📦 Found ${registryModels.length} entries in registry`);
 
