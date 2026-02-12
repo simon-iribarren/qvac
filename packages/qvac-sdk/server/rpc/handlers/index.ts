@@ -15,9 +15,9 @@ import { handleTextToSpeech } from "./text-to-speech";
 import { handleGetModelInfo } from "./get-model-info";
 import { handleOCRStream } from "./ocr-stream";
 import {
-  handleQvacModelRegistryList,
-  handleQvacModelRegistrySearch,
-  handleQvacModelRegistryGetModel,
+  handleModelRegistryList,
+  handleModelRegistrySearch,
+  handleModelRegistryGetModel,
 } from "./registry";
 
 export const handlers = {
@@ -37,7 +37,7 @@ export const handlers = {
   textToSpeech: handleTextToSpeech,
   getModelInfo: handleGetModelInfo,
   ocrStream: handleOCRStream,
-  qvacModelRegistryList: handleQvacModelRegistryList,
-  qvacModelRegistrySearch: handleQvacModelRegistrySearch,
-  qvacModelRegistryGetModel: handleQvacModelRegistryGetModel,
+  modelRegistryList: handleModelRegistryList,
+  modelRegistrySearch: handleModelRegistrySearch,
+  modelRegistryGetModel: handleModelRegistryGetModel,
 };

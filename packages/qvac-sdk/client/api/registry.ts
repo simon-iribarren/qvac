@@ -1,73 +1,73 @@
 import type {
-  QvacModelRegistryListRequest,
-  QvacModelRegistryListResponse,
-  QvacModelRegistrySearchRequest,
-  QvacModelRegistrySearchResponse,
-  QvacModelRegistryGetModelRequest,
-  QvacModelRegistryGetModelResponse,
-  QvacModelRegistryEntry,
-  QvacModelRegistryEntryAddon,
+  ModelRegistryListRequest,
+  ModelRegistryListResponse,
+  ModelRegistrySearchRequest,
+  ModelRegistrySearchResponse,
+  ModelRegistryGetModelRequest,
+  ModelRegistryGetModelResponse,
+  ModelRegistryEntry,
+  ModelRegistryEntryAddon,
 } from "@/schemas";
 import { send } from "@/client/rpc/rpc-client";
-import { QvacModelRegistryQueryFailedError } from "@/utils/errors-client";
+import { ModelRegistryQueryFailedError } from "@/utils/errors-client";
 
-export type { QvacModelRegistryEntry, QvacModelRegistryEntryAddon };
+export type { ModelRegistryEntry, ModelRegistryEntryAddon };
 
-export interface QvacModelRegistrySearchParams {
+export interface ModelRegistrySearchParams {
   filter?: string;
   engine?: string;
   quantization?: string;
-  modelType?: QvacModelRegistryEntryAddon;
-  addon?: QvacModelRegistryEntryAddon;
+  modelType?: ModelRegistryEntryAddon;
+  addon?: ModelRegistryEntryAddon;
 }
 
-async function qvacModelRegistryList(): Promise<QvacModelRegistryEntry[]> {
-  const request: QvacModelRegistryListRequest = {
-    type: "qvacModelRegistryList",
+async function modelRegistryList(): Promise<ModelRegistryEntry[]> {
+  const request: ModelRegistryListRequest = {
+    type: "modelRegistryList",
   };
 
-  const response = (await send(request)) as QvacModelRegistryListResponse;
+  const response = (await send(request)) as ModelRegistryListResponse;
 
   if (!response.success || !response.models) {
-    throw new QvacModelRegistryQueryFailedError(response.error);
+    throw new ModelRegistryQueryFailedError(response.error);
   }
 
   return response.models;
 }
 
-async function qvacModelRegistrySearch(
-  params: QvacModelRegistrySearchParams = {},
-): Promise<QvacModelRegistryEntry[]> {
+async function modelRegistrySearch(
+  params: ModelRegistrySearchParams = {},
+): Promise<ModelRegistryEntry[]> {
   const { modelType, ...rest } = params;
-  const request: QvacModelRegistrySearchRequest = {
-    type: "qvacModelRegistrySearch",
+  const request: ModelRegistrySearchRequest = {
+    type: "modelRegistrySearch",
     ...rest,
     addon: modelType ?? rest.addon,
   };
 
-  const response = (await send(request)) as QvacModelRegistrySearchResponse;
+  const response = (await send(request)) as ModelRegistrySearchResponse;
 
   if (!response.success || !response.models) {
-    throw new QvacModelRegistryQueryFailedError(response.error);
+    throw new ModelRegistryQueryFailedError(response.error);
   }
 
   return response.models;
 }
 
-async function qvacModelRegistryGetModel(
+async function modelRegistryGetModel(
   registryPath: string,
   registrySource: string,
-): Promise<QvacModelRegistryEntry> {
-  const request: QvacModelRegistryGetModelRequest = {
-    type: "qvacModelRegistryGetModel",
+): Promise<ModelRegistryEntry> {
+  const request: ModelRegistryGetModelRequest = {
+    type: "modelRegistryGetModel",
     registryPath,
     registrySource,
   };
 
-  const response = (await send(request)) as QvacModelRegistryGetModelResponse;
+  const response = (await send(request)) as ModelRegistryGetModelResponse;
 
   if (!response.success || !response.model) {
-    throw new QvacModelRegistryQueryFailedError(
+    throw new ModelRegistryQueryFailedError(
       response.error ?? `Model not found: ${registrySource}/${registryPath}`,
     );
   }
@@ -76,7 +76,7 @@ async function qvacModelRegistryGetModel(
 }
 
 export {
-  qvacModelRegistryList,
-  qvacModelRegistrySearch,
-  qvacModelRegistryGetModel,
+  modelRegistryList,
+  modelRegistrySearch,
+  modelRegistryGetModel,
 };

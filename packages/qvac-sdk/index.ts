@@ -26,10 +26,10 @@ export {
   getModelInfo,
   loggingStream,
   ocr,
-  qvacModelRegistryList,
-  qvacModelRegistrySearch,
-  qvacModelRegistryGetModel,
-  type QvacModelRegistrySearchParams,
+  modelRegistryList,
+  modelRegistrySearch,
+  modelRegistryGetModel,
+  type ModelRegistrySearchParams,
 } from "./client/api";
 export { close } from "./client";
 export {
@@ -69,8 +69,8 @@ export {
   type OCRClientParams,
   type OCRTextBlock,
   type OCROptions,
-  type QvacModelRegistryEntry,
-  type QvacModelRegistryEntryAddon,
+  type ModelRegistryEntry,
+  type ModelRegistryEntryAddon,
 } from "./schemas";
 
 export { type ToolInput, type ToolHandler } from "./utils/tool-helpers";

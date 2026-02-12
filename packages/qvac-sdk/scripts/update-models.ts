@@ -8,8 +8,8 @@ import {
   resolveCanonicalEngine,
 } from "../schemas/engine-addon-map";
 import type {
-  QvacModelRegistryEntryAddon,
-  QvacModelRegistryEngine,
+  ModelRegistryEntryAddon,
+  ModelRegistryEngine,
 } from "../schemas/registry";
 
 // Default QVAC Registry core key - this is the public registry that contains all QVAC models
@@ -57,10 +57,10 @@ interface ProcessedModel {
   blobBlockLength: number;
   blobByteOffset: number;
   modelId: string;
-  addon: QvacModelRegistryEntryAddon;
+  addon: ModelRegistryEntryAddon;
   expectedSize: number;
   sha256Checksum: string;
-  engine: QvacModelRegistryEngine;
+  engine: ModelRegistryEngine;
   modelName: string;
   quantization: string;
   params: string;
@@ -107,7 +107,7 @@ function generateExportName({
   usedNames,
 }: {
   path: string;
-  engine: QvacModelRegistryEngine;
+  engine: ModelRegistryEngine;
   name: string;
   quantization: string;
   usedNames: Set<string>;
