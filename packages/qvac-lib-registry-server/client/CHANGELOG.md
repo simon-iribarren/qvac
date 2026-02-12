@@ -10,6 +10,7 @@
 
 - Consumers must update their `package.json` dependency name and any import references
 - GPR publishes under `@tetherto/registry-client-mono` (scope rewritten by CI)
+- Added `findBy` method to client
 
 ## 0.1.3
 
