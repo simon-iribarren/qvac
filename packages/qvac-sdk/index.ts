@@ -28,10 +28,6 @@ export {
   ocr,
   qvacModelRegistryList,
   qvacModelRegistrySearch,
-  qvacModelRegistryFindByEngine,
-  qvacModelRegistryFindByName,
-  qvacModelRegistryFindByQuantization,
-  qvacModelRegistryFindByModelType,
   qvacModelRegistryGetModel,
   type QvacModelRegistrySearchParams,
 } from "./client/api";

@@ -28,10 +28,6 @@ export { ocr } from "./ocr";
 export {
   qvacModelRegistryList,
   qvacModelRegistrySearch,
-  qvacModelRegistryFindByEngine,
-  qvacModelRegistryFindByName,
-  qvacModelRegistryFindByQuantization,
-  qvacModelRegistryFindByModelType,
   qvacModelRegistryGetModel,
   type QvacModelRegistrySearchParams,
 } from "./registry";

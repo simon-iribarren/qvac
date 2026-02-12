@@ -102,10 +102,10 @@ export async function handleQvacModelRegistryList(): Promise<QvacModelRegistryLi
 
   try {
     const client = await getRegistryClient();
-    const registryModels = await client.findModels({});
-    const models = (registryModels as RegistryModelRaw[])
-      .map(processRegistryModel)
-      .filter((m): m is QvacModelRegistryEntry => m !== null);
+    const registryModels = await client.findBy();
+    const models = (registryModels as RegistryModelRaw[]).map(
+      processRegistryModel,
+    );
 
     logger.debug(`QVAC model registry list returned ${models.length} models`);
 
@@ -143,29 +143,18 @@ export async function handleQvacModelRegistrySearch(
   try {
     const client = await getRegistryClient();
 
-    let registryModels: RegistryModelRaw[];
-
-    // Use native indexed queries when possible, then apply remaining filters in-memory
-    // Priority: quantization > engine > fetch all (quantization index is typically more selective)
-    if (request.quantization) {
-      registryModels = await client.findModelsByQuantization({
-        gte: { quantization: request.quantization.toLowerCase() },
-        lte: { quantization: request.quantization.toLowerCase() },
-      } as never);
-    } else if (request.engine) {
-      registryModels = await client.findModelsByEngine({
-        gte: { engine: request.engine },
-        lte: { engine: request.engine },
-      } as never);
-    } else {
-      registryModels = await client.findModels({});
-    }
+    const registryModels = (await client.findBy({
+      ...(request.quantization && { quantization: request.quantization }),
+    })) as RegistryModelRaw[];
 
     let models = registryModels
       .map(processRegistryModel)
       .filter((m): m is QvacModelRegistryEntry => m !== null);
 
-    // Apply in-memory filters for fields not handled by native query
+    if (request.engine) {
+      models = models.filter((m) => m.engine === request.engine);
+    }
+
     if (request.filter) {
       const filterLower = request.filter.toLowerCase();
       models = models.filter(
@@ -174,14 +163,6 @@ export async function handleQvacModelRegistrySearch(
           m.registryPath.toLowerCase().includes(filterLower) ||
           m.addon.toLowerCase().includes(filterLower) ||
           m.engine.toLowerCase().includes(filterLower),
-      );
-    }
-
-    // Apply engine filter when not already handled by native query
-    if (request.engine && request.quantization) {
-      const engineLower = request.engine.toLowerCase();
-      models = models.filter((m) =>
-        m.engine.toLowerCase().includes(engineLower),
       );
     }
 

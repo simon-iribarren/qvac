@@ -532,7 +532,7 @@ export class SetConfigFailedError extends QvacErrorBase {
 }
 
 // ============== QVAC Model Registry Operation Errors ==============
-// Registry client errors (19,001-20,000) are re-thrown directly from @tetherto/qvac-lib-registry-client
+// Registry client errors (19,001-20,000) are re-thrown directly from @tetherto/registry-client-mono
 // Only SDK-specific errors are defined here
 
 export class QvacModelRegistryQueryFailedError extends QvacErrorBase {

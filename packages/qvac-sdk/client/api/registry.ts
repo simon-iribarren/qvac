@@ -54,30 +54,6 @@ async function qvacModelRegistrySearch(
   return response.models;
 }
 
-async function qvacModelRegistryFindByEngine(
-  engine: string,
-): Promise<QvacModelRegistryEntry[]> {
-  return qvacModelRegistrySearch({ engine });
-}
-
-async function qvacModelRegistryFindByName(
-  name: string,
-): Promise<QvacModelRegistryEntry[]> {
-  return qvacModelRegistrySearch({ filter: name });
-}
-
-async function qvacModelRegistryFindByQuantization(
-  quantization: string,
-): Promise<QvacModelRegistryEntry[]> {
-  return qvacModelRegistrySearch({ quantization });
-}
-
-async function qvacModelRegistryFindByModelType(
-  modelType: QvacModelRegistryEntryAddon,
-): Promise<QvacModelRegistryEntry[]> {
-  return qvacModelRegistrySearch({ addon: modelType });
-}
-
 async function qvacModelRegistryGetModel(
   registryPath: string,
   registrySource: string,
@@ -102,9 +78,5 @@ async function qvacModelRegistryGetModel(
 export {
   qvacModelRegistryList,
   qvacModelRegistrySearch,
-  qvacModelRegistryFindByEngine,
-  qvacModelRegistryFindByName,
-  qvacModelRegistryFindByQuantization,
-  qvacModelRegistryFindByModelType,
   qvacModelRegistryGetModel,
 };

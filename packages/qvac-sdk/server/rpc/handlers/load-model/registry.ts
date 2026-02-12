@@ -1,5 +1,5 @@
 import type { ModelProgressUpdate, RegistryDownloadEntry } from "@/schemas";
-import type { QVACModelEntry } from "@tetherto/qvac-lib-registry-client";
+import type { QVACModelEntry } from "@tetherto/registry-client-mono";
 import fs, { promises as fsPromises } from "bare-fs";
 import path from "bare-path";
 import { type Readable, type Writable } from "bare-stream";
@@ -212,11 +212,9 @@ async function findModelShards(
 
     logger.info(`🔍 Finding shards with prefix: ${basePath}`);
 
-    // Query registry for all shards
-    const shards: QVACModelEntry[] = await client.findModels({
-      gte: { path: basePath },
-      lte: { path: basePath + "\uffff" },
-    });
+    // Query registry for all models and filter by path prefix
+    const allModels: QVACModelEntry[] = await client.findBy();
+    const shards = allModels.filter((m) => m.path.startsWith(basePath));
 
     // Sort shards by shard number
     const sortedShards = shards
