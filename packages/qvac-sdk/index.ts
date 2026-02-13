@@ -78,8 +78,8 @@ export { type ToolInput, type ToolHandler } from "./utils/tool-helpers";
 // Model types - canonical naming with backward-compatible aliases
 export { MODEL_TYPES } from "./schemas";
 
-// Hyperdrive model constants
-export * from "./models/hyperdrive";
+// Model registry constants
+export * from "./models/registry";
 
 export { SUPPORTED_AUDIO_FORMATS } from "./constants/audio";
 

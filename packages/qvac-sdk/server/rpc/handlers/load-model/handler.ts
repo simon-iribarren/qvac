@@ -22,7 +22,7 @@ import {
   ModelNotFoundError,
 } from "@/utils/errors-server";
 import { getServerLogger } from "@/logging";
-import { OCR_CRAFT_DETECTOR } from "@/models/hyperdrive";
+import { OCR_CRAFT_DETECTOR } from "@/models/registry";
 
 const logger = getServerLogger();
 

@@ -14,7 +14,7 @@ import {
   extractTensorsFromShards,
   calculatePercentage,
 } from "@/server/utils";
-import { getModelByPath } from "@/models/hyperdrive";
+import { getModelByPath } from "@/models/registry";
 import {
   getRegistryClient,
   closeRegistryClient,

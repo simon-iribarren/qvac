@@ -13,7 +13,7 @@ import { collectModels } from "./registry";
 import { formatSize } from "./utils";
 
 const OUTPUT_FILE = fileURLToPath(
-  new URL("../hyperdrive/models.ts", import.meta.url),
+  new URL("../registry/models.ts", import.meta.url),
 );
 const HISTORY_DIR = fileURLToPath(
   new URL("../history", import.meta.url),

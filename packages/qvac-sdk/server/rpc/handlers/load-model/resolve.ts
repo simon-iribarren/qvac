@@ -1,4 +1,4 @@
-import { models, getModelByPath } from "@/models/hyperdrive/models";
+import { models, getModelByPath } from "@/models/registry/models";
 import {
   hyperdriveUrlSchema,
   registryUrlSchema,
