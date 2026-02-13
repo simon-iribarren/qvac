@@ -76,7 +76,7 @@ export {
 export { type ToolInput, type ToolHandler } from "./utils/tool-helpers";
 
 // Model types - canonical naming with backward-compatible aliases
-export { MODEL_TYPES } from "./schemas";
+export { MODEL_TYPES, ModelType } from "./schemas";
 
 // Model registry constants
 export * from "./models/registry";
