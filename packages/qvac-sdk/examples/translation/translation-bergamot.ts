@@ -1,6 +1,6 @@
 // NOTE: Bergamot models are not yet in the registry
 // This example uses OPUS en->de model as a substitute
-import { loadModel, translate, unloadModel, OPUS_EN_DE_Q4_0 } from "@qvac/sdk";
+import { loadModel, translate, unloadModel, MARIAN_OPUS_EN_DE_Q4_0 } from "@qvac/sdk";
 
 try {
   // Vocabulary files are automatically derived from the model source.
@@ -9,7 +9,7 @@ try {
   // - dstVocabSrc: target vocabulary file (optional)
 
   const modelId = await loadModel({
-    modelSrc: OPUS_EN_DE_Q4_0,
+    modelSrc: MARIAN_OPUS_EN_DE_Q4_0,
     modelType: "nmt",
     modelConfig: {
       engine: "Opus",
