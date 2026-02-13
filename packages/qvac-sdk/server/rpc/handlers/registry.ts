@@ -61,12 +61,8 @@ function processRegistryModel(
 
   const addon = getAddonFromEngine(engine);
 
-  // Extract model name from path
-  const parts = model.path.split("/");
-  const name =
-    (parts.length >= 2
-      ? parts[1] || parts[0]
-      : filename.replace(/\.\w+$/, "")) || filename;
+  // Use the filename without extension as the display name
+  const name = filename.replace(/\.\w+$/, "");
 
   return {
     name,
@@ -141,7 +137,10 @@ export async function handleModelRegistrySearch(
       .filter((m): m is ModelRegistryEntry => m !== null);
 
     if (request.engine) {
-      models = models.filter((m) => m.engine === request.engine);
+      const canonicalEngine = resolveCanonicalEngine(request.engine);
+      models = models.filter(
+        (m) => m.engine === (canonicalEngine ?? request.engine),
+      );
     }
 
     if (request.filter) {
