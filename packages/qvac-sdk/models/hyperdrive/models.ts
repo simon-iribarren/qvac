@@ -68,10 +68,10 @@ export const models = [
       "ChristianAzinn/gte-large-gguf/blob/f9fa5479908e72c2a8b9d6ba112911cd1e51be53/gte-large_fp16.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 278131,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 180512,
     blobBlockLength: 10218,
-    blobByteOffset: 18226816682,
+    blobByteOffset: 11829586648,
     modelId: "gte-large_fp16.gguf",
     addon: "embeddings",
     expectedSize: 669603712,
@@ -87,10 +87,10 @@ export const models = [
       "qvac_models_compiled/ggml/gte-large_fp6/2025-08-21/gte-large_fp16-00001-of-00005.gguf",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 470544,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 193622,
     blobBlockLength: 2393,
-    blobByteOffset: 30836238276,
+    blobByteOffset: 12688680895,
     modelId: "gte-large_fp16-00001-of-00005.gguf",
     addon: "embeddings",
     expectedSize: 669604320,
@@ -106,10 +106,10 @@ export const models = [
         sha256Checksum:
           "81c871b0433ed75adb4b1888f4396248c0a587f509f45050b2b65de9b8e86a3b",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 470544,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 193622,
         blobBlockLength: 2393,
-        blobByteOffset: 30836238276,
+        blobByteOffset: 12688680895,
       },
       {
         filename: "gte-large_fp16-00002-of-00005.gguf",
@@ -117,10 +117,10 @@ export const models = [
         sha256Checksum:
           "da7f5a2e0ba4f6769599cb7d2735f19a8022eb065973d7584081cf67617a064d",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 472937,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 196015,
         blobBlockLength: 2438,
-        blobByteOffset: 30993053700,
+        blobByteOffset: 12845496319,
       },
       {
         filename: "gte-large_fp16-00003-of-00005.gguf",
@@ -128,10 +128,10 @@ export const models = [
         sha256Checksum:
           "d95b830af36d2dfa1d4c7c156ac59be767a5f9b5d37288533d3add7a90ec3822",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 475375,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 198453,
         blobBlockLength: 2438,
-        blobByteOffset: 31152774916,
+        blobByteOffset: 13005217535,
       },
       {
         filename: "gte-large_fp16-00004-of-00005.gguf",
@@ -139,10 +139,10 @@ export const models = [
         sha256Checksum:
           "6def2c28f1b6314403a39c54250d870333d273e31446717f8670a4e1d5861d20",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 477813,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 200891,
         blobBlockLength: 2438,
-        blobByteOffset: 31312512708,
+        blobByteOffset: 13164955327,
       },
       {
         filename: "gte-large_fp16-00005-of-00005.gguf",
@@ -150,10 +150,10 @@ export const models = [
         sha256Checksum:
           "f5ff10900f675900a1838536746d23ccc6adcfed074f89f7a4ac4d3167401d08",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 480251,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 203329,
         blobBlockLength: 513,
-        blobByteOffset: 31472233828,
+        blobByteOffset: 13324676447,
       },
     ],
   },
@@ -163,10 +163,10 @@ export const models = [
       "qvac_models_compiled/ggml/gte-large_fp6/2025-08-21/gte-large_fp16.tensors.txt",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 480764,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 203842,
     blobBlockLength: 1,
-    blobByteOffset: 31505842596,
+    blobByteOffset: 13358285215,
     modelId: "gte-large_fp16.tensors.txt",
     addon: "embeddings",
     expectedSize: 8966,
@@ -182,10 +182,10 @@ export const models = [
       "unsloth/embeddinggemma-300m-GGUF/resolve/6661a6504c30d8304af13455cb4a5d4f5bc6011f/embeddinggemma-300M-BF16.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 615856,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 338934,
     blobBlockLength: 9345,
-    blobByteOffset: 40358094887,
+    blobByteOffset: 22210537506,
     modelId: "embeddinggemma-300M-BF16.gguf",
     addon: "embeddings",
     expectedSize: 612429792,
@@ -201,10 +201,10 @@ export const models = [
       "unsloth/embeddinggemma-300m-GGUF/resolve/6661a6504c30d8304af13455cb4a5d4f5bc6011f/embeddinggemma-300M-F32.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 625201,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 348279,
     blobBlockLength: 18585,
-    blobByteOffset: 40970524679,
+    blobByteOffset: 22822967298,
     modelId: "embeddinggemma-300M-F32.gguf",
     addon: "embeddings",
     expectedSize: 1217982432,
@@ -220,10 +220,10 @@ export const models = [
       "unsloth/embeddinggemma-300m-GGUF/resolve/6661a6504c30d8304af13455cb4a5d4f5bc6011f/embeddinggemma-300m-Q4_0.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 606602,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 329680,
     blobBlockLength: 4240,
-    blobByteOffset: 39751665639,
+    blobByteOffset: 21604108258,
     modelId: "embeddinggemma-300m-Q4_0.gguf",
     addon: "embeddings",
     expectedSize: 277852192,
@@ -239,10 +239,10 @@ export const models = [
       "unsloth/embeddinggemma-300m-GGUF/resolve/6661a6504c30d8304af13455cb4a5d4f5bc6011f/embeddinggemma-300M-Q8_0.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 610842,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 333920,
     blobBlockLength: 5014,
-    blobByteOffset: 40029517831,
+    blobByteOffset: 21881960450,
     modelId: "embeddinggemma-300M-Q8_0.gguf",
     addon: "embeddings",
     expectedSize: 328577056,
@@ -258,10 +258,10 @@ export const models = [
       "ggml-org/Qwen2.5-Omni-3B-GGUF/blob/75f1b73b657a50f5092502799457ccb4a4a1f9df/mmproj-Qwen2.5-Omni-3B-Q8_0.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 320468,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 222849,
     blobBlockLength: 23469,
-    blobByteOffset: 21001352042,
+    blobByteOffset: 14604122008,
     modelId: "mmproj-Qwen2.5-Omni-3B-Q8_0.gguf",
     addon: "llm",
     expectedSize: 1538031328,
@@ -277,10 +277,10 @@ export const models = [
       "ggml-org/Qwen2.5-Omni-3B-GGUF/blob/75f1b73b657a50f5092502799457ccb4a4a1f9df/Qwen2.5-Omni-3B-Q4_K_M.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 288349,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 190730,
     blobBlockLength: 32119,
-    blobByteOffset: 18896420394,
+    blobByteOffset: 12499190360,
     modelId: "Qwen2.5-Omni-3B-Q4_K_M.gguf",
     addon: "llm",
     expectedSize: 2104931648,
@@ -296,10 +296,10 @@ export const models = [
       "ggml-org/SmolVLM2-500M-Video-Instruct-GGUF/resolve/ccd7aae53bcb1997355c2f094959e72b3642ce17/mmproj-SmolVLM2-500M-Video-Instruct-Q8_0.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 366729,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 89807,
     blobBlockLength: 1660,
-    blobByteOffset: 24032974986,
+    blobByteOffset: 5885417605,
     modelId: "mmproj-SmolVLM2-500M-Video-Instruct-Q8_0.gguf",
     addon: "llm",
     expectedSize: 108785184,
@@ -315,10 +315,10 @@ export const models = [
       "ggml-org/SmolVLM2-500M-Video-Instruct-GGUF/resolve/ccd7aae53bcb1997355c2f094959e72b3642ce17/SmolVLM2-500M-Video-Instruct-Q8_0.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 360063,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 262444,
     blobBlockLength: 6666,
-    blobByteOffset: 23596166282,
+    blobByteOffset: 17198936248,
     modelId: "SmolVLM2-500M-Video-Instruct-Q8_0.gguf",
     addon: "llm",
     expectedSize: 436808704,
@@ -334,10 +334,10 @@ export const models = [
       "jmb95/laser-dolphin-mixtral-2x7b-dpo-GGUF/resolve/448afcb8afc647d0c565071222fb8b0c7f9860b4/dolphin-mixtral-2x7b-dop-Q2_K.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 643786,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 366864,
     blobBlockLength: 72645,
-    blobByteOffset: 42188507111,
+    blobByteOffset: 24040949730,
     modelId: "dolphin-mixtral-2x7b-dop-Q2_K.gguf",
     addon: "llm",
     expectedSize: 4760823264,
@@ -348,15 +348,34 @@ export const models = [
     params: "2x7B",
   },
   {
+    name: "LLAMA_TOOL_CALLING_1B_INST_Q4_K",
+    registryPath:
+      "mav23/Llama_3.2_1B_Intruct_Tool_Calling_V2-GGUF/blob/main/llama_3.2_1b_intruct_tool_calling_v2.Q4_K.gguf",
+    registrySource: "hf",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 529475,
+    blobBlockLength: 12325,
+    blobByteOffset: 34696195331,
+    modelId: "llama_3.2_1b_intruct_tool_calling_v2.Q4_K.gguf",
+    addon: "llm",
+    expectedSize: 807691648,
+    sha256Checksum:
+      "406bd5983096cc49e1019e9c295e1b011d7b17ccae9e066266eb1734a4743bf7",
+    engine: "llamacpp-completion",
+    quantization: "q4_k",
+    params: "1B",
+  },
+  {
     name: "DOLPHIN_MIXTRAL_2X7B_MOE_Q2_K_SHARD",
     registryPath:
       "qvac_models_compiled/ggml/dolphin-mixtral-2x7b-dop_q2/2025-09-17/dolphin-mixtral-2x7b-dop-Q2_K-00001-of-00005.gguf",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 889055,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 280910,
     blobBlockLength: 17107,
-    blobByteOffset: 58261085089,
+    blobByteOffset: 18407947370,
     modelId: "dolphin-mixtral-2x7b-dop-Q2_K-00001-of-00005.gguf",
     addon: "llm",
     expectedSize: 4760823808,
@@ -372,10 +391,10 @@ export const models = [
         sha256Checksum:
           "d7b900fae41cd466dd16a4b1fbf8083b8f00578deb59a2d0619a52672d872493",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 889055,
+          "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+        blobBlockOffset: 280910,
         blobBlockLength: 17107,
-        blobByteOffset: 58261085089,
+        blobByteOffset: 18407947370,
       },
       {
         filename: "dolphin-mixtral-2x7b-dop-Q2_K-00002-of-00005.gguf",
@@ -383,10 +402,10 @@ export const models = [
         sha256Checksum:
           "086236731567ca7c27047bcbcffc4acaddff3825101337e34269413ea2b9bd18",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 906162,
+          "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+        blobBlockOffset: 298017,
         blobBlockLength: 16996,
-        blobByteOffset: 59382153953,
+        blobByteOffset: 19529016234,
       },
       {
         filename: "dolphin-mixtral-2x7b-dop-Q2_K-00003-of-00005.gguf",
@@ -394,10 +413,10 @@ export const models = [
         sha256Checksum:
           "1208536e6b934638b51764485c5a76c17bd27893d8187d755dcc526a3a2f364c",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 923158,
+          "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+        blobBlockOffset: 315013,
         blobBlockLength: 16815,
-        blobByteOffset: 60495959681,
+        blobByteOffset: 20642821962,
       },
       {
         filename: "dolphin-mixtral-2x7b-dop-Q2_K-00004-of-00005.gguf",
@@ -405,10 +424,10 @@ export const models = [
         sha256Checksum:
           "6987ae5a392e9682e70d5ec6c7af6139895a886ad7e9d781308d70a8cf2f0772",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 939973,
+          "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+        blobBlockOffset: 331828,
         blobBlockLength: 17333,
-        blobByteOffset: 61597887169,
+        blobByteOffset: 21744749450,
       },
       {
         filename: "dolphin-mixtral-2x7b-dop-Q2_K-00005-of-00005.gguf",
@@ -416,10 +435,10 @@ export const models = [
         sha256Checksum:
           "47e84383b16ad16c159cb4edc2cbc52e8b1be369053805e722a2318bc5645587",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 957306,
+          "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+        blobBlockOffset: 349161,
         blobBlockLength: 4397,
-        blobByteOffset: 62733811233,
+        blobByteOffset: 22880673514,
       },
     ],
   },
@@ -429,10 +448,10 @@ export const models = [
       "qvac_models_compiled/ggml/dolphin-mixtral-2x7b-dop_q2/2025-09-17/dolphin-mixtral-2x7b-dop-Q2_K.tensors.txt",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 961703,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 353558,
     blobBlockLength: 1,
-    blobByteOffset: 63021908897,
+    blobByteOffset: 23168771178,
     modelId: "dolphin-mixtral-2x7b-dop-Q2_K.tensors.txt",
     addon: "llm",
     expectedSize: 7791,
@@ -448,10 +467,10 @@ export const models = [
       "qvac_models_compiled/ggml/Llama-3.2-1B/2025-12-04/Llama-3.2-1B-Instruct-Q4_0-00001-of-00008.gguf",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 480765,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 203843,
     blobBlockLength: 120,
-    blobByteOffset: 31505851562,
+    blobByteOffset: 13358294181,
     modelId: "Llama-3.2-1B-Instruct-Q4_0-00001-of-00008.gguf",
     addon: "llm",
     expectedSize: 773026848,
@@ -467,10 +486,10 @@ export const models = [
         sha256Checksum:
           "fafc6166dc5e7a9791b053cda2e71924c037b16f09fa41d69383cedd37cd91d8",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 480765,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 203843,
         blobBlockLength: 120,
-        blobByteOffset: 31505851562,
+        blobByteOffset: 13358294181,
       },
       {
         filename: "Llama-3.2-1B-Instruct-Q4_0-00002-of-00008.gguf",
@@ -478,10 +497,10 @@ export const models = [
         sha256Checksum:
           "a74db7a0871a97b2f82bff0e8bcd675b47f1b71b2604ae532d53e830d8929128",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 480885,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 203963,
         blobBlockLength: 3288,
-        blobByteOffset: 31513674698,
+        blobByteOffset: 13366117317,
       },
       {
         filename: "Llama-3.2-1B-Instruct-Q4_0-00003-of-00008.gguf",
@@ -489,10 +508,10 @@ export const models = [
         sha256Checksum:
           "ef6bf88818090ae955c9701ebd1c20e182abf52bbf2b57c06aeebaf98db9b764",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 484173,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 207251,
         blobBlockLength: 1518,
-        blobByteOffset: 31729144970,
+        blobByteOffset: 13581587589,
       },
       {
         filename: "Llama-3.2-1B-Instruct-Q4_0-00004-of-00008.gguf",
@@ -500,10 +519,10 @@ export const models = [
         sha256Checksum:
           "8370dbdbbf6ad993971a1270e34b6648b6a238b2e177e8c2361a5e1976bd803e",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 485691,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 208769,
         blobBlockLength: 1414,
-        blobByteOffset: 31828613770,
+        blobByteOffset: 13681056389,
       },
       {
         filename: "Llama-3.2-1B-Instruct-Q4_0-00005-of-00008.gguf",
@@ -511,10 +530,10 @@ export const models = [
         sha256Checksum:
           "924cae739e6fc9bcf613cfcd92ffd6b8e766cf3fc90a62a8cd49a02ccd30383b",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 487105,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 210183,
         blobBlockLength: 1423,
-        blobByteOffset: 31921258666,
+        blobByteOffset: 13773701285,
       },
       {
         filename: "Llama-3.2-1B-Instruct-Q4_0-00006-of-00008.gguf",
@@ -522,10 +541,10 @@ export const models = [
         sha256Checksum:
           "4eb85c7c807d593fd9e91dad6fb7b18c715ddfa667a3b47cee1176b3331921f0",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 488528,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 211606,
         blobBlockLength: 1423,
-        blobByteOffset: 32014501674,
+        blobByteOffset: 13866944293,
       },
       {
         filename: "Llama-3.2-1B-Instruct-Q4_0-00007-of-00008.gguf",
@@ -533,10 +552,10 @@ export const models = [
         sha256Checksum:
           "ad86b62f5270613771fb5c3dd69e9f94103beb4b74f8d63687f7f0578b728788",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 489951,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 213029,
         blobBlockLength: 1522,
-        blobByteOffset: 32107744650,
+        blobByteOffset: 13960187269,
       },
       {
         filename: "Llama-3.2-1B-Instruct-Q4_0-00008-of-00008.gguf",
@@ -544,10 +563,10 @@ export const models = [
         sha256Checksum:
           "51ca922125a8a543daea7fb30a71e6d683e025148ce6a4c335accbdec0f7a2ad",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 491473,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 214551,
         blobBlockLength: 1090,
-        blobByteOffset: 32207467402,
+        blobByteOffset: 14059910021,
       },
     ],
   },
@@ -557,10 +576,10 @@ export const models = [
       "qvac_models_compiled/ggml/Llama-3.2-1B/2025-12-04/Llama-3.2-1B-Instruct-Q4_0.tensors.txt",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 492563,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 215641,
     blobBlockLength: 1,
-    blobByteOffset: 32278878410,
+    blobByteOffset: 14131321029,
     modelId: "Llama-3.2-1B-Instruct-Q4_0.tensors.txt",
     addon: "llm",
     expectedSize: 3213,
@@ -576,10 +595,10 @@ export const models = [
       "qvac_models_compiled/ggml/medgemma-4b-it-Q4/2025-08-21/medgemma-4b-it-Q4_1-00001-of-00005.gguf",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 368389,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 91467,
     blobBlockLength: 9428,
-    blobByteOffset: 24141760170,
+    blobByteOffset: 5994202789,
     modelId: "medgemma-4b-it-Q4_1-00001-of-00005.gguf",
     addon: "llm",
     expectedSize: 2564053312,
@@ -595,10 +614,10 @@ export const models = [
         sha256Checksum:
           "df8f007c52173c7ffd4a385205805f1f0b8312bec7548460b42c20b74b00c344",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 368389,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 91467,
         blobBlockLength: 9428,
-        blobByteOffset: 24141760170,
+        blobByteOffset: 5994202789,
       },
       {
         filename: "medgemma-4b-it-Q4_1-00002-of-00005.gguf",
@@ -606,10 +625,10 @@ export const models = [
         sha256Checksum:
           "6c24b60b160420f9c6d3b243d0283e57a7aced67142f17e32e0418aef8e29cef",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 377817,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 100895,
         blobBlockLength: 9132,
-        blobByteOffset: 24759598890,
+        blobByteOffset: 6612041509,
       },
       {
         filename: "medgemma-4b-it-Q4_1-00003-of-00005.gguf",
@@ -617,10 +636,10 @@ export const models = [
         sha256Checksum:
           "65d97e751eb0cbb6900cec6960c54d3ac402a12f49eaf6453b458da17489ceb8",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 386949,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 110027,
         blobBlockLength: 9257,
-        blobByteOffset: 25358053994,
+        blobByteOffset: 7210496613,
       },
       {
         filename: "medgemma-4b-it-Q4_1-00004-of-00005.gguf",
@@ -628,10 +647,10 @@ export const models = [
         sha256Checksum:
           "ab081005a0db7bd37c78ecfa6d0b58f8d811a5f6e3e87531d51338c011209a9f",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 396206,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 119284,
         blobBlockLength: 9257,
-        blobByteOffset: 25964700010,
+        blobByteOffset: 7817142629,
       },
       {
         filename: "medgemma-4b-it-Q4_1-00005-of-00005.gguf",
@@ -639,10 +658,10 @@ export const models = [
         sha256Checksum:
           "7738264eb3d1846419c71cdf2f5a628a93b4801092da56806957a8dd207f7f4d",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 405463,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 128541,
         blobBlockLength: 2052,
-        blobByteOffset: 26571356330,
+        blobByteOffset: 8423798949,
       },
     ],
   },
@@ -652,10 +671,10 @@ export const models = [
       "qvac_models_compiled/ggml/medgemma-4b-it-Q4/2025-08-21/medgemma-4b-it-Q4_1.tensors.txt",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 407515,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 130593,
     blobBlockLength: 1,
-    blobByteOffset: 26705813482,
+    blobByteOffset: 8558256101,
     modelId: "medgemma-4b-it-Q4_1.tensors.txt",
     addon: "llm",
     expectedSize: 10685,
@@ -671,10 +690,10 @@ export const models = [
       "qvac_models_compiled/ggml/medgemma-4b-it-Q8/2025-08-21/medgemma-4b-it-Q8_0-00001-of-00005.gguf",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 407516,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 130594,
     blobBlockLength: 14724,
-    blobByteOffset: 26705824167,
+    blobByteOffset: 8558266786,
     modelId: "medgemma-4b-it-Q8_0-00001-of-00005.gguf",
     addon: "llm",
     expectedSize: 4130403424,
@@ -690,10 +709,10 @@ export const models = [
         sha256Checksum:
           "eee391a8709570399797a48490ff123a86e82e9ed46e54f301c89b0cd8a87c24",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 407516,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 130594,
         blobBlockLength: 14724,
-        blobByteOffset: 26705824167,
+        blobByteOffset: 8558266786,
       },
       {
         filename: "medgemma-4b-it-Q8_0-00002-of-00005.gguf",
@@ -701,10 +720,10 @@ export const models = [
         sha256Checksum:
           "39cc15b09ddd54518b95f7f663ee427cb381a9eaf87ce63c011391a78bfdaee3",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 422240,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 145318,
         blobBlockLength: 14882,
-        blobByteOffset: 27670760775,
+        blobByteOffset: 9523203394,
       },
       {
         filename: "medgemma-4b-it-Q8_0-00003-of-00005.gguf",
@@ -712,10 +731,10 @@ export const models = [
         sha256Checksum:
           "da3a9079e8bd787e9bca72f6e31af0e08bc84ff4bc855c0516ffe800ef06a16f",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 437122,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 160200,
         blobBlockLength: 14627,
-        blobByteOffset: 28646046567,
+        blobByteOffset: 10498489186,
       },
       {
         filename: "medgemma-4b-it-Q8_0-00004-of-00005.gguf",
@@ -723,10 +742,10 @@ export const models = [
         sha256Checksum:
           "3d107beef3ef34e3d284881932ce1709e04fd8f8a790d32074db0832613bbbba",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 451749,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 174827,
         blobBlockLength: 14882,
-        blobByteOffset: 29604587495,
+        blobByteOffset: 11457030114,
       },
       {
         filename: "medgemma-4b-it-Q8_0-00005-of-00005.gguf",
@@ -734,10 +753,10 @@ export const models = [
         sha256Checksum:
           "4a343ee2e0d440de96379deaedb82157c2b102dcb0429bc3a642f84956664479",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 466631,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 189709,
         blobBlockLength: 3912,
-        blobByteOffset: 30579863111,
+        blobByteOffset: 12432305730,
       },
     ],
   },
@@ -747,10 +766,10 @@ export const models = [
       "qvac_models_compiled/ggml/Qwen3-1.7B/2025-08-21/Qwen3-1.7B-Q4_0-00001-of-00005.gguf",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 590473,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 313551,
     blobBlockLength: 4004,
-    blobByteOffset: 38694875116,
+    blobByteOffset: 20547317735,
     modelId: "Qwen3-1.7B-Q4_0-00001-of-00005.gguf",
     addon: "llm",
     expectedSize: 1056783456,
@@ -766,10 +785,10 @@ export const models = [
         sha256Checksum:
           "3c431cbd66b097bca68e2445e94398092e4bbacba1b1fce1a82bb0c7c4548163",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 590473,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 313551,
         blobBlockLength: 4004,
-        blobByteOffset: 38694875116,
+        blobByteOffset: 20547317735,
       },
       {
         filename: "Qwen3-1.7B-Q4_0-00002-of-00005.gguf",
@@ -777,10 +796,10 @@ export const models = [
         sha256Checksum:
           "be625ac56ec660a1e57096ff4cb708e5b0bf48de8881af0de7b63ff97e77500e",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 594477,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 317555,
         blobBlockLength: 3801,
-        blobByteOffset: 38957249484,
+        blobByteOffset: 20809692103,
       },
       {
         filename: "Qwen3-1.7B-Q4_0-00003-of-00005.gguf",
@@ -788,10 +807,10 @@ export const models = [
         sha256Checksum:
           "7a38d01c2c44b7d3cbe5c5e81c9bbd24049e5401afbe7d8d3bd21cb534e1c05a",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 598278,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 321356,
         blobBlockLength: 3783,
-        blobByteOffset: 39206317644,
+        blobByteOffset: 21058760263,
       },
       {
         filename: "Qwen3-1.7B-Q4_0-00004-of-00005.gguf",
@@ -799,10 +818,10 @@ export const models = [
         sha256Checksum:
           "943d1ad1cbe8bf581ff4ea2ea6a9009b76d7ab5594ed0c771d3fee392956c1c5",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 602061,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 325139,
         blobBlockLength: 3783,
-        blobByteOffset: 39454198060,
+        blobByteOffset: 21306640679,
       },
       {
         filename: "Qwen3-1.7B-Q4_0-00005-of-00005.gguf",
@@ -810,10 +829,10 @@ export const models = [
         sha256Checksum:
           "2febc30e9f6152ad0d077e6f6b932db865384ab6324d5ccc2210d17875c294d3",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 605844,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 328922,
         blobBlockLength: 757,
-        blobByteOffset: 39702086732,
+        blobByteOffset: 21554529351,
       },
     ],
   },
@@ -823,10 +842,10 @@ export const models = [
       "qvac_models_compiled/ggml/Qwen3-1.7B/2025-08-21/Qwen3-1.7B-Q4_0.tensors.txt",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 606601,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 329679,
     blobBlockLength: 1,
-    blobByteOffset: 39751658572,
+    blobByteOffset: 21604101191,
     modelId: "Qwen3-1.7B-Q4_0.tensors.txt",
     addon: "llm",
     expectedSize: 7067,
@@ -842,10 +861,10 @@ export const models = [
       "qvac_models_compiled/ggml/Qwen3-4B/2025-06-27/Qwen3-4B-Q4_K_M.gguf",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 126079,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 28460,
     blobBlockLength: 38106,
-    blobByteOffset: 8262054922,
+    blobByteOffset: 1864824888,
     modelId: "Qwen3-4B-Q4_K_M.gguf",
     addon: "llm",
     expectedSize: 2497280256,
@@ -861,10 +880,10 @@ export const models = [
       "qvac_models_compiled/ggml/Qwen3-4B/2025-08-21/Qwen3-4B-Q4_0-00001-of-00005.gguf",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 492564,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 215642,
     blobBlockLength: 9084,
-    blobByteOffset: 32278881623,
+    blobByteOffset: 14131324242,
     modelId: "Qwen3-4B-Q4_0-00001-of-00005.gguf",
     addon: "llm",
     expectedSize: 2497280864,
@@ -880,10 +899,10 @@ export const models = [
         sha256Checksum:
           "44855a5795d7cc494e1bc45d023b9fa1ba99e59a937859d3227d00bcf8d4bf09",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 492564,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 215642,
         blobBlockLength: 9084,
-        blobByteOffset: 32278881623,
+        blobByteOffset: 14131324242,
       },
       {
         filename: "Qwen3-4B-Q4_0-00002-of-00005.gguf",
@@ -891,10 +910,10 @@ export const models = [
         sha256Checksum:
           "22fbb31f804bb7dae0c46423675f37fdde82ff473b45a21266a97049c2ba75fa",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 501648,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 224726,
         blobBlockLength: 8991,
-        blobByteOffset: 32874203895,
+        blobByteOffset: 14726646514,
       },
       {
         filename: "Qwen3-4B-Q4_0-00003-of-00005.gguf",
@@ -902,10 +921,10 @@ export const models = [
         sha256Checksum:
           "45cd8d3b40d72fd2f5afd3f013ef59b59626f3489ac39bb91565783eb1cf67cb",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 510639,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 233717,
         blobBlockLength: 9002,
-        blobByteOffset: 33463420087,
+        blobByteOffset: 15315862706,
       },
       {
         filename: "Qwen3-4B-Q4_0-00004-of-00005.gguf",
@@ -913,10 +932,10 @@ export const models = [
         sha256Checksum:
           "ff24652aac8790c5f5810057710bec19a6872d4f29b2f61663b05fe7c57605a4",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 519641,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 242719,
         blobBlockLength: 9081,
-        blobByteOffset: 34053312183,
+        blobByteOffset: 15905754802,
       },
       {
         filename: "Qwen3-4B-Q4_0-00005-of-00005.gguf",
@@ -924,10 +943,10 @@ export const models = [
         sha256Checksum:
           "edecb6b27de377761d97ab88c75709b2b6cc8466bde4a43baf9744ff9a3ed19e",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 528722,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 251800,
         blobBlockLength: 1950,
-        blobByteOffset: 34648384279,
+        blobByteOffset: 16500826898,
       },
     ],
   },
@@ -937,10 +956,10 @@ export const models = [
       "qvac_models_compiled/ggml/Qwen3-4B/2025-08-21/Qwen3-4B-Q4_0.tensors.txt",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 530672,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 253750,
     blobBlockLength: 1,
-    blobByteOffset: 34776162487,
+    blobByteOffset: 16628605106,
     modelId: "Qwen3-4B-Q4_0.tensors.txt",
     addon: "llm",
     expectedSize: 9107,
@@ -951,15 +970,89 @@ export const models = [
     params: "4B",
   },
   {
+    name: "QWEN3_8B_INST_Q4_K_M",
+    registryPath: "Qwen/Qwen3-8B-GGUF/blob/main/Qwen3-8B-Q4_K_M.gguf",
+    registrySource: "hf",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 719180,
+    blobBlockLength: 76718,
+    blobByteOffset: 47128646467,
+    modelId: "Qwen3-8B-Q4_K_M.gguf",
+    addon: "llm",
+    expectedSize: 5027783488,
+    sha256Checksum:
+      "d98cdcbd03e17ce47681435b5150e34c1417f50b5c0019dd560e4882c5745785",
+    engine: "llamacpp-completion",
+    quantization: "q4_k_m",
+    params: "8B",
+  },
+  {
+    name: "MMPROJ_QWEN3VL_2B_MULTIMODAL_Q4_K",
+    registryPath:
+      "Qwen/Qwen3-VL-2B-Instruct-GGUF/resolve/main/mmproj-Qwen3VL-2B-Instruct-Q8_0.gguf",
+    registrySource: "hf",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 522684,
+    blobBlockLength: 6791,
+    blobByteOffset: 34251142115,
+    modelId: "mmproj-Qwen3VL-2B-Instruct-Q8_0.gguf",
+    addon: "llm",
+    expectedSize: 445053216,
+    sha256Checksum:
+      "f9a68fabba69c3b81e153367b2c7521030b0fa8bb0de400c9599c8e6725f9c82",
+    engine: "llamacpp-completion",
+    quantization: "q4_k",
+    params: "2B",
+  },
+  {
+    name: "QWEN3VL_2B_MULTIMODAL_Q4_K",
+    registryPath:
+      "Qwen/Qwen3-VL-2B-Instruct-GGUF/resolve/main/Qwen3VL-2B-Instruct-Q4_K_M.gguf",
+    registrySource: "hf",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 505786,
+    blobBlockLength: 16898,
+    blobByteOffset: 33143732163,
+    modelId: "Qwen3VL-2B-Instruct-Q4_K_M.gguf",
+    addon: "llm",
+    expectedSize: 1107409952,
+    sha256Checksum:
+      "089d75c52f4b7ffc56ba998ffc50aae89fcafc755f9e7208aacca281dca6c2ae",
+    engine: "llamacpp-completion",
+    quantization: "q4_k",
+    params: "2B",
+  },
+  {
+    name: "GPT_OSS_20B_INST_Q4_K_M",
+    registryPath: "unsloth/gpt-oss-20b-GGUF/blob/main/gpt-oss-20b-Q4_K_M.gguf",
+    registrySource: "hf",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 541800,
+    blobBlockLength: 177380,
+    blobByteOffset: 35503886979,
+    modelId: "gpt-oss-20b-Q4_K_M.gguf",
+    addon: "llm",
+    expectedSize: 11624759488,
+    sha256Checksum:
+      "c27536640e410032865dc68781d80a08b98f8db5e93575919af8ccc0568aeb4f",
+    engine: "llamacpp-completion",
+    quantization: "q4_k_m",
+    params: "20B",
+  },
+  {
     name: "LLAMA_3_2_1B_INST_Q4_0",
     registryPath:
       "unsloth/Llama-3.2-1B-Instruct-GGUF/blob/b69aef112e9f895e6f98d7ae0949f72ff09aa401/Llama-3.2-1B-Instruct-Q4_0.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 266335,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 168716,
     blobBlockLength: 11796,
-    blobByteOffset: 17453790858,
+    blobByteOffset: 11056560824,
     modelId: "Llama-3.2-1B-Instruct-Q4_0.gguf",
     addon: "llm",
     expectedSize: 773025824,
@@ -975,10 +1068,10 @@ export const models = [
       "unsloth/medgemma-4b-it-GGUF/blob/fa17ea2647ef236db91adfe1465a61ab6562cf2c/medgemma-4b-it-Q4_1.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 164185,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 66566,
     blobBlockLength: 39125,
-    blobByteOffset: 10759335178,
+    blobByteOffset: 4362105144,
     modelId: "medgemma-4b-it-Q4_1.gguf",
     addon: "llm",
     expectedSize: 2564052800,
@@ -994,10 +1087,10 @@ export const models = [
       "unsloth/medgemma-4b-it-GGUF/resolve/fa17ea2647ef236db91adfe1465a61ab6562cf2c/medgemma-4b-it-Q8_0.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 203310,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 105691,
     blobBlockLength: 63025,
-    blobByteOffset: 13323387978,
+    blobByteOffset: 6926157944,
     modelId: "medgemma-4b-it-Q8_0.gguf",
     addon: "llm",
     expectedSize: 4130402880,
@@ -1013,10 +1106,10 @@ export const models = [
       "unsloth/Qwen3-0.6B-GGUF/blob/50968a4468ef4233ed78cd7c3de230dd1d61a56b/Qwen3-0.6B-Q4_0.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1899882,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 380426,
     blobBlockLength: 5832,
-    blobByteOffset: 124498686383,
+    blobByteOffset: 24929383097,
     modelId: "Qwen3-0.6B-Q4_0.gguf",
     addon: "llm",
     expectedSize: 382156480,
@@ -1032,10 +1125,10 @@ export const models = [
       "unsloth/Qwen3-1.7B-GGUF/resolve/d7f544eead698dbd1f15126ef60b45a1e1933222/Qwen3-1.7B-Q4_0.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 343937,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 246318,
     blobBlockLength: 16126,
-    blobByteOffset: 22539383370,
+    blobByteOffset: 16142153336,
     modelId: "Qwen3-1.7B-Q4_0.gguf",
     addon: "llm",
     expectedSize: 1056782912,
@@ -1051,10 +1144,10 @@ export const models = [
       "BSC-LT/salamandraTA-2B-instruct-GGUF/blob/60046856fcac87c47fb0c706e994e70f01eda62b/salamandrata_2b_inst_q4.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 44450,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 36638,
     blobBlockLength: 23158,
-    blobByteOffset: 2912887981,
+    blobByteOffset: 2401075552,
     modelId: "salamandrata_2b_inst_q4.gguf",
     addon: "nmt",
     expectedSize: 1517617504,
@@ -1070,10 +1163,10 @@ export const models = [
       "BSC-LT/salamandraTA-2B-instruct-GGUF/blob/60046856fcac87c47fb0c706e994e70f01eda62b/salamandrata_2b_inst_q8.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 7812,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 0,
     blobBlockLength: 36638,
-    blobByteOffset: 511812429,
+    blobByteOffset: 0,
     modelId: "salamandrata_2b_inst_q8.gguf",
     addon: "nmt",
     expectedSize: 2401075552,
@@ -1089,10 +1182,10 @@ export const models = [
       "ggml-org/SmolVLM2-500M-Video-Instruct-GGUF/resolve/ccd7aae53bcb1997355c2f094959e72b3642ce17/mmproj-SmolVLM2-500M-Video-Instruct-f16.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1896838,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 377382,
     blobBlockLength: 3044,
-    blobByteOffset: 124299215759,
+    blobByteOffset: 24729912473,
     modelId: "mmproj-SmolVLM2-500M-Video-Instruct-f16.gguf",
     addon: "nmt",
     expectedSize: 199470624,
@@ -1108,10 +1201,10 @@ export const models = [
       "ggml-org/SmolVLM2-500M-Video-Instruct-GGUF/resolve/ccd7aae53bcb1997355c2f094959e72b3642ce17/SmolVLM2-500M-Video-Instruct-f16.gguf",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1884319,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 364863,
     blobBlockLength: 12519,
-    blobByteOffset: 123478791055,
+    blobByteOffset: 23909487769,
     modelId: "SmolVLM2-500M-Video-Instruct-f16.gguf",
     addon: "nmt",
     expectedSize: 820424704,
@@ -1122,129 +1215,1459 @@ export const models = [
     params: "500M",
   },
   {
-    name: "MARIAN_EN_HI_INDIC_1B_Q0F16",
+    name: "BERGAMOT_AR_EN_LEX",
     registryPath:
-      "qvac_models_compiled/ggml/indictrans2/q0f16/ggml-indictrans2-en-indic-1B/2025-09-09/ggml-indictrans2-en-indic-1B-q0f16.bin",
+      "qvac_models_compiled/bergamot/bergamot-aren/2025-12-18/lex.50.50.aren.s2t.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 716431,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 817546,
+    blobBlockLength: 71,
+    blobByteOffset: 53574760140,
+    modelId: "lex.50.50.aren.s2t.bin",
+    addon: "nmt",
+    expectedSize: 4627200,
+    sha256Checksum:
+      "4b45f14dbea40d368093a13563fc1ca48457ee70c1291c82b206f3baff210081",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-aren/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 817617,
+    blobBlockLength: 1,
+    blobByteOffset: 53579387340,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2238,
+    sha256Checksum:
+      "3d51ad945784c5dd05577f6f4f8355f2736fce5f2da6ecfefe13c1face6d2878",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_AR_EN",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-aren/2025-12-18/model.aren.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 817618,
+    blobBlockLength: 482,
+    blobByteOffset: 53579389578,
+    modelId: "model.aren.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 31561787,
+    sha256Checksum:
+      "7b7af0282dc5f4d8805b9a298c2fa828967e3f09ca10f1942ebeea0b2cfc12fa",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_AR_EN_VOCAB",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-aren/2025-12-18/vocab.aren.spm",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 818100,
+    blobBlockLength: 14,
+    blobByteOffset: 53610951365,
+    modelId: "vocab.aren.spm",
+    addon: "nmt",
+    expectedSize: 860035,
+    sha256Checksum:
+      "51b4ee3f828d10015464523d0b4f5a6c086b0b2a9bde716a581001cf6c260366",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_CS_EN_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-csen/2025-12-18/lex.50.50.csen.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 818114,
+    blobBlockLength: 77,
+    blobByteOffset: 53611811400,
+    modelId: "lex.50.50.csen.s2t.bin",
+    addon: "nmt",
+    expectedSize: 4990588,
+    sha256Checksum:
+      "eba6bd9575251525f1941640ea0b6527a06e72a46421579eafea04d635ee20a8",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_1",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-csen/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 818191,
+    blobBlockLength: 1,
+    blobByteOffset: 53616801988,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2238,
+    sha256Checksum:
+      "b2f44477cb1d92ca92217a195808eef830afd7ef525a3633215ca24d7da6396f",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_CS_EN",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-csen/2025-12-18/model.csen.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 818192,
+    blobBlockLength: 482,
+    blobByteOffset: 53616804226,
+    modelId: "model.csen.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 31561787,
+    sha256Checksum:
+      "c815273b31074492eaab0ccd78d33d7ac16f94088707ab2492abaedcb9ee0b75",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_CS_EN_VOCAB",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-csen/2025-12-18/vocab.csen.spm",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 818674,
+    blobBlockLength: 13,
+    blobByteOffset: 53648366013,
+    modelId: "vocab.csen.spm",
+    addon: "nmt",
+    expectedSize: 815154,
+    sha256Checksum:
+      "ee4b8ce15c8e1237c5f7a2d04741341beb0a5d5c09820f7ec08f13ee2b212755",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_AR_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enar/2025-12-18/lex.50.50.enar.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 818687,
+    blobBlockLength: 48,
+    blobByteOffset: 53649181167,
+    modelId: "lex.50.50.enar.s2t.bin",
+    addon: "nmt",
+    expectedSize: 3139692,
+    sha256Checksum:
+      "2b7194817c5dd9225ca90c0d908cc92e1d6d1f45625781a5feb037ac568d6a61",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_2",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enar/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 818735,
+    blobBlockLength: 1,
+    blobByteOffset: 53652320859,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2238,
+    sha256Checksum:
+      "cecd66082bbfdec98e9948ef0480e992de00e5054fd915aa89c76683f14f71ac",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_AR",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enar/2025-12-18/model.enar.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 818736,
+    blobBlockLength: 482,
+    blobByteOffset: 53652323097,
+    modelId: "model.enar.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 31561787,
+    sha256Checksum:
+      "ae659d7045fc2e5d6ba50583586a5d94ee4358d92c019847e37b57a0e627faa8",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_AR_VOCAB",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enar/2025-12-18/vocab.enar.spm",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 819218,
+    blobBlockLength: 14,
+    blobByteOffset: 53683884884,
+    modelId: "vocab.enar.spm",
+    addon: "nmt",
+    expectedSize: 863591,
+    sha256Checksum:
+      "8d93c54aa5e2044c416ec680b5ff9af0227bd698521666e8b1a1ea1b041fbae8",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_CS_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-encs/2025-12-18/lex.50.50.encs.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 819232,
+    blobBlockLength: 55,
+    blobByteOffset: 53684748475,
+    modelId: "lex.50.50.encs.s2t.bin",
+    addon: "nmt",
+    expectedSize: 3572436,
+    sha256Checksum:
+      "699b9b59fe3acbcddf831380024b2e139f2cbe225dce96d59ade2b159318f58b",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_3",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-encs/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 819287,
+    blobBlockLength: 1,
+    blobByteOffset: 53688320911,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2238,
+    sha256Checksum:
+      "3020fbce4d4629677a2cb4b8216cc33a79b0829f95fe193c23a6342949ed05fd",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_CS",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-encs/2025-12-18/model.encs.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 819288,
+    blobBlockLength: 482,
+    blobByteOffset: 53688323149,
+    modelId: "model.encs.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 31561787,
+    sha256Checksum:
+      "1d7855f91c3e2b8ef79fbea62707d46ceb8a1ad01834ef6dd500f32a7006cc2c",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_ES_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enes/2025-12-18/lex.50.50.enes.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 819783,
+    blobBlockLength: 65,
+    blobByteOffset: 53720700090,
+    modelId: "lex.50.50.enes.s2t.bin",
+    addon: "nmt",
+    expectedSize: 4198436,
+    sha256Checksum:
+      "7d51237c0a07027dcd61643cfbbb0f8c48597d19907ef53d2cae9d6bec2cf25c",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_4",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enes/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 819848,
+    blobBlockLength: 1,
+    blobByteOffset: 53724898526,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2238,
+    sha256Checksum:
+      "bafcb48a25fe7fa2b05ae0721822773ec1d2232bed1124295be9f22a5f26e313",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_ES",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enes/2025-12-18/model.enes.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 819849,
+    blobBlockLength: 482,
+    blobByteOffset: 53724900764,
+    modelId: "model.enes.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 31561787,
+    sha256Checksum:
+      "3b1c399511c01c84c36fae5c0524df44096288efdc8236e182b5c97d7ad2244c",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_ES_VOCAB",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enes/2025-12-18/vocab.enes.spm",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 820331,
+    blobBlockLength: 13,
+    blobByteOffset: 53756462551,
+    modelId: "vocab.enes.spm",
+    addon: "nmt",
+    expectedSize: 816054,
+    sha256Checksum:
+      "5ae254fa9b15aa182e70fd2a6186b1333c63a29a48043a9224c6aa4fcac058ad",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_FR_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enfr/2025-12-18/lex.50.50.enfr.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 820344,
+    blobBlockLength: 67,
+    blobByteOffset: 53757278605,
+    modelId: "lex.50.50.enfr.s2t.bin",
+    addon: "nmt",
+    expectedSize: 4372936,
+    sha256Checksum:
+      "2585ed98d3af0bc949865aedeb390493d591f56870814376e73e4144c41ed059",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_5",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enfr/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 820411,
+    blobBlockLength: 1,
+    blobByteOffset: 53761651541,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2238,
+    sha256Checksum:
+      "0c21df488924402f479517d2551e1c44ef72f3063e1424d49e3bd777f1c2b701",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_FR",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enfr/2025-12-18/model.enfr.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 820412,
+    blobBlockLength: 482,
+    blobByteOffset: 53761653779,
+    modelId: "model.enfr.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 31561787,
+    sha256Checksum:
+      "6322e296d4fecfe395a8d5723da4ec37ecbe6d7613bb1dfcf4b28e2a47498b68",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_FR_VOCAB",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enfr/2025-12-18/vocab.enfr.spm",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 820894,
+    blobBlockLength: 13,
+    blobByteOffset: 53793215566,
+    modelId: "vocab.enfr.spm",
+    addon: "nmt",
+    expectedSize: 814404,
+    sha256Checksum:
+      "783abf3abe075afdf8d85d233994bef2c3a064e935ab1bed946820aff6ac002a",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_IT_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enit/2025-12-18/lex.50.50.enit.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 820907,
+    blobBlockLength: 69,
+    blobByteOffset: 53794029970,
+    modelId: "lex.50.50.enit.s2t.bin",
+    addon: "nmt",
+    expectedSize: 4495004,
+    sha256Checksum:
+      "351ea80fb9f366f07533c7c4836248e72d9d4aa4eb7a05b5d74891a7abb4208c",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_6",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enit/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 820976,
+    blobBlockLength: 1,
+    blobByteOffset: 53798524974,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2061,
+    sha256Checksum:
+      "ec2b783ae97dceebfd7f5232eeb5b5cd0d357e7d789cc894958afe7fb764aea3",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_IT",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enit/2025-12-18/model.enit.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 820977,
+    blobBlockLength: 262,
+    blobByteOffset: 53798527035,
+    modelId: "model.enit.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 17140899,
+    sha256Checksum:
+      "3d7bbc4d7977e10b35f53faa79f5d5de8211f4f04baed9e7cd9dee1dcceda917",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_IT_VOCAB",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enit/2025-12-18/vocab.enit.spm",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 821239,
+    blobBlockLength: 13,
+    blobByteOffset: 53815667934,
+    modelId: "vocab.enit.spm",
+    addon: "nmt",
+    expectedSize: 812781,
+    sha256Checksum:
+      "603f3349657c3deb9736a0c567452d102a5a03c377dfdf1d32c428608f2cff1b",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_JA_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enja/2025-12-18/lex.50.50.enja.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 821252,
+    blobBlockLength: 63,
+    blobByteOffset: 53816480715,
+    modelId: "lex.50.50.enja.s2t.bin",
+    addon: "nmt",
+    expectedSize: 4128360,
+    sha256Checksum:
+      "edfb7eb47b98a2689b804ab3614c31b24f1257aa54b1154da3d85e1ae8152d9f",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_7",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enja/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 821315,
+    blobBlockLength: 1,
+    blobByteOffset: 53820609075,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2233,
+    sha256Checksum:
+      "976e75eddb222c4a9280e311e6cc5fbeb2a0a846d9f70955cfde01ee579cfd94",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_JA",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enja/2025-12-18/model.enja.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 821316,
+    blobBlockLength: 670,
+    blobByteOffset: 53820611308,
+    modelId: "model.enja.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 43849787,
+    sha256Checksum:
+      "59ae659f9bb63e4f81f474fe3c03d3f4499434b5f9e779fab7c12a45f31fd562",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_JA_SRCVOCAB",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enja/2025-12-18/srcvocab.enja.spm",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 821986,
+    blobBlockLength: 13,
+    blobByteOffset: 53864461095,
+    modelId: "srcvocab.enja.spm",
+    addon: "nmt",
+    expectedSize: 796275,
+    sha256Checksum:
+      "970c98d174fc01e0339fbabbf45af36a4be3f26f819ec1a5ea1189f71e091889",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_JA_TRGVOCAB",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enja/2025-12-18/trgvocab.enja.spm",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 821999,
+    blobBlockLength: 13,
+    blobByteOffset: 53865257370,
+    modelId: "trgvocab.enja.spm",
+    addon: "nmt",
+    expectedSize: 827144,
+    sha256Checksum:
+      "3b3d9f8f3a034d98d0a476f1794fa79c01e4e98a967ceb6777a66ba2d03ec1e1",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_PT_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enpt/2025-12-18/lex.50.50.enpt.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 822012,
+    blobBlockLength: 61,
+    blobByteOffset: 53866084514,
+    modelId: "lex.50.50.enpt.s2t.bin",
+    addon: "nmt",
+    expectedSize: 3970340,
+    sha256Checksum:
+      "ccb4c31c9e1899d77a200e71a86958e6ef6c8649627d0bbf3f873b57d9f236bd",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_8",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enpt/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 822073,
+    blobBlockLength: 1,
+    blobByteOffset: 53870054854,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2237,
+    sha256Checksum:
+      "661fa25e4955a7d63099021c04fe86cf4e58a3b141f8851696e2009b6596020d",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_PT",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enpt/2025-12-18/model.enpt.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 822074,
+    blobBlockLength: 482,
+    blobByteOffset: 53870057091,
+    modelId: "model.enpt.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 31561787,
+    sha256Checksum:
+      "07892fd2544ee79dcb643615d8f2debb9793fae16842e87c328e27a3dd26a770",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_PT_VOCAB",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enpt/2025-12-18/vocab.enpt.spm",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 822556,
+    blobBlockLength: 13,
+    blobByteOffset: 53901618878,
+    modelId: "vocab.enpt.spm",
+    addon: "nmt",
+    expectedSize: 816726,
+    sha256Checksum:
+      "d9f46182823d5bbc84201252b2dfcac28f63e561f0ec827ed858f241864c9def",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_RU_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enru/2025-12-18/lex.50.50.enru.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 822569,
+    blobBlockLength: 43,
+    blobByteOffset: 53902435604,
+    modelId: "lex.50.50.enru.s2t.bin",
+    addon: "nmt",
+    expectedSize: 2774540,
+    sha256Checksum:
+      "4d91839726b960e70b6d05c53d0cffd16262832b1c0e1ea99d66f412dcc6a239",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_9",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enru/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 822612,
+    blobBlockLength: 1,
+    blobByteOffset: 53905210144,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2238,
+    sha256Checksum:
+      "6e77797aa8a3099017dbe7f6c3412b136c0d38089e1878a14248ee4a721540f8",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_RU",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enru/2025-12-18/model.enru.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 822613,
+    blobBlockLength: 482,
+    blobByteOffset: 53905212382,
+    modelId: "model.enru.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 31561787,
+    sha256Checksum:
+      "184cb5cda528eeefc0f75f5d0035d787b71d74af135e3c5608d01ae02ecfb920",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_RU_VOCAB",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enru/2025-12-18/vocab.enru.spm",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 823095,
+    blobBlockLength: 14,
+    blobByteOffset: 53936774169,
+    modelId: "vocab.enru.spm",
+    addon: "nmt",
+    expectedSize: 904455,
+    sha256Checksum:
+      "56ee63e14e8cb926c394242adc3ed7cc602644c3d33058cff2ce2959d52a6258",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_ZH_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enzh/2025-12-18/lex.50.50.enzh.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 823109,
+    blobBlockLength: 100,
+    blobByteOffset: 53937678624,
+    modelId: "lex.50.50.enzh.s2t.bin",
+    addon: "nmt",
+    expectedSize: 6506248,
+    sha256Checksum:
+      "4a5e5827788060f1d718a8132b69440929387514a045796e9b77f935db68c055",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_10",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enzh/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 823209,
+    blobBlockLength: 1,
+    blobByteOffset: 53944184872,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2233,
+    sha256Checksum:
+      "42d277178bca7f757463067ff659467e1b0d300f8408b6de6c7e891b4c19075b",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_ZH",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enzh/2025-12-18/model.enzh.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 823210,
+    blobBlockLength: 670,
+    blobByteOffset: 53944187105,
+    modelId: "model.enzh.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 43849787,
+    sha256Checksum:
+      "4e5accc141373565ddc8fa1565bceaa8d0c3482a82cab8131c719ebcc6c2157c",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_ZH_SRCVOCAB",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enzh/2025-12-18/srcvocab.enzh.spm",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 823880,
+    blobBlockLength: 13,
+    blobByteOffset: 53988036892,
+    modelId: "srcvocab.enzh.spm",
+    addon: "nmt",
+    expectedSize: 806952,
+    sha256Checksum:
+      "bd9b65504acc6d9726dd281f7defc2adb7c2c22d0688fe2f84697de25197c8c5",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_EN_ZH_TRGVOCAB",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-enzh/2025-12-18/trgvocab.enzh.spm",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 823893,
+    blobBlockLength: 12,
+    blobByteOffset: 53988843844,
+    modelId: "trgvocab.enzh.spm",
+    addon: "nmt",
+    expectedSize: 772004,
+    sha256Checksum:
+      "aded6993c36e440284d11cec3f6b8aef9c0e43188a772d80be342a713adf223d",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_ES_EN_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-esen/2025-12-18/lex.50.50.esen.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 823905,
+    blobBlockLength: 59,
+    blobByteOffset: 53989615848,
+    modelId: "lex.50.50.esen.s2t.bin",
+    addon: "nmt",
+    expectedSize: 3860888,
+    sha256Checksum:
+      "f11a2c23ef85ab1fee1c412b908d69bc20d66fd59faa8f7da5a5f0347eddf969",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_11",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-esen/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 823964,
+    blobBlockLength: 1,
+    blobByteOffset: 53993476736,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 1873,
+    sha256Checksum:
+      "4d40849ae6e754e225d417fb15fa08713119b6140a6a6893cecf03d422ad9220",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_ES_EN",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-esen/2025-12-18/model.esen.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 823965,
+    blobBlockLength: 262,
+    blobByteOffset: 53993478609,
+    modelId: "model.esen.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 17140755,
+    sha256Checksum:
+      "4b6b7f451094aaa447d012658af158ffc708fc8842dde2f871a58404f5457fe0",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_ES_EN_VOCAB",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-esen/2025-12-18/vocab.esen.spm",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 824227,
+    blobBlockLength: 13,
+    blobByteOffset: 54010619364,
+    modelId: "vocab.esen.spm",
+    addon: "nmt",
+    expectedSize: 825463,
+    sha256Checksum:
+      "909b1eea1face0d7f90a474fe29a8c0fef8d104b6e41e65616f864c964ba8845",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_FR_EN_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-fren/2025-12-18/lex.50.50.fren.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 824240,
+    blobBlockLength: 74,
+    blobByteOffset: 54011444827,
+    modelId: "lex.50.50.fren.s2t.bin",
+    addon: "nmt",
+    expectedSize: 4824120,
+    sha256Checksum:
+      "87c6752ea908f5f0347c10ac0cf7d80d9c2f4f20c81c90168f3e8230b56d4440",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_12",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-fren/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 824314,
+    blobBlockLength: 1,
+    blobByteOffset: 54016268947,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2238,
+    sha256Checksum:
+      "3f274b8aa7445b76e17c5106d31f8675b0112d29899e1c8422db66a42e1e2f7c",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_FR_EN",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-fren/2025-12-18/model.fren.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 824315,
+    blobBlockLength: 482,
+    blobByteOffset: 54016271185,
+    modelId: "model.fren.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 31561787,
+    sha256Checksum:
+      "15f997bc0d13808b0b0fbd0786e684a3c8a52adcd8071844b76123fdacbf2b90",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_IT_EN_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-iten/2025-12-18/lex.50.50.iten.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 824810,
+    blobBlockLength: 72,
+    blobByteOffset: 54048647376,
+    modelId: "lex.50.50.iten.s2t.bin",
+    addon: "nmt",
+    expectedSize: 4713616,
+    sha256Checksum:
+      "0700d6d70b30490e68ff9deca0b45b80310745b491855bde3a13e1692d0cbce1",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_13",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-iten/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 824882,
+    blobBlockLength: 1,
+    blobByteOffset: 54053360992,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2238,
+    sha256Checksum:
+      "0bca85e2c3eacb2a6ed3c168730bdafb3398d158e0d72ba1adb78a437dae8874",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_IT_EN",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-iten/2025-12-18/model.iten.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 824883,
+    blobBlockLength: 482,
+    blobByteOffset: 54053363230,
+    modelId: "model.iten.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 31561787,
+    sha256Checksum:
+      "21b70978ce2f3b4da7a06b5de86a09abe3acd30b9eee1b2ebb3582b9bad790bf",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_IT_EN_VOCAB",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-iten/2025-12-18/vocab.iten.spm",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 825365,
+    blobBlockLength: 13,
+    blobByteOffset: 54084925017,
+    modelId: "vocab.iten.spm",
+    addon: "nmt",
+    expectedSize: 812724,
+    sha256Checksum:
+      "3ef0211d4ae6db21440892f180f2019fe2bfc110a330ffa9d2eca9665e4f2bc5",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_JA_EN_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-jaen/2025-12-18/lex.50.50.jaen.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 825378,
+    blobBlockLength: 143,
+    blobByteOffset: 54085737741,
+    modelId: "lex.50.50.jaen.s2t.bin",
+    addon: "nmt",
+    expectedSize: 9348172,
+    sha256Checksum:
+      "525f412f0d210536c2933c78ae395fa0bf2b5ee6cc5dda61ebc2e79410ebaee4",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_14",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-jaen/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 825521,
+    blobBlockLength: 1,
+    blobByteOffset: 54095085913,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2238,
+    sha256Checksum:
+      "aa5c56afcdd54a3e67ee767391da68d13618b2c56a938dd93e325afb51a44cba",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_JA_EN",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-jaen/2025-12-18/model.jaen.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 825522,
+    blobBlockLength: 672,
+    blobByteOffset: 54095088151,
+    modelId: "model.jaen.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 43977787,
+    sha256Checksum:
+      "3a603e20bfe1be86071913f9e23ab5129075bc0a8490151020ac4821e4f17302",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_JA_EN_VOCAB",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-jaen/2025-12-18/vocab.jaen.spm",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 826194,
+    blobBlockLength: 23,
+    blobByteOffset: 54139065938,
+    modelId: "vocab.jaen.spm",
+    addon: "nmt",
+    expectedSize: 1443222,
+    sha256Checksum:
+      "5cb217758bae05877bb3f0c2f612e4e7c1e4cb03c10db11f4a47098d7ae62919",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_PT_EN_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-pten/2025-12-18/lex.50.50.pten.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 826217,
+    blobBlockLength: 71,
+    blobByteOffset: 54140509160,
+    modelId: "lex.50.50.pten.s2t.bin",
+    addon: "nmt",
+    expectedSize: 4634492,
+    sha256Checksum:
+      "2685d8b6530be92a4db4cc61f15a097eb114552be15cb6c1699e9d2d99d24470",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_15",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-pten/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 826288,
+    blobBlockLength: 1,
+    blobByteOffset: 54145143652,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2238,
+    sha256Checksum:
+      "afd1fce3f2ffff597481700140b0e0a58eb4e094dd9006587a035aca26fde26d",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_PT_EN",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-pten/2025-12-18/model.pten.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 826289,
+    blobBlockLength: 482,
+    blobByteOffset: 54145145890,
+    modelId: "model.pten.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 31561787,
+    sha256Checksum:
+      "7b854f1ec5a485dd33efd7c1bc01dd7d5a57f566957c5e47722af333f0ce9157",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_RU_EN_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-ruen/2025-12-18/lex.50.50.ruen.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 826784,
+    blobBlockLength: 69,
+    blobByteOffset: 54177524403,
+    modelId: "lex.50.50.ruen.s2t.bin",
+    addon: "nmt",
+    expectedSize: 4483844,
+    sha256Checksum:
+      "f654693577505fd38b1f3d220cdd4ffffbb45afb900a60cf751f0724eadc74e0",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_16",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-ruen/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 826853,
+    blobBlockLength: 1,
+    blobByteOffset: 54182008247,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2248,
+    sha256Checksum:
+      "e9f8d86c32eb82441c8b2558c9c2843f39d73fe03fc3fbe294e239707ca4b36e",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_RU_EN",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-ruen/2025-12-18/model.ruen.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 826854,
+    blobBlockLength: 262,
+    blobByteOffset: 54182010495,
+    modelId: "model.ruen.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 17141051,
+    sha256Checksum:
+      "b1d85c13cfbb05e1d326dd6f0fb5ef270a2011b547450260f96567a93f446c94",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_RU_EN_VOCAB",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-ruen/2025-12-18/vocab.ruen.spm",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 827116,
+    blobBlockLength: 14,
+    blobByteOffset: 54199151546,
+    modelId: "vocab.ruen.spm",
+    addon: "nmt",
+    expectedSize: 905257,
+    sha256Checksum:
+      "93bdc941b16e523695c319f74778bca9fd8b75a25ad75020cdc98aef74cdc0fc",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_ZH_EN_LEX",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-zhen/2025-12-18/lex.50.50.zhen.s2t.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 827130,
+    blobBlockLength: 141,
+    blobByteOffset: 54200056803,
+    modelId: "lex.50.50.zhen.s2t.bin",
+    addon: "nmt",
+    expectedSize: 9219192,
+    sha256Checksum:
+      "8524dd4c93ffd7f0ae7be32f77a7c14fea7cdbbebe34ea6ad0ec368d5ddd8b13",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_METADATA_17",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-zhen/2025-12-18/metadata.json",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 827271,
+    blobBlockLength: 1,
+    blobByteOffset: 54209275995,
+    modelId: "metadata.json",
+    addon: "nmt",
+    expectedSize: 2238,
+    sha256Checksum:
+      "40767965cbc4289fccc7a8dc34fa6d4700ccc0ff36ba382a85acc943fb1b0c03",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "BERGAMOT_ZH_EN",
+    registryPath:
+      "qvac_models_compiled/bergamot/bergamot-zhen/2025-12-18/model.zhen.intgemm.alphas.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 827272,
+    blobBlockLength: 672,
+    blobByteOffset: 54209278233,
+    modelId: "model.zhen.intgemm.alphas.bin",
+    addon: "nmt",
+    expectedSize: 43977787,
+    sha256Checksum:
+      "5cd149601802fc8a18124a1c1306144dbbedc058630c4ddb2d53aa76fa9c7c06",
+    engine: "nmtcpp-translation",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "MARIAN_EN_HI_INDIC_1B_F16",
+    registryPath:
+      "qvac_models_compiled/ggml/indictrans2/f16/ggml-indictrans2-en-indic-1B/2026-01-01/ggml-indictrans2-en-indic-1B-f16.bin",
+    registrySource: "s3",
+    blobCoreKey:
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 424155,
     blobBlockLength: 34176,
-    blobByteOffset: 46949330375,
-    modelId: "ggml-indictrans2-en-indic-1B-q0f16.bin",
+    blobByteOffset: 27794683758,
+    modelId: "ggml-indictrans2-en-indic-1B-f16.bin",
     addon: "nmt",
     expectedSize: 2239757219,
     sha256Checksum:
       "76763bab9e6c7f90d0a202a91a21a678dd65d9cfc1cfcd4f3c80f5a83a531444",
     engine: "nmtcpp-translation",
-    quantization: "q0f16",
+    quantization: "f16",
     params: "1B",
   },
   {
-    name: "MARIAN_EN_HI_INDIC_200M_Q0F16",
+    name: "MARIAN_EN_HI_INDIC_200M_F16",
     registryPath:
-      "qvac_models_compiled/ggml/indictrans2/q0f16/ggml-indictrans2-en-indic-dist-200M/2025-09-09/ggml-indictrans2-en-indic-dist-200M-q0f16.bin",
+      "qvac_models_compiled/ggml/indictrans2/f16/ggml-indictrans2-en-indic-dist-200M/2026-01-01/ggml-indictrans2-en-indic-dist-200M-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 750607,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 458331,
     blobBlockLength: 6582,
-    blobByteOffset: 49189087594,
-    modelId: "ggml-indictrans2-en-indic-dist-200M-q0f16.bin",
+    blobByteOffset: 30034440977,
+    modelId: "ggml-indictrans2-en-indic-dist-200M-f16.bin",
     addon: "nmt",
     expectedSize: 431338529,
     sha256Checksum:
       "0448976882eaf62300b294abc7d6696bceed51c1a83308e68575698f9bf1d910",
     engine: "nmtcpp-translation",
-    quantization: "q0f16",
+    quantization: "f16",
     params: "200M",
   },
   {
-    name: "MARIAN_HI_EN_INDIC_1B_Q0F16",
+    name: "MARIAN_HI_EN_INDIC_1B_F16",
     registryPath:
-      "qvac_models_compiled/ggml/indictrans2/q0f16/ggml-indictrans2-indic-en-1B/2025-09-09/ggml-indictrans2-indic-en-1B-q0f16.bin",
+      "qvac_models_compiled/ggml/indictrans2/f16/ggml-indictrans2-indic-en-1B/2026-01-01/ggml-indictrans2-indic-en-1B-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 757189,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 464913,
     blobBlockLength: 31347,
-    blobByteOffset: 49620426123,
-    modelId: "ggml-indictrans2-indic-en-1B-q0f16.bin",
+    blobByteOffset: 30465779506,
+    modelId: "ggml-indictrans2-indic-en-1B-f16.bin",
     addon: "nmt",
     expectedSize: 2054322154,
     sha256Checksum:
       "97e1dd56b9b68ad56bdf9c49949dc2cb9d7d27cb0c4ff84c3dda9113be43417b",
     engine: "nmtcpp-translation",
-    quantization: "q0f16",
+    quantization: "f16",
     params: "1B",
   },
   {
-    name: "MARIAN_HI_EN_INDIC_200M_Q0F16",
+    name: "MARIAN_HI_EN_INDIC_200M_F16",
     registryPath:
-      "qvac_models_compiled/ggml/indictrans2/q0f16/ggml-indictrans2-indic-en-dist-200M/2025-09-09/ggml-indictrans2-indic-en-dist-200M-q0f16.bin",
+      "qvac_models_compiled/ggml/indictrans2/f16/ggml-indictrans2-indic-en-dist-200M/2026-01-01/ggml-indictrans2-indic-en-dist-200M-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 788536,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 496260,
     blobBlockLength: 6577,
-    blobByteOffset: 51674748277,
-    modelId: "ggml-indictrans2-indic-en-dist-200M-q0f16.bin",
+    blobByteOffset: 32520101660,
+    modelId: "ggml-indictrans2-indic-en-dist-200M-f16.bin",
     addon: "nmt",
     expectedSize: 430985320,
     sha256Checksum:
       "e914f157a92018fb5601be9e546dff480ae5ec1a9a1ba49078ad3ef371ff4c44",
     engine: "nmtcpp-translation",
-    quantization: "q0f16",
+    quantization: "f16",
     params: "200M",
   },
   {
-    name: "MARIAN_HI_HI_INDIC_1B_Q0F16",
+    name: "MARIAN_HI_HI_INDIC_1B_F16",
     registryPath:
-      "qvac_models_compiled/ggml/indictrans2/q0f16/ggml-indictrans2-indic-indic-1B/2025-09-09/ggml-indictrans2-indic-indic-1B-q0f16.bin",
+      "qvac_models_compiled/ggml/indictrans2/f16/ggml-indictrans2-indic-indic-1B/2026-01-01/ggml-indictrans2-indic-indic-1B-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 795113,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 502837,
     blobBlockLength: 37068,
-    blobByteOffset: 52105733597,
-    modelId: "ggml-indictrans2-indic-indic-1B-q0f16.bin",
+    blobByteOffset: 32951086980,
+    modelId: "ggml-indictrans2-indic-indic-1B-f16.bin",
     addon: "nmt",
     expectedSize: 2429270859,
     sha256Checksum:
       "c4e9eafc03f9ac7aac35b494dfea02feda9797b5f69b682bd3bb9f565ec4ba2e",
     engine: "nmtcpp-translation",
-    quantization: "q0f16",
+    quantization: "f16",
     params: "1B",
   },
   {
-    name: "MARIAN_HI_HI_INDIC_320M_Q0F16",
+    name: "MARIAN_HI_HI_INDIC_320M_F16",
     registryPath:
-      "qvac_models_compiled/ggml/indictrans2/q0f16/ggml-indictrans2-indic-indic-dist-320M/2025-09-09/ggml-indictrans2-indic-indic-dist-320M-q0f16.bin",
+      "qvac_models_compiled/ggml/indictrans2/f16/ggml-indictrans2-indic-indic-dist-320M/2026-01-01/ggml-indictrans2-indic-indic-dist-320M-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 832181,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 539905,
     blobBlockLength: 9978,
-    blobByteOffset: 54535004456,
-    modelId: "ggml-indictrans2-indic-indic-dist-320M-q0f16.bin",
+    blobByteOffset: 35380357839,
+    modelId: "ggml-indictrans2-indic-indic-dist-320M-f16.bin",
     addon: "nmt",
     expectedSize: 653915115,
     sha256Checksum:
       "292f376b75b164ec3700da5b376675c79bd48f43dd2e28d1b54040020acc28b9",
     engine: "nmtcpp-translation",
-    quantization: "q0f16",
+    quantization: "f16",
     params: "320M",
   },
   {
     name: "MARIAN_EN_HI_INDIC_1B_Q4_0",
     registryPath:
-      "qvac_models_compiled/ggml/indictrans2/q4_0/ggml-indictrans2-en-indic-1B/2025-09-09/ggml-indictrans2-en-indic-1B-q4_0.bin",
+      "qvac_models_compiled/ggml/indictrans2/q4_0/ggml-indictrans2-en-indic-1B/2026-01-01/ggml-indictrans2-en-indic-1B-q4_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 842159,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 549883,
     blobBlockLength: 9724,
-    blobByteOffset: 55188919571,
+    blobByteOffset: 36034272954,
     modelId: "ggml-indictrans2-en-indic-1B-q4_0.bin",
     addon: "nmt",
     expectedSize: 637229091,
@@ -1257,13 +2680,13 @@ export const models = [
   {
     name: "MARIAN_EN_HI_INDIC_200M_Q4_0",
     registryPath:
-      "qvac_models_compiled/ggml/indictrans2/q4_0/ggml-indictrans2-en-indic-dist-200M/2025-09-09/ggml-indictrans2-en-indic-dist-200M-q4_0.bin",
+      "qvac_models_compiled/ggml/indictrans2/q4_0/ggml-indictrans2-en-indic-dist-200M/2026-01-01/ggml-indictrans2-en-indic-dist-200M-q4_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 851883,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 559607,
     blobBlockLength: 1944,
-    blobByteOffset: 55826148662,
+    blobByteOffset: 36671502045,
     modelId: "ggml-indictrans2-en-indic-dist-200M-q4_0.bin",
     addon: "nmt",
     expectedSize: 127339617,
@@ -1276,13 +2699,13 @@ export const models = [
   {
     name: "MARIAN_HI_EN_INDIC_1B_Q4_0",
     registryPath:
-      "qvac_models_compiled/ggml/indictrans2/q4_0/ggml-indictrans2-indic-en-1B/2025-09-09/ggml-indictrans2-indic-en-1B-q4_0.bin",
+      "qvac_models_compiled/ggml/indictrans2/q4_0/ggml-indictrans2-indic-en-1B/2026-01-01/ggml-indictrans2-indic-en-1B-q4_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 853827,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 561551,
     blobBlockLength: 8924,
-    blobByteOffset: 55953488279,
+    blobByteOffset: 36798841662,
     modelId: "ggml-indictrans2-indic-en-1B-q4_0.bin",
     addon: "nmt",
     expectedSize: 584815722,
@@ -1295,13 +2718,13 @@ export const models = [
   {
     name: "MARIAN_HI_EN_INDIC_200M_Q4_0",
     registryPath:
-      "qvac_models_compiled/ggml/indictrans2/q4_0/ggml-indictrans2-indic-en-dist-200M/2025-09-09/ggml-indictrans2-indic-en-dist-200M-q4_0.bin",
+      "qvac_models_compiled/ggml/indictrans2/q4_0/ggml-indictrans2-indic-en-dist-200M/2026-01-01/ggml-indictrans2-indic-en-dist-200M-q4_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 862751,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 570475,
     blobBlockLength: 1938,
-    blobByteOffset: 56538304001,
+    blobByteOffset: 37383657384,
     modelId: "ggml-indictrans2-indic-en-dist-200M-q4_0.bin",
     addon: "nmt",
     expectedSize: 126980520,
@@ -1314,13 +2737,13 @@ export const models = [
   {
     name: "MARIAN_HI_HI_INDIC_1B_Q4_0",
     registryPath:
-      "qvac_models_compiled/ggml/indictrans2/q4_0/ggml-indictrans2-indic-indic-1B/2025-09-09/ggml-indictrans2-indic-indic-1B-q4_0.bin",
+      "qvac_models_compiled/ggml/indictrans2/q4_0/ggml-indictrans2-indic-indic-1B/2026-01-01/ggml-indictrans2-indic-indic-1B-q4_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 864689,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 572413,
     blobBlockLength: 10585,
-    blobByteOffset: 56665284521,
+    blobByteOffset: 37510637904,
     modelId: "ggml-indictrans2-indic-indic-1B-q4_0.bin",
     addon: "nmt",
     expectedSize: 693697483,
@@ -1333,13 +2756,13 @@ export const models = [
   {
     name: "MARIAN_HI_HI_INDIC_320M_Q4_0",
     registryPath:
-      "qvac_models_compiled/ggml/indictrans2/q4_0/ggml-indictrans2-indic-indic-dist-320M/2025-09-09/ggml-indictrans2-indic-indic-dist-320M-q4_0.bin",
+      "qvac_models_compiled/ggml/indictrans2/q4_0/ggml-indictrans2-indic-indic-dist-320M/2026-01-01/ggml-indictrans2-indic-indic-dist-320M-q4_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 875274,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 582998,
     blobBlockLength: 2947,
-    blobByteOffset: 57358982004,
+    blobByteOffset: 38204335387,
     modelId: "ggml-indictrans2-indic-indic-dist-320M-q4_0.bin",
     addon: "nmt",
     expectedSize: 193106987,
@@ -1355,10 +2778,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q0f16/ggml-opus-de-fr/2025-11-09/ggml-opus-de-fr.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1920989,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 401533,
     blobBlockLength: 4291,
-    blobByteOffset: 125881685709,
+    blobByteOffset: 26312382423,
     modelId: "ggml-opus-de-fr.bin",
     addon: "nmt",
     expectedSize: 281161529,
@@ -1374,10 +2797,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q0f16/ggml-opus-en-fr/2025-11-09/ggml-opus-en-fr.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1916778,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 397322,
     blobBlockLength: 4211,
-    blobByteOffset: 125605720355,
+    blobByteOffset: 26036417069,
     modelId: "ggml-opus-en-fr.bin",
     addon: "nmt",
     expectedSize: 275965354,
@@ -1393,10 +2816,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q0f16/ggml-opus-en-pt/2025-11-07/ggml-opus-mt-en-roa-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1908230,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 388774,
     blobBlockLength: 4078,
-    blobByteOffset: 125045622838,
+    blobByteOffset: 25476319552,
     modelId: "ggml-opus-mt-en-roa-f16.bin",
     addon: "nmt",
     expectedSize: 267197483,
@@ -1412,10 +2835,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q0f16/ggml-opus-en-ru/2025-11-09/ggml-opus-en-ru.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1873015,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 353559,
     blobBlockLength: 4362,
-    blobByteOffset: 122738082255,
+    blobByteOffset: 23168778969,
     modelId: "ggml-opus-en-ru.bin",
     addon: "nmt",
     expectedSize: 285850960,
@@ -1431,10 +2854,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q0f16/ggml-opus-es-fr/2025-11-09/ggml-opus-es-fr.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1784629,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 407088,
     blobBlockLength: 4937,
-    blobByteOffset: 116947454379,
+    blobByteOffset: 26676371893,
     modelId: "ggml-opus-es-fr.bin",
     addon: "nmt",
     expectedSize: 323544954,
@@ -1450,10 +2873,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q0f16/ggml-opus-fr-de/2025-11-09/ggml-opus-fr-de.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1929403,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 419864,
     blobBlockLength: 4291,
-    blobByteOffset: 126432980081,
+    blobByteOffset: 27513522229,
     modelId: "ggml-opus-fr-de.bin",
     addon: "nmt",
     expectedSize: 281161529,
@@ -1469,10 +2892,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q0f16/ggml-opus-fr-en/2025-11-09/ggml-opus-fr-en.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1934958,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 440773,
     blobBlockLength: 4211,
-    blobByteOffset: 126796969551,
+    blobByteOffset: 28884600935,
     modelId: "ggml-opus-fr-en.bin",
     addon: "nmt",
     expectedSize: 275965354,
@@ -1488,10 +2911,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q0f16/ggml-opus-fr-es/2025-11-09/ggml-opus-fr-es.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1791017,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 413476,
     blobBlockLength: 4937,
-    blobByteOffset: 117366029547,
+    blobByteOffset: 27094947061,
     modelId: "ggml-opus-fr-es.bin",
     addon: "nmt",
     expectedSize: 323544954,
@@ -1507,10 +2930,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q0f16/ggml-opus-pt-en/2025-11-07/ggml-opus-mt-roa-en-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1912308,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 392852,
     blobBlockLength: 4470,
-    blobByteOffset: 125312820321,
+    blobByteOffset: 25743517035,
     modelId: "ggml-opus-mt-roa-en-f16.bin",
     addon: "nmt",
     expectedSize: 292900034,
@@ -1526,10 +2949,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q0f16/ggml-opus-ru-en/2025-11-09/ggml-opus-ru-en.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1877377,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 357921,
     blobBlockLength: 4362,
-    blobByteOffset: 123023933215,
+    blobByteOffset: 23454629929,
     modelId: "ggml-opus-ru-en.bin",
     addon: "nmt",
     expectedSize: 285850960,
@@ -1545,10 +2968,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-ar-en/2025-11-20/ggml-opus-ar-en.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1955564,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 461383,
     blobBlockLength: 1289,
-    blobByteOffset: 128146977977,
+    blobByteOffset: 30234877617,
     modelId: "ggml-opus-ar-en.bin",
     addon: "nmt",
     expectedSize: 84462871,
@@ -1564,10 +2987,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-de-en/2025-09-10/ggml-opus-de-en.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1947942,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 453761,
     blobBlockLength: 1221,
-    blobByteOffset: 127647695663,
+    blobByteOffset: 29735595303,
     modelId: "ggml-opus-de-en.bin",
     addon: "nmt",
     expectedSize: 79986254,
@@ -1583,10 +3006,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-de-fr/2025-11-04/ggml-opus-de-fr.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1925280,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 405824,
     blobBlockLength: 1264,
-    blobByteOffset: 126162847238,
+    blobByteOffset: 26593543952,
     modelId: "ggml-opus-de-fr.bin",
     addon: "nmt",
     expectedSize: 82827941,
@@ -1602,10 +3025,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-en-ar/2025-11-20/ggml-opus-en-ar.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1954275,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 460094,
     blobBlockLength: 1289,
-    blobByteOffset: 128062555811,
+    blobByteOffset: 30150455451,
     modelId: "ggml-opus-en-ar.bin",
     addon: "nmt",
     expectedSize: 84422166,
@@ -1621,10 +3044,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-en-de/2025-09-10/ggml-opus-en-de.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1946721,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 452540,
     blobBlockLength: 1221,
-    blobByteOffset: 127567709409,
+    blobByteOffset: 29655609049,
     modelId: "ggml-opus-en-de.bin",
     addon: "nmt",
     expectedSize: 79986254,
@@ -1640,10 +3063,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-en-es/2025-09-10/ggml-opus-en-es.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1949163,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 454982,
     blobBlockLength: 1316,
-    blobByteOffset: 127727681917,
+    blobByteOffset: 29815581557,
     modelId: "ggml-opus-en-es.bin",
     addon: "nmt",
     expectedSize: 86186269,
@@ -1659,10 +3082,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-en-fr/2025-11-04/ggml-opus-en-fr.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1951795,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 457614,
     blobBlockLength: 1240,
-    blobByteOffset: 127900054455,
+    blobByteOffset: 29987954095,
     modelId: "ggml-opus-en-fr.bin",
     addon: "nmt",
     expectedSize: 81250678,
@@ -1678,10 +3101,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-en-it/2025-09-10/ggml-opus-en-it.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1943677,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 449496,
     blobBlockLength: 1520,
-    blobByteOffset: 127368262555,
+    blobByteOffset: 29456162195,
     modelId: "ggml-opus-en-it.bin",
     addon: "nmt",
     expectedSize: 99571033,
@@ -1697,10 +3120,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-en-pt/2025-11-04/ggml-opus-en-pt.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1939169,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 444984,
     blobBlockLength: 3008,
-    blobByteOffset: 127072934905,
+    blobByteOffset: 29160566289,
     modelId: "ggml-opus-en-pt.bin",
     addon: "nmt",
     expectedSize: 197125444,
@@ -1716,10 +3139,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-en-roa/2025-11-20/ggml-opus-en-roa.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1960740,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 466559,
     blobBlockLength: 1202,
-    blobByteOffset: 128486026338,
+    blobByteOffset: 30573925978,
     modelId: "ggml-opus-en-roa.bin",
     addon: "nmt",
     expectedSize: 78760139,
@@ -1735,10 +3158,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-en-ru/2025-09-23/ggml-opus-en-ru.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1881739,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 362283,
     blobBlockLength: 1290,
-    blobByteOffset: 123309784175,
+    blobByteOffset: 23740480889,
     modelId: "ggml-opus-en-ru.bin",
     addon: "nmt",
     expectedSize: 84503440,
@@ -1754,10 +3177,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-en-zh/2025-11-19/ggml-opus-en-zh.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1956853,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 462672,
     blobBlockLength: 1315,
-    blobByteOffset: 128231440848,
+    blobByteOffset: 30319340488,
     modelId: "ggml-opus-en-zh.bin",
     addon: "nmt",
     expectedSize: 86130069,
@@ -1773,10 +3196,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-es-en/2025-09-10/ggml-opus-es-en.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1950479,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 456298,
     blobBlockLength: 1316,
-    blobByteOffset: 127813868186,
+    blobByteOffset: 29901767826,
     modelId: "ggml-opus-es-en.bin",
     addon: "nmt",
     expectedSize: 86186269,
@@ -1792,10 +3215,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-es-fr/2025-11-04/ggml-opus-es-fr.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1789566,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 412025,
     blobBlockLength: 1451,
-    blobByteOffset: 117270999333,
+    blobByteOffset: 26999916847,
     modelId: "ggml-opus-es-fr.bin",
     addon: "nmt",
     expectedSize: 95030214,
@@ -1811,10 +3234,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-fr-de/2025-11-04/ggml-opus-fr-de.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1933694,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 439509,
     blobBlockLength: 1264,
-    blobByteOffset: 126714141610,
+    blobByteOffset: 28801772994,
     modelId: "ggml-opus-fr-de.bin",
     addon: "nmt",
     expectedSize: 82827941,
@@ -1830,10 +3253,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-fr-en/2025-11-04/ggml-opus-fr-en.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1953035,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 458854,
     blobBlockLength: 1240,
-    blobByteOffset: 127981305133,
+    blobByteOffset: 30069204773,
     modelId: "ggml-opus-fr-en.bin",
     addon: "nmt",
     expectedSize: 81250678,
@@ -1849,10 +3272,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-fr-es/2025-11-04/ggml-opus-fr-es.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1927952,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 418413,
     blobBlockLength: 1451,
-    blobByteOffset: 126337949867,
+    blobByteOffset: 27418492015,
     modelId: "ggml-opus-fr-es.bin",
     addon: "nmt",
     expectedSize: 95030214,
@@ -1868,10 +3291,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-it-en/2025-09-10/ggml-opus-it-en.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1945197,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 451016,
     blobBlockLength: 1524,
-    blobByteOffset: 127467833588,
+    blobByteOffset: 29555733228,
     modelId: "ggml-opus-it-en.bin",
     addon: "nmt",
     expectedSize: 99875821,
@@ -1887,10 +3310,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-ja-en/2025-11-19/ggml-opus-ja-en.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1959483,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 465302,
     blobBlockLength: 1257,
-    blobByteOffset: 128403701281,
+    blobByteOffset: 30491600921,
     modelId: "ggml-opus-ja-en.bin",
     addon: "nmt",
     expectedSize: 82325057,
@@ -1906,10 +3329,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-roa-en/2025-11-19/ggml-opus-roa-en.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1961942,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 467761,
     blobBlockLength: 1314,
-    blobByteOffset: 128564786477,
+    blobByteOffset: 30652686117,
     modelId: "ggml-opus-roa-en.bin",
     addon: "nmt",
     expectedSize: 86070050,
@@ -1925,10 +3348,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-ru-en/2025-09-23/ggml-opus-ru-en.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1883029,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 363573,
     blobBlockLength: 1290,
-    blobByteOffset: 123394287615,
+    blobByteOffset: 23824984329,
     modelId: "ggml-opus-ru-en.bin",
     addon: "nmt",
     expectedSize: 84503440,
@@ -1944,10 +3367,10 @@ export const models = [
       "qvac_models_compiled/ggml/marian/q4_0/ggml-opus-zh-en/2025-11-19/ggml-opus-zh-en.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1958168,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 463987,
     blobBlockLength: 1315,
-    blobByteOffset: 128317570917,
+    blobByteOffset: 30405470557,
     modelId: "ggml-opus-zh-en.bin",
     addon: "nmt",
     expectedSize: 86130364,
@@ -1963,10 +3386,10 @@ export const models = [
       "qvac_models_compiled/ggml/salamandrata_2b_inst_q4/2025-08-21/salamandrata_2b_inst_q4-00001-of-00003.gguf",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 530673,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 253751,
     blobBlockLength: 11701,
-    blobByteOffset: 34776171594,
+    blobByteOffset: 16628614213,
     modelId: "salamandrata_2b_inst_q4-00001-of-00003.gguf",
     addon: "nmt",
     expectedSize: 1517617856,
@@ -1982,10 +3405,10 @@ export const models = [
         sha256Checksum:
           "f682eeb7c52b55328c84c9e6a6775b7be8cade81493f0f3399b67e29fccbd5e6",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 530673,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 253751,
         blobBlockLength: 11701,
-        blobByteOffset: 34776171594,
+        blobByteOffset: 16628614213,
       },
       {
         filename: "salamandrata_2b_inst_q4-00002-of-00003.gguf",
@@ -1993,10 +3416,10 @@ export const models = [
         sha256Checksum:
           "05c6e127c41391dbbfe06a508c2eadf0ec80e9fe713c306a88cdd39e46c832d6",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 542374,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 265452,
         blobBlockLength: 6933,
-        blobByteOffset: 35542996010,
+        blobByteOffset: 17395438629,
       },
       {
         filename: "salamandrata_2b_inst_q4-00003-of-00003.gguf",
@@ -2004,10 +3427,10 @@ export const models = [
         sha256Checksum:
           "06f750c9e82485f89d0aeaac8830c57cfde107de522371bb0b6d7a6d9935ea25",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 549307,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 272385,
         blobBlockLength: 4524,
-        blobByteOffset: 35997324010,
+        blobByteOffset: 17849766629,
       },
     ],
   },
@@ -2017,10 +3440,10 @@ export const models = [
       "qvac_models_compiled/ggml/salamandrata_2b_inst_q4/2025-08-21/salamandrata_2b_inst_q4.tensors.txt",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 553831,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 276909,
     blobBlockLength: 1,
-    blobByteOffset: 36293789450,
+    blobByteOffset: 18146232069,
     modelId: "salamandrata_2b_inst_q4.tensors.txt",
     addon: "nmt",
     expectedSize: 4833,
@@ -2036,10 +3459,10 @@ export const models = [
       "qvac_models_compiled/ggml/salamandrata_2b_inst_q8/2025-08-21/salamandrata_2b_inst_q8-00001-of-00004.gguf",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 553832,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 276910,
     blobBlockLength: 17167,
-    blobByteOffset: 36293794283,
+    blobByteOffset: 18146236902,
     modelId: "salamandrata_2b_inst_q8-00001-of-00004.gguf",
     addon: "nmt",
     expectedSize: 2401076000,
@@ -2055,10 +3478,10 @@ export const models = [
         sha256Checksum:
           "2bff3b74fd628d009a0a7e63ca7c5141322ab1dbdcae48b5c51846c8d115e769",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 553832,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 276910,
         blobBlockLength: 17167,
-        blobByteOffset: 36293794283,
+        blobByteOffset: 18146236902,
       },
       {
         filename: "salamandrata_2b_inst_q8-00002-of-00004.gguf",
@@ -2066,10 +3489,10 @@ export const models = [
         sha256Checksum:
           "044dd6b733e45f05e47009a1cdb8f78437fa8b879a09429b9d8bb65c76a2759b",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 570999,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 294077,
         blobBlockLength: 8707,
-        blobByteOffset: 37418805707,
+        blobByteOffset: 19271248326,
       },
       {
         filename: "salamandrata_2b_inst_q8-00003-of-00004.gguf",
@@ -2077,10 +3500,10 @@ export const models = [
         sha256Checksum:
           "c1ddbd27c401f049dbe6adae996aadd3309da91d58d97851f9ab6725653a1feb",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 579706,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 302784,
         blobBlockLength: 8595,
-        blobByteOffset: 37989417099,
+        blobByteOffset: 19841859718,
       },
       {
         filename: "salamandrata_2b_inst_q8-00004-of-00004.gguf",
@@ -2088,22 +3511,23 @@ export const models = [
         sha256Checksum:
           "a47c2287be8bfa4575f4ea2d5065452d254dacff2b9a07eea43f34de31c44120",
         blobCoreKey:
-          "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-        blobBlockOffset: 588301,
+          "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+        blobBlockOffset: 311379,
         blobBlockLength: 2171,
-        blobByteOffset: 38552639339,
+        blobByteOffset: 20405081958,
       },
     ],
   },
   {
-    name: "OCR_CRAFT_ENGLISH_DETECTOR",
-    registryPath: "qvac_models_compiled/ocr/2025-04-25/detector_craft.onnx",
+    name: "OCR_CRAFT_DETECTOR",
+    registryPath:
+      "qvac_models_compiled/ocr/2026-02-12/rec_512/detector_craft.onnx",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1942409,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 448228,
     blobBlockLength: 1268,
-    blobByteOffset: 127285203961,
+    blobByteOffset: 29373103601,
     modelId: "detector_craft.onnx",
     addon: "ocr",
     expectedSize: 83058594,
@@ -2114,19 +3538,267 @@ export const models = [
     params: "",
   },
   {
-    name: "OCR_CRAFT_ENGLISH_RECOGNIZER",
-    registryPath: "qvac_models_compiled/ocr/2025-04-25/recognizer_english.onnx",
+    name: "OCR_LATIN_RECOGNIZER",
+    registryPath:
+      "qvac_models_compiled/ocr/2026-02-12/rec_512/recognizer_latin.onnx",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1942177,
-    blobBlockLength: 232,
-    blobByteOffset: 127270060349,
-    modelId: "recognizer_english.onnx",
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 447992,
+    blobBlockLength: 236,
+    blobByteOffset: 29357691733,
+    modelId: "recognizer_latin.onnx",
     addon: "ocr",
-    expectedSize: 15143612,
+    expectedSize: 15411868,
     sha256Checksum:
-      "d962883812953aaafd165f2a815aa0fb95ff9c35d29807e6ceae7dd4cd5c64aa",
+      "5dfcc50a6b2a237d62bd160f1b578a65e5cf445ff30c7a8b2fddec30bbde2098",
+    engine: "onnx-ocr",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "OCR_ARABIC_RECOGNIZER",
+    registryPath:
+      "qvac_models_compiled/ocr/2026-02-12/rec_dyn/recognizer_arabic.onnx",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 795898,
+    blobBlockLength: 3285,
+    blobByteOffset: 52156429955,
+    modelId: "recognizer_arabic.onnx",
+    addon: "ocr",
+    expectedSize: 215232646,
+    sha256Checksum:
+      "c592747bb80b17bdeb77cd35397b60b2ad121ad4a14a84cf97ea2476fea0abbd",
+    engine: "onnx-ocr",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "OCR_BENGALI_RECOGNIZER",
+    registryPath:
+      "qvac_models_compiled/ocr/2026-02-12/rec_dyn/recognizer_bengali.onnx",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 799183,
+    blobBlockLength: 3284,
+    blobByteOffset: 52371662601,
+    modelId: "recognizer_bengali.onnx",
+    addon: "ocr",
+    expectedSize: 215201866,
+    sha256Checksum:
+      "3a817445513e57398c1012c189fef046719466c91a46e6b7c6fc618ad89ed416",
+    engine: "onnx-ocr",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "OCR_CYRILLIC_RECOGNIZER",
+    registryPath:
+      "qvac_models_compiled/ocr/2026-02-12/rec_dyn/recognizer_cyrillic.onnx",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 802467,
+    blobBlockLength: 233,
+    blobByteOffset: 52586864467,
+    modelId: "recognizer_cyrillic.onnx",
+    addon: "ocr",
+    expectedSize: 15250809,
+    sha256Checksum:
+      "7eeeda79f6970bf2d522bce10592b6e681e44336fd4fc9e7ffd49a114ee983a0",
+    engine: "onnx-ocr",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "OCR_DEVANAGARI_RECOGNIZER",
+    registryPath:
+      "qvac_models_compiled/ocr/2026-02-12/rec_dyn/recognizer_devanagari.onnx",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 802700,
+    blobBlockLength: 3285,
+    blobByteOffset: 52602115276,
+    modelId: "recognizer_devanagari.onnx",
+    addon: "ocr",
+    expectedSize: 215238802,
+    sha256Checksum:
+      "f9f3da8db6360c5cc48f9e5fd75a78705738a1160ee9fba4544461a24d34a194",
+    engine: "onnx-ocr",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "OCR_JAPANESE_RECOGNIZER",
+    registryPath:
+      "qvac_models_compiled/ocr/2026-02-12/rec_dyn/recognizer_japanese.onnx",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 805985,
+    blobBlockLength: 265,
+    blobByteOffset: 52817354078,
+    modelId: "recognizer_japanese.onnx",
+    addon: "ocr",
+    expectedSize: 17314007,
+    sha256Checksum:
+      "e76fb3af253c54b3a28988c968f6afb3be9b0270a89618845638c14aa01f52e3",
+    engine: "onnx-ocr",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "OCR_KANNADA_RECOGNIZER",
+    registryPath:
+      "qvac_models_compiled/ocr/2026-02-12/rec_dyn/recognizer_kannada.onnx",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 806250,
+    blobBlockLength: 233,
+    blobByteOffset: 52834668085,
+    modelId: "recognizer_kannada.onnx",
+    addon: "ocr",
+    expectedSize: 15209689,
+    sha256Checksum:
+      "bb29ad21f3b8c154d17db46613b14d394144b8cfbb6d5b80a0274a2bf2d03996",
+    engine: "onnx-ocr",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "OCR_KOREAN_RECOGNIZER",
+    registryPath:
+      "qvac_models_compiled/ocr/2026-02-12/rec_dyn/recognizer_korean.onnx",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 806483,
+    blobBlockLength: 246,
+    blobByteOffset: 52849877774,
+    modelId: "recognizer_korean.onnx",
+    addon: "ocr",
+    expectedSize: 16074237,
+    sha256Checksum:
+      "ec313ff3adf17d9f0931a756eed384b2d4dc289f1bf518aea81800b1cf54ec9b",
+    engine: "onnx-ocr",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "OCR_LATIN_RECOGNIZER_1",
+    registryPath:
+      "qvac_models_compiled/ocr/2026-02-12/rec_dyn/recognizer_latin.onnx",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 806729,
+    blobBlockLength: 235,
+    blobByteOffset: 52865952011,
+    modelId: "recognizer_latin.onnx",
+    addon: "ocr",
+    expectedSize: 15398841,
+    sha256Checksum:
+      "fbae7f3d321cf4891ed8c5da7599d0695acc93c638056d837383f9b317730273",
+    engine: "onnx-ocr",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "OCR_TAMIL_RECOGNIZER",
+    registryPath:
+      "qvac_models_compiled/ocr/2026-02-12/rec_dyn/recognizer_tamil.onnx",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 806964,
+    blobBlockLength: 3283,
+    blobByteOffset: 52881350852,
+    modelId: "recognizer_tamil.onnx",
+    addon: "ocr",
+    expectedSize: 215146462,
+    sha256Checksum:
+      "6ea5201e534245dc6b13be45ce7837ad601045c790dfcb0b26e7f26c4068bf48",
+    engine: "onnx-ocr",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "OCR_TELUGU_RECOGNIZER",
+    registryPath:
+      "qvac_models_compiled/ocr/2026-02-12/rec_dyn/recognizer_telugu.onnx",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 810247,
+    blobBlockLength: 233,
+    blobByteOffset: 53096497314,
+    modelId: "recognizer_telugu.onnx",
+    addon: "ocr",
+    expectedSize: 15207633,
+    sha256Checksum:
+      "37cf83c803102b84964fc9d3fa1a02c4df979d077a2f4795cdea1a7b4f88b9cd",
+    engine: "onnx-ocr",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "OCR_THAI_RECOGNIZER",
+    registryPath:
+      "qvac_models_compiled/ocr/2026-02-12/rec_dyn/recognizer_thai.onnx",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 810480,
+    blobBlockLength: 3284,
+    blobByteOffset: 53111704947,
+    modelId: "recognizer_thai.onnx",
+    addon: "ocr",
+    expectedSize: 215216230,
+    sha256Checksum:
+      "3bb9260eeedf6a1675f3d9f773a83f93e828d44a6737e8e928bb491e64921e79",
+    engine: "onnx-ocr",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "OCR_ZH_SIM_RECOGNIZER",
+    registryPath:
+      "qvac_models_compiled/ocr/2026-02-12/rec_dyn/recognizer_zh_sim.onnx",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 813764,
+    blobBlockLength: 335,
+    blobByteOffset: 53326921177,
+    modelId: "recognizer_zh_sim.onnx",
+    addon: "ocr",
+    expectedSize: 21944121,
+    sha256Checksum:
+      "34b53c185aea7d43648d1ae03eedb9c8b38555cadb2c9e5c048ed9b25c447bc6",
+    engine: "onnx-ocr",
+    quantization: "",
+    params: "",
+  },
+  {
+    name: "OCR_ZH_TRA_RECOGNIZER",
+    registryPath:
+      "qvac_models_compiled/ocr/2026-02-12/rec_dyn/recognizer_zh_tra.onnx",
+    registrySource: "s3",
+    blobCoreKey:
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 814099,
+    blobBlockLength: 3447,
+    blobByteOffset: 53348865298,
+    modelId: "recognizer_zh_tra.onnx",
+    addon: "ocr",
+    expectedSize: 225894842,
+    sha256Checksum:
+      "234c8454c81661d78d016b1ecf3dc60eab3a652e78d8ba4891079d5211a4a378",
     engine: "onnx-ocr",
     quantization: "",
     params: "",
@@ -2137,10 +3809,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/de/de_DE/thorsten/medium/de_DE-thorsten-medium.onnx",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 884226,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 275115,
     blobBlockLength: 965,
-    blobByteOffset: 57945091012,
+    blobByteOffset: 18028746973,
     modelId: "de_DE-thorsten-medium.onnx",
     addon: "tts",
     expectedSize: 63201294,
@@ -2156,10 +3828,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/de/de_DE/thorsten/medium/de_DE-thorsten-medium.onnx.json",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 885191,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 276080,
     blobBlockLength: 1,
-    blobByteOffset: 58008292306,
+    blobByteOffset: 18091948267,
     modelId: "de_DE-thorsten-medium.onnx.json",
     addon: "tts",
     expectedSize: 4819,
@@ -2175,10 +3847,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/en/en_US/amy/low/en_US-amy-low.onnx",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 880158,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 271047,
     blobBlockLength: 963,
-    blobByteOffset: 57678831517,
+    blobByteOffset: 17762487478,
     modelId: "en_US-amy-low.onnx",
     addon: "tts",
     expectedSize: 63104526,
@@ -2194,10 +3866,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/en/en_US/amy/low/en_US-amy-low.onnx.json",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 881121,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 272010,
     blobBlockLength: 1,
-    blobByteOffset: 57741936043,
+    blobByteOffset: 17825592004,
     modelId: "en_US-amy-low.onnx.json",
     addon: "tts",
     expectedSize: 4164,
@@ -2213,10 +3885,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/en/en_US/amy/medium/en_US-amy-medium.onnx",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 881122,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 272011,
     blobBlockLength: 965,
-    blobByteOffset: 57741940207,
+    blobByteOffset: 17825596168,
     modelId: "en_US-amy-medium.onnx",
     addon: "tts",
     expectedSize: 63201294,
@@ -2232,10 +3904,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/en/en_US/amy/medium/en_US-amy-medium.onnx.json",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 882087,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 272976,
     blobBlockLength: 1,
-    blobByteOffset: 57805141501,
+    blobByteOffset: 17888797462,
     modelId: "en_US-amy-medium.onnx.json",
     addon: "tts",
     expectedSize: 4882,
@@ -2251,10 +3923,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/en/en_US/lessac/medium/en_US-lessac-medium.onnx",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 879192,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 270081,
     blobBlockLength: 965,
-    blobByteOffset: 57615625338,
+    blobByteOffset: 17699281299,
     modelId: "en_US-lessac-medium.onnx",
     addon: "tts",
     expectedSize: 63201294,
@@ -2270,10 +3942,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/en/en_US/lessac/medium/en_US-lessac-medium.onnx.json",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 880157,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 271046,
     blobBlockLength: 1,
-    blobByteOffset: 57678826632,
+    blobByteOffset: 17762482593,
     modelId: "en_US-lessac-medium.onnx.json",
     addon: "tts",
     expectedSize: 4885,
@@ -2289,10 +3961,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/en/en_US/norman/medium/en_US-norman-medium.onnx",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 878221,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 269110,
     blobBlockLength: 970,
-    blobByteOffset: 57552088991,
+    blobByteOffset: 17635744952,
     modelId: "en_US-norman-medium.onnx",
     addon: "tts",
     expectedSize: 63531379,
@@ -2308,10 +3980,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/en/en_US/norman/medium/en_US-norman-medium.onnx.json",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 879191,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 270080,
     blobBlockLength: 1,
-    blobByteOffset: 57615620370,
+    blobByteOffset: 17699276331,
     modelId: "en_US-norman-medium.onnx.json",
     addon: "tts",
     expectedSize: 4968,
@@ -2327,10 +3999,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/es/es_ES/davefx/medium/es_ES-davefx-medium.onnx",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 883260,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 274149,
     blobBlockLength: 965,
-    blobByteOffset: 57881884901,
+    blobByteOffset: 17965540862,
     modelId: "es_ES-davefx-medium.onnx",
     addon: "tts",
     expectedSize: 63201294,
@@ -2346,10 +4018,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/es/es_ES/davefx/medium/es_ES-davefx-medium.onnx.json",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 884225,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 275114,
     blobBlockLength: 1,
-    blobByteOffset: 57945086195,
+    blobByteOffset: 18028742156,
     modelId: "es_ES-davefx-medium.onnx.json",
     addon: "tts",
     expectedSize: 4817,
@@ -2365,10 +4037,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/es/es_ES/sharvard/medium/es_ES-sharvard-medium.onnx",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 882088,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 272977,
     blobBlockLength: 1171,
-    blobByteOffset: 57805146383,
+    blobByteOffset: 17888802344,
     modelId: "es_ES-sharvard-medium.onnx",
     addon: "tts",
     expectedSize: 76733615,
@@ -2384,10 +4056,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/es/es_ES/sharvard/medium/es_ES-sharvard-medium.onnx.json",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 883259,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 274148,
     blobBlockLength: 1,
-    blobByteOffset: 57881879998,
+    blobByteOffset: 17965535959,
     modelId: "es_ES-sharvard-medium.onnx.json",
     addon: "tts",
     expectedSize: 4903,
@@ -2403,10 +4075,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/fr/fr_FR/gilles/low/fr_FR-gilles-low.onnx",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 887129,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 278018,
     blobBlockLength: 963,
-    blobByteOffset: 58135021321,
+    blobByteOffset: 18218677282,
     modelId: "fr_FR-gilles-low.onnx",
     addon: "tts",
     expectedSize: 63104526,
@@ -2422,10 +4094,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/fr/fr_FR/gilles/low/fr_FR-gilles-low.onnx.json",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 888092,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 278981,
     blobBlockLength: 1,
-    blobByteOffset: 58198125847,
+    blobByteOffset: 18281781808,
     modelId: "fr_FR-gilles-low.onnx.json",
     addon: "tts",
     expectedSize: 4158,
@@ -2441,10 +4113,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/it/it_IT/paola/medium/it_IT-paola-medium.onnx",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 885192,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 276081,
     blobBlockLength: 970,
-    blobByteOffset: 58008297125,
+    blobByteOffset: 18091953086,
     modelId: "it_IT-paola-medium.onnx",
     addon: "tts",
     expectedSize: 63511038,
@@ -2460,10 +4132,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/it/it_IT/paola/medium/it_IT-paola-medium.onnx.json",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 886162,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 277051,
     blobBlockLength: 1,
-    blobByteOffset: 58071808163,
+    blobByteOffset: 18155464124,
     modelId: "it_IT-paola-medium.onnx.json",
     addon: "tts",
     expectedSize: 7099,
@@ -2479,10 +4151,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/pt/pt_BR/cadu/medium/pt_BR-cadu-medium.onnx",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 888093,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 279948,
     blobBlockLength: 961,
-    blobByteOffset: 58198130005,
+    blobByteOffset: 18344992286,
     modelId: "pt_BR-cadu-medium.onnx",
     addon: "tts",
     expectedSize: 62950044,
@@ -2498,10 +4170,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/pt/pt_BR/cadu/medium/pt_BR-cadu-medium.onnx.json",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 889054,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 280909,
     blobBlockLength: 1,
-    blobByteOffset: 58261080049,
+    blobByteOffset: 18407942330,
     modelId: "pt_BR-cadu-medium.onnx.json",
     addon: "tts",
     expectedSize: 5040,
@@ -2517,10 +4189,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/pt/pt_PT/tugão/medium/pt_PT-tugão-medium.onnx",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1872049,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 278982,
     blobBlockLength: 965,
-    blobByteOffset: 122674875935,
+    blobByteOffset: 18281785966,
     modelId: "pt_PT-tugão-medium.onnx",
     addon: "tts",
     expectedSize: 63201294,
@@ -2536,10 +4208,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/pt/pt_PT/tugão/medium/pt_PT-tugão-medium.onnx.json",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1873014,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 279947,
     blobBlockLength: 1,
-    blobByteOffset: 122738077229,
+    blobByteOffset: 18344987260,
     modelId: "pt_PT-tugão-medium.onnx.json",
     addon: "tts",
     expectedSize: 5026,
@@ -2555,10 +4227,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/ru/ru_RU/irina/medium/ru_RU-irina-medium.onnx",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 886163,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 277052,
     blobBlockLength: 965,
-    blobByteOffset: 58071815262,
+    blobByteOffset: 18155471223,
     modelId: "ru_RU-irina-medium.onnx",
     addon: "tts",
     expectedSize: 63201294,
@@ -2574,10 +4246,10 @@ export const models = [
       "rhasspy/piper-voices/resolve/0622afc867cf0388684853ecdf59a498b489949d/ru/ru_RU/irina/medium/ru_RU-irina-medium.onnx.json",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 887128,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 278017,
     blobBlockLength: 1,
-    blobByteOffset: 58135016556,
+    blobByteOffset: 18218672517,
     modelId: "ru_RU-irina-medium.onnx.json",
     addon: "tts",
     expectedSize: 4765,
@@ -2593,10 +4265,10 @@ export const models = [
       "ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-base-q8_0.bin",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 102393,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 4774,
     blobBlockLength: 1248,
-    blobByteOffset: 6709974442,
+    blobByteOffset: 312744408,
     modelId: "ggml-base-q8_0.bin",
     addon: "whisper",
     expectedSize: 81768585,
@@ -2612,10 +4284,10 @@ export const models = [
       "ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-base.bin",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 100135,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 2516,
     blobBlockLength: 2258,
-    blobByteOffset: 6562022977,
+    blobByteOffset: 164792943,
     modelId: "ggml-base.bin",
     addon: "whisper",
     expectedSize: 147951465,
@@ -2631,10 +4303,10 @@ export const models = [
       "ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-base.en-q8_0.bin",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 105899,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 8280,
     blobBlockLength: 1248,
-    blobByteOffset: 6939707238,
+    blobByteOffset: 542477204,
     modelId: "ggml-base.en-q8_0.bin",
     addon: "whisper",
     expectedSize: 81781811,
@@ -2650,10 +4322,10 @@ export const models = [
       "ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-base.en.bin",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 103641,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 6022,
     blobBlockLength: 2258,
-    blobByteOffset: 6791743027,
+    blobByteOffset: 394512993,
     modelId: "ggml-base.en.bin",
     addon: "whisper",
     expectedSize: 147964211,
@@ -2669,10 +4341,10 @@ export const models = [
       "ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo.bin",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 71644,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 63832,
     blobBlockLength: 24789,
-    blobByteOffset: 4694983046,
+    blobByteOffset: 4183170617,
     modelId: "ggml-large-v3-turbo.bin",
     addon: "whisper",
     expectedSize: 1624555275,
@@ -2688,10 +4360,10 @@ export const models = [
       "ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-small-q8_0.bin",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 114588,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 16969,
     blobBlockLength: 4036,
-    blobByteOffset: 7509091016,
+    blobByteOffset: 1111860982,
     modelId: "ggml-small-q8_0.bin",
     addon: "whisper",
     expectedSize: 264464607,
@@ -2707,10 +4379,10 @@ export const models = [
       "ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-small.bin",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 107147,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 9528,
     blobBlockLength: 7441,
-    blobByteOffset: 7021489049,
+    blobByteOffset: 624259015,
     modelId: "ggml-small.bin",
     addon: "whisper",
     expectedSize: 487601967,
@@ -2726,10 +4398,10 @@ export const models = [
       "ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-small.en-q8_0.bin",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 67608,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 59796,
     blobBlockLength: 4036,
-    blobByteOffset: 4430505485,
+    blobByteOffset: 3918693056,
     modelId: "ggml-small.en-q8_0.bin",
     addon: "whisper",
     expectedSize: 264477561,
@@ -2745,10 +4417,10 @@ export const models = [
       "ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-small.en.bin",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 118624,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 21005,
     blobBlockLength: 7441,
-    blobByteOffset: 7773555623,
+    blobByteOffset: 1376325589,
     modelId: "ggml-small.en.bin",
     addon: "whisper",
     expectedSize: 487614201,
@@ -2764,10 +4436,10 @@ export const models = [
       "ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-tiny-q8_0.bin",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 97619,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 0,
     blobBlockLength: 665,
-    blobByteOffset: 6397230034,
+    blobByteOffset: 0,
     modelId: "ggml-tiny-q8_0.bin",
     addon: "whisper",
     expectedSize: 43537433,
@@ -2783,10 +4455,10 @@ export const models = [
       "ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-tiny.bin",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 96433,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 88621,
     blobBlockLength: 1186,
-    blobByteOffset: 6319538321,
+    blobByteOffset: 5807725892,
     modelId: "ggml-tiny.bin",
     addon: "whisper",
     expectedSize: 77691713,
@@ -2802,10 +4474,10 @@ export const models = [
       "ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-tiny.en-q8_0.bin",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 99470,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 1851,
     blobBlockLength: 665,
-    blobByteOffset: 6518472182,
+    blobByteOffset: 121242148,
     modelId: "ggml-tiny.en-q8_0.bin",
     addon: "whisper",
     expectedSize: 43550795,
@@ -2821,10 +4493,10 @@ export const models = [
       "ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-tiny.en.bin",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 98284,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 665,
     blobBlockLength: 1186,
-    blobByteOffset: 6440767467,
+    blobByteOffset: 43537433,
     modelId: "ggml-tiny.en.bin",
     addon: "whisper",
     expectedSize: 77704715,
@@ -2840,10 +4512,10 @@ export const models = [
       "ggml-org/whisper-vad/resolve/9ffd54a1e1ee413ddf265af9913beaf518d1639b/ggml-silero-v5.1.2.bin",
     registrySource: "hf",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 126065,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 28446,
     blobBlockLength: 14,
-    blobByteOffset: 8261169824,
+    blobByteOffset: 1863939790,
     modelId: "ggml-silero-v5.1.2.bin",
     addon: "whisper",
     expectedSize: 885098,
@@ -2859,10 +4531,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-french/fr-base-ggml-model-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1972511,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 478330,
     blobBlockLength: 2258,
-    blobByteOffset: 129257002325,
+    blobByteOffset: 31344901931,
     modelId: "fr-base-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 147951482,
@@ -2878,10 +4550,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-french/fr-base-ggml-model-q8_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1974769,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 480588,
     blobBlockLength: 1248,
-    blobByteOffset: 129404953807,
+    blobByteOffset: 31492853413,
     modelId: "fr-base-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 81768602,
@@ -2897,15 +4569,15 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-french/fr-tiny-ggml-model-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1963256,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 469075,
     blobBlockLength: 1186,
-    blobByteOffset: 128650856527,
+    blobByteOffset: 30738756167,
     modelId: "fr-tiny-ggml-model-f16.bin",
     addon: "whisper",
-    expectedSize: 77691730,
+    expectedSize: 77691713,
     sha256Checksum:
-      "16ea1031e24b40a229ca867b731f515d6e876e4dd14bc637d3ed37029d46648a",
+      "3736cc0b0a8c989f2c6d4eeb915acb4edf61acfd7534d49fc1544caaa46447f5",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
@@ -2916,15 +4588,15 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-french/fr-tiny-ggml-model-q8_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1964442,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 470261,
     blobBlockLength: 665,
-    blobByteOffset: 128728548257,
+    blobByteOffset: 30816447880,
     modelId: "fr-tiny-ggml-model-q8_0.bin",
     addon: "whisper",
-    expectedSize: 43537450,
+    expectedSize: 43537433,
     sha256Checksum:
-      "b5c091603ca9144495005f4ecb461ff912e5aabb2599a240fba636e9b372d29d",
+      "5271ac0c626bdea492655bc14855e4e5ae43a167de20622abd5f99f8b327a8e0",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -2935,10 +4607,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-german/de-base-ggml-model-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1976017,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 481836,
     blobBlockLength: 2258,
-    blobByteOffset: 129486722409,
+    blobByteOffset: 31574622015,
     modelId: "de-base-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 147951465,
@@ -2954,10 +4626,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-german/de-base-ggml-model-q8_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1978275,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 484094,
     blobBlockLength: 1248,
-    blobByteOffset: 129634673874,
+    blobByteOffset: 31722573480,
     modelId: "de-base-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 81768585,
@@ -2973,10 +4645,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-german/de-tiny-ggml-model-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1965107,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 470926,
     blobBlockLength: 1186,
-    blobByteOffset: 128772085707,
+    blobByteOffset: 30859985313,
     modelId: "de-tiny-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 77691713,
@@ -2992,10 +4664,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-german/de-tiny-ggml-model-q8_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1966293,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 472112,
     blobBlockLength: 665,
-    blobByteOffset: 128849777420,
+    blobByteOffset: 30937677026,
     modelId: "de-tiny-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 43537433,
@@ -3011,10 +4683,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-italian/it-base-ggml-model-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1979523,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 485342,
     blobBlockLength: 1744,
-    blobByteOffset: 129716442459,
+    blobByteOffset: 31804342065,
     modelId: "it-base-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 114252906,
@@ -3030,10 +4702,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-italian/it-base-ggml-model-q8_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1981267,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 487086,
     blobBlockLength: 974,
-    blobByteOffset: 129830695365,
+    blobByteOffset: 31918594971,
     modelId: "it-base-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 63798666,
@@ -3049,10 +4721,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-italian/it-tiny-ggml-model-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1966958,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 472777,
     blobBlockLength: 1186,
-    blobByteOffset: 128893314853,
+    blobByteOffset: 30981214459,
     modelId: "it-tiny-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 77691713,
@@ -3068,10 +4740,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-italian/it-tiny-ggml-model-q8_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1968144,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 473963,
     blobBlockLength: 665,
-    blobByteOffset: 128971006566,
+    blobByteOffset: 31058906172,
     modelId: "it-tiny-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 43537433,
@@ -3087,15 +4759,15 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-japanese/ja-base-ggml-model-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1996650,
-    blobBlockLength: 3038,
-    blobByteOffset: 130838592733,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 500429,
+    blobBlockLength: 2258,
+    blobByteOffset: 32792782967,
     modelId: "ja-base-ggml-model-f16.bin",
     addon: "whisper",
-    expectedSize: 199069379,
+    expectedSize: 147951465,
     sha256Checksum:
-      "d8a0c0cc74464f26c997888bc0c3e0327dcd9732c037bf8639766e254cddbe12",
+      "04bbfb097095f688717459eb941067c4ebd3751029c14842011ae199e63d3d13",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
@@ -3106,15 +4778,15 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-japanese/ja-base-ggml-model-q8_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1999688,
-    blobBlockLength: 1634,
-    blobByteOffset: 131037662112,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 502687,
+    blobBlockLength: 1248,
+    blobByteOffset: 32940734432,
     modelId: "ja-base-ggml-model-q8_0.bin",
     addon: "whisper",
-    expectedSize: 107056259,
+    expectedSize: 81768585,
     sha256Checksum:
-      "867b6f7d188d0f93389a0b1f6deaecb3b581477ca35951f507565c8a6b6a1ae5",
+      "f87879235948ac216904bf612210441a35efe17ce50ceeea52d2ec2e9e649ab7",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -3125,15 +4797,15 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-japanese/ja-tiny-ggml-model-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 2001322,
-    blobBlockLength: 1771,
-    blobByteOffset: 131144718371,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 503935,
+    blobBlockLength: 1186,
+    blobByteOffset: 33022503017,
     modelId: "ja-tiny-ggml-model-f16.bin",
     addon: "whisper",
-    expectedSize: 116029945,
+    expectedSize: 77691713,
     sha256Checksum:
-      "a6eab14d52813b860ecb34ed8aebca07b024c89b7ada7facd2b7b72910bb2fdb",
+      "9bb10c3a10e502bebede75379d226b3dc0dd58ff408e537272ea88fe9517e000",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
@@ -3144,15 +4816,15 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-japanese/ja-tiny-ggml-model-q8_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 2003093,
-    blobBlockLength: 954,
-    blobByteOffset: 131260748316,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 505121,
+    blobBlockLength: 665,
+    blobByteOffset: 33100194730,
     modelId: "ja-tiny-ggml-model-q8_0.bin",
     addon: "whisper",
-    expectedSize: 62502985,
+    expectedSize: 43537433,
     sha256Checksum:
-      "825e90cca8970378f0ed5a4e18db8e7c8bb6d4e25fac2798ac562526b41d7d93",
+      "91695796a2170770275e1f10382aef5164e3d24244f18652190b0322f94bc853",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -3163,10 +4835,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-norwegian/nb-tiny-ggml-model.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1905714,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 386258,
     blobBlockLength: 1186,
-    blobByteOffset: 124880842863,
+    blobByteOffset: 25311539577,
     modelId: "nb-tiny-ggml-model.bin",
     addon: "whisper",
     expectedSize: 77691730,
@@ -3182,10 +4854,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-portuguese/pt-base-ggml-model-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1982241,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 488060,
     blobBlockLength: 2258,
-    blobByteOffset: 129894494031,
+    blobByteOffset: 31982393637,
     modelId: "pt-base-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 147951482,
@@ -3201,10 +4873,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-portuguese/pt-base-ggml-model-q8_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1984499,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 490318,
     blobBlockLength: 1248,
-    blobByteOffset: 130042445513,
+    blobByteOffset: 32130345119,
     modelId: "pt-base-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 81768602,
@@ -3220,10 +4892,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-portuguese/pt-tiny-ggml-model-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1970660,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 476479,
     blobBlockLength: 1186,
-    blobByteOffset: 129135773145,
+    blobByteOffset: 31223672751,
     modelId: "pt-tiny-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 77691730,
@@ -3239,10 +4911,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-portuguese/pt-tiny-ggml-model-q8_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1971846,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 477665,
     blobBlockLength: 665,
-    blobByteOffset: 129213464875,
+    blobByteOffset: 31301364481,
     modelId: "pt-tiny-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 43537450,
@@ -3258,15 +4930,15 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-russian/ru-base-ggml-model-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1989253,
-    blobBlockLength: 3038,
-    blobByteOffset: 130353934165,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 495072,
+    blobBlockLength: 2258,
+    blobByteOffset: 32441833771,
     modelId: "ru-base-ggml-model-f16.bin",
     addon: "whisper",
-    expectedSize: 199069379,
+    expectedSize: 147951465,
     sha256Checksum:
-      "676d12da762f52f8fe8201d494945a44f365d03b16f28152c8c13af208ff328a",
+      "d9aeb0ae5edcef7d078078a7523354b6d9eca197b3ca792dffcab57d4ffe381b",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
@@ -3277,15 +4949,15 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-russian/ru-base-ggml-model-q8_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1992291,
-    blobBlockLength: 1634,
-    blobByteOffset: 130553003544,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 497330,
+    blobBlockLength: 1248,
+    blobByteOffset: 32589785236,
     modelId: "ru-base-ggml-model-q8_0.bin",
     addon: "whisper",
-    expectedSize: 107056259,
+    expectedSize: 81768585,
     sha256Checksum:
-      "8858e8bbc3503472da7111558dff6bb9fd8f10fcd26dc9a636ad1e9d67c35c2a",
+      "c50968d27609f67134031d1ef6604be734efc9cd1578b555f572ee7981c110b1",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -3296,15 +4968,15 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-russian/ru-tiny-ggml-model-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1993925,
-    blobBlockLength: 1771,
-    blobByteOffset: 130660059803,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 498578,
+    blobBlockLength: 1186,
+    blobByteOffset: 32671553821,
     modelId: "ru-tiny-ggml-model-f16.bin",
     addon: "whisper",
-    expectedSize: 116029945,
+    expectedSize: 77691713,
     sha256Checksum:
-      "458c6522c1b8466f7c77b76fd8a82c38b566df938aa1b1ceffc4fbfe11e11d6a",
+      "46698042a1ea3fcec319cf5a63486db30fe77818f00bbbc522d01a6ae06d61e8",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
@@ -3315,15 +4987,15 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-russian/ru-tiny-ggml-model-q8_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1995696,
-    blobBlockLength: 954,
-    blobByteOffset: 130776089748,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 499764,
+    blobBlockLength: 665,
+    blobByteOffset: 32749245534,
     modelId: "ru-tiny-ggml-model-q8_0.bin",
     addon: "whisper",
-    expectedSize: 62502985,
+    expectedSize: 43537433,
     sha256Checksum:
-      "0780df582b9d29443fe2640f7462e3bf86b342e978feb4dce4518c843c6a67de",
+      "df1d532ccc1dba3e88510c5eaba3f9d26d1d7220c078ddfa25cab5ec806575a3",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -3334,15 +5006,15 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-spanish/es-tiny-ggml-model-f16.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1968809,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 474628,
     blobBlockLength: 1186,
-    blobByteOffset: 129014543999,
+    blobByteOffset: 31102443605,
     modelId: "es-tiny-ggml-model-f16.bin",
     addon: "whisper",
     expectedSize: 77691713,
     sha256Checksum:
-      "263e134a1a40474850a3a7b07871e77f842fce327d2081d87637d43061cdea7f",
+      "ecdacba8e0511f0c92814ef87badff88aed5ec593262f8f684924bd0e0cd199e",
     engine: "whispercpp-transcription",
     quantization: "f16",
     params: "",
@@ -3353,15 +5025,15 @@ export const models = [
       "qvac_models_compiled/ggml/whisper-spanish/es-tiny-ggml-model-q8_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1969995,
+      "6309722b3460d91d38ad7526875ecfa29183245826b717949c55ba443093d963",
+    blobBlockOffset: 475814,
     blobBlockLength: 665,
-    blobByteOffset: 129092235712,
+    blobByteOffset: 31180135318,
     modelId: "es-tiny-ggml-model-q8_0.bin",
     addon: "whisper",
     expectedSize: 43537433,
     sha256Checksum:
-      "066fed776a4209276ccf5a30e1d2f93531313a3917352dd52e2a804725bdcd59",
+      "e18a4e2374b5f91505cb1a1fd08b89b44d7dc0d5f70c6fc5a2e483cb8281bc91",
     engine: "whispercpp-transcription",
     quantization: "q8_0",
     params: "",
@@ -3372,10 +5044,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper/ggml-futo/2025-10-20/tiny_acft_q8_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1906900,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 387444,
     blobBlockLength: 665,
-    blobByteOffset: 124958534593,
+    blobByteOffset: 25389231307,
     modelId: "tiny_acft_q8_0.bin",
     addon: "whisper",
     expectedSize: 43537450,
@@ -3391,10 +5063,10 @@ export const models = [
       "qvac_models_compiled/ggml/whisper/ggml-futo/2025-10-20/tiny_en_acft_q8_0.bin",
     registrySource: "s3",
     blobCoreKey:
-      "34b0ed5cad561852a8a42288eb9b24a9d7859ab633a184ef0f433bf3bf19045e",
-    blobBlockOffset: 1907565,
+      "4035e66388340ff7c1f291e7c0101855f5d0b2c7085f3ff62213573a2cd5dd17",
+    blobBlockOffset: 388109,
     blobBlockLength: 665,
-    blobByteOffset: 125002072043,
+    blobByteOffset: 25432768757,
     modelId: "tiny_en_acft_q8_0.bin",
     addon: "whisper",
     expectedSize: 43550795,
@@ -3624,8 +5296,8 @@ export const LASER_DOLPHIN_2X7B_INST_Q2_K = {
   params: models[11].params,
 } as const;
 
-export const DOLPHIN_MIXTRAL_2X7B_MOE_Q2_K_SHARD = {
-  name: "DOLPHIN_MIXTRAL_2X7B_MOE_Q2_K_SHARD",
+export const LLAMA_TOOL_CALLING_1B_INST_Q4_K = {
+  name: "LLAMA_TOOL_CALLING_1B_INST_Q4_K",
   src: `registry://${models[12].registrySource}/${models[12].registryPath}`,
   registryPath: models[12].registryPath,
   registrySource: models[12].registrySource,
@@ -3642,8 +5314,8 @@ export const DOLPHIN_MIXTRAL_2X7B_MOE_Q2_K_SHARD = {
   params: models[12].params,
 } as const;
 
-export const DOLPHIN_MIXTRAL_2X7B_MOE_Q2_K_TENSORS = {
-  name: "DOLPHIN_MIXTRAL_2X7B_MOE_Q2_K_TENSORS",
+export const DOLPHIN_MIXTRAL_2X7B_MOE_Q2_K_SHARD = {
+  name: "DOLPHIN_MIXTRAL_2X7B_MOE_Q2_K_SHARD",
   src: `registry://${models[13].registrySource}/${models[13].registryPath}`,
   registryPath: models[13].registryPath,
   registrySource: models[13].registrySource,
@@ -3660,8 +5332,8 @@ export const DOLPHIN_MIXTRAL_2X7B_MOE_Q2_K_TENSORS = {
   params: models[13].params,
 } as const;
 
-export const LLAMA_3_2_1B_INST_Q4_0_SHARD = {
-  name: "LLAMA_3_2_1B_INST_Q4_0_SHARD",
+export const DOLPHIN_MIXTRAL_2X7B_MOE_Q2_K_TENSORS = {
+  name: "DOLPHIN_MIXTRAL_2X7B_MOE_Q2_K_TENSORS",
   src: `registry://${models[14].registrySource}/${models[14].registryPath}`,
   registryPath: models[14].registryPath,
   registrySource: models[14].registrySource,
@@ -3678,8 +5350,8 @@ export const LLAMA_3_2_1B_INST_Q4_0_SHARD = {
   params: models[14].params,
 } as const;
 
-export const LLAMA_3_2_1B_INST_Q4_0_TENSORS = {
-  name: "LLAMA_3_2_1B_INST_Q4_0_TENSORS",
+export const LLAMA_3_2_1B_INST_Q4_0_SHARD = {
+  name: "LLAMA_3_2_1B_INST_Q4_0_SHARD",
   src: `registry://${models[15].registrySource}/${models[15].registryPath}`,
   registryPath: models[15].registryPath,
   registrySource: models[15].registrySource,
@@ -3696,8 +5368,8 @@ export const LLAMA_3_2_1B_INST_Q4_0_TENSORS = {
   params: models[15].params,
 } as const;
 
-export const MEDGEMMA_4B_IT_Q4_1_SHARD = {
-  name: "MEDGEMMA_4B_IT_Q4_1_SHARD",
+export const LLAMA_3_2_1B_INST_Q4_0_TENSORS = {
+  name: "LLAMA_3_2_1B_INST_Q4_0_TENSORS",
   src: `registry://${models[16].registrySource}/${models[16].registryPath}`,
   registryPath: models[16].registryPath,
   registrySource: models[16].registrySource,
@@ -3714,8 +5386,8 @@ export const MEDGEMMA_4B_IT_Q4_1_SHARD = {
   params: models[16].params,
 } as const;
 
-export const MEDGEMMA_4B_IT_Q4_1_TENSORS = {
-  name: "MEDGEMMA_4B_IT_Q4_1_TENSORS",
+export const MEDGEMMA_4B_IT_Q4_1_SHARD = {
+  name: "MEDGEMMA_4B_IT_Q4_1_SHARD",
   src: `registry://${models[17].registrySource}/${models[17].registryPath}`,
   registryPath: models[17].registryPath,
   registrySource: models[17].registrySource,
@@ -3732,8 +5404,8 @@ export const MEDGEMMA_4B_IT_Q4_1_TENSORS = {
   params: models[17].params,
 } as const;
 
-export const MEDGEMMA_4B_IT_Q8_1_SHARD = {
-  name: "MEDGEMMA_4B_IT_Q8_1_SHARD",
+export const MEDGEMMA_4B_IT_Q4_1_TENSORS = {
+  name: "MEDGEMMA_4B_IT_Q4_1_TENSORS",
   src: `registry://${models[18].registrySource}/${models[18].registryPath}`,
   registryPath: models[18].registryPath,
   registrySource: models[18].registrySource,
@@ -3750,8 +5422,8 @@ export const MEDGEMMA_4B_IT_Q8_1_SHARD = {
   params: models[18].params,
 } as const;
 
-export const QWEN3_1_7B_INST_Q4_SHARD = {
-  name: "QWEN3_1_7B_INST_Q4_SHARD",
+export const MEDGEMMA_4B_IT_Q8_1_SHARD = {
+  name: "MEDGEMMA_4B_IT_Q8_1_SHARD",
   src: `registry://${models[19].registrySource}/${models[19].registryPath}`,
   registryPath: models[19].registryPath,
   registrySource: models[19].registrySource,
@@ -3768,8 +5440,8 @@ export const QWEN3_1_7B_INST_Q4_SHARD = {
   params: models[19].params,
 } as const;
 
-export const QWEN3_1_7B_INST_Q4_TENSORS = {
-  name: "QWEN3_1_7B_INST_Q4_TENSORS",
+export const QWEN3_1_7B_INST_Q4_SHARD = {
+  name: "QWEN3_1_7B_INST_Q4_SHARD",
   src: `registry://${models[20].registrySource}/${models[20].registryPath}`,
   registryPath: models[20].registryPath,
   registrySource: models[20].registrySource,
@@ -3786,8 +5458,8 @@ export const QWEN3_1_7B_INST_Q4_TENSORS = {
   params: models[20].params,
 } as const;
 
-export const QWEN3_4B_INST_Q4 = {
-  name: "QWEN3_4B_INST_Q4",
+export const QWEN3_1_7B_INST_Q4_TENSORS = {
+  name: "QWEN3_1_7B_INST_Q4_TENSORS",
   src: `registry://${models[21].registrySource}/${models[21].registryPath}`,
   registryPath: models[21].registryPath,
   registrySource: models[21].registrySource,
@@ -3804,8 +5476,8 @@ export const QWEN3_4B_INST_Q4 = {
   params: models[21].params,
 } as const;
 
-export const QWEN3_4B_INST_Q4_SHARD = {
-  name: "QWEN3_4B_INST_Q4_SHARD",
+export const QWEN3_4B_INST_Q4 = {
+  name: "QWEN3_4B_INST_Q4",
   src: `registry://${models[22].registrySource}/${models[22].registryPath}`,
   registryPath: models[22].registryPath,
   registrySource: models[22].registrySource,
@@ -3822,8 +5494,8 @@ export const QWEN3_4B_INST_Q4_SHARD = {
   params: models[22].params,
 } as const;
 
-export const QWEN3_4B_INST_Q4_TENSORS = {
-  name: "QWEN3_4B_INST_Q4_TENSORS",
+export const QWEN3_4B_INST_Q4_SHARD = {
+  name: "QWEN3_4B_INST_Q4_SHARD",
   src: `registry://${models[23].registrySource}/${models[23].registryPath}`,
   registryPath: models[23].registryPath,
   registrySource: models[23].registrySource,
@@ -3840,8 +5512,8 @@ export const QWEN3_4B_INST_Q4_TENSORS = {
   params: models[23].params,
 } as const;
 
-export const LLAMA_3_2_1B_INST_Q4_0 = {
-  name: "LLAMA_3_2_1B_INST_Q4_0",
+export const QWEN3_4B_INST_Q4_TENSORS = {
+  name: "QWEN3_4B_INST_Q4_TENSORS",
   src: `registry://${models[24].registrySource}/${models[24].registryPath}`,
   registryPath: models[24].registryPath,
   registrySource: models[24].registrySource,
@@ -3858,8 +5530,8 @@ export const LLAMA_3_2_1B_INST_Q4_0 = {
   params: models[24].params,
 } as const;
 
-export const MEDGEMMA_4B_IT_Q4_1 = {
-  name: "MEDGEMMA_4B_IT_Q4_1",
+export const QWEN3_8B_INST_Q4_K_M = {
+  name: "QWEN3_8B_INST_Q4_K_M",
   src: `registry://${models[25].registrySource}/${models[25].registryPath}`,
   registryPath: models[25].registryPath,
   registrySource: models[25].registrySource,
@@ -3876,8 +5548,8 @@ export const MEDGEMMA_4B_IT_Q4_1 = {
   params: models[25].params,
 } as const;
 
-export const MEDGEMMA_4B_IT_Q8_0 = {
-  name: "MEDGEMMA_4B_IT_Q8_0",
+export const MMPROJ_QWEN3VL_2B_MULTIMODAL_Q4_K = {
+  name: "MMPROJ_QWEN3VL_2B_MULTIMODAL_Q4_K",
   src: `registry://${models[26].registrySource}/${models[26].registryPath}`,
   registryPath: models[26].registryPath,
   registrySource: models[26].registrySource,
@@ -3894,8 +5566,8 @@ export const MEDGEMMA_4B_IT_Q8_0 = {
   params: models[26].params,
 } as const;
 
-export const QWEN3_600M_INST_Q4 = {
-  name: "QWEN3_600M_INST_Q4",
+export const QWEN3VL_2B_MULTIMODAL_Q4_K = {
+  name: "QWEN3VL_2B_MULTIMODAL_Q4_K",
   src: `registry://${models[27].registrySource}/${models[27].registryPath}`,
   registryPath: models[27].registryPath,
   registrySource: models[27].registrySource,
@@ -3912,8 +5584,8 @@ export const QWEN3_600M_INST_Q4 = {
   params: models[27].params,
 } as const;
 
-export const QWEN3_1_7B_INST_Q4 = {
-  name: "QWEN3_1_7B_INST_Q4",
+export const GPT_OSS_20B_INST_Q4_K_M = {
+  name: "GPT_OSS_20B_INST_Q4_K_M",
   src: `registry://${models[28].registrySource}/${models[28].registryPath}`,
   registryPath: models[28].registryPath,
   registrySource: models[28].registrySource,
@@ -3930,8 +5602,8 @@ export const QWEN3_1_7B_INST_Q4 = {
   params: models[28].params,
 } as const;
 
-export const SALAMANDRATA_2B_INST_Q4 = {
-  name: "SALAMANDRATA_2B_INST_Q4",
+export const LLAMA_3_2_1B_INST_Q4_0 = {
+  name: "LLAMA_3_2_1B_INST_Q4_0",
   src: `registry://${models[29].registrySource}/${models[29].registryPath}`,
   registryPath: models[29].registryPath,
   registrySource: models[29].registrySource,
@@ -3948,8 +5620,8 @@ export const SALAMANDRATA_2B_INST_Q4 = {
   params: models[29].params,
 } as const;
 
-export const SALAMANDRATA_2B_INST_Q8 = {
-  name: "SALAMANDRATA_2B_INST_Q8",
+export const MEDGEMMA_4B_IT_Q4_1 = {
+  name: "MEDGEMMA_4B_IT_Q4_1",
   src: `registry://${models[30].registrySource}/${models[30].registryPath}`,
   registryPath: models[30].registryPath,
   registrySource: models[30].registrySource,
@@ -3966,8 +5638,8 @@ export const SALAMANDRATA_2B_INST_Q8 = {
   params: models[30].params,
 } as const;
 
-export const MMPROJ_SMOLVLM2_500M_MULTIMODAL_F16 = {
-  name: "MMPROJ_SMOLVLM2_500M_MULTIMODAL_F16",
+export const MEDGEMMA_4B_IT_Q8_0 = {
+  name: "MEDGEMMA_4B_IT_Q8_0",
   src: `registry://${models[31].registrySource}/${models[31].registryPath}`,
   registryPath: models[31].registryPath,
   registrySource: models[31].registrySource,
@@ -3984,8 +5656,8 @@ export const MMPROJ_SMOLVLM2_500M_MULTIMODAL_F16 = {
   params: models[31].params,
 } as const;
 
-export const SMOLVLM2_500M_MULTIMODAL_F16 = {
-  name: "SMOLVLM2_500M_MULTIMODAL_F16",
+export const QWEN3_600M_INST_Q4 = {
+  name: "QWEN3_600M_INST_Q4",
   src: `registry://${models[32].registrySource}/${models[32].registryPath}`,
   registryPath: models[32].registryPath,
   registrySource: models[32].registrySource,
@@ -4002,8 +5674,8 @@ export const SMOLVLM2_500M_MULTIMODAL_F16 = {
   params: models[32].params,
 } as const;
 
-export const MARIAN_EN_HI_INDIC_1B_Q0F16 = {
-  name: "MARIAN_EN_HI_INDIC_1B_Q0F16",
+export const QWEN3_1_7B_INST_Q4 = {
+  name: "QWEN3_1_7B_INST_Q4",
   src: `registry://${models[33].registrySource}/${models[33].registryPath}`,
   registryPath: models[33].registryPath,
   registrySource: models[33].registrySource,
@@ -4020,8 +5692,8 @@ export const MARIAN_EN_HI_INDIC_1B_Q0F16 = {
   params: models[33].params,
 } as const;
 
-export const MARIAN_EN_HI_INDIC_200M_Q0F16 = {
-  name: "MARIAN_EN_HI_INDIC_200M_Q0F16",
+export const SALAMANDRATA_2B_INST_Q4 = {
+  name: "SALAMANDRATA_2B_INST_Q4",
   src: `registry://${models[34].registrySource}/${models[34].registryPath}`,
   registryPath: models[34].registryPath,
   registrySource: models[34].registrySource,
@@ -4038,8 +5710,8 @@ export const MARIAN_EN_HI_INDIC_200M_Q0F16 = {
   params: models[34].params,
 } as const;
 
-export const MARIAN_HI_EN_INDIC_1B_Q0F16 = {
-  name: "MARIAN_HI_EN_INDIC_1B_Q0F16",
+export const SALAMANDRATA_2B_INST_Q8 = {
+  name: "SALAMANDRATA_2B_INST_Q8",
   src: `registry://${models[35].registrySource}/${models[35].registryPath}`,
   registryPath: models[35].registryPath,
   registrySource: models[35].registrySource,
@@ -4056,8 +5728,8 @@ export const MARIAN_HI_EN_INDIC_1B_Q0F16 = {
   params: models[35].params,
 } as const;
 
-export const MARIAN_HI_EN_INDIC_200M_Q0F16 = {
-  name: "MARIAN_HI_EN_INDIC_200M_Q0F16",
+export const MMPROJ_SMOLVLM2_500M_MULTIMODAL_F16 = {
+  name: "MMPROJ_SMOLVLM2_500M_MULTIMODAL_F16",
   src: `registry://${models[36].registrySource}/${models[36].registryPath}`,
   registryPath: models[36].registryPath,
   registrySource: models[36].registrySource,
@@ -4074,8 +5746,8 @@ export const MARIAN_HI_EN_INDIC_200M_Q0F16 = {
   params: models[36].params,
 } as const;
 
-export const MARIAN_HI_HI_INDIC_1B_Q0F16 = {
-  name: "MARIAN_HI_HI_INDIC_1B_Q0F16",
+export const SMOLVLM2_500M_MULTIMODAL_F16 = {
+  name: "SMOLVLM2_500M_MULTIMODAL_F16",
   src: `registry://${models[37].registrySource}/${models[37].registryPath}`,
   registryPath: models[37].registryPath,
   registrySource: models[37].registrySource,
@@ -4092,8 +5764,8 @@ export const MARIAN_HI_HI_INDIC_1B_Q0F16 = {
   params: models[37].params,
 } as const;
 
-export const MARIAN_HI_HI_INDIC_320M_Q0F16 = {
-  name: "MARIAN_HI_HI_INDIC_320M_Q0F16",
+export const BERGAMOT_AR_EN_LEX = {
+  name: "BERGAMOT_AR_EN_LEX",
   src: `registry://${models[38].registrySource}/${models[38].registryPath}`,
   registryPath: models[38].registryPath,
   registrySource: models[38].registrySource,
@@ -4110,8 +5782,8 @@ export const MARIAN_HI_HI_INDIC_320M_Q0F16 = {
   params: models[38].params,
 } as const;
 
-export const MARIAN_EN_HI_INDIC_1B_Q4_0 = {
-  name: "MARIAN_EN_HI_INDIC_1B_Q4_0",
+export const BERGAMOT_METADATA = {
+  name: "BERGAMOT_METADATA",
   src: `registry://${models[39].registrySource}/${models[39].registryPath}`,
   registryPath: models[39].registryPath,
   registrySource: models[39].registrySource,
@@ -4128,8 +5800,8 @@ export const MARIAN_EN_HI_INDIC_1B_Q4_0 = {
   params: models[39].params,
 } as const;
 
-export const MARIAN_EN_HI_INDIC_200M_Q4_0 = {
-  name: "MARIAN_EN_HI_INDIC_200M_Q4_0",
+export const BERGAMOT_AR_EN = {
+  name: "BERGAMOT_AR_EN",
   src: `registry://${models[40].registrySource}/${models[40].registryPath}`,
   registryPath: models[40].registryPath,
   registrySource: models[40].registrySource,
@@ -4146,8 +5818,8 @@ export const MARIAN_EN_HI_INDIC_200M_Q4_0 = {
   params: models[40].params,
 } as const;
 
-export const MARIAN_HI_EN_INDIC_1B_Q4_0 = {
-  name: "MARIAN_HI_EN_INDIC_1B_Q4_0",
+export const BERGAMOT_AR_EN_VOCAB = {
+  name: "BERGAMOT_AR_EN_VOCAB",
   src: `registry://${models[41].registrySource}/${models[41].registryPath}`,
   registryPath: models[41].registryPath,
   registrySource: models[41].registrySource,
@@ -4164,8 +5836,8 @@ export const MARIAN_HI_EN_INDIC_1B_Q4_0 = {
   params: models[41].params,
 } as const;
 
-export const MARIAN_HI_EN_INDIC_200M_Q4_0 = {
-  name: "MARIAN_HI_EN_INDIC_200M_Q4_0",
+export const BERGAMOT_CS_EN_LEX = {
+  name: "BERGAMOT_CS_EN_LEX",
   src: `registry://${models[42].registrySource}/${models[42].registryPath}`,
   registryPath: models[42].registryPath,
   registrySource: models[42].registrySource,
@@ -4182,8 +5854,8 @@ export const MARIAN_HI_EN_INDIC_200M_Q4_0 = {
   params: models[42].params,
 } as const;
 
-export const MARIAN_HI_HI_INDIC_1B_Q4_0 = {
-  name: "MARIAN_HI_HI_INDIC_1B_Q4_0",
+export const BERGAMOT_METADATA_1 = {
+  name: "BERGAMOT_METADATA_1",
   src: `registry://${models[43].registrySource}/${models[43].registryPath}`,
   registryPath: models[43].registryPath,
   registrySource: models[43].registrySource,
@@ -4200,8 +5872,8 @@ export const MARIAN_HI_HI_INDIC_1B_Q4_0 = {
   params: models[43].params,
 } as const;
 
-export const MARIAN_HI_HI_INDIC_320M_Q4_0 = {
-  name: "MARIAN_HI_HI_INDIC_320M_Q4_0",
+export const BERGAMOT_CS_EN = {
+  name: "BERGAMOT_CS_EN",
   src: `registry://${models[44].registrySource}/${models[44].registryPath}`,
   registryPath: models[44].registryPath,
   registrySource: models[44].registrySource,
@@ -4218,8 +5890,8 @@ export const MARIAN_HI_HI_INDIC_320M_Q4_0 = {
   params: models[44].params,
 } as const;
 
-export const MARIAN_OPUS_DE_FR_Q0F16 = {
-  name: "MARIAN_OPUS_DE_FR_Q0F16",
+export const BERGAMOT_CS_EN_VOCAB = {
+  name: "BERGAMOT_CS_EN_VOCAB",
   src: `registry://${models[45].registrySource}/${models[45].registryPath}`,
   registryPath: models[45].registryPath,
   registrySource: models[45].registrySource,
@@ -4236,8 +5908,8 @@ export const MARIAN_OPUS_DE_FR_Q0F16 = {
   params: models[45].params,
 } as const;
 
-export const MARIAN_OPUS_EN_FR_Q0F16 = {
-  name: "MARIAN_OPUS_EN_FR_Q0F16",
+export const BERGAMOT_EN_AR_LEX = {
+  name: "BERGAMOT_EN_AR_LEX",
   src: `registry://${models[46].registrySource}/${models[46].registryPath}`,
   registryPath: models[46].registryPath,
   registrySource: models[46].registrySource,
@@ -4254,8 +5926,8 @@ export const MARIAN_OPUS_EN_FR_Q0F16 = {
   params: models[46].params,
 } as const;
 
-export const MARIAN_OPUS_EN_PT_Q0F16 = {
-  name: "MARIAN_OPUS_EN_PT_Q0F16",
+export const BERGAMOT_METADATA_2 = {
+  name: "BERGAMOT_METADATA_2",
   src: `registry://${models[47].registrySource}/${models[47].registryPath}`,
   registryPath: models[47].registryPath,
   registrySource: models[47].registrySource,
@@ -4272,8 +5944,8 @@ export const MARIAN_OPUS_EN_PT_Q0F16 = {
   params: models[47].params,
 } as const;
 
-export const MARIAN_OPUS_EN_RU_Q0F16 = {
-  name: "MARIAN_OPUS_EN_RU_Q0F16",
+export const BERGAMOT_EN_AR = {
+  name: "BERGAMOT_EN_AR",
   src: `registry://${models[48].registrySource}/${models[48].registryPath}`,
   registryPath: models[48].registryPath,
   registrySource: models[48].registrySource,
@@ -4290,8 +5962,8 @@ export const MARIAN_OPUS_EN_RU_Q0F16 = {
   params: models[48].params,
 } as const;
 
-export const MARIAN_OPUS_ES_FR_Q0F16 = {
-  name: "MARIAN_OPUS_ES_FR_Q0F16",
+export const BERGAMOT_EN_AR_VOCAB = {
+  name: "BERGAMOT_EN_AR_VOCAB",
   src: `registry://${models[49].registrySource}/${models[49].registryPath}`,
   registryPath: models[49].registryPath,
   registrySource: models[49].registrySource,
@@ -4308,8 +5980,8 @@ export const MARIAN_OPUS_ES_FR_Q0F16 = {
   params: models[49].params,
 } as const;
 
-export const MARIAN_OPUS_FR_DE_Q0F16 = {
-  name: "MARIAN_OPUS_FR_DE_Q0F16",
+export const BERGAMOT_EN_CS_LEX = {
+  name: "BERGAMOT_EN_CS_LEX",
   src: `registry://${models[50].registrySource}/${models[50].registryPath}`,
   registryPath: models[50].registryPath,
   registrySource: models[50].registrySource,
@@ -4326,8 +5998,8 @@ export const MARIAN_OPUS_FR_DE_Q0F16 = {
   params: models[50].params,
 } as const;
 
-export const MARIAN_OPUS_FR_EN_Q0F16 = {
-  name: "MARIAN_OPUS_FR_EN_Q0F16",
+export const BERGAMOT_METADATA_3 = {
+  name: "BERGAMOT_METADATA_3",
   src: `registry://${models[51].registrySource}/${models[51].registryPath}`,
   registryPath: models[51].registryPath,
   registrySource: models[51].registrySource,
@@ -4344,8 +6016,8 @@ export const MARIAN_OPUS_FR_EN_Q0F16 = {
   params: models[51].params,
 } as const;
 
-export const MARIAN_OPUS_FR_ES_Q0F16 = {
-  name: "MARIAN_OPUS_FR_ES_Q0F16",
+export const BERGAMOT_EN_CS = {
+  name: "BERGAMOT_EN_CS",
   src: `registry://${models[52].registrySource}/${models[52].registryPath}`,
   registryPath: models[52].registryPath,
   registrySource: models[52].registrySource,
@@ -4362,8 +6034,8 @@ export const MARIAN_OPUS_FR_ES_Q0F16 = {
   params: models[52].params,
 } as const;
 
-export const MARIAN_OPUS_PT_EN_Q0F16 = {
-  name: "MARIAN_OPUS_PT_EN_Q0F16",
+export const BERGAMOT_EN_ES_LEX = {
+  name: "BERGAMOT_EN_ES_LEX",
   src: `registry://${models[53].registrySource}/${models[53].registryPath}`,
   registryPath: models[53].registryPath,
   registrySource: models[53].registrySource,
@@ -4380,8 +6052,8 @@ export const MARIAN_OPUS_PT_EN_Q0F16 = {
   params: models[53].params,
 } as const;
 
-export const MARIAN_OPUS_RU_EN_Q0F16 = {
-  name: "MARIAN_OPUS_RU_EN_Q0F16",
+export const BERGAMOT_METADATA_4 = {
+  name: "BERGAMOT_METADATA_4",
   src: `registry://${models[54].registrySource}/${models[54].registryPath}`,
   registryPath: models[54].registryPath,
   registrySource: models[54].registrySource,
@@ -4398,8 +6070,8 @@ export const MARIAN_OPUS_RU_EN_Q0F16 = {
   params: models[54].params,
 } as const;
 
-export const MARIAN_OPUS_AR_EN_Q4_0 = {
-  name: "MARIAN_OPUS_AR_EN_Q4_0",
+export const BERGAMOT_EN_ES = {
+  name: "BERGAMOT_EN_ES",
   src: `registry://${models[55].registrySource}/${models[55].registryPath}`,
   registryPath: models[55].registryPath,
   registrySource: models[55].registrySource,
@@ -4416,8 +6088,8 @@ export const MARIAN_OPUS_AR_EN_Q4_0 = {
   params: models[55].params,
 } as const;
 
-export const MARIAN_OPUS_DE_EN_Q4_0 = {
-  name: "MARIAN_OPUS_DE_EN_Q4_0",
+export const BERGAMOT_EN_ES_VOCAB = {
+  name: "BERGAMOT_EN_ES_VOCAB",
   src: `registry://${models[56].registrySource}/${models[56].registryPath}`,
   registryPath: models[56].registryPath,
   registrySource: models[56].registrySource,
@@ -4434,8 +6106,8 @@ export const MARIAN_OPUS_DE_EN_Q4_0 = {
   params: models[56].params,
 } as const;
 
-export const MARIAN_OPUS_DE_FR_Q4_0 = {
-  name: "MARIAN_OPUS_DE_FR_Q4_0",
+export const BERGAMOT_EN_FR_LEX = {
+  name: "BERGAMOT_EN_FR_LEX",
   src: `registry://${models[57].registrySource}/${models[57].registryPath}`,
   registryPath: models[57].registryPath,
   registrySource: models[57].registrySource,
@@ -4452,8 +6124,8 @@ export const MARIAN_OPUS_DE_FR_Q4_0 = {
   params: models[57].params,
 } as const;
 
-export const MARIAN_OPUS_EN_AR_Q4_0 = {
-  name: "MARIAN_OPUS_EN_AR_Q4_0",
+export const BERGAMOT_METADATA_5 = {
+  name: "BERGAMOT_METADATA_5",
   src: `registry://${models[58].registrySource}/${models[58].registryPath}`,
   registryPath: models[58].registryPath,
   registrySource: models[58].registrySource,
@@ -4470,8 +6142,8 @@ export const MARIAN_OPUS_EN_AR_Q4_0 = {
   params: models[58].params,
 } as const;
 
-export const MARIAN_OPUS_EN_DE_Q4_0 = {
-  name: "MARIAN_OPUS_EN_DE_Q4_0",
+export const BERGAMOT_EN_FR = {
+  name: "BERGAMOT_EN_FR",
   src: `registry://${models[59].registrySource}/${models[59].registryPath}`,
   registryPath: models[59].registryPath,
   registrySource: models[59].registrySource,
@@ -4488,8 +6160,8 @@ export const MARIAN_OPUS_EN_DE_Q4_0 = {
   params: models[59].params,
 } as const;
 
-export const MARIAN_OPUS_EN_ES_Q4_0 = {
-  name: "MARIAN_OPUS_EN_ES_Q4_0",
+export const BERGAMOT_EN_FR_VOCAB = {
+  name: "BERGAMOT_EN_FR_VOCAB",
   src: `registry://${models[60].registrySource}/${models[60].registryPath}`,
   registryPath: models[60].registryPath,
   registrySource: models[60].registrySource,
@@ -4506,8 +6178,8 @@ export const MARIAN_OPUS_EN_ES_Q4_0 = {
   params: models[60].params,
 } as const;
 
-export const MARIAN_OPUS_EN_FR_Q4_0 = {
-  name: "MARIAN_OPUS_EN_FR_Q4_0",
+export const BERGAMOT_EN_IT_LEX = {
+  name: "BERGAMOT_EN_IT_LEX",
   src: `registry://${models[61].registrySource}/${models[61].registryPath}`,
   registryPath: models[61].registryPath,
   registrySource: models[61].registrySource,
@@ -4524,8 +6196,8 @@ export const MARIAN_OPUS_EN_FR_Q4_0 = {
   params: models[61].params,
 } as const;
 
-export const MARIAN_OPUS_EN_IT_Q4_0 = {
-  name: "MARIAN_OPUS_EN_IT_Q4_0",
+export const BERGAMOT_METADATA_6 = {
+  name: "BERGAMOT_METADATA_6",
   src: `registry://${models[62].registrySource}/${models[62].registryPath}`,
   registryPath: models[62].registryPath,
   registrySource: models[62].registrySource,
@@ -4542,8 +6214,8 @@ export const MARIAN_OPUS_EN_IT_Q4_0 = {
   params: models[62].params,
 } as const;
 
-export const MARIAN_OPUS_EN_PT_Q4_0 = {
-  name: "MARIAN_OPUS_EN_PT_Q4_0",
+export const BERGAMOT_EN_IT = {
+  name: "BERGAMOT_EN_IT",
   src: `registry://${models[63].registrySource}/${models[63].registryPath}`,
   registryPath: models[63].registryPath,
   registrySource: models[63].registrySource,
@@ -4560,8 +6232,8 @@ export const MARIAN_OPUS_EN_PT_Q4_0 = {
   params: models[63].params,
 } as const;
 
-export const MARIAN_OPUS_EN_ROA_Q4_0 = {
-  name: "MARIAN_OPUS_EN_ROA_Q4_0",
+export const BERGAMOT_EN_IT_VOCAB = {
+  name: "BERGAMOT_EN_IT_VOCAB",
   src: `registry://${models[64].registrySource}/${models[64].registryPath}`,
   registryPath: models[64].registryPath,
   registrySource: models[64].registrySource,
@@ -4578,8 +6250,8 @@ export const MARIAN_OPUS_EN_ROA_Q4_0 = {
   params: models[64].params,
 } as const;
 
-export const MARIAN_OPUS_EN_RU_Q4_0 = {
-  name: "MARIAN_OPUS_EN_RU_Q4_0",
+export const BERGAMOT_EN_JA_LEX = {
+  name: "BERGAMOT_EN_JA_LEX",
   src: `registry://${models[65].registrySource}/${models[65].registryPath}`,
   registryPath: models[65].registryPath,
   registrySource: models[65].registrySource,
@@ -4596,8 +6268,8 @@ export const MARIAN_OPUS_EN_RU_Q4_0 = {
   params: models[65].params,
 } as const;
 
-export const MARIAN_OPUS_EN_ZH_Q4_0 = {
-  name: "MARIAN_OPUS_EN_ZH_Q4_0",
+export const BERGAMOT_METADATA_7 = {
+  name: "BERGAMOT_METADATA_7",
   src: `registry://${models[66].registrySource}/${models[66].registryPath}`,
   registryPath: models[66].registryPath,
   registrySource: models[66].registrySource,
@@ -4614,8 +6286,8 @@ export const MARIAN_OPUS_EN_ZH_Q4_0 = {
   params: models[66].params,
 } as const;
 
-export const MARIAN_OPUS_ES_EN_Q4_0 = {
-  name: "MARIAN_OPUS_ES_EN_Q4_0",
+export const BERGAMOT_EN_JA = {
+  name: "BERGAMOT_EN_JA",
   src: `registry://${models[67].registrySource}/${models[67].registryPath}`,
   registryPath: models[67].registryPath,
   registrySource: models[67].registrySource,
@@ -4632,8 +6304,8 @@ export const MARIAN_OPUS_ES_EN_Q4_0 = {
   params: models[67].params,
 } as const;
 
-export const MARIAN_OPUS_ES_FR_Q4_0 = {
-  name: "MARIAN_OPUS_ES_FR_Q4_0",
+export const BERGAMOT_EN_JA_SRCVOCAB = {
+  name: "BERGAMOT_EN_JA_SRCVOCAB",
   src: `registry://${models[68].registrySource}/${models[68].registryPath}`,
   registryPath: models[68].registryPath,
   registrySource: models[68].registrySource,
@@ -4650,8 +6322,8 @@ export const MARIAN_OPUS_ES_FR_Q4_0 = {
   params: models[68].params,
 } as const;
 
-export const MARIAN_OPUS_FR_DE_Q4_0 = {
-  name: "MARIAN_OPUS_FR_DE_Q4_0",
+export const BERGAMOT_EN_JA_TRGVOCAB = {
+  name: "BERGAMOT_EN_JA_TRGVOCAB",
   src: `registry://${models[69].registrySource}/${models[69].registryPath}`,
   registryPath: models[69].registryPath,
   registrySource: models[69].registrySource,
@@ -4668,8 +6340,8 @@ export const MARIAN_OPUS_FR_DE_Q4_0 = {
   params: models[69].params,
 } as const;
 
-export const MARIAN_OPUS_FR_EN_Q4_0 = {
-  name: "MARIAN_OPUS_FR_EN_Q4_0",
+export const BERGAMOT_EN_PT_LEX = {
+  name: "BERGAMOT_EN_PT_LEX",
   src: `registry://${models[70].registrySource}/${models[70].registryPath}`,
   registryPath: models[70].registryPath,
   registrySource: models[70].registrySource,
@@ -4686,8 +6358,8 @@ export const MARIAN_OPUS_FR_EN_Q4_0 = {
   params: models[70].params,
 } as const;
 
-export const MARIAN_OPUS_FR_ES_Q4_0 = {
-  name: "MARIAN_OPUS_FR_ES_Q4_0",
+export const BERGAMOT_METADATA_8 = {
+  name: "BERGAMOT_METADATA_8",
   src: `registry://${models[71].registrySource}/${models[71].registryPath}`,
   registryPath: models[71].registryPath,
   registrySource: models[71].registrySource,
@@ -4704,8 +6376,8 @@ export const MARIAN_OPUS_FR_ES_Q4_0 = {
   params: models[71].params,
 } as const;
 
-export const MARIAN_OPUS_IT_EN_Q4_0 = {
-  name: "MARIAN_OPUS_IT_EN_Q4_0",
+export const BERGAMOT_EN_PT = {
+  name: "BERGAMOT_EN_PT",
   src: `registry://${models[72].registrySource}/${models[72].registryPath}`,
   registryPath: models[72].registryPath,
   registrySource: models[72].registrySource,
@@ -4722,8 +6394,8 @@ export const MARIAN_OPUS_IT_EN_Q4_0 = {
   params: models[72].params,
 } as const;
 
-export const MARIAN_OPUS_JA_EN_Q4_0 = {
-  name: "MARIAN_OPUS_JA_EN_Q4_0",
+export const BERGAMOT_EN_PT_VOCAB = {
+  name: "BERGAMOT_EN_PT_VOCAB",
   src: `registry://${models[73].registrySource}/${models[73].registryPath}`,
   registryPath: models[73].registryPath,
   registrySource: models[73].registrySource,
@@ -4740,8 +6412,8 @@ export const MARIAN_OPUS_JA_EN_Q4_0 = {
   params: models[73].params,
 } as const;
 
-export const MARIAN_OPUS_ROA_EN_Q4_0 = {
-  name: "MARIAN_OPUS_ROA_EN_Q4_0",
+export const BERGAMOT_EN_RU_LEX = {
+  name: "BERGAMOT_EN_RU_LEX",
   src: `registry://${models[74].registrySource}/${models[74].registryPath}`,
   registryPath: models[74].registryPath,
   registrySource: models[74].registrySource,
@@ -4758,8 +6430,8 @@ export const MARIAN_OPUS_ROA_EN_Q4_0 = {
   params: models[74].params,
 } as const;
 
-export const MARIAN_OPUS_RU_EN_Q4_0 = {
-  name: "MARIAN_OPUS_RU_EN_Q4_0",
+export const BERGAMOT_METADATA_9 = {
+  name: "BERGAMOT_METADATA_9",
   src: `registry://${models[75].registrySource}/${models[75].registryPath}`,
   registryPath: models[75].registryPath,
   registrySource: models[75].registrySource,
@@ -4776,8 +6448,8 @@ export const MARIAN_OPUS_RU_EN_Q4_0 = {
   params: models[75].params,
 } as const;
 
-export const MARIAN_OPUS_ZH_EN_Q4_0 = {
-  name: "MARIAN_OPUS_ZH_EN_Q4_0",
+export const BERGAMOT_EN_RU = {
+  name: "BERGAMOT_EN_RU",
   src: `registry://${models[76].registrySource}/${models[76].registryPath}`,
   registryPath: models[76].registryPath,
   registrySource: models[76].registrySource,
@@ -4794,8 +6466,8 @@ export const MARIAN_OPUS_ZH_EN_Q4_0 = {
   params: models[76].params,
 } as const;
 
-export const SALAMANDRATA_2B_INST_Q4_SHARD = {
-  name: "SALAMANDRATA_2B_INST_Q4_SHARD",
+export const BERGAMOT_EN_RU_VOCAB = {
+  name: "BERGAMOT_EN_RU_VOCAB",
   src: `registry://${models[77].registrySource}/${models[77].registryPath}`,
   registryPath: models[77].registryPath,
   registrySource: models[77].registrySource,
@@ -4812,8 +6484,8 @@ export const SALAMANDRATA_2B_INST_Q4_SHARD = {
   params: models[77].params,
 } as const;
 
-export const SALAMANDRATA_2B_INST_Q4_TENSORS = {
-  name: "SALAMANDRATA_2B_INST_Q4_TENSORS",
+export const BERGAMOT_EN_ZH_LEX = {
+  name: "BERGAMOT_EN_ZH_LEX",
   src: `registry://${models[78].registrySource}/${models[78].registryPath}`,
   registryPath: models[78].registryPath,
   registrySource: models[78].registrySource,
@@ -4830,8 +6502,8 @@ export const SALAMANDRATA_2B_INST_Q4_TENSORS = {
   params: models[78].params,
 } as const;
 
-export const SALAMANDRATA_2B_INST_Q8_SHARD = {
-  name: "SALAMANDRATA_2B_INST_Q8_SHARD",
+export const BERGAMOT_METADATA_10 = {
+  name: "BERGAMOT_METADATA_10",
   src: `registry://${models[79].registrySource}/${models[79].registryPath}`,
   registryPath: models[79].registryPath,
   registrySource: models[79].registrySource,
@@ -4848,8 +6520,8 @@ export const SALAMANDRATA_2B_INST_Q8_SHARD = {
   params: models[79].params,
 } as const;
 
-export const OCR_CRAFT_ENGLISH_DETECTOR = {
-  name: "OCR_CRAFT_ENGLISH_DETECTOR",
+export const BERGAMOT_EN_ZH = {
+  name: "BERGAMOT_EN_ZH",
   src: `registry://${models[80].registrySource}/${models[80].registryPath}`,
   registryPath: models[80].registryPath,
   registrySource: models[80].registrySource,
@@ -4866,8 +6538,8 @@ export const OCR_CRAFT_ENGLISH_DETECTOR = {
   params: models[80].params,
 } as const;
 
-export const OCR_CRAFT_ENGLISH_RECOGNIZER = {
-  name: "OCR_CRAFT_ENGLISH_RECOGNIZER",
+export const BERGAMOT_EN_ZH_SRCVOCAB = {
+  name: "BERGAMOT_EN_ZH_SRCVOCAB",
   src: `registry://${models[81].registrySource}/${models[81].registryPath}`,
   registryPath: models[81].registryPath,
   registrySource: models[81].registrySource,
@@ -4884,8 +6556,8 @@ export const OCR_CRAFT_ENGLISH_RECOGNIZER = {
   params: models[81].params,
 } as const;
 
-export const TTS_PIPER_THORSTEN_DE_DE_ONNX_MEDIUM = {
-  name: "TTS_PIPER_THORSTEN_DE_DE_ONNX_MEDIUM",
+export const BERGAMOT_EN_ZH_TRGVOCAB = {
+  name: "BERGAMOT_EN_ZH_TRGVOCAB",
   src: `registry://${models[82].registrySource}/${models[82].registryPath}`,
   registryPath: models[82].registryPath,
   registrySource: models[82].registrySource,
@@ -4902,8 +6574,8 @@ export const TTS_PIPER_THORSTEN_DE_DE_ONNX_MEDIUM = {
   params: models[82].params,
 } as const;
 
-export const TTS_PIPER_THORSTEN_DE_DE_ONNX_MEDIUM_CONFIG = {
-  name: "TTS_PIPER_THORSTEN_DE_DE_ONNX_MEDIUM_CONFIG",
+export const BERGAMOT_ES_EN_LEX = {
+  name: "BERGAMOT_ES_EN_LEX",
   src: `registry://${models[83].registrySource}/${models[83].registryPath}`,
   registryPath: models[83].registryPath,
   registrySource: models[83].registrySource,
@@ -4920,8 +6592,8 @@ export const TTS_PIPER_THORSTEN_DE_DE_ONNX_MEDIUM_CONFIG = {
   params: models[83].params,
 } as const;
 
-export const TTS_PIPER_AMY_EN_US_ONNX_LOW = {
-  name: "TTS_PIPER_AMY_EN_US_ONNX_LOW",
+export const BERGAMOT_METADATA_11 = {
+  name: "BERGAMOT_METADATA_11",
   src: `registry://${models[84].registrySource}/${models[84].registryPath}`,
   registryPath: models[84].registryPath,
   registrySource: models[84].registrySource,
@@ -4938,8 +6610,8 @@ export const TTS_PIPER_AMY_EN_US_ONNX_LOW = {
   params: models[84].params,
 } as const;
 
-export const TTS_PIPER_AMY_EN_US_ONNX_LOW_CONFIG = {
-  name: "TTS_PIPER_AMY_EN_US_ONNX_LOW_CONFIG",
+export const BERGAMOT_ES_EN = {
+  name: "BERGAMOT_ES_EN",
   src: `registry://${models[85].registrySource}/${models[85].registryPath}`,
   registryPath: models[85].registryPath,
   registrySource: models[85].registrySource,
@@ -4956,8 +6628,8 @@ export const TTS_PIPER_AMY_EN_US_ONNX_LOW_CONFIG = {
   params: models[85].params,
 } as const;
 
-export const TTS_PIPER_AMY_EN_US_ONNX_MEDIUM = {
-  name: "TTS_PIPER_AMY_EN_US_ONNX_MEDIUM",
+export const BERGAMOT_ES_EN_VOCAB = {
+  name: "BERGAMOT_ES_EN_VOCAB",
   src: `registry://${models[86].registrySource}/${models[86].registryPath}`,
   registryPath: models[86].registryPath,
   registrySource: models[86].registrySource,
@@ -4974,8 +6646,8 @@ export const TTS_PIPER_AMY_EN_US_ONNX_MEDIUM = {
   params: models[86].params,
 } as const;
 
-export const TTS_PIPER_AMY_EN_US_ONNX_MEDIUM_CONFIG = {
-  name: "TTS_PIPER_AMY_EN_US_ONNX_MEDIUM_CONFIG",
+export const BERGAMOT_FR_EN_LEX = {
+  name: "BERGAMOT_FR_EN_LEX",
   src: `registry://${models[87].registrySource}/${models[87].registryPath}`,
   registryPath: models[87].registryPath,
   registrySource: models[87].registrySource,
@@ -4992,8 +6664,8 @@ export const TTS_PIPER_AMY_EN_US_ONNX_MEDIUM_CONFIG = {
   params: models[87].params,
 } as const;
 
-export const TTS_PIPER_LESSAC_EN_US_ONNX_MEDIUM = {
-  name: "TTS_PIPER_LESSAC_EN_US_ONNX_MEDIUM",
+export const BERGAMOT_METADATA_12 = {
+  name: "BERGAMOT_METADATA_12",
   src: `registry://${models[88].registrySource}/${models[88].registryPath}`,
   registryPath: models[88].registryPath,
   registrySource: models[88].registrySource,
@@ -5010,8 +6682,8 @@ export const TTS_PIPER_LESSAC_EN_US_ONNX_MEDIUM = {
   params: models[88].params,
 } as const;
 
-export const TTS_PIPER_LESSAC_EN_US_ONNX_MEDIUM_CONFIG = {
-  name: "TTS_PIPER_LESSAC_EN_US_ONNX_MEDIUM_CONFIG",
+export const BERGAMOT_FR_EN = {
+  name: "BERGAMOT_FR_EN",
   src: `registry://${models[89].registrySource}/${models[89].registryPath}`,
   registryPath: models[89].registryPath,
   registrySource: models[89].registrySource,
@@ -5028,8 +6700,8 @@ export const TTS_PIPER_LESSAC_EN_US_ONNX_MEDIUM_CONFIG = {
   params: models[89].params,
 } as const;
 
-export const TTS_PIPER_NORMAN_EN_US_ONNX_MEDIUM = {
-  name: "TTS_PIPER_NORMAN_EN_US_ONNX_MEDIUM",
+export const BERGAMOT_IT_EN_LEX = {
+  name: "BERGAMOT_IT_EN_LEX",
   src: `registry://${models[90].registrySource}/${models[90].registryPath}`,
   registryPath: models[90].registryPath,
   registrySource: models[90].registrySource,
@@ -5046,8 +6718,8 @@ export const TTS_PIPER_NORMAN_EN_US_ONNX_MEDIUM = {
   params: models[90].params,
 } as const;
 
-export const TTS_PIPER_NORMAN_EN_US_ONNX_MEDIUM_CONFIG = {
-  name: "TTS_PIPER_NORMAN_EN_US_ONNX_MEDIUM_CONFIG",
+export const BERGAMOT_METADATA_13 = {
+  name: "BERGAMOT_METADATA_13",
   src: `registry://${models[91].registrySource}/${models[91].registryPath}`,
   registryPath: models[91].registryPath,
   registrySource: models[91].registrySource,
@@ -5064,8 +6736,8 @@ export const TTS_PIPER_NORMAN_EN_US_ONNX_MEDIUM_CONFIG = {
   params: models[91].params,
 } as const;
 
-export const TTS_PIPER_DAVEFX_ES_ES_ONNX_MEDIUM = {
-  name: "TTS_PIPER_DAVEFX_ES_ES_ONNX_MEDIUM",
+export const BERGAMOT_IT_EN = {
+  name: "BERGAMOT_IT_EN",
   src: `registry://${models[92].registrySource}/${models[92].registryPath}`,
   registryPath: models[92].registryPath,
   registrySource: models[92].registrySource,
@@ -5082,8 +6754,8 @@ export const TTS_PIPER_DAVEFX_ES_ES_ONNX_MEDIUM = {
   params: models[92].params,
 } as const;
 
-export const TTS_PIPER_DAVEFX_ES_ES_ONNX_MEDIUM_CONFIG = {
-  name: "TTS_PIPER_DAVEFX_ES_ES_ONNX_MEDIUM_CONFIG",
+export const BERGAMOT_IT_EN_VOCAB = {
+  name: "BERGAMOT_IT_EN_VOCAB",
   src: `registry://${models[93].registrySource}/${models[93].registryPath}`,
   registryPath: models[93].registryPath,
   registrySource: models[93].registrySource,
@@ -5100,8 +6772,8 @@ export const TTS_PIPER_DAVEFX_ES_ES_ONNX_MEDIUM_CONFIG = {
   params: models[93].params,
 } as const;
 
-export const TTS_PIPER_SHARVARD_ES_ES_ONNX_MEDIUM = {
-  name: "TTS_PIPER_SHARVARD_ES_ES_ONNX_MEDIUM",
+export const BERGAMOT_JA_EN_LEX = {
+  name: "BERGAMOT_JA_EN_LEX",
   src: `registry://${models[94].registrySource}/${models[94].registryPath}`,
   registryPath: models[94].registryPath,
   registrySource: models[94].registrySource,
@@ -5118,8 +6790,8 @@ export const TTS_PIPER_SHARVARD_ES_ES_ONNX_MEDIUM = {
   params: models[94].params,
 } as const;
 
-export const TTS_PIPER_SHARVARD_ES_ES_ONNX_MEDIUM_CONFIG = {
-  name: "TTS_PIPER_SHARVARD_ES_ES_ONNX_MEDIUM_CONFIG",
+export const BERGAMOT_METADATA_14 = {
+  name: "BERGAMOT_METADATA_14",
   src: `registry://${models[95].registrySource}/${models[95].registryPath}`,
   registryPath: models[95].registryPath,
   registrySource: models[95].registrySource,
@@ -5136,8 +6808,8 @@ export const TTS_PIPER_SHARVARD_ES_ES_ONNX_MEDIUM_CONFIG = {
   params: models[95].params,
 } as const;
 
-export const TTS_PIPER_GILLES_FR_FR_ONNX_LOW = {
-  name: "TTS_PIPER_GILLES_FR_FR_ONNX_LOW",
+export const BERGAMOT_JA_EN = {
+  name: "BERGAMOT_JA_EN",
   src: `registry://${models[96].registrySource}/${models[96].registryPath}`,
   registryPath: models[96].registryPath,
   registrySource: models[96].registrySource,
@@ -5154,8 +6826,8 @@ export const TTS_PIPER_GILLES_FR_FR_ONNX_LOW = {
   params: models[96].params,
 } as const;
 
-export const TTS_PIPER_GILLES_FR_FR_ONNX_LOW_CONFIG = {
-  name: "TTS_PIPER_GILLES_FR_FR_ONNX_LOW_CONFIG",
+export const BERGAMOT_JA_EN_VOCAB = {
+  name: "BERGAMOT_JA_EN_VOCAB",
   src: `registry://${models[97].registrySource}/${models[97].registryPath}`,
   registryPath: models[97].registryPath,
   registrySource: models[97].registrySource,
@@ -5172,8 +6844,8 @@ export const TTS_PIPER_GILLES_FR_FR_ONNX_LOW_CONFIG = {
   params: models[97].params,
 } as const;
 
-export const TTS_PIPER_PAOLA_IT_IT_ONNX_MEDIUM = {
-  name: "TTS_PIPER_PAOLA_IT_IT_ONNX_MEDIUM",
+export const BERGAMOT_PT_EN_LEX = {
+  name: "BERGAMOT_PT_EN_LEX",
   src: `registry://${models[98].registrySource}/${models[98].registryPath}`,
   registryPath: models[98].registryPath,
   registrySource: models[98].registrySource,
@@ -5190,8 +6862,8 @@ export const TTS_PIPER_PAOLA_IT_IT_ONNX_MEDIUM = {
   params: models[98].params,
 } as const;
 
-export const TTS_PIPER_PAOLA_IT_IT_ONNX_MEDIUM_CONFIG = {
-  name: "TTS_PIPER_PAOLA_IT_IT_ONNX_MEDIUM_CONFIG",
+export const BERGAMOT_METADATA_15 = {
+  name: "BERGAMOT_METADATA_15",
   src: `registry://${models[99].registrySource}/${models[99].registryPath}`,
   registryPath: models[99].registryPath,
   registrySource: models[99].registrySource,
@@ -5208,8 +6880,8 @@ export const TTS_PIPER_PAOLA_IT_IT_ONNX_MEDIUM_CONFIG = {
   params: models[99].params,
 } as const;
 
-export const TTS_PIPER_CADU_PT_BR_ONNX_MEDIUM = {
-  name: "TTS_PIPER_CADU_PT_BR_ONNX_MEDIUM",
+export const BERGAMOT_PT_EN = {
+  name: "BERGAMOT_PT_EN",
   src: `registry://${models[100].registrySource}/${models[100].registryPath}`,
   registryPath: models[100].registryPath,
   registrySource: models[100].registrySource,
@@ -5226,8 +6898,8 @@ export const TTS_PIPER_CADU_PT_BR_ONNX_MEDIUM = {
   params: models[100].params,
 } as const;
 
-export const TTS_PIPER_CADU_PT_BR_ONNX_MEDIUM_CONFIG = {
-  name: "TTS_PIPER_CADU_PT_BR_ONNX_MEDIUM_CONFIG",
+export const BERGAMOT_RU_EN_LEX = {
+  name: "BERGAMOT_RU_EN_LEX",
   src: `registry://${models[101].registrySource}/${models[101].registryPath}`,
   registryPath: models[101].registryPath,
   registrySource: models[101].registrySource,
@@ -5244,8 +6916,8 @@ export const TTS_PIPER_CADU_PT_BR_ONNX_MEDIUM_CONFIG = {
   params: models[101].params,
 } as const;
 
-export const TTS_PIPER_TUGAO_PT_PT_ONNX_MEDIUM = {
-  name: "TTS_PIPER_TUGAO_PT_PT_ONNX_MEDIUM",
+export const BERGAMOT_METADATA_16 = {
+  name: "BERGAMOT_METADATA_16",
   src: `registry://${models[102].registrySource}/${models[102].registryPath}`,
   registryPath: models[102].registryPath,
   registrySource: models[102].registrySource,
@@ -5262,8 +6934,8 @@ export const TTS_PIPER_TUGAO_PT_PT_ONNX_MEDIUM = {
   params: models[102].params,
 } as const;
 
-export const TTS_PIPER_TUGAO_PT_PT_ONNX_MEDIUM_CONFIG = {
-  name: "TTS_PIPER_TUGAO_PT_PT_ONNX_MEDIUM_CONFIG",
+export const BERGAMOT_RU_EN = {
+  name: "BERGAMOT_RU_EN",
   src: `registry://${models[103].registrySource}/${models[103].registryPath}`,
   registryPath: models[103].registryPath,
   registrySource: models[103].registrySource,
@@ -5280,8 +6952,8 @@ export const TTS_PIPER_TUGAO_PT_PT_ONNX_MEDIUM_CONFIG = {
   params: models[103].params,
 } as const;
 
-export const TTS_PIPER_IRINA_RU_RU_ONNX_MEDIUM = {
-  name: "TTS_PIPER_IRINA_RU_RU_ONNX_MEDIUM",
+export const BERGAMOT_RU_EN_VOCAB = {
+  name: "BERGAMOT_RU_EN_VOCAB",
   src: `registry://${models[104].registrySource}/${models[104].registryPath}`,
   registryPath: models[104].registryPath,
   registrySource: models[104].registrySource,
@@ -5298,8 +6970,8 @@ export const TTS_PIPER_IRINA_RU_RU_ONNX_MEDIUM = {
   params: models[104].params,
 } as const;
 
-export const TTS_PIPER_IRINA_RU_RU_ONNX_MEDIUM_CONFIG = {
-  name: "TTS_PIPER_IRINA_RU_RU_ONNX_MEDIUM_CONFIG",
+export const BERGAMOT_ZH_EN_LEX = {
+  name: "BERGAMOT_ZH_EN_LEX",
   src: `registry://${models[105].registrySource}/${models[105].registryPath}`,
   registryPath: models[105].registryPath,
   registrySource: models[105].registrySource,
@@ -5316,8 +6988,8 @@ export const TTS_PIPER_IRINA_RU_RU_ONNX_MEDIUM_CONFIG = {
   params: models[105].params,
 } as const;
 
-export const WHISPER_BASE_Q8_0 = {
-  name: "WHISPER_BASE_Q8_0",
+export const BERGAMOT_METADATA_17 = {
+  name: "BERGAMOT_METADATA_17",
   src: `registry://${models[106].registrySource}/${models[106].registryPath}`,
   registryPath: models[106].registryPath,
   registrySource: models[106].registrySource,
@@ -5334,8 +7006,8 @@ export const WHISPER_BASE_Q8_0 = {
   params: models[106].params,
 } as const;
 
-export const WHISPER_BASE_Q0F16 = {
-  name: "WHISPER_BASE_Q0F16",
+export const BERGAMOT_ZH_EN = {
+  name: "BERGAMOT_ZH_EN",
   src: `registry://${models[107].registrySource}/${models[107].registryPath}`,
   registryPath: models[107].registryPath,
   registrySource: models[107].registrySource,
@@ -5352,8 +7024,8 @@ export const WHISPER_BASE_Q0F16 = {
   params: models[107].params,
 } as const;
 
-export const WHISPER_EN_BASE_Q8_0 = {
-  name: "WHISPER_EN_BASE_Q8_0",
+export const MARIAN_EN_HI_INDIC_1B_F16 = {
+  name: "MARIAN_EN_HI_INDIC_1B_F16",
   src: `registry://${models[108].registrySource}/${models[108].registryPath}`,
   registryPath: models[108].registryPath,
   registrySource: models[108].registrySource,
@@ -5370,8 +7042,8 @@ export const WHISPER_EN_BASE_Q8_0 = {
   params: models[108].params,
 } as const;
 
-export const WHISPER_EN_BASE_Q0F16 = {
-  name: "WHISPER_EN_BASE_Q0F16",
+export const MARIAN_EN_HI_INDIC_200M_F16 = {
+  name: "MARIAN_EN_HI_INDIC_200M_F16",
   src: `registry://${models[109].registrySource}/${models[109].registryPath}`,
   registryPath: models[109].registryPath,
   registrySource: models[109].registrySource,
@@ -5388,8 +7060,8 @@ export const WHISPER_EN_BASE_Q0F16 = {
   params: models[109].params,
 } as const;
 
-export const WHISPER_LARGE_V3_TURBO = {
-  name: "WHISPER_LARGE_V3_TURBO",
+export const MARIAN_HI_EN_INDIC_1B_F16 = {
+  name: "MARIAN_HI_EN_INDIC_1B_F16",
   src: `registry://${models[110].registrySource}/${models[110].registryPath}`,
   registryPath: models[110].registryPath,
   registrySource: models[110].registrySource,
@@ -5406,8 +7078,8 @@ export const WHISPER_LARGE_V3_TURBO = {
   params: models[110].params,
 } as const;
 
-export const WHISPER_SMALL_Q8_0 = {
-  name: "WHISPER_SMALL_Q8_0",
+export const MARIAN_HI_EN_INDIC_200M_F16 = {
+  name: "MARIAN_HI_EN_INDIC_200M_F16",
   src: `registry://${models[111].registrySource}/${models[111].registryPath}`,
   registryPath: models[111].registryPath,
   registrySource: models[111].registrySource,
@@ -5424,8 +7096,8 @@ export const WHISPER_SMALL_Q8_0 = {
   params: models[111].params,
 } as const;
 
-export const WHISPER_SMALL_Q0F16 = {
-  name: "WHISPER_SMALL_Q0F16",
+export const MARIAN_HI_HI_INDIC_1B_F16 = {
+  name: "MARIAN_HI_HI_INDIC_1B_F16",
   src: `registry://${models[112].registrySource}/${models[112].registryPath}`,
   registryPath: models[112].registryPath,
   registrySource: models[112].registrySource,
@@ -5442,8 +7114,8 @@ export const WHISPER_SMALL_Q0F16 = {
   params: models[112].params,
 } as const;
 
-export const WHISPER_EN_SMALL_Q8_0 = {
-  name: "WHISPER_EN_SMALL_Q8_0",
+export const MARIAN_HI_HI_INDIC_320M_F16 = {
+  name: "MARIAN_HI_HI_INDIC_320M_F16",
   src: `registry://${models[113].registrySource}/${models[113].registryPath}`,
   registryPath: models[113].registryPath,
   registrySource: models[113].registrySource,
@@ -5460,8 +7132,8 @@ export const WHISPER_EN_SMALL_Q8_0 = {
   params: models[113].params,
 } as const;
 
-export const WHISPER_EN_SMALL_Q0F16 = {
-  name: "WHISPER_EN_SMALL_Q0F16",
+export const MARIAN_EN_HI_INDIC_1B_Q4_0 = {
+  name: "MARIAN_EN_HI_INDIC_1B_Q4_0",
   src: `registry://${models[114].registrySource}/${models[114].registryPath}`,
   registryPath: models[114].registryPath,
   registrySource: models[114].registrySource,
@@ -5478,8 +7150,8 @@ export const WHISPER_EN_SMALL_Q0F16 = {
   params: models[114].params,
 } as const;
 
-export const WHISPER_TINY_Q8_0 = {
-  name: "WHISPER_TINY_Q8_0",
+export const MARIAN_EN_HI_INDIC_200M_Q4_0 = {
+  name: "MARIAN_EN_HI_INDIC_200M_Q4_0",
   src: `registry://${models[115].registrySource}/${models[115].registryPath}`,
   registryPath: models[115].registryPath,
   registrySource: models[115].registrySource,
@@ -5496,8 +7168,8 @@ export const WHISPER_TINY_Q8_0 = {
   params: models[115].params,
 } as const;
 
-export const WHISPER_TINY = {
-  name: "WHISPER_TINY",
+export const MARIAN_HI_EN_INDIC_1B_Q4_0 = {
+  name: "MARIAN_HI_EN_INDIC_1B_Q4_0",
   src: `registry://${models[116].registrySource}/${models[116].registryPath}`,
   registryPath: models[116].registryPath,
   registrySource: models[116].registrySource,
@@ -5514,8 +7186,8 @@ export const WHISPER_TINY = {
   params: models[116].params,
 } as const;
 
-export const WHISPER_EN_TINY_Q8_0 = {
-  name: "WHISPER_EN_TINY_Q8_0",
+export const MARIAN_HI_EN_INDIC_200M_Q4_0 = {
+  name: "MARIAN_HI_EN_INDIC_200M_Q4_0",
   src: `registry://${models[117].registrySource}/${models[117].registryPath}`,
   registryPath: models[117].registryPath,
   registrySource: models[117].registrySource,
@@ -5532,8 +7204,8 @@ export const WHISPER_EN_TINY_Q8_0 = {
   params: models[117].params,
 } as const;
 
-export const WHISPER_EN_TINY_Q0F16 = {
-  name: "WHISPER_EN_TINY_Q0F16",
+export const MARIAN_HI_HI_INDIC_1B_Q4_0 = {
+  name: "MARIAN_HI_HI_INDIC_1B_Q4_0",
   src: `registry://${models[118].registrySource}/${models[118].registryPath}`,
   registryPath: models[118].registryPath,
   registrySource: models[118].registrySource,
@@ -5550,8 +7222,8 @@ export const WHISPER_EN_TINY_Q0F16 = {
   params: models[118].params,
 } as const;
 
-export const VAD_SILERO_5_1_2 = {
-  name: "VAD_SILERO_5_1_2",
+export const MARIAN_HI_HI_INDIC_320M_Q4_0 = {
+  name: "MARIAN_HI_HI_INDIC_320M_Q4_0",
   src: `registry://${models[119].registrySource}/${models[119].registryPath}`,
   registryPath: models[119].registryPath,
   registrySource: models[119].registrySource,
@@ -5568,8 +7240,8 @@ export const VAD_SILERO_5_1_2 = {
   params: models[119].params,
 } as const;
 
-export const WHISPER_FRENCH_BASE_F16 = {
-  name: "WHISPER_FRENCH_BASE_F16",
+export const MARIAN_OPUS_DE_FR_Q0F16 = {
+  name: "MARIAN_OPUS_DE_FR_Q0F16",
   src: `registry://${models[120].registrySource}/${models[120].registryPath}`,
   registryPath: models[120].registryPath,
   registrySource: models[120].registrySource,
@@ -5586,8 +7258,8 @@ export const WHISPER_FRENCH_BASE_F16 = {
   params: models[120].params,
 } as const;
 
-export const WHISPER_FRENCH_BASE_Q8_0 = {
-  name: "WHISPER_FRENCH_BASE_Q8_0",
+export const MARIAN_OPUS_EN_FR_Q0F16 = {
+  name: "MARIAN_OPUS_EN_FR_Q0F16",
   src: `registry://${models[121].registrySource}/${models[121].registryPath}`,
   registryPath: models[121].registryPath,
   registrySource: models[121].registrySource,
@@ -5604,8 +7276,8 @@ export const WHISPER_FRENCH_BASE_Q8_0 = {
   params: models[121].params,
 } as const;
 
-export const WHISPER_FRENCH_TINY_F16 = {
-  name: "WHISPER_FRENCH_TINY_F16",
+export const MARIAN_OPUS_EN_PT_Q0F16 = {
+  name: "MARIAN_OPUS_EN_PT_Q0F16",
   src: `registry://${models[122].registrySource}/${models[122].registryPath}`,
   registryPath: models[122].registryPath,
   registrySource: models[122].registrySource,
@@ -5622,8 +7294,8 @@ export const WHISPER_FRENCH_TINY_F16 = {
   params: models[122].params,
 } as const;
 
-export const WHISPER_FRENCH_TINY_Q8_0 = {
-  name: "WHISPER_FRENCH_TINY_Q8_0",
+export const MARIAN_OPUS_EN_RU_Q0F16 = {
+  name: "MARIAN_OPUS_EN_RU_Q0F16",
   src: `registry://${models[123].registrySource}/${models[123].registryPath}`,
   registryPath: models[123].registryPath,
   registrySource: models[123].registrySource,
@@ -5640,8 +7312,8 @@ export const WHISPER_FRENCH_TINY_Q8_0 = {
   params: models[123].params,
 } as const;
 
-export const WHISPER_GERMAN_BASE_F16 = {
-  name: "WHISPER_GERMAN_BASE_F16",
+export const MARIAN_OPUS_ES_FR_Q0F16 = {
+  name: "MARIAN_OPUS_ES_FR_Q0F16",
   src: `registry://${models[124].registrySource}/${models[124].registryPath}`,
   registryPath: models[124].registryPath,
   registrySource: models[124].registrySource,
@@ -5658,8 +7330,8 @@ export const WHISPER_GERMAN_BASE_F16 = {
   params: models[124].params,
 } as const;
 
-export const WHISPER_GERMAN_BASE_Q8_0 = {
-  name: "WHISPER_GERMAN_BASE_Q8_0",
+export const MARIAN_OPUS_FR_DE_Q0F16 = {
+  name: "MARIAN_OPUS_FR_DE_Q0F16",
   src: `registry://${models[125].registrySource}/${models[125].registryPath}`,
   registryPath: models[125].registryPath,
   registrySource: models[125].registrySource,
@@ -5676,8 +7348,8 @@ export const WHISPER_GERMAN_BASE_Q8_0 = {
   params: models[125].params,
 } as const;
 
-export const WHISPER_GERMAN_TINY_F16 = {
-  name: "WHISPER_GERMAN_TINY_F16",
+export const MARIAN_OPUS_FR_EN_Q0F16 = {
+  name: "MARIAN_OPUS_FR_EN_Q0F16",
   src: `registry://${models[126].registrySource}/${models[126].registryPath}`,
   registryPath: models[126].registryPath,
   registrySource: models[126].registrySource,
@@ -5694,8 +7366,8 @@ export const WHISPER_GERMAN_TINY_F16 = {
   params: models[126].params,
 } as const;
 
-export const WHISPER_GERMAN_TINY_Q8_0 = {
-  name: "WHISPER_GERMAN_TINY_Q8_0",
+export const MARIAN_OPUS_FR_ES_Q0F16 = {
+  name: "MARIAN_OPUS_FR_ES_Q0F16",
   src: `registry://${models[127].registrySource}/${models[127].registryPath}`,
   registryPath: models[127].registryPath,
   registrySource: models[127].registrySource,
@@ -5712,8 +7384,8 @@ export const WHISPER_GERMAN_TINY_Q8_0 = {
   params: models[127].params,
 } as const;
 
-export const WHISPER_ITALIAN_BASE_F16 = {
-  name: "WHISPER_ITALIAN_BASE_F16",
+export const MARIAN_OPUS_PT_EN_Q0F16 = {
+  name: "MARIAN_OPUS_PT_EN_Q0F16",
   src: `registry://${models[128].registrySource}/${models[128].registryPath}`,
   registryPath: models[128].registryPath,
   registrySource: models[128].registrySource,
@@ -5730,8 +7402,8 @@ export const WHISPER_ITALIAN_BASE_F16 = {
   params: models[128].params,
 } as const;
 
-export const WHISPER_ITALIAN_BASE_Q8_0 = {
-  name: "WHISPER_ITALIAN_BASE_Q8_0",
+export const MARIAN_OPUS_RU_EN_Q0F16 = {
+  name: "MARIAN_OPUS_RU_EN_Q0F16",
   src: `registry://${models[129].registrySource}/${models[129].registryPath}`,
   registryPath: models[129].registryPath,
   registrySource: models[129].registrySource,
@@ -5748,8 +7420,8 @@ export const WHISPER_ITALIAN_BASE_Q8_0 = {
   params: models[129].params,
 } as const;
 
-export const WHISPER_ITALIAN_TINY_F16 = {
-  name: "WHISPER_ITALIAN_TINY_F16",
+export const MARIAN_OPUS_AR_EN_Q4_0 = {
+  name: "MARIAN_OPUS_AR_EN_Q4_0",
   src: `registry://${models[130].registrySource}/${models[130].registryPath}`,
   registryPath: models[130].registryPath,
   registrySource: models[130].registrySource,
@@ -5766,8 +7438,8 @@ export const WHISPER_ITALIAN_TINY_F16 = {
   params: models[130].params,
 } as const;
 
-export const WHISPER_ITALIAN_TINY_Q8_0 = {
-  name: "WHISPER_ITALIAN_TINY_Q8_0",
+export const MARIAN_OPUS_DE_EN_Q4_0 = {
+  name: "MARIAN_OPUS_DE_EN_Q4_0",
   src: `registry://${models[131].registrySource}/${models[131].registryPath}`,
   registryPath: models[131].registryPath,
   registrySource: models[131].registrySource,
@@ -5784,8 +7456,8 @@ export const WHISPER_ITALIAN_TINY_Q8_0 = {
   params: models[131].params,
 } as const;
 
-export const WHISPER_JAPANESE_BASE_F16 = {
-  name: "WHISPER_JAPANESE_BASE_F16",
+export const MARIAN_OPUS_DE_FR_Q4_0 = {
+  name: "MARIAN_OPUS_DE_FR_Q4_0",
   src: `registry://${models[132].registrySource}/${models[132].registryPath}`,
   registryPath: models[132].registryPath,
   registrySource: models[132].registrySource,
@@ -5802,8 +7474,8 @@ export const WHISPER_JAPANESE_BASE_F16 = {
   params: models[132].params,
 } as const;
 
-export const WHISPER_JAPANESE_BASE_Q8_0 = {
-  name: "WHISPER_JAPANESE_BASE_Q8_0",
+export const MARIAN_OPUS_EN_AR_Q4_0 = {
+  name: "MARIAN_OPUS_EN_AR_Q4_0",
   src: `registry://${models[133].registrySource}/${models[133].registryPath}`,
   registryPath: models[133].registryPath,
   registrySource: models[133].registrySource,
@@ -5820,8 +7492,8 @@ export const WHISPER_JAPANESE_BASE_Q8_0 = {
   params: models[133].params,
 } as const;
 
-export const WHISPER_JAPANESE_TINY_F16 = {
-  name: "WHISPER_JAPANESE_TINY_F16",
+export const MARIAN_OPUS_EN_DE_Q4_0 = {
+  name: "MARIAN_OPUS_EN_DE_Q4_0",
   src: `registry://${models[134].registrySource}/${models[134].registryPath}`,
   registryPath: models[134].registryPath,
   registrySource: models[134].registrySource,
@@ -5838,8 +7510,8 @@ export const WHISPER_JAPANESE_TINY_F16 = {
   params: models[134].params,
 } as const;
 
-export const WHISPER_JAPANESE_TINY_Q8_0 = {
-  name: "WHISPER_JAPANESE_TINY_Q8_0",
+export const MARIAN_OPUS_EN_ES_Q4_0 = {
+  name: "MARIAN_OPUS_EN_ES_Q4_0",
   src: `registry://${models[135].registrySource}/${models[135].registryPath}`,
   registryPath: models[135].registryPath,
   registrySource: models[135].registrySource,
@@ -5856,8 +7528,8 @@ export const WHISPER_JAPANESE_TINY_Q8_0 = {
   params: models[135].params,
 } as const;
 
-export const WHISPER_NORWEGIAN_TINY = {
-  name: "WHISPER_NORWEGIAN_TINY",
+export const MARIAN_OPUS_EN_FR_Q4_0 = {
+  name: "MARIAN_OPUS_EN_FR_Q4_0",
   src: `registry://${models[136].registrySource}/${models[136].registryPath}`,
   registryPath: models[136].registryPath,
   registrySource: models[136].registrySource,
@@ -5874,8 +7546,8 @@ export const WHISPER_NORWEGIAN_TINY = {
   params: models[136].params,
 } as const;
 
-export const WHISPER_PORTUGUESE_BASE_F16 = {
-  name: "WHISPER_PORTUGUESE_BASE_F16",
+export const MARIAN_OPUS_EN_IT_Q4_0 = {
+  name: "MARIAN_OPUS_EN_IT_Q4_0",
   src: `registry://${models[137].registrySource}/${models[137].registryPath}`,
   registryPath: models[137].registryPath,
   registrySource: models[137].registrySource,
@@ -5892,8 +7564,8 @@ export const WHISPER_PORTUGUESE_BASE_F16 = {
   params: models[137].params,
 } as const;
 
-export const WHISPER_PORTUGUESE_BASE_Q8_0 = {
-  name: "WHISPER_PORTUGUESE_BASE_Q8_0",
+export const MARIAN_OPUS_EN_PT_Q4_0 = {
+  name: "MARIAN_OPUS_EN_PT_Q4_0",
   src: `registry://${models[138].registrySource}/${models[138].registryPath}`,
   registryPath: models[138].registryPath,
   registrySource: models[138].registrySource,
@@ -5910,8 +7582,8 @@ export const WHISPER_PORTUGUESE_BASE_Q8_0 = {
   params: models[138].params,
 } as const;
 
-export const WHISPER_PORTUGUESE_TINY_F16 = {
-  name: "WHISPER_PORTUGUESE_TINY_F16",
+export const MARIAN_OPUS_EN_ROA_Q4_0 = {
+  name: "MARIAN_OPUS_EN_ROA_Q4_0",
   src: `registry://${models[139].registrySource}/${models[139].registryPath}`,
   registryPath: models[139].registryPath,
   registrySource: models[139].registrySource,
@@ -5928,8 +7600,8 @@ export const WHISPER_PORTUGUESE_TINY_F16 = {
   params: models[139].params,
 } as const;
 
-export const WHISPER_PORTUGUESE_TINY_Q8_0 = {
-  name: "WHISPER_PORTUGUESE_TINY_Q8_0",
+export const MARIAN_OPUS_EN_RU_Q4_0 = {
+  name: "MARIAN_OPUS_EN_RU_Q4_0",
   src: `registry://${models[140].registrySource}/${models[140].registryPath}`,
   registryPath: models[140].registryPath,
   registrySource: models[140].registrySource,
@@ -5946,8 +7618,8 @@ export const WHISPER_PORTUGUESE_TINY_Q8_0 = {
   params: models[140].params,
 } as const;
 
-export const WHISPER_RUSSIAN_BASE_F16 = {
-  name: "WHISPER_RUSSIAN_BASE_F16",
+export const MARIAN_OPUS_EN_ZH_Q4_0 = {
+  name: "MARIAN_OPUS_EN_ZH_Q4_0",
   src: `registry://${models[141].registrySource}/${models[141].registryPath}`,
   registryPath: models[141].registryPath,
   registrySource: models[141].registrySource,
@@ -5964,8 +7636,8 @@ export const WHISPER_RUSSIAN_BASE_F16 = {
   params: models[141].params,
 } as const;
 
-export const WHISPER_RUSSIAN_BASE_Q8_0 = {
-  name: "WHISPER_RUSSIAN_BASE_Q8_0",
+export const MARIAN_OPUS_ES_EN_Q4_0 = {
+  name: "MARIAN_OPUS_ES_EN_Q4_0",
   src: `registry://${models[142].registrySource}/${models[142].registryPath}`,
   registryPath: models[142].registryPath,
   registrySource: models[142].registrySource,
@@ -5982,8 +7654,8 @@ export const WHISPER_RUSSIAN_BASE_Q8_0 = {
   params: models[142].params,
 } as const;
 
-export const WHISPER_RUSSIAN_TINY_F16 = {
-  name: "WHISPER_RUSSIAN_TINY_F16",
+export const MARIAN_OPUS_ES_FR_Q4_0 = {
+  name: "MARIAN_OPUS_ES_FR_Q4_0",
   src: `registry://${models[143].registrySource}/${models[143].registryPath}`,
   registryPath: models[143].registryPath,
   registrySource: models[143].registrySource,
@@ -6000,8 +7672,8 @@ export const WHISPER_RUSSIAN_TINY_F16 = {
   params: models[143].params,
 } as const;
 
-export const WHISPER_RUSSIAN_TINY_Q8_0 = {
-  name: "WHISPER_RUSSIAN_TINY_Q8_0",
+export const MARIAN_OPUS_FR_DE_Q4_0 = {
+  name: "MARIAN_OPUS_FR_DE_Q4_0",
   src: `registry://${models[144].registrySource}/${models[144].registryPath}`,
   registryPath: models[144].registryPath,
   registrySource: models[144].registrySource,
@@ -6018,8 +7690,8 @@ export const WHISPER_RUSSIAN_TINY_Q8_0 = {
   params: models[144].params,
 } as const;
 
-export const WHISPER_SPANISH_TINY_F16 = {
-  name: "WHISPER_SPANISH_TINY_F16",
+export const MARIAN_OPUS_FR_EN_Q4_0 = {
+  name: "MARIAN_OPUS_FR_EN_Q4_0",
   src: `registry://${models[145].registrySource}/${models[145].registryPath}`,
   registryPath: models[145].registryPath,
   registrySource: models[145].registrySource,
@@ -6036,8 +7708,8 @@ export const WHISPER_SPANISH_TINY_F16 = {
   params: models[145].params,
 } as const;
 
-export const WHISPER_SPANISH_TINY_Q8_0 = {
-  name: "WHISPER_SPANISH_TINY_Q8_0",
+export const MARIAN_OPUS_FR_ES_Q4_0 = {
+  name: "MARIAN_OPUS_FR_ES_Q4_0",
   src: `registry://${models[146].registrySource}/${models[146].registryPath}`,
   registryPath: models[146].registryPath,
   registrySource: models[146].registrySource,
@@ -6054,8 +7726,8 @@ export const WHISPER_SPANISH_TINY_Q8_0 = {
   params: models[146].params,
 } as const;
 
-export const WHISPER_Q8_0 = {
-  name: "WHISPER_Q8_0",
+export const MARIAN_OPUS_IT_EN_Q4_0 = {
+  name: "MARIAN_OPUS_IT_EN_Q4_0",
   src: `registry://${models[147].registrySource}/${models[147].registryPath}`,
   registryPath: models[147].registryPath,
   registrySource: models[147].registrySource,
@@ -6072,8 +7744,8 @@ export const WHISPER_Q8_0 = {
   params: models[147].params,
 } as const;
 
-export const WHISPER_Q8_0_1 = {
-  name: "WHISPER_Q8_0_1",
+export const MARIAN_OPUS_JA_EN_Q4_0 = {
+  name: "MARIAN_OPUS_JA_EN_Q4_0",
   src: `registry://${models[148].registrySource}/${models[148].registryPath}`,
   registryPath: models[148].registryPath,
   registrySource: models[148].registrySource,
@@ -6088,6 +7760,1590 @@ export const WHISPER_Q8_0_1 = {
   engine: models[148].engine,
   quantization: models[148].quantization,
   params: models[148].params,
+} as const;
+
+export const MARIAN_OPUS_ROA_EN_Q4_0 = {
+  name: "MARIAN_OPUS_ROA_EN_Q4_0",
+  src: `registry://${models[149].registrySource}/${models[149].registryPath}`,
+  registryPath: models[149].registryPath,
+  registrySource: models[149].registrySource,
+  blobCoreKey: models[149].blobCoreKey,
+  blobBlockOffset: models[149].blobBlockOffset,
+  blobBlockLength: models[149].blobBlockLength,
+  blobByteOffset: models[149].blobByteOffset,
+  modelId: models[149].modelId,
+  expectedSize: models[149].expectedSize,
+  sha256Checksum: models[149].sha256Checksum,
+  addon: models[149].addon,
+  engine: models[149].engine,
+  quantization: models[149].quantization,
+  params: models[149].params,
+} as const;
+
+export const MARIAN_OPUS_RU_EN_Q4_0 = {
+  name: "MARIAN_OPUS_RU_EN_Q4_0",
+  src: `registry://${models[150].registrySource}/${models[150].registryPath}`,
+  registryPath: models[150].registryPath,
+  registrySource: models[150].registrySource,
+  blobCoreKey: models[150].blobCoreKey,
+  blobBlockOffset: models[150].blobBlockOffset,
+  blobBlockLength: models[150].blobBlockLength,
+  blobByteOffset: models[150].blobByteOffset,
+  modelId: models[150].modelId,
+  expectedSize: models[150].expectedSize,
+  sha256Checksum: models[150].sha256Checksum,
+  addon: models[150].addon,
+  engine: models[150].engine,
+  quantization: models[150].quantization,
+  params: models[150].params,
+} as const;
+
+export const MARIAN_OPUS_ZH_EN_Q4_0 = {
+  name: "MARIAN_OPUS_ZH_EN_Q4_0",
+  src: `registry://${models[151].registrySource}/${models[151].registryPath}`,
+  registryPath: models[151].registryPath,
+  registrySource: models[151].registrySource,
+  blobCoreKey: models[151].blobCoreKey,
+  blobBlockOffset: models[151].blobBlockOffset,
+  blobBlockLength: models[151].blobBlockLength,
+  blobByteOffset: models[151].blobByteOffset,
+  modelId: models[151].modelId,
+  expectedSize: models[151].expectedSize,
+  sha256Checksum: models[151].sha256Checksum,
+  addon: models[151].addon,
+  engine: models[151].engine,
+  quantization: models[151].quantization,
+  params: models[151].params,
+} as const;
+
+export const SALAMANDRATA_2B_INST_Q4_SHARD = {
+  name: "SALAMANDRATA_2B_INST_Q4_SHARD",
+  src: `registry://${models[152].registrySource}/${models[152].registryPath}`,
+  registryPath: models[152].registryPath,
+  registrySource: models[152].registrySource,
+  blobCoreKey: models[152].blobCoreKey,
+  blobBlockOffset: models[152].blobBlockOffset,
+  blobBlockLength: models[152].blobBlockLength,
+  blobByteOffset: models[152].blobByteOffset,
+  modelId: models[152].modelId,
+  expectedSize: models[152].expectedSize,
+  sha256Checksum: models[152].sha256Checksum,
+  addon: models[152].addon,
+  engine: models[152].engine,
+  quantization: models[152].quantization,
+  params: models[152].params,
+} as const;
+
+export const SALAMANDRATA_2B_INST_Q4_TENSORS = {
+  name: "SALAMANDRATA_2B_INST_Q4_TENSORS",
+  src: `registry://${models[153].registrySource}/${models[153].registryPath}`,
+  registryPath: models[153].registryPath,
+  registrySource: models[153].registrySource,
+  blobCoreKey: models[153].blobCoreKey,
+  blobBlockOffset: models[153].blobBlockOffset,
+  blobBlockLength: models[153].blobBlockLength,
+  blobByteOffset: models[153].blobByteOffset,
+  modelId: models[153].modelId,
+  expectedSize: models[153].expectedSize,
+  sha256Checksum: models[153].sha256Checksum,
+  addon: models[153].addon,
+  engine: models[153].engine,
+  quantization: models[153].quantization,
+  params: models[153].params,
+} as const;
+
+export const SALAMANDRATA_2B_INST_Q8_SHARD = {
+  name: "SALAMANDRATA_2B_INST_Q8_SHARD",
+  src: `registry://${models[154].registrySource}/${models[154].registryPath}`,
+  registryPath: models[154].registryPath,
+  registrySource: models[154].registrySource,
+  blobCoreKey: models[154].blobCoreKey,
+  blobBlockOffset: models[154].blobBlockOffset,
+  blobBlockLength: models[154].blobBlockLength,
+  blobByteOffset: models[154].blobByteOffset,
+  modelId: models[154].modelId,
+  expectedSize: models[154].expectedSize,
+  sha256Checksum: models[154].sha256Checksum,
+  addon: models[154].addon,
+  engine: models[154].engine,
+  quantization: models[154].quantization,
+  params: models[154].params,
+} as const;
+
+export const OCR_CRAFT_DETECTOR = {
+  name: "OCR_CRAFT_DETECTOR",
+  src: `registry://${models[155].registrySource}/${models[155].registryPath}`,
+  registryPath: models[155].registryPath,
+  registrySource: models[155].registrySource,
+  blobCoreKey: models[155].blobCoreKey,
+  blobBlockOffset: models[155].blobBlockOffset,
+  blobBlockLength: models[155].blobBlockLength,
+  blobByteOffset: models[155].blobByteOffset,
+  modelId: models[155].modelId,
+  expectedSize: models[155].expectedSize,
+  sha256Checksum: models[155].sha256Checksum,
+  addon: models[155].addon,
+  engine: models[155].engine,
+  quantization: models[155].quantization,
+  params: models[155].params,
+} as const;
+
+export const OCR_LATIN_RECOGNIZER = {
+  name: "OCR_LATIN_RECOGNIZER",
+  src: `registry://${models[156].registrySource}/${models[156].registryPath}`,
+  registryPath: models[156].registryPath,
+  registrySource: models[156].registrySource,
+  blobCoreKey: models[156].blobCoreKey,
+  blobBlockOffset: models[156].blobBlockOffset,
+  blobBlockLength: models[156].blobBlockLength,
+  blobByteOffset: models[156].blobByteOffset,
+  modelId: models[156].modelId,
+  expectedSize: models[156].expectedSize,
+  sha256Checksum: models[156].sha256Checksum,
+  addon: models[156].addon,
+  engine: models[156].engine,
+  quantization: models[156].quantization,
+  params: models[156].params,
+} as const;
+
+export const OCR_ARABIC_RECOGNIZER = {
+  name: "OCR_ARABIC_RECOGNIZER",
+  src: `registry://${models[157].registrySource}/${models[157].registryPath}`,
+  registryPath: models[157].registryPath,
+  registrySource: models[157].registrySource,
+  blobCoreKey: models[157].blobCoreKey,
+  blobBlockOffset: models[157].blobBlockOffset,
+  blobBlockLength: models[157].blobBlockLength,
+  blobByteOffset: models[157].blobByteOffset,
+  modelId: models[157].modelId,
+  expectedSize: models[157].expectedSize,
+  sha256Checksum: models[157].sha256Checksum,
+  addon: models[157].addon,
+  engine: models[157].engine,
+  quantization: models[157].quantization,
+  params: models[157].params,
+} as const;
+
+export const OCR_BENGALI_RECOGNIZER = {
+  name: "OCR_BENGALI_RECOGNIZER",
+  src: `registry://${models[158].registrySource}/${models[158].registryPath}`,
+  registryPath: models[158].registryPath,
+  registrySource: models[158].registrySource,
+  blobCoreKey: models[158].blobCoreKey,
+  blobBlockOffset: models[158].blobBlockOffset,
+  blobBlockLength: models[158].blobBlockLength,
+  blobByteOffset: models[158].blobByteOffset,
+  modelId: models[158].modelId,
+  expectedSize: models[158].expectedSize,
+  sha256Checksum: models[158].sha256Checksum,
+  addon: models[158].addon,
+  engine: models[158].engine,
+  quantization: models[158].quantization,
+  params: models[158].params,
+} as const;
+
+export const OCR_CYRILLIC_RECOGNIZER = {
+  name: "OCR_CYRILLIC_RECOGNIZER",
+  src: `registry://${models[159].registrySource}/${models[159].registryPath}`,
+  registryPath: models[159].registryPath,
+  registrySource: models[159].registrySource,
+  blobCoreKey: models[159].blobCoreKey,
+  blobBlockOffset: models[159].blobBlockOffset,
+  blobBlockLength: models[159].blobBlockLength,
+  blobByteOffset: models[159].blobByteOffset,
+  modelId: models[159].modelId,
+  expectedSize: models[159].expectedSize,
+  sha256Checksum: models[159].sha256Checksum,
+  addon: models[159].addon,
+  engine: models[159].engine,
+  quantization: models[159].quantization,
+  params: models[159].params,
+} as const;
+
+export const OCR_DEVANAGARI_RECOGNIZER = {
+  name: "OCR_DEVANAGARI_RECOGNIZER",
+  src: `registry://${models[160].registrySource}/${models[160].registryPath}`,
+  registryPath: models[160].registryPath,
+  registrySource: models[160].registrySource,
+  blobCoreKey: models[160].blobCoreKey,
+  blobBlockOffset: models[160].blobBlockOffset,
+  blobBlockLength: models[160].blobBlockLength,
+  blobByteOffset: models[160].blobByteOffset,
+  modelId: models[160].modelId,
+  expectedSize: models[160].expectedSize,
+  sha256Checksum: models[160].sha256Checksum,
+  addon: models[160].addon,
+  engine: models[160].engine,
+  quantization: models[160].quantization,
+  params: models[160].params,
+} as const;
+
+export const OCR_JAPANESE_RECOGNIZER = {
+  name: "OCR_JAPANESE_RECOGNIZER",
+  src: `registry://${models[161].registrySource}/${models[161].registryPath}`,
+  registryPath: models[161].registryPath,
+  registrySource: models[161].registrySource,
+  blobCoreKey: models[161].blobCoreKey,
+  blobBlockOffset: models[161].blobBlockOffset,
+  blobBlockLength: models[161].blobBlockLength,
+  blobByteOffset: models[161].blobByteOffset,
+  modelId: models[161].modelId,
+  expectedSize: models[161].expectedSize,
+  sha256Checksum: models[161].sha256Checksum,
+  addon: models[161].addon,
+  engine: models[161].engine,
+  quantization: models[161].quantization,
+  params: models[161].params,
+} as const;
+
+export const OCR_KANNADA_RECOGNIZER = {
+  name: "OCR_KANNADA_RECOGNIZER",
+  src: `registry://${models[162].registrySource}/${models[162].registryPath}`,
+  registryPath: models[162].registryPath,
+  registrySource: models[162].registrySource,
+  blobCoreKey: models[162].blobCoreKey,
+  blobBlockOffset: models[162].blobBlockOffset,
+  blobBlockLength: models[162].blobBlockLength,
+  blobByteOffset: models[162].blobByteOffset,
+  modelId: models[162].modelId,
+  expectedSize: models[162].expectedSize,
+  sha256Checksum: models[162].sha256Checksum,
+  addon: models[162].addon,
+  engine: models[162].engine,
+  quantization: models[162].quantization,
+  params: models[162].params,
+} as const;
+
+export const OCR_KOREAN_RECOGNIZER = {
+  name: "OCR_KOREAN_RECOGNIZER",
+  src: `registry://${models[163].registrySource}/${models[163].registryPath}`,
+  registryPath: models[163].registryPath,
+  registrySource: models[163].registrySource,
+  blobCoreKey: models[163].blobCoreKey,
+  blobBlockOffset: models[163].blobBlockOffset,
+  blobBlockLength: models[163].blobBlockLength,
+  blobByteOffset: models[163].blobByteOffset,
+  modelId: models[163].modelId,
+  expectedSize: models[163].expectedSize,
+  sha256Checksum: models[163].sha256Checksum,
+  addon: models[163].addon,
+  engine: models[163].engine,
+  quantization: models[163].quantization,
+  params: models[163].params,
+} as const;
+
+export const OCR_LATIN_RECOGNIZER_1 = {
+  name: "OCR_LATIN_RECOGNIZER_1",
+  src: `registry://${models[164].registrySource}/${models[164].registryPath}`,
+  registryPath: models[164].registryPath,
+  registrySource: models[164].registrySource,
+  blobCoreKey: models[164].blobCoreKey,
+  blobBlockOffset: models[164].blobBlockOffset,
+  blobBlockLength: models[164].blobBlockLength,
+  blobByteOffset: models[164].blobByteOffset,
+  modelId: models[164].modelId,
+  expectedSize: models[164].expectedSize,
+  sha256Checksum: models[164].sha256Checksum,
+  addon: models[164].addon,
+  engine: models[164].engine,
+  quantization: models[164].quantization,
+  params: models[164].params,
+} as const;
+
+export const OCR_TAMIL_RECOGNIZER = {
+  name: "OCR_TAMIL_RECOGNIZER",
+  src: `registry://${models[165].registrySource}/${models[165].registryPath}`,
+  registryPath: models[165].registryPath,
+  registrySource: models[165].registrySource,
+  blobCoreKey: models[165].blobCoreKey,
+  blobBlockOffset: models[165].blobBlockOffset,
+  blobBlockLength: models[165].blobBlockLength,
+  blobByteOffset: models[165].blobByteOffset,
+  modelId: models[165].modelId,
+  expectedSize: models[165].expectedSize,
+  sha256Checksum: models[165].sha256Checksum,
+  addon: models[165].addon,
+  engine: models[165].engine,
+  quantization: models[165].quantization,
+  params: models[165].params,
+} as const;
+
+export const OCR_TELUGU_RECOGNIZER = {
+  name: "OCR_TELUGU_RECOGNIZER",
+  src: `registry://${models[166].registrySource}/${models[166].registryPath}`,
+  registryPath: models[166].registryPath,
+  registrySource: models[166].registrySource,
+  blobCoreKey: models[166].blobCoreKey,
+  blobBlockOffset: models[166].blobBlockOffset,
+  blobBlockLength: models[166].blobBlockLength,
+  blobByteOffset: models[166].blobByteOffset,
+  modelId: models[166].modelId,
+  expectedSize: models[166].expectedSize,
+  sha256Checksum: models[166].sha256Checksum,
+  addon: models[166].addon,
+  engine: models[166].engine,
+  quantization: models[166].quantization,
+  params: models[166].params,
+} as const;
+
+export const OCR_THAI_RECOGNIZER = {
+  name: "OCR_THAI_RECOGNIZER",
+  src: `registry://${models[167].registrySource}/${models[167].registryPath}`,
+  registryPath: models[167].registryPath,
+  registrySource: models[167].registrySource,
+  blobCoreKey: models[167].blobCoreKey,
+  blobBlockOffset: models[167].blobBlockOffset,
+  blobBlockLength: models[167].blobBlockLength,
+  blobByteOffset: models[167].blobByteOffset,
+  modelId: models[167].modelId,
+  expectedSize: models[167].expectedSize,
+  sha256Checksum: models[167].sha256Checksum,
+  addon: models[167].addon,
+  engine: models[167].engine,
+  quantization: models[167].quantization,
+  params: models[167].params,
+} as const;
+
+export const OCR_ZH_SIM_RECOGNIZER = {
+  name: "OCR_ZH_SIM_RECOGNIZER",
+  src: `registry://${models[168].registrySource}/${models[168].registryPath}`,
+  registryPath: models[168].registryPath,
+  registrySource: models[168].registrySource,
+  blobCoreKey: models[168].blobCoreKey,
+  blobBlockOffset: models[168].blobBlockOffset,
+  blobBlockLength: models[168].blobBlockLength,
+  blobByteOffset: models[168].blobByteOffset,
+  modelId: models[168].modelId,
+  expectedSize: models[168].expectedSize,
+  sha256Checksum: models[168].sha256Checksum,
+  addon: models[168].addon,
+  engine: models[168].engine,
+  quantization: models[168].quantization,
+  params: models[168].params,
+} as const;
+
+export const OCR_ZH_TRA_RECOGNIZER = {
+  name: "OCR_ZH_TRA_RECOGNIZER",
+  src: `registry://${models[169].registrySource}/${models[169].registryPath}`,
+  registryPath: models[169].registryPath,
+  registrySource: models[169].registrySource,
+  blobCoreKey: models[169].blobCoreKey,
+  blobBlockOffset: models[169].blobBlockOffset,
+  blobBlockLength: models[169].blobBlockLength,
+  blobByteOffset: models[169].blobByteOffset,
+  modelId: models[169].modelId,
+  expectedSize: models[169].expectedSize,
+  sha256Checksum: models[169].sha256Checksum,
+  addon: models[169].addon,
+  engine: models[169].engine,
+  quantization: models[169].quantization,
+  params: models[169].params,
+} as const;
+
+export const TTS_PIPER_THORSTEN_DE_DE_ONNX_MEDIUM = {
+  name: "TTS_PIPER_THORSTEN_DE_DE_ONNX_MEDIUM",
+  src: `registry://${models[170].registrySource}/${models[170].registryPath}`,
+  registryPath: models[170].registryPath,
+  registrySource: models[170].registrySource,
+  blobCoreKey: models[170].blobCoreKey,
+  blobBlockOffset: models[170].blobBlockOffset,
+  blobBlockLength: models[170].blobBlockLength,
+  blobByteOffset: models[170].blobByteOffset,
+  modelId: models[170].modelId,
+  expectedSize: models[170].expectedSize,
+  sha256Checksum: models[170].sha256Checksum,
+  addon: models[170].addon,
+  engine: models[170].engine,
+  quantization: models[170].quantization,
+  params: models[170].params,
+} as const;
+
+export const TTS_PIPER_THORSTEN_DE_DE_ONNX_MEDIUM_CONFIG = {
+  name: "TTS_PIPER_THORSTEN_DE_DE_ONNX_MEDIUM_CONFIG",
+  src: `registry://${models[171].registrySource}/${models[171].registryPath}`,
+  registryPath: models[171].registryPath,
+  registrySource: models[171].registrySource,
+  blobCoreKey: models[171].blobCoreKey,
+  blobBlockOffset: models[171].blobBlockOffset,
+  blobBlockLength: models[171].blobBlockLength,
+  blobByteOffset: models[171].blobByteOffset,
+  modelId: models[171].modelId,
+  expectedSize: models[171].expectedSize,
+  sha256Checksum: models[171].sha256Checksum,
+  addon: models[171].addon,
+  engine: models[171].engine,
+  quantization: models[171].quantization,
+  params: models[171].params,
+} as const;
+
+export const TTS_PIPER_AMY_EN_US_ONNX_LOW = {
+  name: "TTS_PIPER_AMY_EN_US_ONNX_LOW",
+  src: `registry://${models[172].registrySource}/${models[172].registryPath}`,
+  registryPath: models[172].registryPath,
+  registrySource: models[172].registrySource,
+  blobCoreKey: models[172].blobCoreKey,
+  blobBlockOffset: models[172].blobBlockOffset,
+  blobBlockLength: models[172].blobBlockLength,
+  blobByteOffset: models[172].blobByteOffset,
+  modelId: models[172].modelId,
+  expectedSize: models[172].expectedSize,
+  sha256Checksum: models[172].sha256Checksum,
+  addon: models[172].addon,
+  engine: models[172].engine,
+  quantization: models[172].quantization,
+  params: models[172].params,
+} as const;
+
+export const TTS_PIPER_AMY_EN_US_ONNX_LOW_CONFIG = {
+  name: "TTS_PIPER_AMY_EN_US_ONNX_LOW_CONFIG",
+  src: `registry://${models[173].registrySource}/${models[173].registryPath}`,
+  registryPath: models[173].registryPath,
+  registrySource: models[173].registrySource,
+  blobCoreKey: models[173].blobCoreKey,
+  blobBlockOffset: models[173].blobBlockOffset,
+  blobBlockLength: models[173].blobBlockLength,
+  blobByteOffset: models[173].blobByteOffset,
+  modelId: models[173].modelId,
+  expectedSize: models[173].expectedSize,
+  sha256Checksum: models[173].sha256Checksum,
+  addon: models[173].addon,
+  engine: models[173].engine,
+  quantization: models[173].quantization,
+  params: models[173].params,
+} as const;
+
+export const TTS_PIPER_AMY_EN_US_ONNX_MEDIUM = {
+  name: "TTS_PIPER_AMY_EN_US_ONNX_MEDIUM",
+  src: `registry://${models[174].registrySource}/${models[174].registryPath}`,
+  registryPath: models[174].registryPath,
+  registrySource: models[174].registrySource,
+  blobCoreKey: models[174].blobCoreKey,
+  blobBlockOffset: models[174].blobBlockOffset,
+  blobBlockLength: models[174].blobBlockLength,
+  blobByteOffset: models[174].blobByteOffset,
+  modelId: models[174].modelId,
+  expectedSize: models[174].expectedSize,
+  sha256Checksum: models[174].sha256Checksum,
+  addon: models[174].addon,
+  engine: models[174].engine,
+  quantization: models[174].quantization,
+  params: models[174].params,
+} as const;
+
+export const TTS_PIPER_AMY_EN_US_ONNX_MEDIUM_CONFIG = {
+  name: "TTS_PIPER_AMY_EN_US_ONNX_MEDIUM_CONFIG",
+  src: `registry://${models[175].registrySource}/${models[175].registryPath}`,
+  registryPath: models[175].registryPath,
+  registrySource: models[175].registrySource,
+  blobCoreKey: models[175].blobCoreKey,
+  blobBlockOffset: models[175].blobBlockOffset,
+  blobBlockLength: models[175].blobBlockLength,
+  blobByteOffset: models[175].blobByteOffset,
+  modelId: models[175].modelId,
+  expectedSize: models[175].expectedSize,
+  sha256Checksum: models[175].sha256Checksum,
+  addon: models[175].addon,
+  engine: models[175].engine,
+  quantization: models[175].quantization,
+  params: models[175].params,
+} as const;
+
+export const TTS_PIPER_LESSAC_EN_US_ONNX_MEDIUM = {
+  name: "TTS_PIPER_LESSAC_EN_US_ONNX_MEDIUM",
+  src: `registry://${models[176].registrySource}/${models[176].registryPath}`,
+  registryPath: models[176].registryPath,
+  registrySource: models[176].registrySource,
+  blobCoreKey: models[176].blobCoreKey,
+  blobBlockOffset: models[176].blobBlockOffset,
+  blobBlockLength: models[176].blobBlockLength,
+  blobByteOffset: models[176].blobByteOffset,
+  modelId: models[176].modelId,
+  expectedSize: models[176].expectedSize,
+  sha256Checksum: models[176].sha256Checksum,
+  addon: models[176].addon,
+  engine: models[176].engine,
+  quantization: models[176].quantization,
+  params: models[176].params,
+} as const;
+
+export const TTS_PIPER_LESSAC_EN_US_ONNX_MEDIUM_CONFIG = {
+  name: "TTS_PIPER_LESSAC_EN_US_ONNX_MEDIUM_CONFIG",
+  src: `registry://${models[177].registrySource}/${models[177].registryPath}`,
+  registryPath: models[177].registryPath,
+  registrySource: models[177].registrySource,
+  blobCoreKey: models[177].blobCoreKey,
+  blobBlockOffset: models[177].blobBlockOffset,
+  blobBlockLength: models[177].blobBlockLength,
+  blobByteOffset: models[177].blobByteOffset,
+  modelId: models[177].modelId,
+  expectedSize: models[177].expectedSize,
+  sha256Checksum: models[177].sha256Checksum,
+  addon: models[177].addon,
+  engine: models[177].engine,
+  quantization: models[177].quantization,
+  params: models[177].params,
+} as const;
+
+export const TTS_PIPER_NORMAN_EN_US_ONNX_MEDIUM = {
+  name: "TTS_PIPER_NORMAN_EN_US_ONNX_MEDIUM",
+  src: `registry://${models[178].registrySource}/${models[178].registryPath}`,
+  registryPath: models[178].registryPath,
+  registrySource: models[178].registrySource,
+  blobCoreKey: models[178].blobCoreKey,
+  blobBlockOffset: models[178].blobBlockOffset,
+  blobBlockLength: models[178].blobBlockLength,
+  blobByteOffset: models[178].blobByteOffset,
+  modelId: models[178].modelId,
+  expectedSize: models[178].expectedSize,
+  sha256Checksum: models[178].sha256Checksum,
+  addon: models[178].addon,
+  engine: models[178].engine,
+  quantization: models[178].quantization,
+  params: models[178].params,
+} as const;
+
+export const TTS_PIPER_NORMAN_EN_US_ONNX_MEDIUM_CONFIG = {
+  name: "TTS_PIPER_NORMAN_EN_US_ONNX_MEDIUM_CONFIG",
+  src: `registry://${models[179].registrySource}/${models[179].registryPath}`,
+  registryPath: models[179].registryPath,
+  registrySource: models[179].registrySource,
+  blobCoreKey: models[179].blobCoreKey,
+  blobBlockOffset: models[179].blobBlockOffset,
+  blobBlockLength: models[179].blobBlockLength,
+  blobByteOffset: models[179].blobByteOffset,
+  modelId: models[179].modelId,
+  expectedSize: models[179].expectedSize,
+  sha256Checksum: models[179].sha256Checksum,
+  addon: models[179].addon,
+  engine: models[179].engine,
+  quantization: models[179].quantization,
+  params: models[179].params,
+} as const;
+
+export const TTS_PIPER_DAVEFX_ES_ES_ONNX_MEDIUM = {
+  name: "TTS_PIPER_DAVEFX_ES_ES_ONNX_MEDIUM",
+  src: `registry://${models[180].registrySource}/${models[180].registryPath}`,
+  registryPath: models[180].registryPath,
+  registrySource: models[180].registrySource,
+  blobCoreKey: models[180].blobCoreKey,
+  blobBlockOffset: models[180].blobBlockOffset,
+  blobBlockLength: models[180].blobBlockLength,
+  blobByteOffset: models[180].blobByteOffset,
+  modelId: models[180].modelId,
+  expectedSize: models[180].expectedSize,
+  sha256Checksum: models[180].sha256Checksum,
+  addon: models[180].addon,
+  engine: models[180].engine,
+  quantization: models[180].quantization,
+  params: models[180].params,
+} as const;
+
+export const TTS_PIPER_DAVEFX_ES_ES_ONNX_MEDIUM_CONFIG = {
+  name: "TTS_PIPER_DAVEFX_ES_ES_ONNX_MEDIUM_CONFIG",
+  src: `registry://${models[181].registrySource}/${models[181].registryPath}`,
+  registryPath: models[181].registryPath,
+  registrySource: models[181].registrySource,
+  blobCoreKey: models[181].blobCoreKey,
+  blobBlockOffset: models[181].blobBlockOffset,
+  blobBlockLength: models[181].blobBlockLength,
+  blobByteOffset: models[181].blobByteOffset,
+  modelId: models[181].modelId,
+  expectedSize: models[181].expectedSize,
+  sha256Checksum: models[181].sha256Checksum,
+  addon: models[181].addon,
+  engine: models[181].engine,
+  quantization: models[181].quantization,
+  params: models[181].params,
+} as const;
+
+export const TTS_PIPER_SHARVARD_ES_ES_ONNX_MEDIUM = {
+  name: "TTS_PIPER_SHARVARD_ES_ES_ONNX_MEDIUM",
+  src: `registry://${models[182].registrySource}/${models[182].registryPath}`,
+  registryPath: models[182].registryPath,
+  registrySource: models[182].registrySource,
+  blobCoreKey: models[182].blobCoreKey,
+  blobBlockOffset: models[182].blobBlockOffset,
+  blobBlockLength: models[182].blobBlockLength,
+  blobByteOffset: models[182].blobByteOffset,
+  modelId: models[182].modelId,
+  expectedSize: models[182].expectedSize,
+  sha256Checksum: models[182].sha256Checksum,
+  addon: models[182].addon,
+  engine: models[182].engine,
+  quantization: models[182].quantization,
+  params: models[182].params,
+} as const;
+
+export const TTS_PIPER_SHARVARD_ES_ES_ONNX_MEDIUM_CONFIG = {
+  name: "TTS_PIPER_SHARVARD_ES_ES_ONNX_MEDIUM_CONFIG",
+  src: `registry://${models[183].registrySource}/${models[183].registryPath}`,
+  registryPath: models[183].registryPath,
+  registrySource: models[183].registrySource,
+  blobCoreKey: models[183].blobCoreKey,
+  blobBlockOffset: models[183].blobBlockOffset,
+  blobBlockLength: models[183].blobBlockLength,
+  blobByteOffset: models[183].blobByteOffset,
+  modelId: models[183].modelId,
+  expectedSize: models[183].expectedSize,
+  sha256Checksum: models[183].sha256Checksum,
+  addon: models[183].addon,
+  engine: models[183].engine,
+  quantization: models[183].quantization,
+  params: models[183].params,
+} as const;
+
+export const TTS_PIPER_GILLES_FR_FR_ONNX_LOW = {
+  name: "TTS_PIPER_GILLES_FR_FR_ONNX_LOW",
+  src: `registry://${models[184].registrySource}/${models[184].registryPath}`,
+  registryPath: models[184].registryPath,
+  registrySource: models[184].registrySource,
+  blobCoreKey: models[184].blobCoreKey,
+  blobBlockOffset: models[184].blobBlockOffset,
+  blobBlockLength: models[184].blobBlockLength,
+  blobByteOffset: models[184].blobByteOffset,
+  modelId: models[184].modelId,
+  expectedSize: models[184].expectedSize,
+  sha256Checksum: models[184].sha256Checksum,
+  addon: models[184].addon,
+  engine: models[184].engine,
+  quantization: models[184].quantization,
+  params: models[184].params,
+} as const;
+
+export const TTS_PIPER_GILLES_FR_FR_ONNX_LOW_CONFIG = {
+  name: "TTS_PIPER_GILLES_FR_FR_ONNX_LOW_CONFIG",
+  src: `registry://${models[185].registrySource}/${models[185].registryPath}`,
+  registryPath: models[185].registryPath,
+  registrySource: models[185].registrySource,
+  blobCoreKey: models[185].blobCoreKey,
+  blobBlockOffset: models[185].blobBlockOffset,
+  blobBlockLength: models[185].blobBlockLength,
+  blobByteOffset: models[185].blobByteOffset,
+  modelId: models[185].modelId,
+  expectedSize: models[185].expectedSize,
+  sha256Checksum: models[185].sha256Checksum,
+  addon: models[185].addon,
+  engine: models[185].engine,
+  quantization: models[185].quantization,
+  params: models[185].params,
+} as const;
+
+export const TTS_PIPER_PAOLA_IT_IT_ONNX_MEDIUM = {
+  name: "TTS_PIPER_PAOLA_IT_IT_ONNX_MEDIUM",
+  src: `registry://${models[186].registrySource}/${models[186].registryPath}`,
+  registryPath: models[186].registryPath,
+  registrySource: models[186].registrySource,
+  blobCoreKey: models[186].blobCoreKey,
+  blobBlockOffset: models[186].blobBlockOffset,
+  blobBlockLength: models[186].blobBlockLength,
+  blobByteOffset: models[186].blobByteOffset,
+  modelId: models[186].modelId,
+  expectedSize: models[186].expectedSize,
+  sha256Checksum: models[186].sha256Checksum,
+  addon: models[186].addon,
+  engine: models[186].engine,
+  quantization: models[186].quantization,
+  params: models[186].params,
+} as const;
+
+export const TTS_PIPER_PAOLA_IT_IT_ONNX_MEDIUM_CONFIG = {
+  name: "TTS_PIPER_PAOLA_IT_IT_ONNX_MEDIUM_CONFIG",
+  src: `registry://${models[187].registrySource}/${models[187].registryPath}`,
+  registryPath: models[187].registryPath,
+  registrySource: models[187].registrySource,
+  blobCoreKey: models[187].blobCoreKey,
+  blobBlockOffset: models[187].blobBlockOffset,
+  blobBlockLength: models[187].blobBlockLength,
+  blobByteOffset: models[187].blobByteOffset,
+  modelId: models[187].modelId,
+  expectedSize: models[187].expectedSize,
+  sha256Checksum: models[187].sha256Checksum,
+  addon: models[187].addon,
+  engine: models[187].engine,
+  quantization: models[187].quantization,
+  params: models[187].params,
+} as const;
+
+export const TTS_PIPER_CADU_PT_BR_ONNX_MEDIUM = {
+  name: "TTS_PIPER_CADU_PT_BR_ONNX_MEDIUM",
+  src: `registry://${models[188].registrySource}/${models[188].registryPath}`,
+  registryPath: models[188].registryPath,
+  registrySource: models[188].registrySource,
+  blobCoreKey: models[188].blobCoreKey,
+  blobBlockOffset: models[188].blobBlockOffset,
+  blobBlockLength: models[188].blobBlockLength,
+  blobByteOffset: models[188].blobByteOffset,
+  modelId: models[188].modelId,
+  expectedSize: models[188].expectedSize,
+  sha256Checksum: models[188].sha256Checksum,
+  addon: models[188].addon,
+  engine: models[188].engine,
+  quantization: models[188].quantization,
+  params: models[188].params,
+} as const;
+
+export const TTS_PIPER_CADU_PT_BR_ONNX_MEDIUM_CONFIG = {
+  name: "TTS_PIPER_CADU_PT_BR_ONNX_MEDIUM_CONFIG",
+  src: `registry://${models[189].registrySource}/${models[189].registryPath}`,
+  registryPath: models[189].registryPath,
+  registrySource: models[189].registrySource,
+  blobCoreKey: models[189].blobCoreKey,
+  blobBlockOffset: models[189].blobBlockOffset,
+  blobBlockLength: models[189].blobBlockLength,
+  blobByteOffset: models[189].blobByteOffset,
+  modelId: models[189].modelId,
+  expectedSize: models[189].expectedSize,
+  sha256Checksum: models[189].sha256Checksum,
+  addon: models[189].addon,
+  engine: models[189].engine,
+  quantization: models[189].quantization,
+  params: models[189].params,
+} as const;
+
+export const TTS_PIPER_TUGAO_PT_PT_ONNX_MEDIUM = {
+  name: "TTS_PIPER_TUGAO_PT_PT_ONNX_MEDIUM",
+  src: `registry://${models[190].registrySource}/${models[190].registryPath}`,
+  registryPath: models[190].registryPath,
+  registrySource: models[190].registrySource,
+  blobCoreKey: models[190].blobCoreKey,
+  blobBlockOffset: models[190].blobBlockOffset,
+  blobBlockLength: models[190].blobBlockLength,
+  blobByteOffset: models[190].blobByteOffset,
+  modelId: models[190].modelId,
+  expectedSize: models[190].expectedSize,
+  sha256Checksum: models[190].sha256Checksum,
+  addon: models[190].addon,
+  engine: models[190].engine,
+  quantization: models[190].quantization,
+  params: models[190].params,
+} as const;
+
+export const TTS_PIPER_TUGAO_PT_PT_ONNX_MEDIUM_CONFIG = {
+  name: "TTS_PIPER_TUGAO_PT_PT_ONNX_MEDIUM_CONFIG",
+  src: `registry://${models[191].registrySource}/${models[191].registryPath}`,
+  registryPath: models[191].registryPath,
+  registrySource: models[191].registrySource,
+  blobCoreKey: models[191].blobCoreKey,
+  blobBlockOffset: models[191].blobBlockOffset,
+  blobBlockLength: models[191].blobBlockLength,
+  blobByteOffset: models[191].blobByteOffset,
+  modelId: models[191].modelId,
+  expectedSize: models[191].expectedSize,
+  sha256Checksum: models[191].sha256Checksum,
+  addon: models[191].addon,
+  engine: models[191].engine,
+  quantization: models[191].quantization,
+  params: models[191].params,
+} as const;
+
+export const TTS_PIPER_IRINA_RU_RU_ONNX_MEDIUM = {
+  name: "TTS_PIPER_IRINA_RU_RU_ONNX_MEDIUM",
+  src: `registry://${models[192].registrySource}/${models[192].registryPath}`,
+  registryPath: models[192].registryPath,
+  registrySource: models[192].registrySource,
+  blobCoreKey: models[192].blobCoreKey,
+  blobBlockOffset: models[192].blobBlockOffset,
+  blobBlockLength: models[192].blobBlockLength,
+  blobByteOffset: models[192].blobByteOffset,
+  modelId: models[192].modelId,
+  expectedSize: models[192].expectedSize,
+  sha256Checksum: models[192].sha256Checksum,
+  addon: models[192].addon,
+  engine: models[192].engine,
+  quantization: models[192].quantization,
+  params: models[192].params,
+} as const;
+
+export const TTS_PIPER_IRINA_RU_RU_ONNX_MEDIUM_CONFIG = {
+  name: "TTS_PIPER_IRINA_RU_RU_ONNX_MEDIUM_CONFIG",
+  src: `registry://${models[193].registrySource}/${models[193].registryPath}`,
+  registryPath: models[193].registryPath,
+  registrySource: models[193].registrySource,
+  blobCoreKey: models[193].blobCoreKey,
+  blobBlockOffset: models[193].blobBlockOffset,
+  blobBlockLength: models[193].blobBlockLength,
+  blobByteOffset: models[193].blobByteOffset,
+  modelId: models[193].modelId,
+  expectedSize: models[193].expectedSize,
+  sha256Checksum: models[193].sha256Checksum,
+  addon: models[193].addon,
+  engine: models[193].engine,
+  quantization: models[193].quantization,
+  params: models[193].params,
+} as const;
+
+export const WHISPER_BASE_Q8_0 = {
+  name: "WHISPER_BASE_Q8_0",
+  src: `registry://${models[194].registrySource}/${models[194].registryPath}`,
+  registryPath: models[194].registryPath,
+  registrySource: models[194].registrySource,
+  blobCoreKey: models[194].blobCoreKey,
+  blobBlockOffset: models[194].blobBlockOffset,
+  blobBlockLength: models[194].blobBlockLength,
+  blobByteOffset: models[194].blobByteOffset,
+  modelId: models[194].modelId,
+  expectedSize: models[194].expectedSize,
+  sha256Checksum: models[194].sha256Checksum,
+  addon: models[194].addon,
+  engine: models[194].engine,
+  quantization: models[194].quantization,
+  params: models[194].params,
+} as const;
+
+export const WHISPER_BASE_Q0F16 = {
+  name: "WHISPER_BASE_Q0F16",
+  src: `registry://${models[195].registrySource}/${models[195].registryPath}`,
+  registryPath: models[195].registryPath,
+  registrySource: models[195].registrySource,
+  blobCoreKey: models[195].blobCoreKey,
+  blobBlockOffset: models[195].blobBlockOffset,
+  blobBlockLength: models[195].blobBlockLength,
+  blobByteOffset: models[195].blobByteOffset,
+  modelId: models[195].modelId,
+  expectedSize: models[195].expectedSize,
+  sha256Checksum: models[195].sha256Checksum,
+  addon: models[195].addon,
+  engine: models[195].engine,
+  quantization: models[195].quantization,
+  params: models[195].params,
+} as const;
+
+export const WHISPER_EN_BASE_Q8_0 = {
+  name: "WHISPER_EN_BASE_Q8_0",
+  src: `registry://${models[196].registrySource}/${models[196].registryPath}`,
+  registryPath: models[196].registryPath,
+  registrySource: models[196].registrySource,
+  blobCoreKey: models[196].blobCoreKey,
+  blobBlockOffset: models[196].blobBlockOffset,
+  blobBlockLength: models[196].blobBlockLength,
+  blobByteOffset: models[196].blobByteOffset,
+  modelId: models[196].modelId,
+  expectedSize: models[196].expectedSize,
+  sha256Checksum: models[196].sha256Checksum,
+  addon: models[196].addon,
+  engine: models[196].engine,
+  quantization: models[196].quantization,
+  params: models[196].params,
+} as const;
+
+export const WHISPER_EN_BASE_Q0F16 = {
+  name: "WHISPER_EN_BASE_Q0F16",
+  src: `registry://${models[197].registrySource}/${models[197].registryPath}`,
+  registryPath: models[197].registryPath,
+  registrySource: models[197].registrySource,
+  blobCoreKey: models[197].blobCoreKey,
+  blobBlockOffset: models[197].blobBlockOffset,
+  blobBlockLength: models[197].blobBlockLength,
+  blobByteOffset: models[197].blobByteOffset,
+  modelId: models[197].modelId,
+  expectedSize: models[197].expectedSize,
+  sha256Checksum: models[197].sha256Checksum,
+  addon: models[197].addon,
+  engine: models[197].engine,
+  quantization: models[197].quantization,
+  params: models[197].params,
+} as const;
+
+export const WHISPER_LARGE_V3_TURBO = {
+  name: "WHISPER_LARGE_V3_TURBO",
+  src: `registry://${models[198].registrySource}/${models[198].registryPath}`,
+  registryPath: models[198].registryPath,
+  registrySource: models[198].registrySource,
+  blobCoreKey: models[198].blobCoreKey,
+  blobBlockOffset: models[198].blobBlockOffset,
+  blobBlockLength: models[198].blobBlockLength,
+  blobByteOffset: models[198].blobByteOffset,
+  modelId: models[198].modelId,
+  expectedSize: models[198].expectedSize,
+  sha256Checksum: models[198].sha256Checksum,
+  addon: models[198].addon,
+  engine: models[198].engine,
+  quantization: models[198].quantization,
+  params: models[198].params,
+} as const;
+
+export const WHISPER_SMALL_Q8_0 = {
+  name: "WHISPER_SMALL_Q8_0",
+  src: `registry://${models[199].registrySource}/${models[199].registryPath}`,
+  registryPath: models[199].registryPath,
+  registrySource: models[199].registrySource,
+  blobCoreKey: models[199].blobCoreKey,
+  blobBlockOffset: models[199].blobBlockOffset,
+  blobBlockLength: models[199].blobBlockLength,
+  blobByteOffset: models[199].blobByteOffset,
+  modelId: models[199].modelId,
+  expectedSize: models[199].expectedSize,
+  sha256Checksum: models[199].sha256Checksum,
+  addon: models[199].addon,
+  engine: models[199].engine,
+  quantization: models[199].quantization,
+  params: models[199].params,
+} as const;
+
+export const WHISPER_SMALL_Q0F16 = {
+  name: "WHISPER_SMALL_Q0F16",
+  src: `registry://${models[200].registrySource}/${models[200].registryPath}`,
+  registryPath: models[200].registryPath,
+  registrySource: models[200].registrySource,
+  blobCoreKey: models[200].blobCoreKey,
+  blobBlockOffset: models[200].blobBlockOffset,
+  blobBlockLength: models[200].blobBlockLength,
+  blobByteOffset: models[200].blobByteOffset,
+  modelId: models[200].modelId,
+  expectedSize: models[200].expectedSize,
+  sha256Checksum: models[200].sha256Checksum,
+  addon: models[200].addon,
+  engine: models[200].engine,
+  quantization: models[200].quantization,
+  params: models[200].params,
+} as const;
+
+export const WHISPER_EN_SMALL_Q8_0 = {
+  name: "WHISPER_EN_SMALL_Q8_0",
+  src: `registry://${models[201].registrySource}/${models[201].registryPath}`,
+  registryPath: models[201].registryPath,
+  registrySource: models[201].registrySource,
+  blobCoreKey: models[201].blobCoreKey,
+  blobBlockOffset: models[201].blobBlockOffset,
+  blobBlockLength: models[201].blobBlockLength,
+  blobByteOffset: models[201].blobByteOffset,
+  modelId: models[201].modelId,
+  expectedSize: models[201].expectedSize,
+  sha256Checksum: models[201].sha256Checksum,
+  addon: models[201].addon,
+  engine: models[201].engine,
+  quantization: models[201].quantization,
+  params: models[201].params,
+} as const;
+
+export const WHISPER_EN_SMALL_Q0F16 = {
+  name: "WHISPER_EN_SMALL_Q0F16",
+  src: `registry://${models[202].registrySource}/${models[202].registryPath}`,
+  registryPath: models[202].registryPath,
+  registrySource: models[202].registrySource,
+  blobCoreKey: models[202].blobCoreKey,
+  blobBlockOffset: models[202].blobBlockOffset,
+  blobBlockLength: models[202].blobBlockLength,
+  blobByteOffset: models[202].blobByteOffset,
+  modelId: models[202].modelId,
+  expectedSize: models[202].expectedSize,
+  sha256Checksum: models[202].sha256Checksum,
+  addon: models[202].addon,
+  engine: models[202].engine,
+  quantization: models[202].quantization,
+  params: models[202].params,
+} as const;
+
+export const WHISPER_TINY_Q8_0 = {
+  name: "WHISPER_TINY_Q8_0",
+  src: `registry://${models[203].registrySource}/${models[203].registryPath}`,
+  registryPath: models[203].registryPath,
+  registrySource: models[203].registrySource,
+  blobCoreKey: models[203].blobCoreKey,
+  blobBlockOffset: models[203].blobBlockOffset,
+  blobBlockLength: models[203].blobBlockLength,
+  blobByteOffset: models[203].blobByteOffset,
+  modelId: models[203].modelId,
+  expectedSize: models[203].expectedSize,
+  sha256Checksum: models[203].sha256Checksum,
+  addon: models[203].addon,
+  engine: models[203].engine,
+  quantization: models[203].quantization,
+  params: models[203].params,
+} as const;
+
+export const WHISPER_TINY = {
+  name: "WHISPER_TINY",
+  src: `registry://${models[204].registrySource}/${models[204].registryPath}`,
+  registryPath: models[204].registryPath,
+  registrySource: models[204].registrySource,
+  blobCoreKey: models[204].blobCoreKey,
+  blobBlockOffset: models[204].blobBlockOffset,
+  blobBlockLength: models[204].blobBlockLength,
+  blobByteOffset: models[204].blobByteOffset,
+  modelId: models[204].modelId,
+  expectedSize: models[204].expectedSize,
+  sha256Checksum: models[204].sha256Checksum,
+  addon: models[204].addon,
+  engine: models[204].engine,
+  quantization: models[204].quantization,
+  params: models[204].params,
+} as const;
+
+export const WHISPER_EN_TINY_Q8_0 = {
+  name: "WHISPER_EN_TINY_Q8_0",
+  src: `registry://${models[205].registrySource}/${models[205].registryPath}`,
+  registryPath: models[205].registryPath,
+  registrySource: models[205].registrySource,
+  blobCoreKey: models[205].blobCoreKey,
+  blobBlockOffset: models[205].blobBlockOffset,
+  blobBlockLength: models[205].blobBlockLength,
+  blobByteOffset: models[205].blobByteOffset,
+  modelId: models[205].modelId,
+  expectedSize: models[205].expectedSize,
+  sha256Checksum: models[205].sha256Checksum,
+  addon: models[205].addon,
+  engine: models[205].engine,
+  quantization: models[205].quantization,
+  params: models[205].params,
+} as const;
+
+export const WHISPER_EN_TINY_Q0F16 = {
+  name: "WHISPER_EN_TINY_Q0F16",
+  src: `registry://${models[206].registrySource}/${models[206].registryPath}`,
+  registryPath: models[206].registryPath,
+  registrySource: models[206].registrySource,
+  blobCoreKey: models[206].blobCoreKey,
+  blobBlockOffset: models[206].blobBlockOffset,
+  blobBlockLength: models[206].blobBlockLength,
+  blobByteOffset: models[206].blobByteOffset,
+  modelId: models[206].modelId,
+  expectedSize: models[206].expectedSize,
+  sha256Checksum: models[206].sha256Checksum,
+  addon: models[206].addon,
+  engine: models[206].engine,
+  quantization: models[206].quantization,
+  params: models[206].params,
+} as const;
+
+export const VAD_SILERO_5_1_2 = {
+  name: "VAD_SILERO_5_1_2",
+  src: `registry://${models[207].registrySource}/${models[207].registryPath}`,
+  registryPath: models[207].registryPath,
+  registrySource: models[207].registrySource,
+  blobCoreKey: models[207].blobCoreKey,
+  blobBlockOffset: models[207].blobBlockOffset,
+  blobBlockLength: models[207].blobBlockLength,
+  blobByteOffset: models[207].blobByteOffset,
+  modelId: models[207].modelId,
+  expectedSize: models[207].expectedSize,
+  sha256Checksum: models[207].sha256Checksum,
+  addon: models[207].addon,
+  engine: models[207].engine,
+  quantization: models[207].quantization,
+  params: models[207].params,
+} as const;
+
+export const WHISPER_FRENCH_BASE_F16 = {
+  name: "WHISPER_FRENCH_BASE_F16",
+  src: `registry://${models[208].registrySource}/${models[208].registryPath}`,
+  registryPath: models[208].registryPath,
+  registrySource: models[208].registrySource,
+  blobCoreKey: models[208].blobCoreKey,
+  blobBlockOffset: models[208].blobBlockOffset,
+  blobBlockLength: models[208].blobBlockLength,
+  blobByteOffset: models[208].blobByteOffset,
+  modelId: models[208].modelId,
+  expectedSize: models[208].expectedSize,
+  sha256Checksum: models[208].sha256Checksum,
+  addon: models[208].addon,
+  engine: models[208].engine,
+  quantization: models[208].quantization,
+  params: models[208].params,
+} as const;
+
+export const WHISPER_FRENCH_BASE_Q8_0 = {
+  name: "WHISPER_FRENCH_BASE_Q8_0",
+  src: `registry://${models[209].registrySource}/${models[209].registryPath}`,
+  registryPath: models[209].registryPath,
+  registrySource: models[209].registrySource,
+  blobCoreKey: models[209].blobCoreKey,
+  blobBlockOffset: models[209].blobBlockOffset,
+  blobBlockLength: models[209].blobBlockLength,
+  blobByteOffset: models[209].blobByteOffset,
+  modelId: models[209].modelId,
+  expectedSize: models[209].expectedSize,
+  sha256Checksum: models[209].sha256Checksum,
+  addon: models[209].addon,
+  engine: models[209].engine,
+  quantization: models[209].quantization,
+  params: models[209].params,
+} as const;
+
+export const WHISPER_FRENCH_TINY_F16 = {
+  name: "WHISPER_FRENCH_TINY_F16",
+  src: `registry://${models[210].registrySource}/${models[210].registryPath}`,
+  registryPath: models[210].registryPath,
+  registrySource: models[210].registrySource,
+  blobCoreKey: models[210].blobCoreKey,
+  blobBlockOffset: models[210].blobBlockOffset,
+  blobBlockLength: models[210].blobBlockLength,
+  blobByteOffset: models[210].blobByteOffset,
+  modelId: models[210].modelId,
+  expectedSize: models[210].expectedSize,
+  sha256Checksum: models[210].sha256Checksum,
+  addon: models[210].addon,
+  engine: models[210].engine,
+  quantization: models[210].quantization,
+  params: models[210].params,
+} as const;
+
+export const WHISPER_FRENCH_TINY_Q8_0 = {
+  name: "WHISPER_FRENCH_TINY_Q8_0",
+  src: `registry://${models[211].registrySource}/${models[211].registryPath}`,
+  registryPath: models[211].registryPath,
+  registrySource: models[211].registrySource,
+  blobCoreKey: models[211].blobCoreKey,
+  blobBlockOffset: models[211].blobBlockOffset,
+  blobBlockLength: models[211].blobBlockLength,
+  blobByteOffset: models[211].blobByteOffset,
+  modelId: models[211].modelId,
+  expectedSize: models[211].expectedSize,
+  sha256Checksum: models[211].sha256Checksum,
+  addon: models[211].addon,
+  engine: models[211].engine,
+  quantization: models[211].quantization,
+  params: models[211].params,
+} as const;
+
+export const WHISPER_GERMAN_BASE_F16 = {
+  name: "WHISPER_GERMAN_BASE_F16",
+  src: `registry://${models[212].registrySource}/${models[212].registryPath}`,
+  registryPath: models[212].registryPath,
+  registrySource: models[212].registrySource,
+  blobCoreKey: models[212].blobCoreKey,
+  blobBlockOffset: models[212].blobBlockOffset,
+  blobBlockLength: models[212].blobBlockLength,
+  blobByteOffset: models[212].blobByteOffset,
+  modelId: models[212].modelId,
+  expectedSize: models[212].expectedSize,
+  sha256Checksum: models[212].sha256Checksum,
+  addon: models[212].addon,
+  engine: models[212].engine,
+  quantization: models[212].quantization,
+  params: models[212].params,
+} as const;
+
+export const WHISPER_GERMAN_BASE_Q8_0 = {
+  name: "WHISPER_GERMAN_BASE_Q8_0",
+  src: `registry://${models[213].registrySource}/${models[213].registryPath}`,
+  registryPath: models[213].registryPath,
+  registrySource: models[213].registrySource,
+  blobCoreKey: models[213].blobCoreKey,
+  blobBlockOffset: models[213].blobBlockOffset,
+  blobBlockLength: models[213].blobBlockLength,
+  blobByteOffset: models[213].blobByteOffset,
+  modelId: models[213].modelId,
+  expectedSize: models[213].expectedSize,
+  sha256Checksum: models[213].sha256Checksum,
+  addon: models[213].addon,
+  engine: models[213].engine,
+  quantization: models[213].quantization,
+  params: models[213].params,
+} as const;
+
+export const WHISPER_GERMAN_TINY_F16 = {
+  name: "WHISPER_GERMAN_TINY_F16",
+  src: `registry://${models[214].registrySource}/${models[214].registryPath}`,
+  registryPath: models[214].registryPath,
+  registrySource: models[214].registrySource,
+  blobCoreKey: models[214].blobCoreKey,
+  blobBlockOffset: models[214].blobBlockOffset,
+  blobBlockLength: models[214].blobBlockLength,
+  blobByteOffset: models[214].blobByteOffset,
+  modelId: models[214].modelId,
+  expectedSize: models[214].expectedSize,
+  sha256Checksum: models[214].sha256Checksum,
+  addon: models[214].addon,
+  engine: models[214].engine,
+  quantization: models[214].quantization,
+  params: models[214].params,
+} as const;
+
+export const WHISPER_GERMAN_TINY_Q8_0 = {
+  name: "WHISPER_GERMAN_TINY_Q8_0",
+  src: `registry://${models[215].registrySource}/${models[215].registryPath}`,
+  registryPath: models[215].registryPath,
+  registrySource: models[215].registrySource,
+  blobCoreKey: models[215].blobCoreKey,
+  blobBlockOffset: models[215].blobBlockOffset,
+  blobBlockLength: models[215].blobBlockLength,
+  blobByteOffset: models[215].blobByteOffset,
+  modelId: models[215].modelId,
+  expectedSize: models[215].expectedSize,
+  sha256Checksum: models[215].sha256Checksum,
+  addon: models[215].addon,
+  engine: models[215].engine,
+  quantization: models[215].quantization,
+  params: models[215].params,
+} as const;
+
+export const WHISPER_ITALIAN_BASE_F16 = {
+  name: "WHISPER_ITALIAN_BASE_F16",
+  src: `registry://${models[216].registrySource}/${models[216].registryPath}`,
+  registryPath: models[216].registryPath,
+  registrySource: models[216].registrySource,
+  blobCoreKey: models[216].blobCoreKey,
+  blobBlockOffset: models[216].blobBlockOffset,
+  blobBlockLength: models[216].blobBlockLength,
+  blobByteOffset: models[216].blobByteOffset,
+  modelId: models[216].modelId,
+  expectedSize: models[216].expectedSize,
+  sha256Checksum: models[216].sha256Checksum,
+  addon: models[216].addon,
+  engine: models[216].engine,
+  quantization: models[216].quantization,
+  params: models[216].params,
+} as const;
+
+export const WHISPER_ITALIAN_BASE_Q8_0 = {
+  name: "WHISPER_ITALIAN_BASE_Q8_0",
+  src: `registry://${models[217].registrySource}/${models[217].registryPath}`,
+  registryPath: models[217].registryPath,
+  registrySource: models[217].registrySource,
+  blobCoreKey: models[217].blobCoreKey,
+  blobBlockOffset: models[217].blobBlockOffset,
+  blobBlockLength: models[217].blobBlockLength,
+  blobByteOffset: models[217].blobByteOffset,
+  modelId: models[217].modelId,
+  expectedSize: models[217].expectedSize,
+  sha256Checksum: models[217].sha256Checksum,
+  addon: models[217].addon,
+  engine: models[217].engine,
+  quantization: models[217].quantization,
+  params: models[217].params,
+} as const;
+
+export const WHISPER_ITALIAN_TINY_F16 = {
+  name: "WHISPER_ITALIAN_TINY_F16",
+  src: `registry://${models[218].registrySource}/${models[218].registryPath}`,
+  registryPath: models[218].registryPath,
+  registrySource: models[218].registrySource,
+  blobCoreKey: models[218].blobCoreKey,
+  blobBlockOffset: models[218].blobBlockOffset,
+  blobBlockLength: models[218].blobBlockLength,
+  blobByteOffset: models[218].blobByteOffset,
+  modelId: models[218].modelId,
+  expectedSize: models[218].expectedSize,
+  sha256Checksum: models[218].sha256Checksum,
+  addon: models[218].addon,
+  engine: models[218].engine,
+  quantization: models[218].quantization,
+  params: models[218].params,
+} as const;
+
+export const WHISPER_ITALIAN_TINY_Q8_0 = {
+  name: "WHISPER_ITALIAN_TINY_Q8_0",
+  src: `registry://${models[219].registrySource}/${models[219].registryPath}`,
+  registryPath: models[219].registryPath,
+  registrySource: models[219].registrySource,
+  blobCoreKey: models[219].blobCoreKey,
+  blobBlockOffset: models[219].blobBlockOffset,
+  blobBlockLength: models[219].blobBlockLength,
+  blobByteOffset: models[219].blobByteOffset,
+  modelId: models[219].modelId,
+  expectedSize: models[219].expectedSize,
+  sha256Checksum: models[219].sha256Checksum,
+  addon: models[219].addon,
+  engine: models[219].engine,
+  quantization: models[219].quantization,
+  params: models[219].params,
+} as const;
+
+export const WHISPER_JAPANESE_BASE_F16 = {
+  name: "WHISPER_JAPANESE_BASE_F16",
+  src: `registry://${models[220].registrySource}/${models[220].registryPath}`,
+  registryPath: models[220].registryPath,
+  registrySource: models[220].registrySource,
+  blobCoreKey: models[220].blobCoreKey,
+  blobBlockOffset: models[220].blobBlockOffset,
+  blobBlockLength: models[220].blobBlockLength,
+  blobByteOffset: models[220].blobByteOffset,
+  modelId: models[220].modelId,
+  expectedSize: models[220].expectedSize,
+  sha256Checksum: models[220].sha256Checksum,
+  addon: models[220].addon,
+  engine: models[220].engine,
+  quantization: models[220].quantization,
+  params: models[220].params,
+} as const;
+
+export const WHISPER_JAPANESE_BASE_Q8_0 = {
+  name: "WHISPER_JAPANESE_BASE_Q8_0",
+  src: `registry://${models[221].registrySource}/${models[221].registryPath}`,
+  registryPath: models[221].registryPath,
+  registrySource: models[221].registrySource,
+  blobCoreKey: models[221].blobCoreKey,
+  blobBlockOffset: models[221].blobBlockOffset,
+  blobBlockLength: models[221].blobBlockLength,
+  blobByteOffset: models[221].blobByteOffset,
+  modelId: models[221].modelId,
+  expectedSize: models[221].expectedSize,
+  sha256Checksum: models[221].sha256Checksum,
+  addon: models[221].addon,
+  engine: models[221].engine,
+  quantization: models[221].quantization,
+  params: models[221].params,
+} as const;
+
+export const WHISPER_JAPANESE_TINY_F16 = {
+  name: "WHISPER_JAPANESE_TINY_F16",
+  src: `registry://${models[222].registrySource}/${models[222].registryPath}`,
+  registryPath: models[222].registryPath,
+  registrySource: models[222].registrySource,
+  blobCoreKey: models[222].blobCoreKey,
+  blobBlockOffset: models[222].blobBlockOffset,
+  blobBlockLength: models[222].blobBlockLength,
+  blobByteOffset: models[222].blobByteOffset,
+  modelId: models[222].modelId,
+  expectedSize: models[222].expectedSize,
+  sha256Checksum: models[222].sha256Checksum,
+  addon: models[222].addon,
+  engine: models[222].engine,
+  quantization: models[222].quantization,
+  params: models[222].params,
+} as const;
+
+export const WHISPER_JAPANESE_TINY_Q8_0 = {
+  name: "WHISPER_JAPANESE_TINY_Q8_0",
+  src: `registry://${models[223].registrySource}/${models[223].registryPath}`,
+  registryPath: models[223].registryPath,
+  registrySource: models[223].registrySource,
+  blobCoreKey: models[223].blobCoreKey,
+  blobBlockOffset: models[223].blobBlockOffset,
+  blobBlockLength: models[223].blobBlockLength,
+  blobByteOffset: models[223].blobByteOffset,
+  modelId: models[223].modelId,
+  expectedSize: models[223].expectedSize,
+  sha256Checksum: models[223].sha256Checksum,
+  addon: models[223].addon,
+  engine: models[223].engine,
+  quantization: models[223].quantization,
+  params: models[223].params,
+} as const;
+
+export const WHISPER_NORWEGIAN_TINY = {
+  name: "WHISPER_NORWEGIAN_TINY",
+  src: `registry://${models[224].registrySource}/${models[224].registryPath}`,
+  registryPath: models[224].registryPath,
+  registrySource: models[224].registrySource,
+  blobCoreKey: models[224].blobCoreKey,
+  blobBlockOffset: models[224].blobBlockOffset,
+  blobBlockLength: models[224].blobBlockLength,
+  blobByteOffset: models[224].blobByteOffset,
+  modelId: models[224].modelId,
+  expectedSize: models[224].expectedSize,
+  sha256Checksum: models[224].sha256Checksum,
+  addon: models[224].addon,
+  engine: models[224].engine,
+  quantization: models[224].quantization,
+  params: models[224].params,
+} as const;
+
+export const WHISPER_PORTUGUESE_BASE_F16 = {
+  name: "WHISPER_PORTUGUESE_BASE_F16",
+  src: `registry://${models[225].registrySource}/${models[225].registryPath}`,
+  registryPath: models[225].registryPath,
+  registrySource: models[225].registrySource,
+  blobCoreKey: models[225].blobCoreKey,
+  blobBlockOffset: models[225].blobBlockOffset,
+  blobBlockLength: models[225].blobBlockLength,
+  blobByteOffset: models[225].blobByteOffset,
+  modelId: models[225].modelId,
+  expectedSize: models[225].expectedSize,
+  sha256Checksum: models[225].sha256Checksum,
+  addon: models[225].addon,
+  engine: models[225].engine,
+  quantization: models[225].quantization,
+  params: models[225].params,
+} as const;
+
+export const WHISPER_PORTUGUESE_BASE_Q8_0 = {
+  name: "WHISPER_PORTUGUESE_BASE_Q8_0",
+  src: `registry://${models[226].registrySource}/${models[226].registryPath}`,
+  registryPath: models[226].registryPath,
+  registrySource: models[226].registrySource,
+  blobCoreKey: models[226].blobCoreKey,
+  blobBlockOffset: models[226].blobBlockOffset,
+  blobBlockLength: models[226].blobBlockLength,
+  blobByteOffset: models[226].blobByteOffset,
+  modelId: models[226].modelId,
+  expectedSize: models[226].expectedSize,
+  sha256Checksum: models[226].sha256Checksum,
+  addon: models[226].addon,
+  engine: models[226].engine,
+  quantization: models[226].quantization,
+  params: models[226].params,
+} as const;
+
+export const WHISPER_PORTUGUESE_TINY_F16 = {
+  name: "WHISPER_PORTUGUESE_TINY_F16",
+  src: `registry://${models[227].registrySource}/${models[227].registryPath}`,
+  registryPath: models[227].registryPath,
+  registrySource: models[227].registrySource,
+  blobCoreKey: models[227].blobCoreKey,
+  blobBlockOffset: models[227].blobBlockOffset,
+  blobBlockLength: models[227].blobBlockLength,
+  blobByteOffset: models[227].blobByteOffset,
+  modelId: models[227].modelId,
+  expectedSize: models[227].expectedSize,
+  sha256Checksum: models[227].sha256Checksum,
+  addon: models[227].addon,
+  engine: models[227].engine,
+  quantization: models[227].quantization,
+  params: models[227].params,
+} as const;
+
+export const WHISPER_PORTUGUESE_TINY_Q8_0 = {
+  name: "WHISPER_PORTUGUESE_TINY_Q8_0",
+  src: `registry://${models[228].registrySource}/${models[228].registryPath}`,
+  registryPath: models[228].registryPath,
+  registrySource: models[228].registrySource,
+  blobCoreKey: models[228].blobCoreKey,
+  blobBlockOffset: models[228].blobBlockOffset,
+  blobBlockLength: models[228].blobBlockLength,
+  blobByteOffset: models[228].blobByteOffset,
+  modelId: models[228].modelId,
+  expectedSize: models[228].expectedSize,
+  sha256Checksum: models[228].sha256Checksum,
+  addon: models[228].addon,
+  engine: models[228].engine,
+  quantization: models[228].quantization,
+  params: models[228].params,
+} as const;
+
+export const WHISPER_RUSSIAN_BASE_F16 = {
+  name: "WHISPER_RUSSIAN_BASE_F16",
+  src: `registry://${models[229].registrySource}/${models[229].registryPath}`,
+  registryPath: models[229].registryPath,
+  registrySource: models[229].registrySource,
+  blobCoreKey: models[229].blobCoreKey,
+  blobBlockOffset: models[229].blobBlockOffset,
+  blobBlockLength: models[229].blobBlockLength,
+  blobByteOffset: models[229].blobByteOffset,
+  modelId: models[229].modelId,
+  expectedSize: models[229].expectedSize,
+  sha256Checksum: models[229].sha256Checksum,
+  addon: models[229].addon,
+  engine: models[229].engine,
+  quantization: models[229].quantization,
+  params: models[229].params,
+} as const;
+
+export const WHISPER_RUSSIAN_BASE_Q8_0 = {
+  name: "WHISPER_RUSSIAN_BASE_Q8_0",
+  src: `registry://${models[230].registrySource}/${models[230].registryPath}`,
+  registryPath: models[230].registryPath,
+  registrySource: models[230].registrySource,
+  blobCoreKey: models[230].blobCoreKey,
+  blobBlockOffset: models[230].blobBlockOffset,
+  blobBlockLength: models[230].blobBlockLength,
+  blobByteOffset: models[230].blobByteOffset,
+  modelId: models[230].modelId,
+  expectedSize: models[230].expectedSize,
+  sha256Checksum: models[230].sha256Checksum,
+  addon: models[230].addon,
+  engine: models[230].engine,
+  quantization: models[230].quantization,
+  params: models[230].params,
+} as const;
+
+export const WHISPER_RUSSIAN_TINY_F16 = {
+  name: "WHISPER_RUSSIAN_TINY_F16",
+  src: `registry://${models[231].registrySource}/${models[231].registryPath}`,
+  registryPath: models[231].registryPath,
+  registrySource: models[231].registrySource,
+  blobCoreKey: models[231].blobCoreKey,
+  blobBlockOffset: models[231].blobBlockOffset,
+  blobBlockLength: models[231].blobBlockLength,
+  blobByteOffset: models[231].blobByteOffset,
+  modelId: models[231].modelId,
+  expectedSize: models[231].expectedSize,
+  sha256Checksum: models[231].sha256Checksum,
+  addon: models[231].addon,
+  engine: models[231].engine,
+  quantization: models[231].quantization,
+  params: models[231].params,
+} as const;
+
+export const WHISPER_RUSSIAN_TINY_Q8_0 = {
+  name: "WHISPER_RUSSIAN_TINY_Q8_0",
+  src: `registry://${models[232].registrySource}/${models[232].registryPath}`,
+  registryPath: models[232].registryPath,
+  registrySource: models[232].registrySource,
+  blobCoreKey: models[232].blobCoreKey,
+  blobBlockOffset: models[232].blobBlockOffset,
+  blobBlockLength: models[232].blobBlockLength,
+  blobByteOffset: models[232].blobByteOffset,
+  modelId: models[232].modelId,
+  expectedSize: models[232].expectedSize,
+  sha256Checksum: models[232].sha256Checksum,
+  addon: models[232].addon,
+  engine: models[232].engine,
+  quantization: models[232].quantization,
+  params: models[232].params,
+} as const;
+
+export const WHISPER_SPANISH_TINY_F16 = {
+  name: "WHISPER_SPANISH_TINY_F16",
+  src: `registry://${models[233].registrySource}/${models[233].registryPath}`,
+  registryPath: models[233].registryPath,
+  registrySource: models[233].registrySource,
+  blobCoreKey: models[233].blobCoreKey,
+  blobBlockOffset: models[233].blobBlockOffset,
+  blobBlockLength: models[233].blobBlockLength,
+  blobByteOffset: models[233].blobByteOffset,
+  modelId: models[233].modelId,
+  expectedSize: models[233].expectedSize,
+  sha256Checksum: models[233].sha256Checksum,
+  addon: models[233].addon,
+  engine: models[233].engine,
+  quantization: models[233].quantization,
+  params: models[233].params,
+} as const;
+
+export const WHISPER_SPANISH_TINY_Q8_0 = {
+  name: "WHISPER_SPANISH_TINY_Q8_0",
+  src: `registry://${models[234].registrySource}/${models[234].registryPath}`,
+  registryPath: models[234].registryPath,
+  registrySource: models[234].registrySource,
+  blobCoreKey: models[234].blobCoreKey,
+  blobBlockOffset: models[234].blobBlockOffset,
+  blobBlockLength: models[234].blobBlockLength,
+  blobByteOffset: models[234].blobByteOffset,
+  modelId: models[234].modelId,
+  expectedSize: models[234].expectedSize,
+  sha256Checksum: models[234].sha256Checksum,
+  addon: models[234].addon,
+  engine: models[234].engine,
+  quantization: models[234].quantization,
+  params: models[234].params,
+} as const;
+
+export const WHISPER_Q8_0 = {
+  name: "WHISPER_Q8_0",
+  src: `registry://${models[235].registrySource}/${models[235].registryPath}`,
+  registryPath: models[235].registryPath,
+  registrySource: models[235].registrySource,
+  blobCoreKey: models[235].blobCoreKey,
+  blobBlockOffset: models[235].blobBlockOffset,
+  blobBlockLength: models[235].blobBlockLength,
+  blobByteOffset: models[235].blobByteOffset,
+  modelId: models[235].modelId,
+  expectedSize: models[235].expectedSize,
+  sha256Checksum: models[235].sha256Checksum,
+  addon: models[235].addon,
+  engine: models[235].engine,
+  quantization: models[235].quantization,
+  params: models[235].params,
+} as const;
+
+export const WHISPER_Q8_0_1 = {
+  name: "WHISPER_Q8_0_1",
+  src: `registry://${models[236].registrySource}/${models[236].registryPath}`,
+  registryPath: models[236].registryPath,
+  registrySource: models[236].registrySource,
+  blobCoreKey: models[236].blobCoreKey,
+  blobBlockOffset: models[236].blobBlockOffset,
+  blobBlockLength: models[236].blobBlockLength,
+  blobByteOffset: models[236].blobByteOffset,
+  modelId: models[236].modelId,
+  expectedSize: models[236].expectedSize,
+  sha256Checksum: models[236].sha256Checksum,
+  addon: models[236].addon,
+  engine: models[236].engine,
+  quantization: models[236].quantization,
+  params: models[236].params,
 } as const;
 
 // Helper function to get model by name
