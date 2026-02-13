@@ -2,6 +2,7 @@ import {
   modelRegistryList,
   modelRegistrySearch,
   modelRegistryGetModel,
+  ModelType,
   close,
   type ModelRegistryEntry,
 } from "@qvac/sdk";
@@ -28,10 +29,10 @@ try {
   const whisperModels = await modelRegistrySearch({ filter: "whisper" });
   console.log(`   Found ${whisperModels.length} whisper-related models\n`);
 
-  // Search by engine
-  console.log("Searching by engine (@qvac/embed-llamacpp)...");
+  // Search by engine (using canonical ModelType enum)
+  console.log(`Searching by engine (${ModelType.llamacppEmbedding})...`);
   const embedModels = await modelRegistrySearch({
-    engine: "@qvac/embed-llamacpp",
+    engine: ModelType.llamacppEmbedding,
   });
   console.log(`   Found ${embedModels.length} embedding models`);
   embedModels.slice(0, 3).forEach((model) => {
@@ -62,7 +63,7 @@ try {
   // Combined search: engine + quantization
   console.log("Searching for Q4 LLM models...");
   const q4LlmModels = await modelRegistrySearch({
-    engine: "@qvac/llm-llamacpp",
+    engine: ModelType.llamacppCompletion,
     quantization: "q4",
   });
   console.log(`   Found ${q4LlmModels.length} Q4 LLM models`);
