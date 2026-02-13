@@ -22,7 +22,7 @@ import {
   ModelNotFoundError,
 } from "@/utils/errors-server";
 import { getServerLogger } from "@/logging";
-import { OCR_OCR_DETECTOR } from "@/models/hyperdrive";
+import { OCR_CRAFT_DETECTOR } from "@/models/hyperdrive";
 
 const logger = getServerLogger();
 
@@ -132,7 +132,7 @@ export async function handleLoadModel(
         );
       } else if (modelSrc.startsWith("registry://")) {
         detectorModelPath = await resolveModelPath(
-          OCR_OCR_DETECTOR,
+          OCR_CRAFT_DETECTOR,
           progressCallback,
           seed,
         );

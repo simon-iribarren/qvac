@@ -2,7 +2,7 @@ import {
   close,
   loadModel,
   ocr,
-  OCR_LATIN_RECOGNIZER,
+  OCR_LATIN_RECOGNIZER_1,
   unloadModel,
 } from "@qvac/sdk";
 import path from "path";
@@ -15,7 +15,7 @@ const imagePath =
 try {
   console.log("🚀 Loading OCR model...");
   const modelId = await loadModel({
-    modelSrc: OCR_LATIN_RECOGNIZER,
+    modelSrc: OCR_LATIN_RECOGNIZER_1,
     modelType: "ocr",
     modelConfig: {
       langList: ["en"],
