@@ -6,7 +6,7 @@ import type {
   ModelRegistryGetModelResponse,
   ModelRegistryEntry,
 } from "@/schemas";
-import type { QVACModelEntry } from "@tetherto/registry-client-mono";
+import type { QVACModelEntry } from "@qvac/registry-client";
 import { REGISTRY_ERROR_CODES } from "@/schemas/sdk-errors-registry";
 import {
   getAddonFromEngine,

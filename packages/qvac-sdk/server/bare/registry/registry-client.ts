@@ -1,4 +1,4 @@
-import { QVACRegistryClient } from "@tetherto/registry-client-mono";
+import { QVACRegistryClient } from "@qvac/registry-client";
 import { getServerLogger } from "@/logging";
 
 const logger = getServerLogger();

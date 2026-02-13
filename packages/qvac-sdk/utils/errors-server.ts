@@ -801,7 +801,7 @@ export class PathTraversalError extends QvacErrorBase {
 }
 
 // ============== QVAC Model Registry Operation Errors ==============
-// Registry client errors (19,001-20,000) are re-thrown directly from @tetherto/registry-client-mono
+// Registry client errors (19,001-20,000) are re-thrown directly from @qvac/registry-client
 // Only SDK-specific errors are defined here
 
 export class ModelRegistryQueryFailedError extends QvacErrorBase {

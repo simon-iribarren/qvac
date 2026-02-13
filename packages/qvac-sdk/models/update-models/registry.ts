@@ -1,4 +1,4 @@
-import { QVACRegistryClient } from "@tetherto/registry-client-mono";
+import { QVACRegistryClient } from "@qvac/registry-client";
 import { groupShardedModels } from "./shards";
 import { processRegistryModel } from "./processing";
 import type { CollectOptions, ProcessedModel } from "./types";
