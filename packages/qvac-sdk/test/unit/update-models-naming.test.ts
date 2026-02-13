@@ -15,7 +15,7 @@ import type { ProcessedModel } from "@/models/update-models/types";
 // ---------------------------------------------------------------------------
 
 // Simulates a QVACModelEntry from the registry.  The real type comes from
-// @tetherto/registry-client-mono (native module) so we re-declare a
+// @qvac/registry-client (native module) so we re-declare a
 // compatible shape to avoid pulling in NAPI at test time.
 interface TestBlobBinding {
   coreKey: Buffer;

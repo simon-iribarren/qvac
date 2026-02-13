@@ -1,5 +1,5 @@
 import type { ModelProgressUpdate, RegistryDownloadEntry } from "@/schemas";
-import type { QVACModelEntry } from "@tetherto/registry-client-mono";
+import type { QVACModelEntry } from "@qvac/registry-client";
 import fs, { promises as fsPromises } from "bare-fs";
 import path from "bare-path";
 import { type Readable, type Writable } from "bare-stream";
