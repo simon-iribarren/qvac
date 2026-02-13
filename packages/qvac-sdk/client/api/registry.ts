@@ -21,18 +21,31 @@ export interface ModelRegistrySearchParams {
   addon?: ModelRegistryEntryAddon;
 }
 
+interface RegistryResponse {
+  success?: boolean | undefined;
+  error?: string | undefined;
+}
+
+function validateRegistryResponse(
+  response: RegistryResponse,
+  fallbackError?: string,
+): void {
+  if (!response.success) {
+    throw new ModelRegistryQueryFailedError(
+      response.error ?? fallbackError ?? "Unknown registry error",
+    );
+  }
+}
+
 async function modelRegistryList(): Promise<ModelRegistryEntry[]> {
   const request: ModelRegistryListRequest = {
     type: "modelRegistryList",
   };
 
   const response = (await send(request)) as ModelRegistryListResponse;
+  validateRegistryResponse(response);
 
-  if (!response.success || !response.models) {
-    throw new ModelRegistryQueryFailedError(response.error);
-  }
-
-  return response.models;
+  return response.models!;
 }
 
 async function modelRegistrySearch(
@@ -46,12 +59,9 @@ async function modelRegistrySearch(
   };
 
   const response = (await send(request)) as ModelRegistrySearchResponse;
+  validateRegistryResponse(response);
 
-  if (!response.success || !response.models) {
-    throw new ModelRegistryQueryFailedError(response.error);
-  }
-
-  return response.models;
+  return response.models!;
 }
 
 async function modelRegistryGetModel(
@@ -65,14 +75,12 @@ async function modelRegistryGetModel(
   };
 
   const response = (await send(request)) as ModelRegistryGetModelResponse;
+  validateRegistryResponse(
+    response,
+    `Model not found: ${registrySource}/${registryPath}`,
+  );
 
-  if (!response.success || !response.model) {
-    throw new ModelRegistryQueryFailedError(
-      response.error ?? `Model not found: ${registrySource}/${registryPath}`,
-    );
-  }
-
-  return response.model;
+  return response.model!;
 }
 
 export {
