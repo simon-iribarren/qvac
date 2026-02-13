@@ -2,7 +2,7 @@ import {
   loadModel,
   translate,
   unloadModel,
-  INDICTRANS_EN_INDIC_1B_Q4_0,
+  MARIAN_EN_HI_INDIC_1B_Q4_0,
 } from "@qvac/sdk";
 
 // NOTE: @qvac/translation-nmtcpp version 0.1.6 does not work well with IndicTrans models
@@ -11,7 +11,7 @@ import {
 
 try {
   const modelId = await loadModel({
-    modelSrc: INDICTRANS_EN_INDIC_1B_Q4_0,
+    modelSrc: MARIAN_EN_HI_INDIC_1B_Q4_0,
     modelType: "nmt",
     onProgress: (progress) => {
       console.log(progress);

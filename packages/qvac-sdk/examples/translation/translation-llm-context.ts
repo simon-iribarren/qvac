@@ -2,12 +2,12 @@ import {
   translate,
   loadModel,
   unloadModel,
-  SALAMANDRA_SALAMANDRATA_2B_INST_Q8,
+  SALAMANDRATA_2B_INST_Q8,
 } from "@qvac/sdk";
 
 try {
   const modelId = await loadModel({
-    modelSrc: SALAMANDRA_SALAMANDRATA_2B_INST_Q8,
+    modelSrc: SALAMANDRATA_2B_INST_Q8,
     modelType: "llm",
     onProgress: (progress) => {
       console.log(progress);
