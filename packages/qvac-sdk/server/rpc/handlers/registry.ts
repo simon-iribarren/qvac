@@ -6,6 +6,7 @@ import type {
   ModelRegistryGetModelResponse,
   ModelRegistryEntry,
 } from "@/schemas";
+import type { QVACModelEntry } from "@tetherto/registry-client-mono";
 import { REGISTRY_ERROR_CODES } from "@/schemas/sdk-errors-registry";
 import {
   getAddonFromEngine,
@@ -33,24 +34,8 @@ function toHexString(
   return "";
 }
 
-interface RegistryModelRaw {
-  path: string;
-  source: string;
-  engine?: string;
-  quantization?: string;
-  params?: string;
-  blobBinding?: {
-    coreKey?: Buffer | string | { data: number[] };
-    blockOffset?: number;
-    blockLength?: number;
-    byteOffset?: number;
-    byteLength?: number;
-    sha256?: string;
-  };
-}
-
 function processRegistryModel(
-  model: RegistryModelRaw,
+  model: QVACModelEntry,
 ): ModelRegistryEntry | null {
   const engine = resolveCanonicalEngine(model.engine || "");
   if (!engine) {
@@ -61,14 +46,18 @@ function processRegistryModel(
   }
 
   const filename = model.path.split("/").pop() || model.path;
-  const blobBinding = model.blobBinding || {};
+  const blobBinding = model.blobBinding;
 
-  const blobCoreKey = toHexString(blobBinding.coreKey);
-  const blobBlockOffset = blobBinding.blockOffset ?? 0;
-  const blobBlockLength = blobBinding.blockLength ?? 0;
-  const blobByteOffset = blobBinding.byteOffset ?? 0;
-  const expectedSize = blobBinding.byteLength ?? 0;
-  const sha256Checksum = blobBinding.sha256 || "";
+  const blobCoreKey = toHexString(blobBinding?.coreKey);
+  const blobBlockOffset = blobBinding?.blockOffset ?? 0;
+  const blobBlockLength = blobBinding?.blockLength ?? 0;
+  const blobByteOffset = blobBinding?.byteOffset ?? 0;
+  const expectedSize = blobBinding?.byteLength ?? 0;
+  // sha256 lives on blobBinding at runtime (per hyperschema), fall back to top-level
+  const sha256Checksum =
+    (blobBinding as unknown as Record<string, string>)?.["sha256"] ||
+    model.sha256 ||
+    "";
 
   const addon = getAddonFromEngine(engine);
 
@@ -103,7 +92,7 @@ export async function handleModelRegistryList(): Promise<ModelRegistryListRespon
   try {
     const client = await getRegistryClient();
     const registryModels = await client.findBy();
-    const models = (registryModels as RegistryModelRaw[])
+    const models = registryModels
       .map(processRegistryModel)
       .filter((m): m is ModelRegistryEntry => m !== null);
 
@@ -143,9 +132,9 @@ export async function handleModelRegistrySearch(
   try {
     const client = await getRegistryClient();
 
-    const registryModels = (await client.findBy({
+    const registryModels = await client.findBy({
       ...(request.quantization && { quantization: request.quantization }),
-    })) as RegistryModelRaw[];
+    });
 
     let models = registryModels
       .map(processRegistryModel)
@@ -219,11 +208,11 @@ export async function handleModelRegistryGetModel(
       );
     }
 
-    const model = processRegistryModel(rawModel as RegistryModelRaw);
+    const model = processRegistryModel(rawModel);
 
     if (!model) {
       throw new ModelRegistryQueryFailedError(
-        `Model has unknown engine "${(rawModel as RegistryModelRaw).engine}": ${request.registryPath}`,
+        `Model has unknown engine "${rawModel.engine}": ${request.registryPath}`,
       );
     }
 
