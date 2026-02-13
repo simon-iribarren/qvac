@@ -26,12 +26,8 @@ export { textToSpeech } from "./text-to-speech";
 export { getModelInfo } from "./get-model-info";
 export { ocr } from "./ocr";
 export {
-  qvacModelRegistryList,
-  qvacModelRegistrySearch,
-  qvacModelRegistryFindByEngine,
-  qvacModelRegistryFindByName,
-  qvacModelRegistryFindByQuantization,
-  qvacModelRegistryFindByModelType,
-  qvacModelRegistryGetModel,
-  type QvacModelRegistrySearchParams,
+  modelRegistryList,
+  modelRegistrySearch,
+  modelRegistryGetModel,
+  type ModelRegistrySearchParams,
 } from "./registry";

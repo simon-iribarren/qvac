@@ -2,7 +2,7 @@ import { z } from "zod";
 import { ModelType } from "./model-types";
 
 // QVAC Model Registry entry schema matching the RegistryItem from models/hyperdrive/models.ts
-const qvacModelRegistryEntryAddonSchema = z.enum([
+const modelRegistryEntryAddonSchema = z.enum([
   "llm",
   "whisper",
   "embeddings",
@@ -18,7 +18,7 @@ const qvacModelRegistryEntryAddonSchema = z.enum([
 // Values reference ModelType.* directly to avoid string duplication.
 // The SDK resolves legacy engine names (e.g. @qvac/* package names) to canonical
 // form via schemas/engine-addon-map.ts.
-export const qvacModelRegistryEngineSchema = z.enum([
+export const modelRegistryEngineSchema = z.enum([
   ModelType.llamacppCompletion,
   ModelType.whispercppTranscription,
   ModelType.llamacppEmbedding,
@@ -28,7 +28,7 @@ export const qvacModelRegistryEngineSchema = z.enum([
   "onnx-vad",
 ]);
 
-export const qvacModelRegistryEntrySchema = z.object({
+export const modelRegistryEntrySchema = z.object({
   name: z.string(),
   registryPath: z.string(),
   registrySource: z.string(),
@@ -37,104 +37,104 @@ export const qvacModelRegistryEntrySchema = z.object({
   blobBlockLength: z.number(),
   blobByteOffset: z.number(),
   modelId: z.string(),
-  addon: qvacModelRegistryEntryAddonSchema,
+  addon: modelRegistryEntryAddonSchema,
   expectedSize: z.number(),
   sha256Checksum: z.string(),
-  engine: qvacModelRegistryEngineSchema,
+  engine: modelRegistryEngineSchema,
   quantization: z.string(),
   params: z.string(),
 });
 
-export type QvacModelRegistryEntry = z.infer<
-  typeof qvacModelRegistryEntrySchema
+export type ModelRegistryEntry = z.infer<
+  typeof modelRegistryEntrySchema
 >;
-export type QvacModelRegistryEntryAddon = z.infer<
-  typeof qvacModelRegistryEntryAddonSchema
+export type ModelRegistryEntryAddon = z.infer<
+  typeof modelRegistryEntryAddonSchema
 >;
-export type QvacModelRegistryEngine = z.infer<
-  typeof qvacModelRegistryEngineSchema
+export type ModelRegistryEngine = z.infer<
+  typeof modelRegistryEngineSchema
 >;
 
 // QVAC Model Registry list request/response
-export const qvacModelRegistryListRequestSchema = z.object({
-  type: z.literal("qvacModelRegistryList"),
+export const modelRegistryListRequestSchema = z.object({
+  type: z.literal("modelRegistryList"),
 });
 
-export const qvacModelRegistryListResponseSchema = z.object({
-  type: z.literal("qvacModelRegistryList"),
+export const modelRegistryListResponseSchema = z.object({
+  type: z.literal("modelRegistryList"),
   success: z.boolean(),
-  models: z.array(qvacModelRegistryEntrySchema).optional(),
+  models: z.array(modelRegistryEntrySchema).optional(),
   error: z.string().optional(),
 });
 
-export type QvacModelRegistryListRequest = z.infer<
-  typeof qvacModelRegistryListRequestSchema
+export type ModelRegistryListRequest = z.infer<
+  typeof modelRegistryListRequestSchema
 >;
-export type QvacModelRegistryListResponse = z.infer<
-  typeof qvacModelRegistryListResponseSchema
+export type ModelRegistryListResponse = z.infer<
+  typeof modelRegistryListResponseSchema
 >;
 
 // QVAC Model Registry search request/response
-export const qvacModelRegistrySearchRequestSchema = z.object({
-  type: z.literal("qvacModelRegistrySearch"),
+export const modelRegistrySearchRequestSchema = z.object({
+  type: z.literal("modelRegistrySearch"),
   filter: z.string().optional(),
   engine: z.string().optional(),
   quantization: z.string().optional(),
-  addon: qvacModelRegistryEntryAddonSchema.optional(),
+  addon: modelRegistryEntryAddonSchema.optional(),
 });
 
-export const qvacModelRegistrySearchResponseSchema = z.object({
-  type: z.literal("qvacModelRegistrySearch"),
+export const modelRegistrySearchResponseSchema = z.object({
+  type: z.literal("modelRegistrySearch"),
   success: z.boolean(),
-  models: z.array(qvacModelRegistryEntrySchema).optional(),
+  models: z.array(modelRegistryEntrySchema).optional(),
   error: z.string().optional(),
 });
 
-export type QvacModelRegistrySearchRequest = z.infer<
-  typeof qvacModelRegistrySearchRequestSchema
+export type ModelRegistrySearchRequest = z.infer<
+  typeof modelRegistrySearchRequestSchema
 >;
-export type QvacModelRegistrySearchResponse = z.infer<
-  typeof qvacModelRegistrySearchResponseSchema
+export type ModelRegistrySearchResponse = z.infer<
+  typeof modelRegistrySearchResponseSchema
 >;
 
 // QVAC Model Registry get model request/response
-export const qvacModelRegistryGetModelRequestSchema = z.object({
-  type: z.literal("qvacModelRegistryGetModel"),
+export const modelRegistryGetModelRequestSchema = z.object({
+  type: z.literal("modelRegistryGetModel"),
   registryPath: z.string(),
   registrySource: z.string(),
 });
 
-export const qvacModelRegistryGetModelResponseSchema = z.object({
-  type: z.literal("qvacModelRegistryGetModel"),
+export const modelRegistryGetModelResponseSchema = z.object({
+  type: z.literal("modelRegistryGetModel"),
   success: z.boolean(),
-  model: qvacModelRegistryEntrySchema.optional(),
+  model: modelRegistryEntrySchema.optional(),
   error: z.string().optional(),
 });
 
-export type QvacModelRegistryGetModelRequest = z.infer<
-  typeof qvacModelRegistryGetModelRequestSchema
+export type ModelRegistryGetModelRequest = z.infer<
+  typeof modelRegistryGetModelRequestSchema
 >;
-export type QvacModelRegistryGetModelResponse = z.infer<
-  typeof qvacModelRegistryGetModelResponseSchema
+export type ModelRegistryGetModelResponse = z.infer<
+  typeof modelRegistryGetModelResponseSchema
 >;
 
 // Combined QVAC Model Registry request union
-export const qvacModelRegistryRequestSchema = z.union([
-  qvacModelRegistryListRequestSchema,
-  qvacModelRegistrySearchRequestSchema,
-  qvacModelRegistryGetModelRequestSchema,
+export const modelRegistryRequestSchema = z.union([
+  modelRegistryListRequestSchema,
+  modelRegistrySearchRequestSchema,
+  modelRegistryGetModelRequestSchema,
 ]);
 
 // Combined QVAC Model Registry response union
-export const qvacModelRegistryResponseSchema = z.discriminatedUnion("type", [
-  qvacModelRegistryListResponseSchema,
-  qvacModelRegistrySearchResponseSchema,
-  qvacModelRegistryGetModelResponseSchema,
+export const modelRegistryResponseSchema = z.discriminatedUnion("type", [
+  modelRegistryListResponseSchema,
+  modelRegistrySearchResponseSchema,
+  modelRegistryGetModelResponseSchema,
 ]);
 
-export type QvacModelRegistryRequest = z.infer<
-  typeof qvacModelRegistryRequestSchema
+export type ModelRegistryRequest = z.infer<
+  typeof modelRegistryRequestSchema
 >;
-export type QvacModelRegistryResponse = z.infer<
-  typeof qvacModelRegistryResponseSchema
+export type ModelRegistryResponse = z.infer<
+  typeof modelRegistryResponseSchema
 >;
