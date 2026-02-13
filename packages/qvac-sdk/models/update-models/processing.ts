@@ -1,4 +1,4 @@
-import type { QVACModelEntry } from "@tetherto/qvac-lib-registry-client";
+import type { QVACModelEntry } from "@tetherto/registry-client-mono";
 import {
   getAddonFromEngine,
   resolveCanonicalEngine,

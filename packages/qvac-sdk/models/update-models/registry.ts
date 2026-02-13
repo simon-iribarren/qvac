@@ -1,4 +1,4 @@
-import { QVACRegistryClient } from "@tetherto/qvac-lib-registry-client";
+import { QVACRegistryClient } from "@tetherto/registry-client-mono";
 import { groupShardedModels } from "./shards";
 import { processRegistryModel } from "./processing";
 import type { CollectOptions, ProcessedModel } from "./types";
@@ -23,7 +23,7 @@ export async function collectModels(
   try {
     await client.ready();
 
-    const registryModels = await client.findBy({});
+    const registryModels = await client.findModels({});
 
     console.log(`📦 Found ${registryModels.length} entries in registry`);
 
