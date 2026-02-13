@@ -1,10 +1,10 @@
 import type {
-  QvacModelRegistryListResponse,
-  QvacModelRegistrySearchRequest,
-  QvacModelRegistrySearchResponse,
-  QvacModelRegistryGetModelRequest,
-  QvacModelRegistryGetModelResponse,
-  QvacModelRegistryEntry,
+  ModelRegistryListResponse,
+  ModelRegistrySearchRequest,
+  ModelRegistrySearchResponse,
+  ModelRegistryGetModelRequest,
+  ModelRegistryGetModelResponse,
+  ModelRegistryEntry,
 } from "@/schemas";
 import { REGISTRY_ERROR_CODES } from "@/schemas/sdk-errors-registry";
 import {
@@ -13,7 +13,7 @@ import {
 } from "@/schemas/engine-addon-map";
 import { getRegistryClient } from "@/server/bare/registry/registry-client";
 import { getServerLogger } from "@/logging";
-import { QvacModelRegistryQueryFailedError } from "@/utils/errors-server";
+import { ModelRegistryQueryFailedError } from "@/utils/errors-server";
 
 interface QvacError extends Error {
   code?: number;
@@ -51,7 +51,7 @@ interface RegistryModelRaw {
 
 function processRegistryModel(
   model: RegistryModelRaw,
-): QvacModelRegistryEntry | null {
+): ModelRegistryEntry | null {
   const engine = resolveCanonicalEngine(model.engine || "");
   if (!engine) {
     logger.warn(
@@ -97,20 +97,20 @@ function processRegistryModel(
   };
 }
 
-export async function handleQvacModelRegistryList(): Promise<QvacModelRegistryListResponse> {
+export async function handleModelRegistryList(): Promise<ModelRegistryListResponse> {
   logger.debug("Handling QVAC model registry list request");
 
   try {
     const client = await getRegistryClient();
-    const registryModels = await client.findModels({});
+    const registryModels = await client.findBy();
     const models = (registryModels as RegistryModelRaw[])
       .map(processRegistryModel)
-      .filter((m): m is QvacModelRegistryEntry => m !== null);
+      .filter((m): m is ModelRegistryEntry => m !== null);
 
     logger.debug(`QVAC model registry list returned ${models.length} models`);
 
     return {
-      type: "qvacModelRegistryList",
+      type: "modelRegistryList",
       success: true,
       models,
     };
@@ -128,44 +128,33 @@ export async function handleQvacModelRegistryList(): Promise<QvacModelRegistryLi
     }
 
     // Wrap unknown errors in SDK error
-    throw new QvacModelRegistryQueryFailedError(
+    throw new ModelRegistryQueryFailedError(
       error instanceof Error ? error.message : "Unknown error",
       error,
     );
   }
 }
 
-export async function handleQvacModelRegistrySearch(
-  request: QvacModelRegistrySearchRequest,
-): Promise<QvacModelRegistrySearchResponse> {
+export async function handleModelRegistrySearch(
+  request: ModelRegistrySearchRequest,
+): Promise<ModelRegistrySearchResponse> {
   logger.debug("Handling QVAC model registry search request", request);
 
   try {
     const client = await getRegistryClient();
 
-    let registryModels: RegistryModelRaw[];
-
-    // Use native indexed queries when possible, then apply remaining filters in-memory
-    // Priority: quantization > engine > fetch all (quantization index is typically more selective)
-    if (request.quantization) {
-      registryModels = await client.findModelsByQuantization({
-        gte: { quantization: request.quantization.toLowerCase() },
-        lte: { quantization: request.quantization.toLowerCase() },
-      } as never);
-    } else if (request.engine) {
-      registryModels = await client.findModelsByEngine({
-        gte: { engine: request.engine },
-        lte: { engine: request.engine },
-      } as never);
-    } else {
-      registryModels = await client.findModels({});
-    }
+    const registryModels = (await client.findBy({
+      ...(request.quantization && { quantization: request.quantization }),
+    })) as RegistryModelRaw[];
 
     let models = registryModels
       .map(processRegistryModel)
-      .filter((m): m is QvacModelRegistryEntry => m !== null);
+      .filter((m): m is ModelRegistryEntry => m !== null);
 
-    // Apply in-memory filters for fields not handled by native query
+    if (request.engine) {
+      models = models.filter((m) => m.engine === request.engine);
+    }
+
     if (request.filter) {
       const filterLower = request.filter.toLowerCase();
       models = models.filter(
@@ -174,14 +163,6 @@ export async function handleQvacModelRegistrySearch(
           m.registryPath.toLowerCase().includes(filterLower) ||
           m.addon.toLowerCase().includes(filterLower) ||
           m.engine.toLowerCase().includes(filterLower),
-      );
-    }
-
-    // Apply engine filter when not already handled by native query
-    if (request.engine && request.quantization) {
-      const engineLower = request.engine.toLowerCase();
-      models = models.filter((m) =>
-        m.engine.toLowerCase().includes(engineLower),
       );
     }
 
@@ -194,7 +175,7 @@ export async function handleQvacModelRegistrySearch(
     );
 
     return {
-      type: "qvacModelRegistrySearch",
+      type: "modelRegistrySearch",
       success: true,
       models,
     };
@@ -212,16 +193,16 @@ export async function handleQvacModelRegistrySearch(
       throw error;
     }
 
-    throw new QvacModelRegistryQueryFailedError(
+    throw new ModelRegistryQueryFailedError(
       error instanceof Error ? error.message : "Unknown error",
       error,
     );
   }
 }
 
-export async function handleQvacModelRegistryGetModel(
-  request: QvacModelRegistryGetModelRequest,
-): Promise<QvacModelRegistryGetModelResponse> {
+export async function handleModelRegistryGetModel(
+  request: ModelRegistryGetModelRequest,
+): Promise<ModelRegistryGetModelResponse> {
   logger.debug("Handling QVAC model registry get model request", request);
 
   try {
@@ -233,7 +214,7 @@ export async function handleQvacModelRegistryGetModel(
     );
 
     if (!rawModel) {
-      throw new QvacModelRegistryQueryFailedError(
+      throw new ModelRegistryQueryFailedError(
         `Model not found: ${request.registrySource}/${request.registryPath}`,
       );
     }
@@ -241,7 +222,7 @@ export async function handleQvacModelRegistryGetModel(
     const model = processRegistryModel(rawModel as RegistryModelRaw);
 
     if (!model) {
-      throw new QvacModelRegistryQueryFailedError(
+      throw new ModelRegistryQueryFailedError(
         `Model has unknown engine "${(rawModel as RegistryModelRaw).engine}": ${request.registryPath}`,
       );
     }
@@ -249,7 +230,7 @@ export async function handleQvacModelRegistryGetModel(
     logger.debug("QVAC model registry get model found:", model.name);
 
     return {
-      type: "qvacModelRegistryGetModel",
+      type: "modelRegistryGetModel",
       success: true,
       model,
     };
@@ -266,7 +247,7 @@ export async function handleQvacModelRegistryGetModel(
       throw error;
     }
 
-    throw new QvacModelRegistryQueryFailedError(
+    throw new ModelRegistryQueryFailedError(
       error instanceof Error ? error.message : "Unknown error",
       error,
     );

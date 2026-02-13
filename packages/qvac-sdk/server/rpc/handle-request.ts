@@ -27,9 +27,9 @@ import { handleTextToSpeech } from "@/server/rpc/handlers/text-to-speech";
 import { handleGetModelInfo } from "@/server/rpc/handlers/get-model-info";
 import { handleOCRStream } from "@/server/rpc/handlers/ocr-stream";
 import {
-  handleQvacModelRegistryList,
-  handleQvacModelRegistrySearch,
-  handleQvacModelRegistryGetModel,
+  handleModelRegistryList,
+  handleModelRegistrySearch,
+  handleModelRegistryGetModel,
 } from "@/server/rpc/handlers/registry";
 import type RPC from "bare-rpc";
 import {
@@ -368,9 +368,9 @@ export async function handleRequest(req: RPC.IncomingRequest): Promise<void> {
         break;
       }
 
-      case "qvacModelRegistryList": {
+      case "modelRegistryList": {
         try {
-          const response = await handleQvacModelRegistryList();
+          const response = await handleModelRegistryList();
           req.reply(JSON.stringify(responseSchema.parse(response)), "utf-8");
         } catch (error) {
           sendErrorResponse(req, error);
@@ -378,9 +378,9 @@ export async function handleRequest(req: RPC.IncomingRequest): Promise<void> {
         break;
       }
 
-      case "qvacModelRegistrySearch": {
+      case "modelRegistrySearch": {
         try {
-          const response = await handleQvacModelRegistrySearch(request);
+          const response = await handleModelRegistrySearch(request);
           req.reply(JSON.stringify(responseSchema.parse(response)), "utf-8");
         } catch (error) {
           sendErrorResponse(req, error);
@@ -388,9 +388,9 @@ export async function handleRequest(req: RPC.IncomingRequest): Promise<void> {
         break;
       }
 
-      case "qvacModelRegistryGetModel": {
+      case "modelRegistryGetModel": {
         try {
-          const response = await handleQvacModelRegistryGetModel(request);
+          const response = await handleModelRegistryGetModel(request);
           req.reply(JSON.stringify(responseSchema.parse(response)), "utf-8");
         } catch (error) {
           sendErrorResponse(req, error);

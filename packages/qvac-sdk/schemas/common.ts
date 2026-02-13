@@ -50,12 +50,12 @@ import {
 } from "./get-model-info";
 import { ocrStreamRequestSchema, ocrStreamResponseSchema } from "./ocr";
 import {
-  qvacModelRegistryListRequestSchema,
-  qvacModelRegistryListResponseSchema,
-  qvacModelRegistrySearchRequestSchema,
-  qvacModelRegistrySearchResponseSchema,
-  qvacModelRegistryGetModelRequestSchema,
-  qvacModelRegistryGetModelResponseSchema,
+  modelRegistryListRequestSchema,
+  modelRegistryListResponseSchema,
+  modelRegistrySearchRequestSchema,
+  modelRegistrySearchResponseSchema,
+  modelRegistryGetModelRequestSchema,
+  modelRegistryGetModelResponseSchema,
 } from "./registry";
 
 export const requestSchema = z.union([
@@ -76,9 +76,9 @@ export const requestSchema = z.union([
   deleteCacheRequestSchema,
   getModelInfoRequestSchema,
   ocrStreamRequestSchema,
-  qvacModelRegistryListRequestSchema,
-  qvacModelRegistrySearchRequestSchema,
-  qvacModelRegistryGetModelRequestSchema,
+  modelRegistryListRequestSchema,
+  modelRegistrySearchRequestSchema,
+  modelRegistryGetModelRequestSchema,
 ]);
 
 export const responseSchema = z.discriminatedUnion("type", [
@@ -102,9 +102,9 @@ export const responseSchema = z.discriminatedUnion("type", [
   deleteCacheResponseSchema,
   getModelInfoResponseSchema,
   ocrStreamResponseSchema,
-  qvacModelRegistryListResponseSchema,
-  qvacModelRegistrySearchResponseSchema,
-  qvacModelRegistryGetModelResponseSchema,
+  modelRegistryListResponseSchema,
+  modelRegistrySearchResponseSchema,
+  modelRegistryGetModelResponseSchema,
 ]);
 
 export const rpcOptionsSchema = z.object({
