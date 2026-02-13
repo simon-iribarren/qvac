@@ -50,11 +50,11 @@ export function processRegistryModel(
   const blobBlockLength = blobBinding?.blockLength ?? 0;
   const blobByteOffset = blobBinding?.byteOffset ?? 0;
   const expectedSize = blobBinding?.byteLength ?? 0;
-  // The registry client types define sha256 on QVACModelEntry, but at runtime
-  // the value lives on blobBinding (not reflected in types). Try both.
+  // The sha256 lives on blobBinding at runtime (per the hyperschema),
+  // even though the TS types define it on QVACModelEntry. Try blobBinding first.
   const sha256Checksum =
-    model.sha256 ||
     (blobBinding as unknown as Record<string, string>)?.["sha256"] ||
+    model.sha256 ||
     "";
 
   const addon = getAddonFromEngine(engine);

@@ -67,10 +67,19 @@ async function validateCachedFile(
       return modelPath;
     }
 
-    // File exists but incomplete
+    // File exists but wrong size (incomplete/corrupted) - remove it
+    logger.warn(
+      `🗑️ Removing incomplete cached file (expected ${expectedSize}, got ${localSize}): ${modelPath}`,
+    );
+    await fsPromises.unlink(modelPath);
     return null;
-  } catch {
-    // Model doesn't exist, need to download
+  } catch (error) {
+    if (error instanceof ChecksumValidationFailedError) {
+      // Corrupted file - remove it so next download starts fresh
+      logger.warn(`🗑️ Removing corrupted cached file: ${modelPath}`);
+      await fsPromises.unlink(modelPath).catch(() => {});
+    }
+    // File doesn't exist or was cleaned up - need to download
     return null;
   }
 }
@@ -159,6 +168,7 @@ async function downloadSingleFileFromRegistry(
     // Validate file size
     const stats = await fsPromises.stat(modelPath);
     if (expectedSize && stats.size !== expectedSize) {
+      await fsPromises.unlink(modelPath).catch(() => {});
       throw new ChecksumValidationFailedError(
         `${modelFileName}. File size mismatch: expected ${expectedSize}, got ${stats.size}`,
       );
@@ -212,9 +222,11 @@ async function findModelShards(
 
     logger.info(`🔍 Finding shards with prefix: ${basePath}`);
 
-    // Query registry for all models and filter by path prefix
-    const allModels: QVACModelEntry[] = await client.findBy();
-    const shards = allModels.filter((m) => m.path.startsWith(basePath));
+    // Use indexed path range query instead of fetching all models
+    const shards: QVACModelEntry[] = await client.findModels({
+      gte: { path: basePath },
+      lte: { path: basePath + "\uffff" },
+    });
 
     // Sort shards by shard number
     const sortedShards = shards
@@ -231,7 +243,10 @@ async function findModelShards(
         path: s.path,
         source: s.source,
         size: s.blobBinding?.byteLength || 0,
-        checksum: s.sha256 || "",
+        checksum:
+          (s.blobBinding as unknown as Record<string, string>)?.["sha256"] ||
+          s.sha256 ||
+          "",
       }));
 
     logger.info(`📦 Found ${sortedShards.length} shards`);
