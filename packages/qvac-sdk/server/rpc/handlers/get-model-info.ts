@@ -5,7 +5,7 @@ import type {
   LoadedInstance,
   CacheFileInfo,
 } from "@/schemas";
-import { models, type RegistryItem } from "@/models/hyperdrive/models";
+import { models, type RegistryItem } from "@/models/registry/models";
 import {
   getAllModelIds,
   getModelEntry,

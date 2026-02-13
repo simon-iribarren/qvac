@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { ModelType } from "./model-types";
 
-// QVAC Model Registry entry schema matching the RegistryItem from models/hyperdrive/models.ts
+// QVAC Model Registry entry schema matching the RegistryItem from models/registry/models.ts
 const modelRegistryEntryAddonSchema = z.enum([
   "llm",
   "whisper",

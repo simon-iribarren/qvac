@@ -18,7 +18,7 @@
     },
     "./expo-plugin": "./dist/expo/plugins/index.js",
     "./worker.mobile.bundle": "./dist/worker.mobile.bundle.js",
-    "./models": "./dist/models/hyperdrive/models.js"
+    "./models": "./dist/models/registry/models.js"
   },
   "imports": {
     "#rpc": {

@@ -1,4 +1,4 @@
-import { WHISPER_TINY } from "@/models/hyperdrive";
+import { WHISPER_TINY } from "@/models/registry";
 import type { ModelInfo } from "@/schemas";
 import { downloadAsset, getModelInfo, loadModel, unloadModel } from "..";
 
