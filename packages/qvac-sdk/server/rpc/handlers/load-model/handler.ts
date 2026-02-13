@@ -161,8 +161,12 @@ export async function handleLoadModel(
         let resolvedSrcVocabSrc = srcVocabSrc;
         let resolvedDstVocabSrc = dstVocabSrc;
 
-        if ((!srcVocabSrc || !dstVocabSrc) && modelSrc.startsWith("pear://")) {
-          const derivedVocabSrcs = deriveBergamotVocabSources(modelSrc);
+        if (!srcVocabSrc || !dstVocabSrc) {
+          const derivedVocabSrcs = modelSrc.startsWith("pear://")
+            ? deriveBergamotVocabSources(modelSrc)
+            : modelSrc.startsWith("registry://")
+              ? deriveBergamotRegistryVocabSources(modelSrc)
+              : null;
           if (derivedVocabSrcs) {
             resolvedSrcVocabSrc = srcVocabSrc ?? derivedVocabSrcs.srcVocabSrc;
             resolvedDstVocabSrc = dstVocabSrc ?? derivedVocabSrcs.dstVocabSrc;
@@ -302,6 +306,30 @@ function deriveBergamotVocabSources(modelSrc: string) {
   }
 
   const sharedVocab = `pear://${key}/vocab.${langPair}.spm`;
+  return {
+    srcVocabSrc: sharedVocab,
+    dstVocabSrc: sharedVocab,
+  };
+}
+
+function deriveBergamotRegistryVocabSources(modelSrc: string) {
+  // registry://s3/path/to/model.enfr.intgemm.alphas.bin
+  const match = modelSrc.match(
+    /^(registry:\/\/.+\/)model\.([a-z]+)\.intgemm\.alphas\.bin$/,
+  );
+  if (!match || !match[1] || !match[2]) return null;
+
+  const basePath = match[1];
+  const langPair = match[2];
+
+  if (BERGAMOT_CJK_LANG_PAIRS.includes(langPair)) {
+    return {
+      srcVocabSrc: `${basePath}srcvocab.${langPair}.spm`,
+      dstVocabSrc: `${basePath}trgvocab.${langPair}.spm`,
+    };
+  }
+
+  const sharedVocab = `${basePath}vocab.${langPair}.spm`;
   return {
     srcVocabSrc: sharedVocab,
     dstVocabSrc: sharedVocab,
