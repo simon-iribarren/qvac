@@ -96,6 +96,9 @@ async function ensureRPCConnection(
 
   const swarm = getSwarm();
 
+  // Track the listener so we can clean it up on timeout
+  let onConnection: (conn: Connection) => void = () => {};
+
   try {
     logger.info(
       `🔗 Establishing RPC connection to topic: ${topic}, peer: ${publicKey}, timeout: ${timeout}ms`,
@@ -112,7 +115,7 @@ async function ensureRPCConnection(
       // checking after flush. This handles the case where flush resolves
       // (discovery done) but the P2P connection is still being established
       // via holepunching or relays.
-      const onConnection = (conn: Connection): void => {
+      onConnection = (conn: Connection): void => {
         const peerPubkey = conn.remotePublicKey?.toString("hex");
         if (peerPubkey === publicKey) {
           swarm.removeListener("connection", onConnection);
@@ -164,6 +167,21 @@ async function ensureRPCConnection(
 
     return await withTimeout(connectionPromise, timeout);
   } catch (error: unknown) {
+    // Clean up the per-request connection listener
+    swarm.removeListener("connection", onConnection);
+
+    // Remove stale connection so next attempt creates a fresh one
+    // instead of reusing a dead RPC
+    logger.info(
+      `🗑️ Removing stale connection for peer: ${publicKey} after failed RPC attempt`,
+    );
+    activeRPCs.delete(publicKey);
+    const conn = activeConnections.get(publicKey);
+    if (conn) {
+      conn.destroy();
+      activeConnections.delete(publicKey);
+    }
+
     logger.error("Failed to establish RPC connection:", error);
     throw new DelegateConnectionFailedError(
       `RPC connection failed: ${error instanceof Error ? error.message : String(error)}`,
