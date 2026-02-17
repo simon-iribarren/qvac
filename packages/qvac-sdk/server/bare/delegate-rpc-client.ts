@@ -209,3 +209,20 @@ export async function getRPC(
 
   return await ensureRPCConnection(topic, publicKey, options.timeout);
 }
+
+/**
+ * Remove a stale RPC connection for a peer.
+ * Called when a delegation request fails (e.g., timeout) so the next
+ * attempt creates a fresh connection instead of reusing a dead RPC.
+ */
+export function cleanupStaleConnection(publicKey: string): void {
+  logger.info(
+    `🗑️ Removing stale connection for peer: ${publicKey} after failed delegation`,
+  );
+  activeRPCs.delete(publicKey);
+  const conn = activeConnections.get(publicKey);
+  if (conn) {
+    conn.destroy();
+    activeConnections.delete(publicKey);
+  }
+}
