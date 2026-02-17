@@ -3,6 +3,7 @@
 const test = require('brittle')
 const Corestore = require('corestore')
 const Hyperswarm = require('hyperswarm')
+const Hyperblobs = require('hyperblobs')
 const createTestnet = require('hyperdht/testnet')
 const { RegistryDatabase } = require('@qvac/registry-schema')
 const IdEnc = require('hypercore-id-encoding')
@@ -11,7 +12,6 @@ const path = require('path')
 
 const RegistryService = require('../../lib/registry-service')
 const RegistryConfig = require('../../lib/config')
-const QVACRegistryClient = require('../../client/lib/client')
 const { AUTOBASE_NAMESPACE, QVAC_MAIN_REGISTRY } = require('../../shared/constants')
 const { createTempStorage, waitFor } = require('../helpers/test-utils')
 
@@ -140,17 +140,81 @@ async function createTestClient (t, serviceCtx, bootstrap, storage) {
   const db = new RegistryDatabase(viewCore, { extension: false })
   await db.ready()
 
-  const proto = QVACRegistryClient.prototype
+  async function getBlobsCore (blobsCoreKey) {
+    const keyBuffer = Buffer.isBuffer(blobsCoreKey)
+      ? blobsCoreKey
+      : Buffer.from(blobsCoreKey.data || blobsCoreKey, 'hex')
+    const core = corestore.get({ key: keyBuffer })
+    await core.ready()
+    const blobs = new Hyperblobs(core)
+    await blobs.ready()
+    return { core, blobs }
+  }
+
+  async function checkBlobProgress (core, blobPointer) {
+    const totalBlocks = blobPointer.blockLength
+    const totalBytes = blobPointer.byteLength
+    if (totalBlocks === 0) return { cachedBlocks: 0, totalBlocks: 0, totalBytes: 0 }
+    let cachedBlocks = 0
+    for (let i = blobPointer.blockOffset; i < blobPointer.blockOffset + totalBlocks; i++) {
+      if (await core.has(i)) cachedBlocks++
+    }
+    return { cachedBlocks, totalBlocks, totalBytes }
+  }
+
+  async function streamBlobToFile (blobs, core, blobPointer, filePath, options) {
+    const { cachedBlocks, totalBlocks, totalBytes } = await checkBlobProgress(core, blobPointer)
+    const bytesPerBlock = totalBlocks > 0 ? totalBytes / totalBlocks : 0
+    let downloadedBytes = Math.floor(cachedBlocks * bytesPerBlock)
+
+    if (options.onProgress && downloadedBytes > 0) {
+      options.onProgress({ downloaded: downloadedBytes, total: totalBytes, cachedBlocks, totalBlocks })
+    }
+
+    const progressHandler = (index, bytes) => {
+      if (index >= blobPointer.blockOffset && index < blobPointer.blockOffset + blobPointer.blockLength) {
+        downloadedBytes += bytes
+        if (options.onProgress) {
+          options.onProgress({ downloaded: Math.min(downloadedBytes, totalBytes), total: totalBytes, cachedBlocks, totalBlocks })
+        }
+      }
+    }
+
+    core.on('download', progressHandler)
+
+    const stream = blobs.createReadStream(blobPointer, { wait: true, timeout: options.timeout || 30000 })
+    const dir = path.dirname(filePath)
+    await fs.promises.mkdir(dir, { recursive: true })
+    const writeStream = fs.createWriteStream(filePath)
+
+    try {
+      await new Promise((resolve, reject) => {
+        stream.pipe(writeStream)
+        writeStream.on('finish', resolve)
+        writeStream.on('error', reject)
+        stream.on('error', reject)
+        if (options.signal) {
+          if (options.signal.aborted) {
+            stream.destroy()
+            writeStream.destroy()
+            reject(new Error('Download cancelled'))
+            return
+          }
+          options.signal.addEventListener('abort', () => {
+            stream.destroy()
+            writeStream.destroy()
+            reject(new Error('Download cancelled'))
+          }, { once: true })
+        }
+      })
+    } finally {
+      core.off('download', progressHandler)
+    }
+  }
+
   const client = {
     corestore,
     db,
-    logger: noopLogger,
-
-    _validateString: proto._validateString,
-    _checkBlobProgress: proto._checkBlobProgress,
-    _getBlobsCore: proto._getBlobsCore.bind({ corestore, logger: noopLogger }),
-
-    async ready () {},
 
     async getModel (modelPath, source) {
       const result = await db.getModel(modelPath, source)
@@ -158,14 +222,11 @@ async function createTestClient (t, serviceCtx, bootstrap, storage) {
     },
 
     async downloadModel (modelPath, source, options = {}) {
-      proto._validateString(modelPath, 'path')
-      proto._validateString(source, 'source')
-
       const model = await this.getModel(modelPath, source)
       if (!model) throw new Error('Model not found')
       if (!model.blobBinding || !model.blobBinding.coreKey) throw new Error('Model missing blob binding')
 
-      const { core, blobs } = await this._getBlobsCore(model.blobBinding.coreKey)
+      const { core, blobs } = await getBlobsCore(model.blobBinding.coreKey)
 
       swarm.join(core.discoveryKey, { client: true, server: false })
       await swarm.flush()
@@ -174,19 +235,13 @@ async function createTestClient (t, serviceCtx, bootstrap, storage) {
       const totalSize = model.blobBinding.byteLength
 
       if (options.outputFile) {
-        await proto._streamBlobToFile.call(
-          { logger: noopLogger, _checkBlobProgress: proto._checkBlobProgress },
-          blobs, core, model.blobBinding, options.outputFile, options
-        )
+        await streamBlobToFile(blobs, core, model.blobBinding, options.outputFile, options)
         await blobs.close()
         await core.close()
         return { model, artifact: { path: options.outputFile, totalSize } }
       }
 
-      const stream = blobs.createReadStream(model.blobBinding, {
-        wait: true,
-        timeout: options.timeout || 30000
-      })
+      const stream = blobs.createReadStream(model.blobBinding, { wait: true, timeout: options.timeout || 30000 })
       stream.on('close', async () => {
         await blobs.close().catch(() => {})
         await core.close().catch(() => {})
