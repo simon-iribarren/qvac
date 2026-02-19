@@ -17,7 +17,7 @@ export async function getRegistryClient(): Promise<QVACRegistryClient> {
 
   registryClient = new QVACRegistryClient({
     registryCoreKey: DEFAULT_REGISTRY_CORE_KEY,
-    storage: getCacheDir("registry-corestore"),
+    storage: getCacheDir(`registry-corestore/${DEFAULT_REGISTRY_CORE_KEY}`),
   });
 
   await registryClient.ready();
