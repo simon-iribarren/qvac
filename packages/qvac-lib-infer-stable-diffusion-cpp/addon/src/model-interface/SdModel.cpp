@@ -19,7 +19,9 @@ using namespace qvac_lib_inference_addon_cpp;
 using namespace qvac_errors;
 
 // ---------------------------------------------------------------------------
-// Thread-local progress context (stable-diffusion.cpp progress CB is global)
+// Thread-local progress context
+// stable-diffusion.cpp progress callbacks are process-global, so we park the
+// current job pointer in thread-local storage to route progress back.
 // ---------------------------------------------------------------------------
 namespace {
 
@@ -49,7 +51,7 @@ void sdProgressCallback(int step, int steps, float /*time*/, void* /*data*/) {
 } // namespace
 
 // ---------------------------------------------------------------------------
-// Constructor
+// Constructor — stores config, allocates nothing
 // ---------------------------------------------------------------------------
 
 SdModel::SdModel(
@@ -66,39 +68,65 @@ SdModel::SdModel(
       t5XxlPath_(std::move(t5XxlPath)),
       llmPath_(std::move(llmPath)),
       vaePath_(std::move(vaePath)),
+      configMap_(std::move(configMap)),
       sdCtx_(nullptr, &free_sd_ctx) {
 
-  qvac_lib_inference_addon_sd::logging::setVerbosityLevel(configMap);
+  qvac_lib_inference_addon_sd::logging::setVerbosityLevel(
+      const_cast<std::unordered_map<std::string, std::string>&>(configMap_));
 
   sd_set_log_callback(SdModel::sdLogCallback, nullptr);
+}
+
+// ---------------------------------------------------------------------------
+// Destructor — delegates to unload()
+// ---------------------------------------------------------------------------
+
+SdModel::~SdModel() {
+  unload();
+}
+
+// ---------------------------------------------------------------------------
+// load() — reads weights from disk and creates the sd_ctx
+// ---------------------------------------------------------------------------
+
+void SdModel::load() {
+  if (isLoaded()) return;
 
   sd_ctx_params_t params{};
   sd_ctx_params_init(&params);
 
-  params.model_path  = modelPath_.empty()  ? nullptr : modelPath_.c_str();
+  // For FLUX / SD3 style models the weights are split into separate components.
+  // These "standalone diffusion model" GGUFs have no SD-version metadata KV
+  // pairs, so stable-diffusion.cpp's version detection fails if we use
+  // model_path. We therefore route the main weights file through
+  // diffusion_model_path and leave model_path null.  Classic all-in-one SD
+  // checkpoints (SD1.x / SDXL) that embed the full model inside a single file
+  // with metadata should still use model_path, but those are not our target.
+  params.diffusion_model_path = modelPath_.empty() ? nullptr : modelPath_.c_str();
+  params.model_path           = nullptr;  // intentionally unset — see above
   params.clip_l_path = clipLPath_.empty()  ? nullptr : clipLPath_.c_str();
   params.clip_g_path = clipGPath_.empty()  ? nullptr : clipGPath_.c_str();
   params.t5xxl_path  = t5XxlPath_.empty()  ? nullptr : t5XxlPath_.c_str();
-  params.llm_path    = llmPath_.empty()    ? nullptr : llmPath_.c_str();    // FLUX.2 (Qwen3)
+  params.llm_path    = llmPath_.empty()    ? nullptr : llmPath_.c_str();
   params.vae_path    = vaePath_.empty()    ? nullptr : vaePath_.c_str();
   params.free_params_immediately = true;
 
-  if (auto it = configMap.find("threads"); it != configMap.end()) {
+  if (auto it = configMap_.find("threads"); it != configMap_.end()) {
     try { params.n_threads = std::stoi(it->second); } catch (...) {}
   }
-  if (auto it = configMap.find("wtype"); it != configMap.end()) {
+  if (auto it = configMap_.find("wtype"); it != configMap_.end()) {
     params.wtype = parseWeightType(it->second);
   }
-  if (auto it = configMap.find("rng"); it != configMap.end()) {
+  if (auto it = configMap_.find("rng"); it != configMap_.end()) {
     params.rng_type = (it->second == "cpu") ? CPU_RNG : CUDA_RNG;
   }
-  if (auto it = configMap.find("clip_on_cpu"); it != configMap.end()) {
+  if (auto it = configMap_.find("clip_on_cpu"); it != configMap_.end()) {
     params.keep_clip_on_cpu = (it->second == "1" || it->second == "true");
   }
-  if (auto it = configMap.find("vae_on_cpu"); it != configMap.end()) {
+  if (auto it = configMap_.find("vae_on_cpu"); it != configMap_.end()) {
     params.keep_vae_on_cpu = (it->second == "1" || it->second == "true");
   }
-  if (auto it = configMap.find("flash_attn"); it != configMap.end()) {
+  if (auto it = configMap_.find("flash_attn"); it != configMap_.end()) {
     params.flash_attn = (it->second == "1" || it->second == "true");
   }
 
@@ -106,19 +134,37 @@ SdModel::SdModel(
   if (!raw) {
     throw StatusError(
         general_error::InternalError,
-        "Failed to create stable-diffusion context. "
+        "SdModel::load() failed — could not create stable-diffusion context. "
         "Check model path and format: " + modelPath_);
   }
+
   sdCtx_.reset(raw);
 }
 
-SdModel::~SdModel() = default;
+// ---------------------------------------------------------------------------
+// unload() — releases the sd_ctx and all associated GPU/CPU memory
+// ---------------------------------------------------------------------------
+
+void SdModel::unload() {
+  if (!isLoaded()) return;
+
+  // Clearing the unique_ptr calls free_sd_ctx via the custom deleter.
+  sdCtx_.reset();
+  lastStats_.clear();
+  cancelRequested_.store(false);
+}
 
 // ---------------------------------------------------------------------------
-// IModel::process
+// process()
 // ---------------------------------------------------------------------------
 
 std::any SdModel::process(const std::any& input) {
+  if (!isLoaded()) {
+    throw StatusError(
+        general_error::InternalError,
+        "SdModel::process() called before load()");
+  }
+
   const auto& job = std::any_cast<const GenerationJob&>(input);
 
   cancelRequested_.store(false);
@@ -127,7 +173,6 @@ std::any SdModel::process(const std::any& input) {
   tl_progressCtx.startTime = std::chrono::steady_clock::now();
   sd_set_progress_callback(sdProgressCallback, nullptr);
 
-  // --- Parse params JSON ---
   picojson::value v;
   const std::string parseErr = picojson::parse(v, job.paramsJson);
   if (!parseErr.empty()) {
@@ -144,36 +189,33 @@ std::any SdModel::process(const std::any& input) {
   auto getStr = [&](const std::string& key, const std::string& def = "") -> std::string {
     auto it = obj.find(key);
     return (it != obj.end() && it->second.is<std::string>())
-               ? it->second.get<std::string>()
-               : def;
+               ? it->second.get<std::string>() : def;
   };
   auto getInt = [&](const std::string& key, int def) -> int {
     auto it = obj.find(key);
     return (it != obj.end() && it->second.is<double>())
-               ? static_cast<int>(it->second.get<double>())
-               : def;
+               ? static_cast<int>(it->second.get<double>()) : def;
   };
   auto getFloat = [&](const std::string& key, float def) -> float {
     auto it = obj.find(key);
     return (it != obj.end() && it->second.is<double>())
-               ? static_cast<float>(it->second.get<double>())
-               : def;
+               ? static_cast<float>(it->second.get<double>()) : def;
   };
 
   const std::string mode           = getStr("mode", "txt2img");
   const std::string prompt         = getStr("prompt");
   const std::string negativePrompt = getStr("negative_prompt");
-  const int width                  = getInt("width", 512);
-  const int height                 = getInt("height", 512);
-  const int steps                  = getInt("steps", 20);
-  const float cfgScale             = getFloat("cfg_scale", 7.0f);
-  const int64_t seed               = static_cast<int64_t>(getInt("seed", -1));
-  const int batchCount             = getInt("batch_count", 1);
-  const float strength             = getFloat("strength", 0.75f);
+  const int         width          = getInt("width", 512);
+  const int         height         = getInt("height", 512);
+  const int         steps          = getInt("steps", 20);
+  const float       cfgScale       = getFloat("cfg_scale", 7.0f);
+  const int64_t     seed           = static_cast<int64_t>(getInt("seed", -1));
+  const int         batchCount     = getInt("batch_count", 1);
+  const float       strength       = getFloat("strength", 0.75f);
   const sample_method_t sampler    = parseSampler(getStr("sampler", "euler_a"));
-  const scheduler_t scheduler      = parseScheduler(getStr("scheduler", "discrete"));
+  const scheduler_t     scheduler  = parseScheduler(getStr("scheduler", "discrete"));
 
-  auto t0 = std::chrono::steady_clock::now();
+  const auto t0 = std::chrono::steady_clock::now();
   int outputCount = 0;
 
   if (mode == "txt2img" || mode == "img2img") {
@@ -188,12 +230,11 @@ std::any SdModel::process(const std::any& input) {
     genParams.batch_count     = batchCount;
     genParams.strength        = strength;
 
-    genParams.sample_params.sample_method  = sampler;
-    genParams.sample_params.scheduler      = scheduler;
-    genParams.sample_params.sample_steps   = steps;
+    genParams.sample_params.sample_method    = sampler;
+    genParams.sample_params.scheduler        = scheduler;
+    genParams.sample_params.sample_steps     = steps;
     genParams.sample_params.guidance.txt_cfg = cfgScale;
 
-    // img2img: decode PNG from the init_image_bytes array field
     sd_image_t initImg{};
     std::vector<uint8_t> initPng;
     if (mode == "img2img") {
@@ -205,9 +246,7 @@ std::any SdModel::process(const std::any& input) {
           initPng.push_back(static_cast<uint8_t>(el.get<double>()));
         }
       }
-      if (!initPng.empty()) {
-        initImg = decodePng(initPng);
-      }
+      if (!initPng.empty()) initImg = decodePng(initPng);
     }
     genParams.init_image = initImg;
 
@@ -228,6 +267,7 @@ std::any SdModel::process(const std::any& input) {
       }
       free(results);
     }
+
   } else if (mode == "txt2vid") {
     sd_vid_gen_params_t vidParams{};
     sd_vid_gen_params_init(&vidParams);
@@ -239,9 +279,9 @@ std::any SdModel::process(const std::any& input) {
     vidParams.seed            = seed;
     vidParams.video_frames    = getInt("frames", 16);
 
-    vidParams.sample_params.sample_method  = sampler;
-    vidParams.sample_params.scheduler      = scheduler;
-    vidParams.sample_params.sample_steps   = steps;
+    vidParams.sample_params.sample_method    = sampler;
+    vidParams.sample_params.scheduler        = scheduler;
+    vidParams.sample_params.sample_steps     = steps;
     vidParams.sample_params.guidance.txt_cfg = cfgScale;
 
     int numFrames = 0;
@@ -260,10 +300,11 @@ std::any SdModel::process(const std::any& input) {
       }
       free(frames);
     }
+
   } else {
     throw StatusError(
         general_error::InvalidArgument,
-        "Unknown generation mode: " + mode + ". Supported: txt2img, img2img, txt2vid");
+        "Unknown mode: " + mode + ". Supported: txt2img, img2img, txt2vid");
   }
 
   const auto t1 = std::chrono::steady_clock::now();
@@ -296,18 +337,17 @@ qvac_lib_inference_addon_cpp::RuntimeStats SdModel::runtimeStats() const {
 }
 
 // ---------------------------------------------------------------------------
-// PNG encode / decode via stb
+// PNG encode / decode (stb_image / stb_image_write)
 // ---------------------------------------------------------------------------
 
 std::vector<uint8_t> SdModel::encodeToPng(const sd_image_t& img) {
   std::vector<uint8_t> out;
-
   auto writeCallback = [](void* ctx, void* data, int size) {
-    auto* vec       = static_cast<std::vector<uint8_t>*>(ctx);
-    const auto* src = static_cast<const uint8_t*>(data);
-    vec->insert(vec->end(), src, src + size);
+    auto* vec = static_cast<std::vector<uint8_t>*>(ctx);
+    vec->insert(vec->end(),
+                static_cast<const uint8_t*>(data),
+                static_cast<const uint8_t*>(data) + size);
   };
-
   stbi_write_png_to_func(
       writeCallback, &out,
       static_cast<int>(img.width),
@@ -315,25 +355,16 @@ std::vector<uint8_t> SdModel::encodeToPng(const sd_image_t& img) {
       static_cast<int>(img.channel),
       img.data,
       static_cast<int>(img.width * img.channel));
-
   return out;
 }
 
 sd_image_t SdModel::decodePng(const std::vector<uint8_t>& pngBytes) {
   if (pngBytes.empty()) return sd_image_t{};
-
   int w = 0, h = 0, c = 0;
   uint8_t* data = stbi_load_from_memory(
-      pngBytes.data(), static_cast<int>(pngBytes.size()),
-      &w, &h, &c, 3);
-
+      pngBytes.data(), static_cast<int>(pngBytes.size()), &w, &h, &c, 3);
   if (!data) return sd_image_t{};
-
-  return sd_image_t{
-      static_cast<uint32_t>(w),
-      static_cast<uint32_t>(h),
-      3,
-      data};
+  return sd_image_t{ static_cast<uint32_t>(w), static_cast<uint32_t>(h), 3, data };
 }
 
 // ---------------------------------------------------------------------------
@@ -372,7 +403,7 @@ sd_type_t SdModel::parseWeightType(const std::string& name) {
   if (name == "q5_0") return SD_TYPE_Q5_0;
   if (name == "q5_1") return SD_TYPE_Q5_1;
   if (name == "q8_0") return SD_TYPE_Q8_0;
-  return SD_TYPE_COUNT; // auto / default
+  return SD_TYPE_COUNT; // auto-detect
 }
 
 // ---------------------------------------------------------------------------
@@ -382,7 +413,6 @@ sd_type_t SdModel::parseWeightType(const std::string& name) {
 void SdModel::sdLogCallback(
     sd_log_level_t level, const char* text, void* /*userData*/) {
   namespace lg = qvac_lib_inference_addon_cpp::logger;
-
   lg::Priority priority;
   switch (level) {
   case SD_LOG_DEBUG: priority = lg::Priority::DEBUG;   break;
@@ -391,6 +421,5 @@ void SdModel::sdLogCallback(
   case SD_LOG_ERROR: priority = lg::Priority::ERROR;   break;
   default:           priority = lg::Priority::ERROR;   break;
   }
-
-  QLOG_IF(priority, std::string(text));
+  QLOG_IF(priority, std::string(text ? text : ""));
 }

@@ -25,6 +25,12 @@ class SdInterface {
       configurationParams.config.backendsDir = path.join(__dirname, 'prebuilds')
     }
 
+    // C++ getSubmap expects every config value to be a JS string.
+    // Coerce numbers and booleans here so the native layer never sees non-string values.
+    configurationParams.config = Object.fromEntries(
+      Object.entries(configurationParams.config).map(([k, v]) => [k, String(v)])
+    )
+
     this._handle = this._binding.createInstance(
       this,
       configurationParams,
@@ -58,7 +64,17 @@ class SdInterface {
   }
 
   /**
-   * Unload the model and release all native resources.
+   * Release model weights from memory (free_sd_ctx) without destroying the
+   * instance. The instance can be reloaded by calling activate() again.
+   */
+  async unloadWeights () {
+    if (!this._handle) return
+    this._binding.unloadModel(this._handle)
+  }
+
+  /**
+   * Destroy the native instance and release all resources.
+   * After this the SdInterface object must not be used.
    */
   async unload () {
     if (!this._handle) return

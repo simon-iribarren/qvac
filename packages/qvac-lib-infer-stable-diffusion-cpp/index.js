@@ -178,7 +178,10 @@ class ImgStableDiffusion extends BaseInference {
         currentJobResponse.failed(new Error('Model was unloaded'))
         this._deleteJobMapping('OnlyOneJob')
       }
-      await super.unload()
+      // Guard: addon may never have been created if _load() threw before assignment.
+      if (this.addon) {
+        await super.unload()
+      }
     })
   }
 
