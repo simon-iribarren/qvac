@@ -21,20 +21,25 @@
 # Update REF to pin a specific commit for reproducible builds.
 
 set(SD_CPP_REPO "https://github.com/leejet/stable-diffusion.cpp.git")
-set(SD_CPP_REF  "c5eb1e4f9a6a0dbd3cb1e8c6adff9d2c2ad78f11")  # master-505 (2026-02-19)
+set(SOURCE_PATH "${CURRENT_BUILDTREES_DIR}/src/stable-diffusion-cpp-master")
 
-vcpkg_from_git(
-    OUT_SOURCE_PATH SOURCE_PATH
-    URL             "${SD_CPP_REPO}"
-    REF             "${SD_CPP_REF}"
-)
-
-# Initialise the ggml submodule (bundled inside stable-diffusion.cpp)
-vcpkg_execute_required_process(
-    COMMAND "${GIT}" submodule update --init --recursive
-    WORKING_DIRECTORY "${SOURCE_PATH}"
-    LOGNAME           "git-submodule-stable-diffusion"
-)
+# vcpkg_from_git cannot fetch by SHA on GitHub (server restriction) and
+# HEAD_REF-only ports require --head. Use a direct clone with --recurse-submodules
+# so that the bundled ggml submodule is also initialised in one step.
+# TODO: switch to vcpkg_from_github once stable-diffusion.cpp publishes versioned tarballs.
+if(NOT EXISTS "${SOURCE_PATH}/CMakeLists.txt")
+    vcpkg_execute_required_process(
+        COMMAND "${GIT}" clone
+            --depth 1
+            --recurse-submodules
+            --shallow-submodules
+            -b master
+            "${SD_CPP_REPO}"
+            "${SOURCE_PATH}"
+        WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}"
+        LOGNAME "git-clone-stable-diffusion-cpp"
+    )
+endif()
 
 # --- Determine GPU feature flags ---
 set(SD_GGML_METAL   OFF)
@@ -45,7 +50,7 @@ set(SD_FLASH_ATTN   OFF)
 
 if("metal" IN_LIST FEATURES)
     set(SD_GGML_METAL ON)
-elseif(APPLE)
+elseif(VCPKG_TARGET_IS_OSX OR VCPKG_TARGET_IS_IOS)
     # Auto-enable Metal on Apple platforms even without the feature flag
     set(SD_GGML_METAL ON)
 endif()

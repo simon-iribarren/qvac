@@ -2,8 +2,7 @@
 
 #include <qvac-lib-inference-addon-cpp/Errors.hpp>
 
-using qvac_errors::general_error;
-using qvac_errors::StatusError;
+using namespace qvac_errors;
 
 namespace sd_backend_selection {
 
