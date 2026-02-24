@@ -26,11 +26,12 @@ inline js_value_t* createInstance(js_env_t* env, js_callback_info_t* info) try {
   const string clipLPath        = args.getMapEntry(1, "clipLPath");
   const string clipGPath        = args.getMapEntry(1, "clipGPath");
   const string t5XxlPath        = args.getMapEntry(1, "t5XxlPath");
+  const string llmPath          = args.getMapEntry(1, "llmPath");   // FLUX.2 [klein] Qwen3
   const string vaePath          = args.getMapEntry(1, "vaePath");
   auto configMap                = args.getSubmap(1, "config");
 
   auto model = make_unique<SdModel>(
-      modelPath, clipLPath, clipGPath, t5XxlPath, vaePath, std::move(configMap));
+      modelPath, clipLPath, clipGPath, t5XxlPath, llmPath, vaePath, std::move(configMap));
 
   // Register output handlers for both progress strings and image byte arrays
   out_handl::OutputHandlers<out_handl::JsOutputHandlerInterface> outHandlers;
@@ -81,6 +82,32 @@ inline js_value_t* runJob(js_env_t* env, js_callback_info_t* info) try {
   };
 
   return instance.runJob(std::any(std::move(job)));
+}
+JSCATCH
+
+/**
+ * Explicitly unload the model — releases the sd_ctx and all GPU/CPU memory.
+ * The instance remains valid and can be reloaded via activate().
+ * Args: [0] instance handle
+ */
+inline js_value_t* unloadModel(js_env_t* env, js_callback_info_t* info) try {
+  using namespace qvac_lib_inference_addon_cpp;
+
+  JsArgsParser args(env, info);
+  AddonJs& instance = JsInterface::getInstance(env, args.get(0, "instance"));
+
+  auto* sdModel = dynamic_cast<SdModel*>(&instance.addonCpp->model.get());
+  if (sdModel == nullptr) {
+    throw StatusError(
+        general_error::InternalError,
+        "unloadModel: model is not an SdModel");
+  }
+
+  sdModel->unload();
+
+  js_value_t* result = nullptr;
+  js_get_undefined(env, &result);
+  return result;
 }
 JSCATCH
 

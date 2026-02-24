@@ -23,6 +23,10 @@ find_path(QVAC_LIB_INFERENCE_ADDON_CPP_INCLUDE_DIRS "qvac-lib-inference-addon-cp
 # stable-diffusion.cpp – uses the CMake config installed by the overlay port
 find_package(stable-diffusion-cpp CONFIG REQUIRED)
 
+# ggml is installed alongside stable-diffusion.cpp as separate static libs.
+# stable-diffusion.a references ggml symbols externally, so we must link them.
+find_package(ggml CONFIG REQUIRED)
+
 # stb headers are installed into the same include dir by the port
 find_path(STB_IMAGE_WRITE_INCLUDE_DIR "stb_image_write.h" REQUIRED)
 
@@ -71,6 +75,7 @@ add_bare_module(qvac-lib-inference-addon-sd EXPORTS ${BACKEND_DL_LIBS})
     ${qvac-lib-inference-addon-sd}
     PRIVATE
       stable-diffusion::stable-diffusion
+      ggml::ggml
   )
 
   # Link Metal framework on Apple platforms
