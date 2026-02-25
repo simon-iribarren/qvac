@@ -147,7 +147,7 @@ jobs:
 
   publish-release-npm:
     needs: [publish-logic, release-merge-guard]
-    if: needs.publish-logic.outputs.publish_release == 'true'
+    if: "!failure() && !cancelled() && needs.publish-logic.outputs.publish_release == 'true'"
     permissions:
       contents: write
       packages: write
