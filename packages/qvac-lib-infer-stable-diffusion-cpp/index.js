@@ -80,8 +80,17 @@ class ImgStableDiffusion extends BaseInference {
         onDownloadProgress
       })
 
+      // Route the primary model file to the correct stable-diffusion.cpp param:
+      //   FLUX.2 [klein] uses a split layout — diffusion weights have no SD
+      //   version metadata, so diffusion_model_path must be used.
+      //   SD1.x / SD2.x / SDXL use all-in-one checkpoints with metadata, so
+      //   model_path is correct.
+      // Heuristic: if llmModel is provided the caller is using FLUX.2 (which
+      // requires an LLM text encoder); otherwise assume an all-in-one SD model.
+      const isFluxLayout = !!this._llmModel
       const configurationParams = {
-        path: path.join(this._diskPath, this._modelName),
+        path: isFluxLayout ? '' : path.join(this._diskPath, this._modelName),
+        diffusionModelPath: isFluxLayout ? path.join(this._diskPath, this._modelName) : '',
         clipLPath: this._clipLModel ? path.join(this._diskPath, this._clipLModel) : '',
         clipGPath: this._clipGModel ? path.join(this._diskPath, this._clipGModel) : '',
         t5XxlPath: this._t5XxlModel ? path.join(this._diskPath, this._t5XxlModel) : '',
