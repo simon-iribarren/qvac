@@ -60,7 +60,7 @@ class SdInterface {
    */
   async runJob (params) {
     const paramsJson = JSON.stringify(params)
-    return this._binding.runJob(this._handle, [{ type: 'text', input: paramsJson }])
+    return this._binding.runJob(this._handle, { type: 'text', input: paramsJson })
   }
 
   /**

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <limits>
 #include <string>
 #include <unordered_map>
 
@@ -53,21 +54,24 @@ struct SdCtxConfig {
   std::string tensorTypeRules;             // per-tensor rules e.g. "^vae.=f16,model.=q8_0"
 
   // ── Sampling RNG (Random Number Generator) ────────────────────────────────
-  rng_type_t rngType        = CPU_RNG;    // rng_type
-  rng_type_t samplerRngType = CPU_RNG;    // sampler_rng_type (independent RNG for noise schedule)
+  // CUDA_RNG = philox RNG (default in sd_ctx_params_init; not GPU-specific despite the name)
+  // RNG_TYPE_COUNT = auto for sampler RNG
+  rng_type_t rngType        = CUDA_RNG;       // rng_type
+  rng_type_t samplerRngType = RNG_TYPE_COUNT; // sampler_rng_type
 
-  // ── Prediction type (set explicitly if auto-detection fails) ──────────────
-  // EPS_PRED = classic SD1.x epsilon prediction
-  // V_PRED   = v-prediction (SD2.x)
-  // FLUX2_FLOW_PRED = FLUX.2 flow matching
-  // Leave as EPS_PRED to rely on model auto-detection.
-  prediction_t prediction = EPS_PRED;
+  // ── Prediction type ───────────────────────────────────────────────────────
+  // PREDICTION_COUNT = auto-detect from model GGUF metadata (recommended).
+  // Override only if model lacks metadata: EPS_PRED (SD1.x), V_PRED (SD2.x),
+  // FLUX2_FLOW_PRED (FLUX.2 klein).
+  prediction_t prediction = PREDICTION_COUNT;  // auto
 
   // ── LoRA (Low-Rank Adaptation) apply mode ─────────────────────────────────
   lora_apply_mode_t loraApplyMode = LORA_APPLY_AUTO;
 
   // ── Flow matching (FLUX, SD3) ─────────────────────────────────────────────
-  float flowShift = 0.0f;                 // 0 = auto; tune for noise-schedule quality
+  // INFINITY = use the model's embedded flow_shift value (recommended).
+  // Override only to tune noise-schedule quality.
+  float flowShift = std::numeric_limits<float>::infinity();
 
   // ── Convolution kernel options ────────────────────────────────────────────
   bool diffusionConvDirect   = false;     // ggml_conv2d_direct in diffusion model

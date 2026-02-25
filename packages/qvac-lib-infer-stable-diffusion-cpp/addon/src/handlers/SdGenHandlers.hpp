@@ -33,9 +33,12 @@ struct SdGenConfig {
   int height = 512;
 
   // ── Sampling ──────────────────────────────────────────────────────────────
+  // SAMPLE_METHOD_COUNT / SCHEDULER_COUNT = "auto" — stable-diffusion.cpp
+  // selects the correct default for each model family at runtime:
+  //   DiT / FLUX → euler + karras   SD1/SD2 → euler_a + discrete
   int             steps        = 20;
-  sample_method_t sampleMethod = EULER_A_SAMPLE_METHOD;
-  scheduler_t     scheduler    = DISCRETE_SCHEDULER;
+  sample_method_t sampleMethod = SAMPLE_METHOD_COUNT;  // auto
+  scheduler_t     scheduler    = SCHEDULER_COUNT;      // auto
   float           eta          = 0.0f;   // stochasticity for DDIM / TCD samplers
 
   // ── Guidance ─────────────────────────────────────────────────────────────
