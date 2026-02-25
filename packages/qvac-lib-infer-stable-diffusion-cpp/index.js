@@ -80,8 +80,17 @@ class ImgStableDiffusion extends BaseInference {
         onDownloadProgress
       })
 
+      // Route the primary model file to the correct stable-diffusion.cpp param:
+      //   FLUX.2 [klein] uses a split layout — diffusion weights have no SD
+      //   version metadata, so diffusion_model_path must be used.
+      //   SD1.x / SD2.x / SDXL use all-in-one checkpoints with metadata, so
+      //   model_path is correct.
+      // Heuristic: if llmModel is provided the caller is using FLUX.2 (which
+      // requires an LLM text encoder); otherwise assume an all-in-one SD model.
+      const isFluxLayout = !!this._llmModel
       const configurationParams = {
-        path: path.join(this._diskPath, this._modelName),
+        path: isFluxLayout ? '' : path.join(this._diskPath, this._modelName),
+        diffusionModelPath: isFluxLayout ? path.join(this._diskPath, this._modelName) : '',
         clipLPath: this._clipLModel ? path.join(this._diskPath, this._clipLModel) : '',
         clipGPath: this._clipGModel ? path.join(this._diskPath, this._clipGModel) : '',
         t5XxlPath: this._t5XxlModel ? path.join(this._diskPath, this._t5XxlModel) : '',
@@ -146,13 +155,9 @@ class ImgStableDiffusion extends BaseInference {
       mappedEvent = 'Output'
     } else if (typeof data === 'string') {
       try {
-        const parsed = JSON.parse(data)
-        if ('step' in parsed && 'total' in parsed) {
-          mappedEvent = 'StepProgress'
-        }
-      } catch (_) {
-        mappedEvent = 'Output'
-      }
+        JSON.parse(data)
+      } catch (_) {}
+      mappedEvent = 'Output'
     }
 
     return this._outputCallback(addon, mappedEvent, 'OnlyOneJob', data, error)
@@ -186,47 +191,44 @@ class ImgStableDiffusion extends BaseInference {
   }
 
   /**
-   * Generate an image from text.
-   * @param {object} params - Generation parameters
-   * @param {string} params.prompt
-   * @param {string} [params.negative_prompt]
-   * @param {number} [params.width=512]
-   * @param {number} [params.height=512]
-   * @param {number} [params.steps=20]
-   * @param {number} [params.cfg_scale=7.0]
-   * @param {string} [params.sampler='euler_a']
-   * @param {number} [params.seed=-1]
-   * @param {number} [params.batch_count=1]
+   * Generate an image from a text prompt (primary API).
+   *
+   * Returns a QvacResponse that streams two types of updates:
+   *   - Uint8Array  — PNG-encoded output image (one per batch_count)
+   *   - string      — JSON step-progress tick: {"step":N,"total":M,"elapsed_ms":T}
+   *
+   * @param {object} params
+   * @param {string} params.prompt                  - Text prompt
+   * @param {string} [params.negative_prompt]       - Negative prompt
+   * @param {number} [params.steps=20]              - Denoising step count
+   * @param {number} [params.width=512]             - Output width (multiple of 8)
+   * @param {number} [params.height=512]            - Output height (multiple of 8)
+   * @param {number} [params.guidance=3.5]          - Distilled guidance (FLUX.2)
+   * @param {number} [params.cfg_scale=7.0]         - CFG scale (SD1/SD2)
+   * @param {string} [params.sampling_method]       - Sampler name
+   * @param {string} [params.scheduler]             - Scheduler name
+   * @param {number} [params.seed=-1]               - RNG seed; -1 = random
+   * @param {number} [params.batch_count=1]         - Images per call
+   * @param {boolean} [params.vae_tiling=false]     - Enable VAE tiling (for large images)
+   * @param {string}  [params.cache_preset]         - Cache preset: slow/medium/fast/ultra
    * @returns {Promise<QvacResponse>}
    */
-  async txt2img (params) {
+  async run (params) {
     return this._runGeneration({ ...params, mode: 'txt2img' })
   }
 
   /**
-   * Generate an image from an input image and text.
+   * Generate an image from an input image and text prompt.
+   *
    * @param {object} params
-   * @param {Uint8Array} params.init_image - Input image bytes (PNG/JPEG)
-   * @param {number} [params.strength=0.75] - Denoising strength (0.0-1.0)
+   * @param {Uint8Array} params.init_image   - Source image bytes (PNG/JPEG)
+   * @param {string}     params.prompt
+   * @param {number}    [params.strength=0.75] - 0 = keep source, 1 = ignore source
    * @returns {Promise<QvacResponse>}
    */
   async img2img (params) {
-    if (!params.init_image) {
-      throw new Error('img2img requires init_image parameter')
-    }
+    if (!params.init_image) throw new Error('img2img requires init_image')
     return this._runGeneration({ ...params, mode: 'img2img' })
-  }
-
-  /**
-   * Generate a video from text (requires Wan2.x or similar video model).
-   * @param {object} params
-   * @param {string} params.prompt
-   * @param {number} [params.frames=16]
-   * @param {number} [params.fps=8]
-   * @returns {Promise<QvacResponse>}
-   */
-  async txt2vid (params) {
-    return this._runGeneration({ ...params, mode: 'txt2vid' })
   }
 
   async _runGeneration (params) {
