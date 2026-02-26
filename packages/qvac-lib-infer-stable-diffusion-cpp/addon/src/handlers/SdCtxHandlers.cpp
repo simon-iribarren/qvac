@@ -103,7 +103,7 @@ const SdCtxHandlersMap SD_CTX_HANDLERS = {
   // Leave unset / use "eps" to rely on model auto-detection.
 
   {"prediction", [](SdCtxConfig& c, const std::string& v) {
-    if      (v.empty() || v == "auto") c.prediction = EPS_PRED;
+    if      (v.empty() || v == "auto") c.prediction = PREDICTION_COUNT; // sentinel: auto-detect
     else if (v == "eps")         c.prediction = EPS_PRED;
     else if (v == "v")           c.prediction = V_PRED;
     else if (v == "edm_v")       c.prediction = EDM_V_PRED;
