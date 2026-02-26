@@ -541,7 +541,10 @@ async function downloadOnnxWithDataFromRegistry(
               totalFiles: 2,
               overallDownloaded: currentOverall,
               overallTotal,
-              overallPercentage: calculatePercentage(currentOverall, overallTotal),
+              overallPercentage: calculatePercentage(
+                currentOverall,
+                overallTotal,
+              ),
             },
           });
         }
@@ -589,7 +592,10 @@ async function downloadOnnxWithDataFromRegistry(
               totalFiles: 2,
               overallDownloaded: currentOverall,
               overallTotal,
-              overallPercentage: calculatePercentage(currentOverall, overallTotal),
+              overallPercentage: calculatePercentage(
+                currentOverall,
+                overallTotal,
+              ),
             },
           });
         }
