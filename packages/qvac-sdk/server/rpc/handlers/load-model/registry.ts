@@ -37,6 +37,8 @@ import { getServerLogger } from "@/logging";
 
 const logger = getServerLogger();
 
+const REGISTRY_STREAM_TIMEOUT_MS = 60_000;
+
 function buildBlobBinding(meta: {
   blobCoreKey: string;
   blobBlockOffset: number;
@@ -129,7 +131,7 @@ async function downloadSingleFileFromRegistry(
 
     if (blobBinding) {
       logger.info(`📥 Downloading blob directly: ${modelFileName}`);
-      const result = await client.downloadBlob(blobBinding, { timeout: 300000 });
+      const result = await client.downloadBlob(blobBinding, { timeout: REGISTRY_STREAM_TIMEOUT_MS });
       if (!("stream" in result.artifact)) {
         throw new RegistryDownloadFailedError(
           `No stream returned for blob ${modelFileName}`,
@@ -139,7 +141,7 @@ async function downloadSingleFileFromRegistry(
     } else {
       logger.info(`📥 Downloading from registry: ${registryPath}`);
       const result = await client.downloadModel(registryPath, registrySource, {
-        timeout: 300000,
+        timeout: REGISTRY_STREAM_TIMEOUT_MS,
       });
       if (!("stream" in result.artifact)) {
         throw new RegistryDownloadFailedError(
@@ -304,19 +306,13 @@ async function downloadShardedFilesFromRegistry(
   let shards: ShardEntry[];
 
   if (localShardMetadata?.length) {
-    shards = localShardMetadata.map((s) => ({
-      filename: s.filename,
-      size: s.expectedSize,
-      checksum: s.sha256Checksum,
+    shards = localShardMetadata.map((shard) => ({
+      filename: shard.filename,
+      size: shard.expectedSize,
+      checksum: shard.sha256Checksum,
       path: registryPath,
       source: registrySource,
-      blobBinding: buildBlobBinding({
-        blobCoreKey: s.blobCoreKey,
-        blobBlockOffset: s.blobBlockOffset,
-        blobBlockLength: s.blobBlockLength,
-        blobByteOffset: s.blobByteOffset,
-        expectedSize: s.expectedSize,
-      }),
+      blobBinding: buildBlobBinding(shard),
     }));
   } else {
     const filename = registryPath.split("/").pop() || registryPath;
