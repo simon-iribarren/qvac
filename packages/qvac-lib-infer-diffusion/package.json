@@ -1,5 +1,5 @@
 {
-  "name": "@qvac/img-stable-diffusion-cpp",
+  "name": "@qvac/diffusion-cpp",
   "version": "0.1.0",
   "description": "stable-diffusion.cpp addon for qvac image/video generation",
   "addon": true,
