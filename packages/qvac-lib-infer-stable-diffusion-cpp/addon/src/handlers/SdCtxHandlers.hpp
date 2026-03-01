@@ -21,19 +21,22 @@ namespace qvac_lib_inference_addon_sd {
  * Consumed once in SdModel::load() where new_sd_ctx() is called.
  *
  * Supported models:
- *   SD1.x  — uses modelPath (all-in-one .ckpt / .safetensors)
- *   SD2.x  — same as SD1, add prediction="v" to the config
- *   SDXL   — uses modelPath, add clipGModel if split; set force_sdxl_vae_conv_scale if needed
- *   FLUX.2 [klein] — uses diffusionModelPath + llmPath (Qwen3) + vaeModel
+ *   SD1.x        — uses modelPath (all-in-one .ckpt / .safetensors / GGUF)
+ *   SD2.x        — same as SD1, add prediction="v" to the config
+ *   SDXL         — uses modelPath (all-in-one GGUF); set force_sdxl_vae_conv_scale if needed
+ *   SD3 Medium   — all-in-one GGUF via modelPath (CLIP-L, CLIP-G, T5-XXL baked in)
+ *                  OR split layout: diffusionModelPath + clipLPath + clipGPath + t5XxlPath
+ *   FLUX.2 [klein] — uses diffusionModelPath + llmPath (Qwen3) + vaePath
  */
 struct SdCtxConfig {
   // ── Model file paths ───────────────────────────────────────────────────────
   // All paths are absolute; empty string = not used.
 
-  std::string modelPath;           // model_path            — SD1.x/SDXL all-in-one checkpoint
-  std::string diffusionModelPath;  // diffusion_model_path  — FLUX.2 [klein] standalone diffusion GGUF
-  std::string clipLPath;           // clip_l_path           — CLIP-L text encoder (SD1.x / SDXL)
-  std::string clipGPath;           // clip_g_path           — CLIP-G text encoder (SDXL)
+  std::string modelPath;           // model_path            — SD1.x/SD2.x/SDXL/SD3 all-in-one checkpoint
+  std::string diffusionModelPath;  // diffusion_model_path  — FLUX.2 [klein] or SD3 pure diffusion GGUF
+  std::string clipLPath;           // clip_l_path           — CLIP-L text encoder (SD3 split / SDXL)
+  std::string clipGPath;           // clip_g_path           — CLIP-G text encoder (SD3 split / SDXL)
+  std::string t5XxlPath;           // t5xxl_path            — T5-XXL text encoder (SD3 split)
   std::string llmPath;             // llm_path              — LLM text encoder (FLUX.2 → Qwen3)
   std::string vaePath;             // vae_path              — standalone VAE decoder weights
   std::string taesdPath;           // taesd_path            — Tiny AutoEncoder (optional fast preview)
@@ -61,8 +64,11 @@ struct SdCtxConfig {
 
   // ── Prediction type ───────────────────────────────────────────────────────
   // PREDICTION_COUNT = auto-detect from model GGUF metadata (recommended).
-  // Override only if model lacks metadata: EPS_PRED (SD1.x), V_PRED (SD2.x),
-  // FLUX2_FLOW_PRED (FLUX.2 klein).
+  // Override if the GGUF lacks metadata (community conversions often do):
+  //   EPS_PRED        → SD1.x
+  //   V_PRED          → SD2.x
+  //   FLOW_PRED       → SD3 (flow matching)
+  //   FLUX2_FLOW_PRED → FLUX.2 [klein]
   prediction_t prediction = PREDICTION_COUNT;  // auto
 
   // ── LoRA (Low-Rank Adaptation) apply mode ─────────────────────────────────

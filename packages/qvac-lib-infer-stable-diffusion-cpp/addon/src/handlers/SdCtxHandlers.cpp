@@ -99,8 +99,9 @@ const SdCtxHandlersMap SD_CTX_HANDLERS = {
   // ── Prediction type ────────────────────────────────────────────────────────
   // SD1.x  → "eps"         (epsilon prediction)
   // SD2.x  → "v"           (v-prediction)
-  // FLUX.2 → "flux2_flow"  (flow matching)
-  // Leave unset / use "eps" to rely on model auto-detection.
+  // SD3    → "flow"        (flow matching)
+  // FLUX.2 → "flux2_flow"  (FLUX.2 flow matching)
+  // Leave unset (or "auto") to use PREDICTION_COUNT sentinel for auto-detection.
 
   {"prediction", [](SdCtxConfig& c, const std::string& v) {
     if      (v.empty() || v == "auto") c.prediction = PREDICTION_COUNT; // sentinel: auto-detect

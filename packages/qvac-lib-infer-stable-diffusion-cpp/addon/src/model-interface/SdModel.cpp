@@ -86,6 +86,7 @@ void SdModel::load() {
   params.diffusion_model_path = config_.diffusionModelPath.empty() ? nullptr : config_.diffusionModelPath.c_str();
   params.clip_l_path          = config_.clipLPath.empty()          ? nullptr : config_.clipLPath.c_str();
   params.clip_g_path          = config_.clipGPath.empty()          ? nullptr : config_.clipGPath.c_str();
+  params.t5xxl_path           = config_.t5XxlPath.empty()          ? nullptr : config_.t5XxlPath.c_str();
   params.llm_path             = config_.llmPath.empty()            ? nullptr : config_.llmPath.c_str();
   params.vae_path             = config_.vaePath.empty()            ? nullptr : config_.vaePath.c_str();
   params.taesd_path           = config_.taesdPath.empty()          ? nullptr : config_.taesdPath.c_str();

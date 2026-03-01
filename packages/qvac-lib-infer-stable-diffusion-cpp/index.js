@@ -81,16 +81,23 @@ class ImgStableDiffusion extends BaseInference {
       })
 
       // Route the primary model file to the correct stable-diffusion.cpp param:
-      //   FLUX.2 [klein] uses a split layout — diffusion weights have no SD
-      //   version metadata, so diffusion_model_path must be used.
-      //   SD1.x / SD2.x / SDXL use all-in-one checkpoints with metadata, so
-      //   model_path is correct.
-      // Heuristic: if llmModel is provided the caller is using FLUX.2 (which
-      // requires an LLM text encoder); otherwise assume an all-in-one SD model.
-      const isFluxLayout = !!this._llmModel
+      //
+      //   model_path           — all-in-one checkpoints that embed their own text
+      //                          encoders and version metadata (SD1.x, SD2.x, SDXL,
+      //                          SD3 all-in-one GGUF).
+      //
+      //   diffusion_model_path — standalone diffusion-only weights that have no
+      //                          embedded SD metadata and require separate encoders:
+      //                            FLUX.2 [klein] → llmModel (Qwen3)
+      //                            SD3 pure GGUF  → t5XxlModel (T5-XXL) + clipLModel + clipGModel
+      //
+      // Heuristic: if any separate encoder is provided (LLM for FLUX.2, T5-XXL
+      // for SD3 split) the caller is using a pure diffusion GGUF that must be
+      // loaded via diffusion_model_path.
+      const isSplitLayout = !!this._llmModel || !!this._t5XxlModel
       const configurationParams = {
-        path: isFluxLayout ? '' : path.join(this._diskPath, this._modelName),
-        diffusionModelPath: isFluxLayout ? path.join(this._diskPath, this._modelName) : '',
+        path: isSplitLayout ? '' : path.join(this._diskPath, this._modelName),
+        diffusionModelPath: isSplitLayout ? path.join(this._diskPath, this._modelName) : '',
         clipLPath: this._clipLModel ? path.join(this._diskPath, this._clipLModel) : '',
         clipGPath: this._clipGModel ? path.join(this._diskPath, this._clipGModel) : '',
         t5XxlPath: this._t5XxlModel ? path.join(this._diskPath, this._t5XxlModel) : '',
