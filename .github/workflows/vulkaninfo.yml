@@ -64,7 +64,8 @@ jobs:
           $installer   = "$env:TEMP\nvidia_driver.exe"
 
           # Create an HttpClient instance
-          $client = [System.Net.Http.HttpClient]::new()
+          Add-Type -AssemblyName System.Net.Http
+          $client = New-Object System.Net.Http.HttpClient
           $response = $client.GetAsync($driverUrl, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).Result
           $response.EnsureSuccessStatusCode() | Out-Null
 
