@@ -6,8 +6,36 @@ if(BUILD_TESTING)
   list(APPEND VCPKG_MANIFEST_FEATURES "tests")
 endif()
 
+option(SD_CUDA "Enable CUDA GPU backend" OFF)
+if(SD_CUDA)
+  list(APPEND VCPKG_MANIFEST_FEATURES "cuda")
+  # Locate libcudart.so to discover the CUDA lib directory, then add the whole
+  # directory so all CUDA shared libs (cudart, cublas, cublasLt, ...) are found
+  # at link time and their path is baked into the installed .bare RPATH.
+  find_library(CUDA_RUNTIME_LIB cudart
+    PATHS
+      /usr/local/cuda/lib64
+      /usr/local/cuda/targets/x86_64-linux/lib
+      /usr/local/cuda-12.8/targets/x86_64-linux/lib
+    NO_DEFAULT_PATH
+  )
+  if(NOT CUDA_RUNTIME_LIB)
+    find_library(CUDA_RUNTIME_LIB cudart REQUIRED)
+  endif()
+  get_filename_component(CUDA_LIB_DIR "${CUDA_RUNTIME_LIB}" DIRECTORY)
+  link_directories("${CUDA_LIB_DIR}")
+  set(CMAKE_INSTALL_RPATH "${CUDA_LIB_DIR}")
+  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+  message(STATUS "CUDA lib dir: ${CUDA_LIB_DIR}")
+endif()
+
 find_package(cmake-bare REQUIRED PATHS node_modules/cmake-bare)
 find_package(cmake-vcpkg REQUIRED PATHS node_modules/cmake-vcpkg)
+
+# stable-diffusion.cpp uses Clang-only warning flags on Linux; force clang via override triplet
+if(UNIX AND NOT APPLE AND NOT ANDROID)
+  set(VCPKG_OVERLAY_TRIPLETS "vcpkg-override-triplets/triplets")
+endif()
 
 project(qvac-lib-inference-addon-sd C CXX)
 
@@ -79,6 +107,11 @@ add_bare_module(qvac-lib-inference-addon-sd EXPORTS ${BACKEND_DL_LIBS})
       stable-diffusion::stable-diffusion
       ggml::ggml
   )
+
+  # Link all CUDA shared libs needed by ggml-cuda so symbols are resolved at load time
+  if(SD_CUDA)
+    target_link_libraries(${qvac-lib-inference-addon-sd} PRIVATE cudart cublas cublasLt)
+  endif()
 
   # Link Metal framework on Apple platforms
   if(APPLE)

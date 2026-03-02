@@ -116,9 +116,6 @@ void SdModel::load() {
   params.prediction     = config_.prediction;
   params.lora_apply_mode = config_.loraApplyMode;
 
-  // ── Flow matching ─────────────────────────────────────────────────────────
-  params.flow_shift = config_.flowShift;
-
   // ── Convolution options ───────────────────────────────────────────────────
   params.diffusion_conv_direct   = config_.diffusionConvDirect;
   params.vae_conv_direct         = config_.vaeConvDirect;
@@ -210,7 +207,8 @@ std::any SdModel::process(const std::any& input) {
   genParams.sample_params.guidance.img_cfg           = gen.imgCfgScale < 0.0f
                                                          ? gen.cfgScale
                                                          : gen.imgCfgScale;
-  genParams.sample_params.eta = gen.eta;
+  genParams.sample_params.eta        = gen.eta;
+  genParams.sample_params.flow_shift = config_.flowShift;
 
   // ── VAE tiling ────────────────────────────────────────────────────────────
   genParams.vae_tiling_params.enabled        = gen.vaeTiling;

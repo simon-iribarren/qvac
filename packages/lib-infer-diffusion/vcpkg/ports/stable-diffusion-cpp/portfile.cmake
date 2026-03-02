@@ -21,19 +21,21 @@
 # Update REF to pin a specific commit for reproducible builds.
 
 set(SD_CPP_REPO "https://github.com/leejet/stable-diffusion.cpp.git")
-set(SOURCE_PATH "${CURRENT_BUILDTREES_DIR}/src/stable-diffusion-cpp-master")
+# Pinned to release tag master-514-5792c66 (2026-03-01).
+# Update this tag to pick up a newer upstream release.
+set(SD_CPP_TAG "master-514-5792c66")
+set(SOURCE_PATH "${CURRENT_BUILDTREES_DIR}/src/stable-diffusion-cpp-${SD_CPP_TAG}")
 
-# vcpkg_from_git cannot fetch by SHA on GitHub (server restriction) and
-# HEAD_REF-only ports require --head. Use a direct clone with --recurse-submodules
-# so that the bundled ggml submodule is also initialised in one step.
-# TODO: switch to vcpkg_from_github once stable-diffusion.cpp publishes versioned tarballs.
+# vcpkg_from_git cannot fetch by SHA on GitHub (server restriction).
+# We clone the specific release tag with --recurse-submodules so that
+# the bundled ggml submodule is also initialised in one step.
 if(NOT EXISTS "${SOURCE_PATH}/CMakeLists.txt")
     vcpkg_execute_required_process(
         COMMAND "${GIT}" clone
             --depth 1
             --recurse-submodules
             --shallow-submodules
-            -b master
+            -b "${SD_CPP_TAG}"
             "${SD_CPP_REPO}"
             "${SOURCE_PATH}"
         WORKING_DIRECTORY "${CURRENT_BUILDTREES_DIR}"

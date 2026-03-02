@@ -5,6 +5,7 @@
   "addon": true,
   "scripts": {
     "build": "bare-make generate && bare-make build && bare-make install",
+    "build:cuda": "bare-make generate -D SD_CUDA=ON && bare-make build && bare-make install",
     "example": "bare examples/load-model.js",
     "generate": "bare examples/generate-image.js",
     "generate:sd2": "bare examples/generate-image-sd2.js",
