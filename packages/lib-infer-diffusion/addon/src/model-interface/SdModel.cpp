@@ -7,11 +7,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include <stb_image_write.h>
-
 #include <picojson/picojson.h>
 #include <qvac-lib-inference-addon-cpp/Errors.hpp>
 #include <qvac-lib-inference-addon-cpp/Logger.hpp>
+#include <stb_image_write.h>
 
 #include "utils/LoggingMacros.hpp"
 
@@ -32,7 +31,8 @@ struct ProgressCtx {
 thread_local ProgressCtx tl_progressCtx;
 
 void sdProgressCallback(int step, int steps, float /*time*/, void* /*data*/) {
-  if (!tl_progressCtx.job || !tl_progressCtx.job->progressCallback) return;
+  if (!tl_progressCtx.job || !tl_progressCtx.job->progressCallback)
+    return;
 
   const auto elapsed =
       std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -40,9 +40,8 @@ void sdProgressCallback(int step, int steps, float /*time*/, void* /*data*/) {
           .count();
 
   std::ostringstream oss;
-  oss << R"({"step":)" << step
-      << R"(,"total":)" << steps
-      << R"(,"elapsed_ms":)" << elapsed << "}";
+  oss << R"({"step":)" << step << R"(,"total":)" << steps << R"(,"elapsed_ms":)"
+      << elapsed << "}";
 
   tl_progressCtx.job->progressCallback(oss.str());
 }
@@ -54,8 +53,7 @@ void sdProgressCallback(int step, int steps, float /*time*/, void* /*data*/) {
 // ---------------------------------------------------------------------------
 
 SdModel::SdModel(qvac_lib_inference_addon_sd::SdCtxConfig config)
-    : config_(std::move(config)),
-      sdCtx_(nullptr, &free_sd_ctx) {
+    : config_(std::move(config)), sdCtx_(nullptr, &free_sd_ctx) {
 
   sd_set_log_callback(SdModel::sdLogCallback, nullptr);
 }
@@ -64,16 +62,15 @@ SdModel::SdModel(qvac_lib_inference_addon_sd::SdCtxConfig config)
 // Destructor — delegates to unload()
 // ---------------------------------------------------------------------------
 
-SdModel::~SdModel() {
-  unload();
-}
+SdModel::~SdModel() { unload(); }
 
 // ---------------------------------------------------------------------------
 // load() — maps SdCtxConfig → sd_ctx_params_t, then calls new_sd_ctx()
 // ---------------------------------------------------------------------------
 
 void SdModel::load() {
-  if (isLoaded()) return;
+  if (isLoaded())
+    return;
 
   sd_ctx_params_t params{};
   sd_ctx_params_init(&params);
@@ -82,45 +79,52 @@ void SdModel::load() {
   // For FLUX.2 [klein] the GGUF contains only diffusion weights with no SD
   // version metadata KV pairs, so we must use diffusion_model_path.
   // Classic all-in-one SD1.x / SDXL checkpoints use model_path.
-  params.model_path           = config_.modelPath.empty()          ? nullptr : config_.modelPath.c_str();
-  params.diffusion_model_path = config_.diffusionModelPath.empty() ? nullptr : config_.diffusionModelPath.c_str();
-  params.clip_l_path          = config_.clipLPath.empty()          ? nullptr : config_.clipLPath.c_str();
-  params.clip_g_path          = config_.clipGPath.empty()          ? nullptr : config_.clipGPath.c_str();
-  params.t5xxl_path           = config_.t5XxlPath.empty()          ? nullptr : config_.t5XxlPath.c_str();
-  params.llm_path             = config_.llmPath.empty()            ? nullptr : config_.llmPath.c_str();
-  params.vae_path             = config_.vaePath.empty()            ? nullptr : config_.vaePath.c_str();
-  params.taesd_path           = config_.taesdPath.empty()          ? nullptr : config_.taesdPath.c_str();
+  params.model_path =
+      config_.modelPath.empty() ? nullptr : config_.modelPath.c_str();
+  params.diffusion_model_path = config_.diffusionModelPath.empty()
+                                    ? nullptr
+                                    : config_.diffusionModelPath.c_str();
+  params.clip_l_path =
+      config_.clipLPath.empty() ? nullptr : config_.clipLPath.c_str();
+  params.clip_g_path =
+      config_.clipGPath.empty() ? nullptr : config_.clipGPath.c_str();
+  params.t5xxl_path =
+      config_.t5XxlPath.empty() ? nullptr : config_.t5XxlPath.c_str();
+  params.llm_path = config_.llmPath.empty() ? nullptr : config_.llmPath.c_str();
+  params.vae_path = config_.vaePath.empty() ? nullptr : config_.vaePath.c_str();
+  params.taesd_path =
+      config_.taesdPath.empty() ? nullptr : config_.taesdPath.c_str();
 
   // ── Compute ────────────────────────────────────────────────────────────────
-  params.n_threads           = config_.nThreads;
-  params.flash_attn          = config_.flashAttn;
+  params.n_threads = config_.nThreads;
+  params.flash_attn = config_.flashAttn;
   params.diffusion_flash_attn = config_.diffusionFlashAttn;
 
   // ── Memory management ─────────────────────────────────────────────────────
-  params.enable_mmap          = config_.mmap;
+  params.enable_mmap = config_.mmap;
   params.offload_params_to_cpu = config_.offloadToCpu;
-  params.keep_clip_on_cpu     = config_.keepClipOnCpu;
-  params.keep_vae_on_cpu      = config_.keepVaeOnCpu;
+  params.keep_clip_on_cpu = config_.keepClipOnCpu;
+  params.keep_vae_on_cpu = config_.keepVaeOnCpu;
 
   // ── Precision ─────────────────────────────────────────────────────────────
-  params.wtype             = config_.wtype;
+  params.wtype = config_.wtype;
   params.tensor_type_rules = config_.tensorTypeRules.empty()
-                               ? nullptr
-                               : config_.tensorTypeRules.c_str();
+                                 ? nullptr
+                                 : config_.tensorTypeRules.c_str();
 
   // ── Sampling RNG ──────────────────────────────────────────────────────────
-  params.rng_type        = config_.rngType;
+  params.rng_type = config_.rngType;
   params.sampler_rng_type = config_.samplerRngType;
 
   // ── Prediction type / LoRA ────────────────────────────────────────────────
-  params.prediction     = config_.prediction;
+  params.prediction = config_.prediction;
   params.lora_apply_mode = config_.loraApplyMode;
 
   // ── Convolution options ───────────────────────────────────────────────────
-  params.diffusion_conv_direct   = config_.diffusionConvDirect;
-  params.vae_conv_direct         = config_.vaeConvDirect;
-  params.circular_x              = config_.circularX;
-  params.circular_y              = config_.circularY;
+  params.diffusion_conv_direct = config_.diffusionConvDirect;
+  params.vae_conv_direct = config_.vaeConvDirect;
+  params.circular_x = config_.circularX;
+  params.circular_y = config_.circularY;
   params.force_sdxl_vae_conv_scale = config_.forceSDXLVaeConvScale;
 
   // ── Internal ──────────────────────────────────────────────────────────────
@@ -129,12 +133,13 @@ void SdModel::load() {
   sd_ctx_t* raw = new_sd_ctx(&params);
   if (!raw) {
     const std::string path = config_.diffusionModelPath.empty()
-                               ? config_.modelPath
-                               : config_.diffusionModelPath;
+                                 ? config_.modelPath
+                                 : config_.diffusionModelPath;
     throw StatusError(
         general_error::InternalError,
         "SdModel::load() failed — could not create stable-diffusion context. "
-        "Check model path and format: " + path);
+        "Check model path and format: " +
+            path);
   }
 
   sdCtx_.reset(raw);
@@ -145,8 +150,9 @@ void SdModel::load() {
 // ---------------------------------------------------------------------------
 
 void SdModel::unload() {
-  if (!isLoaded()) return;
-  sdCtx_.reset();           // calls free_sd_ctx via custom deleter
+  if (!isLoaded())
+    return;
+  sdCtx_.reset(); // calls free_sd_ctx via custom deleter
   lastStats_.clear();
   cancelRequested_.store(false);
 }
@@ -165,7 +171,7 @@ std::any SdModel::process(const std::any& input) {
   const auto& job = std::any_cast<const GenerationJob&>(input);
 
   cancelRequested_.store(false);
-  tl_progressCtx.job       = &job;
+  tl_progressCtx.job = &job;
   tl_progressCtx.startTime = std::chrono::steady_clock::now();
   sd_set_progress_callback(sdProgressCallback, nullptr);
 
@@ -173,55 +179,62 @@ std::any SdModel::process(const std::any& input) {
   picojson::value v;
   const std::string parseErr = picojson::parse(v, job.paramsJson);
   if (!parseErr.empty())
-    throw StatusError(general_error::InvalidArgument,
-                      "Failed to parse generation params JSON: " + parseErr);
+    throw StatusError(
+        general_error::InvalidArgument,
+        "Failed to parse generation params JSON: " + parseErr);
   if (!v.is<picojson::object>())
-    throw StatusError(general_error::InvalidArgument, "Params must be a JSON object");
+    throw StatusError(
+        general_error::InvalidArgument, "Params must be a JSON object");
 
   // ── Build SdGenConfig from handlers ───────────────────────────────────────
   qvac_lib_inference_addon_sd::SdGenConfig gen{};
-  qvac_lib_inference_addon_sd::applySdGenHandlers(gen, v.get<picojson::object>());
+  qvac_lib_inference_addon_sd::applySdGenHandlers(
+      gen, v.get<picojson::object>());
 
   if (gen.mode != "txt2img" && gen.mode != "img2img")
-    throw StatusError(general_error::InvalidArgument,
-                      "Unsupported mode: '" + gen.mode + "'. Only txt2img and img2img are supported.");
+    throw StatusError(
+        general_error::InvalidArgument,
+        "Unsupported mode: '" + gen.mode +
+            "'. Only txt2img and img2img are supported.");
 
   // ── Build sd_img_gen_params_t ─────────────────────────────────────────────
   sd_img_gen_params_t genParams{};
   sd_img_gen_params_init(&genParams);
 
-  genParams.prompt          = gen.prompt.c_str();
+  genParams.prompt = gen.prompt.c_str();
   genParams.negative_prompt = gen.negativePrompt.c_str();
-  genParams.width           = gen.width;
-  genParams.height          = gen.height;
-  genParams.seed            = gen.seed;
-  genParams.batch_count     = gen.batchCount;
-  genParams.strength        = gen.strength;
-  genParams.clip_skip       = gen.clipSkip;
+  genParams.width = gen.width;
+  genParams.height = gen.height;
+  genParams.seed = gen.seed;
+  genParams.batch_count = gen.batchCount;
+  genParams.strength = gen.strength;
+  genParams.clip_skip = gen.clipSkip;
 
-  genParams.sample_params.sample_method              = gen.sampleMethod;
-  genParams.sample_params.scheduler                  = gen.scheduler;
-  genParams.sample_params.sample_steps               = gen.steps;
-  genParams.sample_params.guidance.txt_cfg           = gen.cfgScale;
+  genParams.sample_params.sample_method = gen.sampleMethod;
+  genParams.sample_params.scheduler = gen.scheduler;
+  genParams.sample_params.sample_steps = gen.steps;
+  genParams.sample_params.guidance.txt_cfg = gen.cfgScale;
   genParams.sample_params.guidance.distilled_guidance = gen.guidance;
-  genParams.sample_params.guidance.img_cfg           = gen.imgCfgScale < 0.0f
-                                                         ? gen.cfgScale
-                                                         : gen.imgCfgScale;
+  genParams.sample_params.guidance.img_cfg =
+      gen.imgCfgScale < 0.0f ? gen.cfgScale : gen.imgCfgScale;
   genParams.sample_params.eta = gen.eta;
   genParams.sample_params.flow_shift = config_.flowShift;
 
   // ── VAE tiling ────────────────────────────────────────────────────────────
-  genParams.vae_tiling_params.enabled        = gen.vaeTiling;
-  genParams.vae_tiling_params.tile_size_x    = gen.vaeTileSizeX;
-  genParams.vae_tiling_params.tile_size_y    = gen.vaeTileSizeY;
+  genParams.vae_tiling_params.enabled = gen.vaeTiling;
+  genParams.vae_tiling_params.tile_size_x = gen.vaeTileSizeX;
+  genParams.vae_tiling_params.tile_size_y = gen.vaeTileSizeY;
   genParams.vae_tiling_params.target_overlap = gen.vaeTileOverlap;
 
   // ── Step-caching ──────────────────────────────────────────────────────────
   sd_cache_params_init(&genParams.cache);
   genParams.cache.mode = gen.cacheMode;
-  if (gen.cacheThreshold > 0.0f) genParams.cache.reuse_threshold    = gen.cacheThreshold;
-  if (gen.cacheStart     > 0.0f) genParams.cache.start_percent      = gen.cacheStart;
-  if (gen.cacheEnd       > 0.0f) genParams.cache.end_percent        = gen.cacheEnd;
+  if (gen.cacheThreshold > 0.0f)
+    genParams.cache.reuse_threshold = gen.cacheThreshold;
+  if (gen.cacheStart > 0.0f)
+    genParams.cache.start_percent = gen.cacheStart;
+  if (gen.cacheEnd > 0.0f)
+    genParams.cache.end_percent = gen.cacheEnd;
 
   // ── img2img init image (bytes passed as JSON array) ───────────────────────
   sd_image_t initImg{};
@@ -229,13 +242,15 @@ std::any SdModel::process(const std::any& input) {
 
   if (gen.mode == "img2img") {
     if (auto it = v.get<picojson::object>().find("init_image_bytes");
-        it != v.get<picojson::object>().end() && it->second.is<picojson::array>()) {
+        it != v.get<picojson::object>().end() &&
+        it->second.is<picojson::array>()) {
       const auto& arr = it->second.get<picojson::array>();
       initPng.reserve(arr.size());
       for (const auto& el : arr)
         initPng.push_back(static_cast<uint8_t>(el.get<double>()));
     }
-    if (!initPng.empty()) initImg = decodePng(initPng);
+    if (!initPng.empty())
+      initImg = decodePng(initPng);
   }
   genParams.init_image = initImg;
 
@@ -244,7 +259,8 @@ std::any SdModel::process(const std::any& input) {
 
   sd_image_t* results = generate_image(sdCtx_.get(), &genParams);
 
-  if (initImg.data) free(initImg.data);
+  if (initImg.data)
+    free(initImg.data);
 
   int outputCount = 0;
   if (results) {
@@ -267,9 +283,9 @@ std::any SdModel::process(const std::any& input) {
 
   lastStats_.clear();
   lastStats_.push_back({"generation_time", genMs});
-  lastStats_.push_back({"steps",        static_cast<int64_t>(gen.steps)});
-  lastStats_.push_back({"width",        static_cast<int64_t>(gen.width)});
-  lastStats_.push_back({"height",       static_cast<int64_t>(gen.height)});
+  lastStats_.push_back({"steps", static_cast<int64_t>(gen.steps)});
+  lastStats_.push_back({"width", static_cast<int64_t>(gen.width)});
+  lastStats_.push_back({"height", static_cast<int64_t>(gen.height)});
   lastStats_.push_back({"output_count", static_cast<int64_t>(outputCount)});
 
   tl_progressCtx.job = nullptr;
@@ -282,9 +298,7 @@ std::any SdModel::process(const std::any& input) {
 // cancel / runtimeStats
 // ---------------------------------------------------------------------------
 
-void SdModel::cancel() const {
-  cancelRequested_.store(true);
-}
+void SdModel::cancel() const { cancelRequested_.store(true); }
 
 qvac_lib_inference_addon_cpp::RuntimeStats SdModel::runtimeStats() const {
   return lastStats_;
@@ -298,12 +312,14 @@ std::vector<uint8_t> SdModel::encodeToPng(const sd_image_t& img) {
   std::vector<uint8_t> out;
   auto writeCallback = [](void* ctx, void* data, int size) {
     auto* vec = static_cast<std::vector<uint8_t>*>(ctx);
-    vec->insert(vec->end(),
-                static_cast<const uint8_t*>(data),
-                static_cast<const uint8_t*>(data) + size);
+    vec->insert(
+        vec->end(),
+        static_cast<const uint8_t*>(data),
+        static_cast<const uint8_t*>(data) + size);
   };
   stbi_write_png_to_func(
-      writeCallback, &out,
+      writeCallback,
+      &out,
       static_cast<int>(img.width),
       static_cast<int>(img.height),
       static_cast<int>(img.channel),
@@ -313,12 +329,15 @@ std::vector<uint8_t> SdModel::encodeToPng(const sd_image_t& img) {
 }
 
 sd_image_t SdModel::decodePng(const std::vector<uint8_t>& pngBytes) {
-  if (pngBytes.empty()) return sd_image_t{};
+  if (pngBytes.empty())
+    return sd_image_t{};
   int w = 0, h = 0, c = 0;
   uint8_t* data = stbi_load_from_memory(
       pngBytes.data(), static_cast<int>(pngBytes.size()), &w, &h, &c, 3);
-  if (!data) return sd_image_t{};
-  return sd_image_t{ static_cast<uint32_t>(w), static_cast<uint32_t>(h), 3, data };
+  if (!data)
+    return sd_image_t{};
+  return sd_image_t{
+      static_cast<uint32_t>(w), static_cast<uint32_t>(h), 3, data};
 }
 
 // ---------------------------------------------------------------------------
@@ -330,11 +349,21 @@ void SdModel::sdLogCallback(
   namespace lg = qvac_lib_inference_addon_cpp::logger;
   lg::Priority priority;
   switch (level) {
-  case SD_LOG_DEBUG: priority = lg::Priority::DEBUG;   break;
-  case SD_LOG_INFO:  priority = lg::Priority::INFO;    break;
-  case SD_LOG_WARN:  priority = lg::Priority::WARNING; break;
-  case SD_LOG_ERROR: priority = lg::Priority::ERROR;   break;
-  default:           priority = lg::Priority::ERROR;   break;
+  case SD_LOG_DEBUG:
+    priority = lg::Priority::DEBUG;
+    break;
+  case SD_LOG_INFO:
+    priority = lg::Priority::INFO;
+    break;
+  case SD_LOG_WARN:
+    priority = lg::Priority::WARNING;
+    break;
+  case SD_LOG_ERROR:
+    priority = lg::Priority::ERROR;
+    break;
+  default:
+    priority = lg::Priority::ERROR;
+    break;
   }
   QLOG_IF(priority, std::string(text ? text : ""));
 }

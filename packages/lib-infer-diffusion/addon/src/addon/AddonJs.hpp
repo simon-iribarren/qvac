@@ -24,19 +24,20 @@ inline js_value_t* createInstance(js_env_t* env, js_callback_info_t* info) try {
 
   // ── Step 1: Extract model file paths from JS args[1] ────────────────────
   // index.js selects which field to populate based on model family:
-  //   "path"               → model_path          (SD1.x / SDXL all-in-one checkpoint)
-  //   "diffusionModelPath" → diffusion_model_path (FLUX.2 [klein] standalone GGUF)
+  //   "path"               → model_path          (SD1.x / SDXL all-in-one
+  //   checkpoint) "diffusionModelPath" → diffusion_model_path (FLUX.2 [klein]
+  //   standalone GGUF)
   // Exactly one of the two will be non-empty; SdModel::load() passes both to
   // sd_ctx_params_t and the library uses whichever is set.
   SdCtxConfig config{};
 
-  config.modelPath          = args.getMapEntry(1, "path");
+  config.modelPath = args.getMapEntry(1, "path");
   config.diffusionModelPath = args.getMapEntry(1, "diffusionModelPath");
-  config.clipLPath          = args.getMapEntry(1, "clipLPath");
-  config.clipGPath          = args.getMapEntry(1, "clipGPath");
-  config.t5XxlPath          = args.getMapEntry(1, "t5XxlPath");
-  config.llmPath            = args.getMapEntry(1, "llmPath");
-  config.vaePath            = args.getMapEntry(1, "vaePath");
+  config.clipLPath = args.getMapEntry(1, "clipLPath");
+  config.clipGPath = args.getMapEntry(1, "clipGPath");
+  config.t5XxlPath = args.getMapEntry(1, "t5XxlPath");
+  config.llmPath = args.getMapEntry(1, "llmPath");
+  config.vaePath = args.getMapEntry(1, "vaePath");
 
   // ── Step 2: Apply SD_CTX_HANDLERS to the "config" sub-object ─────────────
   // configMap holds the flat key/value pairs from the second constructor arg
@@ -113,8 +114,7 @@ inline js_value_t* unloadModel(js_env_t* env, js_callback_info_t* info) try {
   auto* sdModel = dynamic_cast<SdModel*>(&instance.addonCpp->model.get());
   if (sdModel == nullptr)
     throw StatusError(
-        general_error::InternalError,
-        "unloadModel: model is not an SdModel");
+        general_error::InternalError, "unloadModel: model is not an SdModel");
 
   sdModel->unload();
 

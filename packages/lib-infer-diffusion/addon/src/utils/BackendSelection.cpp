@@ -14,8 +14,10 @@ BackendDevice preferredDeviceFromMap(
   }
 
   const std::string& device = it->second;
-  if (device == "gpu") return BackendDevice::GPU;
-  if (device == "cpu") return BackendDevice::CPU;
+  if (device == "gpu")
+    return BackendDevice::GPU;
+  if (device == "cpu")
+    return BackendDevice::CPU;
 
   throw StatusError(
       general_error::InvalidArgument,
@@ -25,7 +27,8 @@ BackendDevice preferredDeviceFromMap(
 int threadsFromMap(
     const std::unordered_map<std::string, std::string>& configMap) {
   auto it = configMap.find("threads");
-  if (it == configMap.end()) return -1; // auto
+  if (it == configMap.end())
+    return -1; // auto
   try {
     return std::stoi(it->second);
   } catch (...) {

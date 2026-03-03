@@ -5,9 +5,8 @@
 #include <string>
 #include <unordered_map>
 
-#include <stable-diffusion.h>
-
 #include <qvac-lib-inference-addon-cpp/Errors.hpp>
+#include <stable-diffusion.h>
 
 namespace qvac_lib_inference_addon_sd {
 
@@ -23,43 +22,56 @@ namespace qvac_lib_inference_addon_sd {
  * Supported models:
  *   SD1.x        — uses modelPath (all-in-one .ckpt / .safetensors / GGUF)
  *   SD2.x        — same as SD1, add prediction="v" to the config
- *   SDXL         — uses modelPath (all-in-one GGUF); set force_sdxl_vae_conv_scale if needed
- *   SD3 Medium   — all-in-one GGUF via modelPath (CLIP-L, CLIP-G, T5-XXL baked in)
- *                  OR split layout: diffusionModelPath + clipLPath + clipGPath + t5XxlPath
- *   FLUX.2 [klein] — uses diffusionModelPath + llmPath (Qwen3) + vaePath
+ *   SDXL         — uses modelPath (all-in-one GGUF); set
+ * force_sdxl_vae_conv_scale if needed SD3 Medium   — all-in-one GGUF via
+ * modelPath (CLIP-L, CLIP-G, T5-XXL baked in) OR split layout:
+ * diffusionModelPath + clipLPath + clipGPath + t5XxlPath FLUX.2 [klein] — uses
+ * diffusionModelPath + llmPath (Qwen3) + vaePath
  */
 struct SdCtxConfig {
   // ── Model file paths ───────────────────────────────────────────────────────
   // All paths are absolute; empty string = not used.
 
-  std::string modelPath;           // model_path            — SD1.x/SD2.x/SDXL/SD3 all-in-one checkpoint
-  std::string diffusionModelPath;  // diffusion_model_path  — FLUX.2 [klein] or SD3 pure diffusion GGUF
-  std::string clipLPath;           // clip_l_path           — CLIP-L text encoder (SD3 split / SDXL)
-  std::string clipGPath;           // clip_g_path           — CLIP-G text encoder (SD3 split / SDXL)
-  std::string t5XxlPath;           // t5xxl_path            — T5-XXL text encoder (SD3 split)
-  std::string llmPath;             // llm_path              — LLM text encoder (FLUX.2 → Qwen3)
-  std::string vaePath;             // vae_path              — standalone VAE decoder weights
-  std::string taesdPath;           // taesd_path            — Tiny AutoEncoder (optional fast preview)
+  std::string modelPath; // model_path            — SD1.x/SD2.x/SDXL/SD3
+                         // all-in-one checkpoint
+  std::string diffusionModelPath; // diffusion_model_path  — FLUX.2 [klein] or
+                                  // SD3 pure diffusion GGUF
+  std::string clipLPath; // clip_l_path           — CLIP-L text encoder (SD3
+                         // split / SDXL)
+  std::string clipGPath; // clip_g_path           — CLIP-G text encoder (SD3
+                         // split / SDXL)
+  std::string
+      t5XxlPath; // t5xxl_path            — T5-XXL text encoder (SD3 split)
+  std::string
+      llmPath; // llm_path              — LLM text encoder (FLUX.2 → Qwen3)
+  std::string vaePath; // vae_path              — standalone VAE decoder weights
+  std::string taesdPath; // taesd_path            — Tiny AutoEncoder (optional
+                         // fast preview)
 
   // ── Compute ───────────────────────────────────────────────────────────────
-  int  nThreads          = -1;    // n_threads:            -1 = auto-detect physical cores
-  bool flashAttn         = false; // flash_attn:           full-model flash attention
-  bool diffusionFlashAttn = false;// diffusion_flash_attn: flash attention on diffusion only
+  int nThreads = -1; // n_threads:            -1 = auto-detect physical cores
+  bool flashAttn = false; // flash_attn:           full-model flash attention
+  bool diffusionFlashAttn =
+      false; // diffusion_flash_attn: flash attention on diffusion only
 
   // ── Memory management ─────────────────────────────────────────────────────
-  bool mmap          = false;     // enable_mmap:           memory-map the GGUF file
-  bool offloadToCpu  = false;     // offload_params_to_cpu: keep weights in RAM, load per-layer to GPU
-  bool keepClipOnCpu = false;     // keep_clip_on_cpu:      keep CLIP encoder in CPU RAM
-  bool keepVaeOnCpu  = false;     // keep_vae_on_cpu:       keep VAE decoder in CPU RAM
+  bool mmap = false;         // enable_mmap:           memory-map the GGUF file
+  bool offloadToCpu = false; // offload_params_to_cpu: keep weights in RAM, load
+                             // per-layer to GPU
+  bool keepClipOnCpu =
+      false; // keep_clip_on_cpu:      keep CLIP encoder in CPU RAM
+  bool keepVaeOnCpu =
+      false; // keep_vae_on_cpu:       keep VAE decoder in CPU RAM
 
   // ── Precision ─────────────────────────────────────────────────────────────
-  sd_type_t wtype = SD_TYPE_COUNT;         // global weight type override; COUNT = auto (use GGUF)
-  std::string tensorTypeRules;             // per-tensor rules e.g. "^vae.=f16,model.=q8_0"
+  sd_type_t wtype =
+      SD_TYPE_COUNT; // global weight type override; COUNT = auto (use GGUF)
+  std::string tensorTypeRules; // per-tensor rules e.g. "^vae.=f16,model.=q8_0"
 
   // ── Sampling RNG (Random Number Generator) ────────────────────────────────
-  // CUDA_RNG = philox RNG (default in sd_ctx_params_init; not GPU-specific despite the name)
-  // RNG_TYPE_COUNT = auto for sampler RNG
-  rng_type_t rngType        = CUDA_RNG;       // rng_type
+  // CUDA_RNG = philox RNG (default in sd_ctx_params_init; not GPU-specific
+  // despite the name) RNG_TYPE_COUNT = auto for sampler RNG
+  rng_type_t rngType = CUDA_RNG;              // rng_type
   rng_type_t samplerRngType = RNG_TYPE_COUNT; // sampler_rng_type
 
   // ── Prediction type ───────────────────────────────────────────────────────
@@ -69,7 +81,7 @@ struct SdCtxConfig {
   //   V_PRED          → SD2.x
   //   FLOW_PRED       → SD3 (flow matching)
   //   FLUX2_FLOW_PRED → FLUX.2 [klein]
-  prediction_t prediction = PREDICTION_COUNT;  // auto
+  prediction_t prediction = PREDICTION_COUNT; // auto
 
   // ── LoRA (Low-Rank Adaptation) apply mode ─────────────────────────────────
   lora_apply_mode_t loraApplyMode = LORA_APPLY_AUTO;
@@ -80,15 +92,15 @@ struct SdCtxConfig {
   float flowShift = std::numeric_limits<float>::infinity();
 
   // ── Convolution kernel options ────────────────────────────────────────────
-  bool diffusionConvDirect   = false;     // ggml_conv2d_direct in diffusion model
-  bool vaeConvDirect         = false;     // ggml_conv2d_direct in VAE
+  bool diffusionConvDirect = false; // ggml_conv2d_direct in diffusion model
+  bool vaeConvDirect = false;       // ggml_conv2d_direct in VAE
 
   // ── Tiling convolutions (produces seamlessly tileable images) ─────────────
-  bool circularX = false;                 // circular RoPE wrap on X-axis (width)
-  bool circularY = false;                 // circular RoPE wrap on Y-axis (height)
+  bool circularX = false; // circular RoPE wrap on X-axis (width)
+  bool circularY = false; // circular RoPE wrap on Y-axis (height)
 
   // ── SDXL compatibility ────────────────────────────────────────────────────
-  bool forceSDXLVaeConvScale = false;     // force SDXL VAE conv scale (compat fix)
+  bool forceSDXLVaeConvScale = false; // force SDXL VAE conv scale (compat fix)
 
   // ── Internal ──────────────────────────────────────────────────────────────
   bool freeParamsImmediately = true;
@@ -101,7 +113,7 @@ struct SdCtxConfig {
  * Receives the config struct (by ref) and the raw string value from JS.
  * Throws qvac_errors::StatusError on invalid input.
  */
-using SdCtxHandlerFn   = std::function<void(SdCtxConfig&, const std::string&)>;
+using SdCtxHandlerFn = std::function<void(SdCtxConfig&, const std::string&)>;
 using SdCtxHandlersMap = std::unordered_map<std::string, SdCtxHandlerFn>;
 
 /** All supported load-time config keys and their handlers. */
