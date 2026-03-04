@@ -82,15 +82,17 @@ file(WRITE "${_reg_file}" "${_reg_contents}")
 
 # 2. pthread_cancel is not available in the Android NDK.
 #    ggml-backend-reg.cpp calls pthread_cancel to stop loader threads; on
-#    Android we replace that call with a no-op so the build succeeds.
-#    The thread will still terminate naturally when its work is done.
+#    Android we guard the call with a runtime no-op.  The loader thread
+#    terminates naturally once its work is complete.
 if(VCPKG_TARGET_IS_ANDROID)
     set(_reg_file "${SOURCE_PATH}/ggml/src/ggml-backend-reg.cpp")
     file(READ "${_reg_file}" _reg_contents)
-    string(REPLACE
-        "pthread_cancel("
-        "((void)0); // pthread_cancel unavailable on Android — ("
-        _reg_contents "${_reg_contents}"
+    # Prepend a portable stub so the symbol resolves without NDK support.
+    string(PREPEND _reg_contents
+        "#if defined(__ANDROID__)\n"
+        "// pthread_cancel is unavailable on Android NDK; provide a no-op stub.\n"
+        "static inline int pthread_cancel(pthread_t) { return 0; }\n"
+        "#endif\n"
     )
     file(WRITE "${_reg_file}" "${_reg_contents}")
 endif()
@@ -100,7 +102,10 @@ set(PLATFORM_OPTIONS)
 
 if(VCPKG_TARGET_IS_OSX OR VCPKG_TARGET_IS_IOS)
     list(APPEND PLATFORM_OPTIONS -DSD_METAL=ON)
-else()
+elseif(NOT VCPKG_TARGET_IS_ANDROID)
+    # Android does not use the host VULKAN_SDK — Vulkan support on Android is
+    # provided by the NDK and enabled separately. Skip it here to avoid
+    # find_package(Vulkan) picking up the wrong x86_64 SDK during cross-compile.
     list(APPEND PLATFORM_OPTIONS -DSD_VULKAN=ON)
 endif()
 
