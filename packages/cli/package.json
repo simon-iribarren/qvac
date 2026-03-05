@@ -5,13 +5,13 @@
   "author": "Tether",
   "license": "Apache-2.0",
   "type": "module",
-  "main": "./src/index.js",
-  "exports": "./src/index.js",
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
   "bin": {
-    "qvac": "./src/index.js"
+    "qvac": "./dist/index.js"
   },
   "files": [
-    "src/**/*",
+    "dist/**/*",
     "README.md",
     "LICENSE",
     "NOTICE"
@@ -33,6 +33,9 @@
     "directory": "packages/cli"
   },
   "scripts": {
+    "build": "rm -rf dist && tsc",
+    "build:watch": "tsc --watch",
+    "typecheck": "tsc --noEmit",
     "lint": "standard",
     "lint:fix": "standard --fix"
   },
@@ -42,6 +45,8 @@
     "tsx": "^4.21.0"
   },
   "devDependencies": {
-    "standard": "^17.1.2"
+    "@types/node": "^25.3.3",
+    "standard": "^17.1.2",
+    "typescript": "^5.9.3"
   }
 }
