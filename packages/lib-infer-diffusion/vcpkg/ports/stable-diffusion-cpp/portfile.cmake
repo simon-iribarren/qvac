@@ -157,13 +157,12 @@ else()
     list(APPEND PLATFORM_OPTIONS -DGGML_BACKEND_DL=OFF)
 endif()
 
-# On Windows, disable OpenMP — the ggml static lib exports GGML_OPENMP_ENABLED
-# in its cmake config which forces the consumer to find_dependency(OpenMP).
-# bare-make's cmake environment can't locate MSVC's OpenMP runtime, so the
-# addon configure fails. ggml falls back to std::thread when OpenMP is off.
-if(VCPKG_TARGET_IS_WINDOWS)
-    list(APPEND PLATFORM_OPTIONS -DGGML_OPENMP=OFF)
-endif()
+# Disable OpenMP on all platforms.  When ggml is built with OpenMP the static
+# lib's cmake config exports GGML_OPENMP_ENABLED which forces the consumer to
+# find_dependency(OpenMP).  On Windows bare-make can't locate MSVC's OpenMP
+# runtime; on Linux the runner may lack libomp.so.5.  ggml falls back to
+# std::thread when OpenMP is off — no performance loss for inference.
+list(APPEND PLATFORM_OPTIONS -DGGML_OPENMP=OFF)
 
 # --- GPU feature flags ---
 set(SD_GGML_CUDA   OFF)
