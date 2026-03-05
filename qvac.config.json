@@ -1,0 +1,8 @@
+{
+  "serve": {
+    "models": {
+      "chat": "QWEN3_600M_INST_Q4",
+      "embed": "EMBEDDINGGEMMA_300M_Q4_0"
+    }
+  }
+}
