@@ -73,7 +73,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Resolve workdir from inputs when available; otherwise default package path.
+          # Resolve workdir from inputs when available; otherwise default to package path.
           if [[ "${{ github.event_name }}" == "workflow_dispatch" || "${{ github.event_name }}" == "workflow_call" ]]; then
             workdir="${{ inputs.workdir || 'packages/qvac-lib-infer-onnx-tts' }}"
             repo="${{ inputs.repository || github.repository }}"
