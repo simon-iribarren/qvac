@@ -1,4 +1,6 @@
 const MIN_SDK_VERSION = '0.7.0'
+const SDK_SPECIFIER = '@qvac/sdk'
+const SDK_PACKAGE_SPECIFIER = '@qvac/sdk/package'
 
 interface SDKModule {
   loadModel: (opts: { modelSrc: string; modelType: string; modelConfig: Record<string, unknown> }) => Promise<string>
@@ -40,7 +42,7 @@ export async function getSDK (): Promise<SDKModule> {
   if (sdk) return sdk
 
   try {
-    sdk = await import('@qvac/sdk') as unknown as SDKModule
+    sdk = await import(SDK_SPECIFIER) as unknown as SDKModule
   } catch {
     throw new Error(
       '@qvac/sdk is required for "qvac serve". Install it: npm install @qvac/sdk'
@@ -60,7 +62,7 @@ export async function getSDK (): Promise<SDKModule> {
 
 async function resolveSDKVersion (): Promise<string | null> {
   try {
-    const pkg = await import('@qvac/sdk/package') as { version?: string }
+    const pkg = await import(SDK_PACKAGE_SPECIFIER) as { version?: string }
     return pkg.version ?? null
   } catch {
     return null
