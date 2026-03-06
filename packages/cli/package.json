@@ -36,8 +36,7 @@
     "build": "rm -rf dist && tsc",
     "build:watch": "tsc --watch",
     "typecheck": "tsc --noEmit",
-    "lint": "standard",
-    "lint:fix": "standard --fix"
+    "lint": "tsc --noEmit"
   },
   "dependencies": {
     "bare-pack": "^2.0.0",
@@ -46,7 +45,6 @@
   },
   "devDependencies": {
     "@types/node": "^25.3.3",
-    "standard": "^17.1.2",
     "typescript": "^5.9.3"
   }
 }
