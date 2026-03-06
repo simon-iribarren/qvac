@@ -51,6 +51,8 @@ export async function handleEmbeddings (req: IncomingMessage, res: ServerRespons
   const input = body['input']
   const inputs = Array.isArray(input) ? input as string[] : [input as string]
 
+  ctx.logger.info(`  embed model=${modelAlias} inputs=${inputs.length}`)
+
   try {
     const embeddings = await sdkEmbed({
       modelId: sdkModelId,
@@ -65,6 +67,8 @@ export async function handleEmbeddings (req: IncomingMessage, res: ServerRespons
       index,
       embedding: vec
     }))
+
+    ctx.logger.info(`  embed done vectors=${vectors.length} dim=${vectors[0]?.length ?? 0}`)
 
     sendJson(res, 200, {
       object: 'list',

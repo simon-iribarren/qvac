@@ -1,6 +1,7 @@
 import http from 'node:http'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { createLogger } from '../logger.js'
+import type { Logger } from '../logger.js'
 import { findConfigFile, loadConfig } from '../config.js'
 import { parseServeConfig } from './config.js'
 import { createModelRegistry } from './core/model-registry.js'
@@ -39,15 +40,24 @@ export async function startServer (options: StartServerOptions): Promise<http.Se
   const ctx: RouteContext = { registry, serveConfig, logger }
 
   const server = http.createServer(async (req: IncomingMessage, res: ServerResponse) => {
-    if (options.cors) {
-      handleCors(req, res)
-      if (req.method === 'OPTIONS') return
+    const start = performance.now()
+    const method = req.method ?? ''
+    const path = (req.url ?? '').split('?')[0] ?? ''
+
+    if (method === 'OPTIONS') {
+      if (options.cors) handleCors(req, res)
+      return
     }
+
+    logger.info(`→ ${method} ${path}`)
+
+    if (options.cors) handleCors(req, res)
 
     if (options.apiKey) {
       const auth = req.headers['authorization']
       if (!auth || auth !== `Bearer ${options.apiKey}`) {
         sendError(res, 401, 'invalid_api_key', 'Invalid or missing API key.')
+        logResponse(logger, method, path, 401, start)
         return
       }
     }
@@ -55,16 +65,19 @@ export async function startServer (options: StartServerOptions): Promise<http.Se
     try {
       for (const adapter of adapters) {
         const handled = await adapter.route(req, res, ctx)
-        if (handled) return
+        if (handled) {
+          logResponse(logger, method, path, res.statusCode, start)
+          return
+        }
       }
 
-      const method = req.method ?? ''
-      const path = (req.url ?? '').split('?')[0] ?? ''
       sendError(res, 404, 'not_found', `Unknown endpoint: ${method} ${path}`)
+      logResponse(logger, method, path, 404, start)
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)
       logger.error(`Unhandled error: ${message}`)
       sendError(res, 500, 'internal_error', message)
+      logResponse(logger, method, path, 500, start)
     }
   })
 
@@ -91,4 +104,10 @@ export async function startServer (options: StartServerOptions): Promise<http.Se
       resolve(server)
     })
   })
+}
+
+function logResponse (logger: Logger, method: string, path: string, status: number, start: number): void {
+  const ms = performance.now() - start
+  const duration = ms < 1000 ? `${ms.toFixed(0)}ms` : `${(ms / 1000).toFixed(2)}s`
+  logger.info(`← ${status} ${method} ${path} (${duration})`)
 }

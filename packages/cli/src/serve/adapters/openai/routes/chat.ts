@@ -51,12 +51,16 @@ export async function handleChatCompletions (req: IncomingMessage, res: ServerRe
   const history = openaiMessagesToHistory(body['messages'] as Array<{ role: string; content: string }>)
   const tools = openaiToolsToSdk(body['tools'] as Array<{ type: string; function?: { name: string; description?: string; parameters?: Record<string, unknown> } }> | undefined)
   const modelAlias = alias
+  const streaming = Boolean(body['stream'])
+  const msgCount = (body['messages'] as unknown[]).length
+
+  ctx.logger.info(`  chat model=${modelAlias} messages=${msgCount} stream=${streaming}${tools ? ` tools=${tools.length}` : ''}`)
 
   try {
-    if (body['stream']) {
-      await handleStreamingCompletion(res, { sdkModelId, history, tools, modelAlias })
+    if (streaming) {
+      await handleStreamingCompletion(res, { sdkModelId, history, tools, modelAlias, logger: ctx.logger })
     } else {
-      await handleBlockingCompletion(res, { sdkModelId, history, tools, modelAlias })
+      await handleBlockingCompletion(res, { sdkModelId, history, tools, modelAlias, logger: ctx.logger })
     }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
@@ -70,6 +74,7 @@ interface CompletionParams {
   history: Array<{ role: string; content: string }>
   tools?: SDKTool[] | undefined
   modelAlias: string
+  logger: import('../../../../logger.js').Logger
 }
 
 async function handleBlockingCompletion (res: ServerResponse, params: CompletionParams): Promise<void> {
@@ -92,6 +97,8 @@ async function handleBlockingCompletion (res: ServerResponse, params: Completion
   }
 
   const completionTokens = text ? text.split(/\s+/).length : 0
+
+  params.logger.info(`  completion done tokens=${completionTokens} finish=${finishReason}`)
 
   sendJson(res, 200, {
     id: `chatcmpl-${randomId()}`,
@@ -152,6 +159,8 @@ async function handleStreamingCompletion (res: ServerResponse, params: Completio
       }]
     })
   }
+
+  params.logger.info(`  streaming done tokens=${tokenCount}`)
 
   const toolCalls = await result.toolCalls
   if (toolCalls && toolCalls.length > 0) {

@@ -1,3 +1,5 @@
+const MIN_SDK_VERSION = '0.7.0'
+
 interface SDKModule {
   loadModel: (opts: { modelSrc: string; modelType: string; modelConfig: Record<string, unknown> }) => Promise<string>
   unloadModel: (opts: { modelId: string }) => Promise<void>
@@ -45,7 +47,38 @@ export async function getSDK (): Promise<SDKModule> {
     )
   }
 
+  const sdkVersion = await resolveSDKVersion()
+  if (sdkVersion && !satisfiesMinVersion(sdkVersion, MIN_SDK_VERSION)) {
+    throw new Error(
+      `@qvac/sdk ${sdkVersion} is too old for this version of @qvac/cli. ` +
+      `Minimum required: ${MIN_SDK_VERSION}. Run: npm install @qvac/sdk@latest`
+    )
+  }
+
   return sdk
+}
+
+async function resolveSDKVersion (): Promise<string | null> {
+  try {
+    const pkg = await import('@qvac/sdk/package') as { version?: string }
+    return pkg.version ?? null
+  } catch {
+    return null
+  }
+}
+
+function satisfiesMinVersion (current: string, minimum: string): boolean {
+  const parse = (v: string): number[] => v.split('.').map(Number)
+  const cur = parse(current)
+  const min = parse(minimum)
+
+  for (let i = 0; i < 3; i++) {
+    const c = cur[i] ?? 0
+    const m = min[i] ?? 0
+    if (c > m) return true
+    if (c < m) return false
+  }
+  return true
 }
 
 export async function sdkLoadModel (opts: {
