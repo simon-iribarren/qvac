@@ -24,7 +24,7 @@ using ParakeetAddon = Addon<Model>;
 
 // Specialize getNextPiece - return the full input (no chunking for Parakeet)
 template <>
-auto ParakeetAddon::getNextPiece(Model::Input& input, size_t /*lastPieceEnd*/)
+auto ParakeetAddon::getNextPiece(Model::Input &input, size_t /*lastPieceEnd*/)
     -> Model::Input {
   return input;
 }
@@ -33,9 +33,9 @@ auto ParakeetAddon::getNextPiece(Model::Input& input, size_t /*lastPieceEnd*/)
 template <>
 template <>
 ParakeetAddon::Addon(
-    js_env_t* env, js_value_t* jsHandle, js_value_t* outputCb,
-    js_value_t* transitionCb,
-    const qvac_lib_infer_parakeet::ParakeetConfig& parakeetConfig,
+    js_env_t *env, js_value_t *jsHandle, js_value_t *outputCb,
+    js_value_t *transitionCb,
+    const qvac_lib_infer_parakeet::ParakeetConfig &parakeetConfig,
     bool /*enableStats*/)
     : env_{env}, jsHandle_{nullptr}, outputCb_{nullptr},
       transitionCb_{transitionCb}, jsOutputCallbackAsyncHandle_{nullptr},
@@ -43,63 +43,68 @@ ParakeetAddon::Addon(
   initializeProcessingThread(env, jsHandle, outputCb, transitionCb);
 }
 
-// Constructor specialization - by value version (needed when passing temporaries)
-// NOLINTNEXTLINE(performance-unnecessary-value-param)
+// Constructor specialization - by value version (needed when passing
+// temporaries) NOLINTNEXTLINE(performance-unnecessary-value-param)
 template <>
 template <>
-ParakeetAddon::Addon(
-    js_env_t* env, js_value_t* jsHandle, js_value_t* outputCb,
-    js_value_t* transitionCb,
-    qvac_lib_infer_parakeet::ParakeetConfig parakeetConfig,
-    bool /*enableStats*/)
+ParakeetAddon::Addon(js_env_t *env, js_value_t *jsHandle, js_value_t *outputCb,
+                     js_value_t *transitionCb,
+                     qvac_lib_infer_parakeet::ParakeetConfig parakeetConfig,
+                     bool /*enableStats*/)
     : env_{env}, jsHandle_{nullptr}, outputCb_{nullptr},
       transitionCb_{transitionCb}, jsOutputCallbackAsyncHandle_{nullptr},
       threadsafeOutputCb_{nullptr}, model_{parakeetConfig} {
   initializeProcessingThread(env, jsHandle, outputCb, transitionCb);
 }
 
-// Custom jsOutputCallback for Parakeet output format
+namespace {
+
+js::Object transcriptToJsObject(js_env_t *env,
+                                const typename Model::Output::value_type &t) {
+  js::Object obj = js::Object::create(env);
+  if (!t.text.empty()) {
+    obj.setProperty(env, "text", js::String::create(env, t.text));
+    obj.setProperty(env, "toAppend", js::Boolean::create(env, t.toAppend));
+    obj.setProperty(env, "start", js::Number::create(env, t.start));
+    obj.setProperty(env, "end", js::Number::create(env, t.end));
+    obj.setProperty(env, "id",
+                    js::Number::create(env, static_cast<uint64_t>(t.id)));
+  }
+  return obj;
+}
+
+js_value_t *parakeetOutputToJsArray(js_env_t *env,
+                                    const Model::Output &output) {
+  js_value_t *outputArr = nullptr;
+  js_create_array_with_length(env, output.size(), &outputArr);
+  for (size_t i = 0; i < output.size(); ++i) {
+    js::Object obj = transcriptToJsObject(env, output[i]);
+    js_set_element(env, outputArr, i, obj);
+  }
+  return outputArr;
+}
+
+} // namespace
+
 template <>
-auto ParakeetAddon::jsOutputCallback(uv_async_t* handle) -> void try {
-  // Convert Parakeet output to JavaScript consumable format
+auto ParakeetAddon::jsOutputCallback(uv_async_t *handle) -> void try {
   auto parakeetOutputToJsConsumable =
-      [](js_env_t* env, const Model::Output& output) -> js_value_t* {
-    js_value_t* outputArr = nullptr;
-    js_create_array_with_length(env, output.size(), &outputArr);
-
-    for (size_t i = 0; i < output.size(); ++i) {
-      js::Object obj = js::Object::create(env);
-
-      if (!output[i].text.empty()) {
-        obj.setProperty(env, "text", js::String::create(env, output[i].text));
-        obj.setProperty(
-            env, "toAppend", js::Boolean::create(env, output[i].toAppend));
-        obj.setProperty(env, "start", js::Number::create(env, output[i].start));
-        obj.setProperty(env, "end", js::Number::create(env, output[i].end));
-        obj.setProperty(
-            env,
-            "id",
-            js::Number::create(env, static_cast<uint64_t>(output[i].id)));
-      }
-
-      js_set_element(env, outputArr, i, obj);
-    }
-
-    return outputArr;
+      [](js_env_t *env, const Model::Output &output) -> js_value_t * {
+    return parakeetOutputToJsArray(env, output);
   };
 
-  auto* asHandle = reinterpret_cast<uv_handle_t*>(handle);
-  auto& addon = *static_cast<ParakeetAddon*>(uv_handle_get_data(asHandle));
+  auto *asHandle = reinterpret_cast<uv_handle_t *>(handle);
+  auto &addon = *static_cast<ParakeetAddon *>(uv_handle_get_data(asHandle));
 
-  js_handle_scope_t* scope = nullptr;
+  js_handle_scope_t *scope = nullptr;
   JS(js_open_handle_scope(addon.env_, &scope));
   auto scopeCleanup = utils::onExit(
       [env = addon.env_, scope]() { js_close_handle_scope(env, scope); });
 
-  js_value_t* outputCb = nullptr;
+  js_value_t *outputCb = nullptr;
   JS(js_get_reference_value(addon.env_, addon.outputCb_, &outputCb));
 
-  js_value_t* jsHandle = nullptr;
+  js_value_t *jsHandle = nullptr;
   JS(js_get_reference_value(addon.env_, addon.jsHandle_, &jsHandle));
 
   std::vector<ModelOutput> outputQueue;
@@ -108,20 +113,18 @@ auto ParakeetAddon::jsOutputCallback(uv_async_t* handle) -> void try {
     outputQueue = std::move(addon.outputQueue_);
   }
 
-  for (auto& output : outputQueue) {
-    js_handle_scope_t* innerScope = nullptr;
+  for (auto &output : outputQueue) {
+    js_handle_scope_t *innerScope = nullptr;
     JS(js_open_handle_scope(addon.env_, &innerScope));
     auto innerScopeCleanup = utils::onExit([env = addon.env_, innerScope]() {
       js_close_handle_scope(env, innerScope);
     });
 
     static constexpr std::size_t K_OUTPUT_CB_PARAMETERS_COUNT = 5;
-    std::array<js_value_t*, K_OUTPUT_CB_PARAMETERS_COUNT> outputCbParameters{
+    std::array<js_value_t *, K_OUTPUT_CB_PARAMETERS_COUNT> outputCbParameters{
         jsHandle,
         js::String::create(addon.env_, outputEventToStringView(output.event)),
-        js::Number::create(addon.env_, output.id),
-        nullptr,
-        nullptr};
+        js::Number::create(addon.env_, output.id), nullptr, nullptr};
 
     switch (output.event) {
     case OutputEvent::Output:
@@ -134,13 +137,13 @@ auto ParakeetAddon::jsOutputCallback(uv_async_t* handle) -> void try {
       outputCbParameters[4] = js::Undefined::create(addon.env_);
       break;
     case OutputEvent::JobEnded: {
-      auto& stats = std::get<RuntimeStats>(output.data);
+      auto &stats = std::get<RuntimeStats>(output.data);
       js::Object runtimeStats = js::Object::create(addon.env_);
-      for (auto& stat : stats) {
+      for (auto &stat : stats) {
         std::visit(
-            [env = addon.env_, &runtimeStats, &stat](auto&& val) {
-              runtimeStats.setProperty(
-                  env, stat.first.c_str(), js::Number::create(env, val));
+            [env = addon.env_, &runtimeStats, &stat](auto &&val) {
+              runtimeStats.setProperty(env, stat.first.c_str(),
+                                       js::Number::create(env, val));
             },
             stat.second);
       }
@@ -157,21 +160,17 @@ auto ParakeetAddon::jsOutputCallback(uv_async_t* handle) -> void try {
       break;
     }
 
-    js_value_t* receiver = nullptr;
+    js_value_t *receiver = nullptr;
     JS(js_get_global(addon.env_, &receiver));
-    JS(js_call_function(
-        addon.env_,
-        receiver,
-        outputCb,
-        static_cast<int>(outputCbParameters.size()),
-        outputCbParameters.data(),
-        nullptr));
+    JS(js_call_function(addon.env_, receiver, outputCb,
+                        static_cast<int>(outputCbParameters.size()),
+                        outputCbParameters.data(), nullptr));
   }
 } catch (...) {
-  auto* asHandle = reinterpret_cast<uv_handle_t*>(handle);
-  auto& addon = *static_cast<ParakeetAddon*>(uv_handle_get_data(asHandle));
+  auto *asHandle = reinterpret_cast<uv_handle_t *>(handle);
+  auto &addon = *static_cast<ParakeetAddon *>(uv_handle_get_data(asHandle));
 
-  js_handle_scope_t* scope = nullptr;
+  js_handle_scope_t *scope = nullptr;
   if (js_open_handle_scope(addon.env_, &scope) != 0) {
     return;
   }
@@ -183,15 +182,13 @@ auto ParakeetAddon::jsOutputCallback(uv_async_t* handle) -> void try {
     return;
   }
   if (isExceptionPending) {
-    js_value_t* error = nullptr;
+    js_value_t *error = nullptr;
     js_get_and_clear_last_exception(addon.env_, &error);
   }
   logger::JsLogger::log(Priority::ERROR, "jsOutputCallback : failed");
 }
 
-// Custom process loop for Parakeet
-template <>
-void ParakeetAddon::process() {
+template <> void ParakeetAddon::process() {
   Model::Input input;
   auto cleanupLastAppended = utils::onError([this]() {
     auto l = std::scoped_lock{mtx_};
@@ -206,7 +203,6 @@ void ParakeetAddon::process() {
     std::unique_lock lk(mtx_);
     processCv_.wait_for(lk, std::chrono::milliseconds{100});
 
-    // Handle signals
     switch (signal_) {
     case ProcessSignals::Activate:
       if (!model_.isLoaded()) {
@@ -216,7 +212,6 @@ void ParakeetAddon::process() {
         } catch (const std::exception &e) {
           QLOG(Priority::ERROR,
                std::string("Failed to load model: ") + e.what());
-          // Emit error to JavaScript
           queueOutput(ModelOutput{OutputEvent::Error, 0,
                                   typename ModelOutput::Error{e.what()}});
           status_ = AddonStatus::Idle;
@@ -257,7 +252,6 @@ void ParakeetAddon::process() {
         model_.load();
       } catch (const std::exception &e) {
         QLOG(Priority::ERROR, std::string("Failed to load model: ") + e.what());
-        // Emit error to JavaScript
         queueOutput(ModelOutput{OutputEvent::Error, 0,
                                 typename ModelOutput::Error{e.what()}});
         status_ = AddonStatus::Idle;
@@ -280,9 +274,10 @@ void ParakeetAddon::process() {
     case ProcessSignals::Cancel:
       if (currentJob_ &&
           (cancelJobId_ == 0 || currentJob_->id == cancelJobId_)) {
-        QLOG(Priority::DEBUG, "Cancelling job " + std::to_string(currentJob_->id));
-        queueOutput(ModelOutput{
-            OutputEvent::JobEnded, currentJob_->id, model_.runtimeStats()});
+        QLOG(Priority::DEBUG,
+             "Cancelling job " + std::to_string(currentJob_->id));
+        queueOutput(ModelOutput{OutputEvent::JobEnded, currentJob_->id,
+                                model_.runtimeStats()});
         model_.reset();
         if (currentJob_.get() == lastAppendedJob_) {
           lastAppendedJob_ = nullptr;
@@ -298,7 +293,6 @@ void ParakeetAddon::process() {
     }
     signal_ = ProcessSignals::None;
 
-    // Skip processing in certain states
     constexpr std::array kSkipStatuses = {
         AddonStatus::Stopped, AddonStatus::Paused, AddonStatus::Loading,
         AddonStatus::Unloaded};
@@ -306,7 +300,6 @@ void ParakeetAddon::process() {
       continue;
     }
 
-    // Prepare job for processing
     if (currentJob_ == nullptr) {
       if (jobQueue_.empty()) {
         if (status_ != AddonStatus::Idle) {
@@ -317,9 +310,9 @@ void ParakeetAddon::process() {
       }
       currentJob_ = std::move(jobQueue_.top().job);
       jobQueue_.pop();
-      
+
       QLOG(Priority::DEBUG, "Starting job " + std::to_string(currentJob_->id));
-      
+
       status_ = AddonStatus::Processing;
       queueOutput(ModelOutput{OutputEvent::JobStarted, currentJob_->id});
     }
@@ -327,10 +320,11 @@ void ParakeetAddon::process() {
     if (input.empty()) {
       if (currentJob_->input.empty()) {
         if (currentJob_.get() != lastAppendedJob_) {
-          QLOG(Priority::DEBUG, "Job " + std::to_string(currentJob_->id) + " completed");
-          
-          queueOutput(ModelOutput{
-              OutputEvent::JobEnded, currentJob_->id, model_.runtimeStats()});
+          QLOG(Priority::DEBUG,
+               "Job " + std::to_string(currentJob_->id) + " completed");
+
+          queueOutput(ModelOutput{OutputEvent::JobEnded, currentJob_->id,
+                                  model_.runtimeStats()});
           model_.reset();
           currentJob_.reset();
           continue;
@@ -345,7 +339,6 @@ void ParakeetAddon::process() {
 
     lk.unlock();
 
-    // Process input
     auto piece = getNextPiece(input, lastPieceEnd);
     lastPieceEnd += piece.size();
     if (lastPieceEnd == input.size()) {
@@ -353,24 +346,24 @@ void ParakeetAddon::process() {
     }
 
     try {
-      // Use the process overload that returns Output via callback
       Model::Output modelOutput;
-      modelOutput = model_.process(piece, [&modelOutput](const Model::Output& out) {
-        modelOutput = out;
-      });
-      
+      modelOutput =
+          model_.process(piece, [&modelOutput](const Model::Output &out) {
+            modelOutput = out;
+          });
+
       std::scoped_lock outputLock{mtx_};
-      queueOutput(
-          ModelOutput{OutputEvent::Output, currentJob_->id, std::move(modelOutput)});
-    } catch (const std::exception& e) {
+      queueOutput(ModelOutput{OutputEvent::Output, currentJob_->id,
+                              std::move(modelOutput)});
+    } catch (const std::exception &e) {
       auto jobId = currentJob_->id;
       std::scoped_lock errorLock{mtx_};
-      
+
       QLOG(Priority::ERROR,
            "Error processing job " + std::to_string(jobId) + ": " + e.what());
-      
-      queueOutput(ModelOutput{
-          OutputEvent::Error, jobId, typename ModelOutput::Error{e.what()}});
+
+      queueOutput(ModelOutput{OutputEvent::Error, jobId,
+                              typename ModelOutput::Error{e.what()}});
       queueOutput(
           ModelOutput{OutputEvent::JobEnded, jobId, model_.runtimeStats()});
       model_.reset();
@@ -383,21 +376,15 @@ void ParakeetAddon::process() {
   }
 }
 
-// Custom endOfJob for Parakeet
-template <>
-uint32_t ParakeetAddon::endOfJob() {
+template <> uint32_t ParakeetAddon::endOfJob() {
   model_.endOfStream();
-
   uint32_t jobId = 0;
   if (lastAppendedJob_ != nullptr) {
     jobId = lastAppendedJob_->id;
-    // Only emit JobEnded immediately if not currently processing
-    // (if processing, the processing loop will emit it when done)
     if (status_ != AddonStatus::Processing) {
       queueOutput(Output<Model::Output>{
           OutputEvent::JobEnded, lastAppendedJob_->id, model_.runtimeStats()});
     }
-    // Always clear lastAppendedJob_ so the processing loop knows the job is finished
     lastAppendedJob_ = nullptr;
   }
 

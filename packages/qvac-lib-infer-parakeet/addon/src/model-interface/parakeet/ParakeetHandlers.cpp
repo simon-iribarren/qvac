@@ -14,13 +14,10 @@ int computeOptimalThreads() {
   return hwThreads > 2 ? static_cast<int>(hwThreads / 2U) : 1;
 }
 
-// Model configuration handlers
+constexpr std::array VALID_SAMPLE_RATES = {8000, 16000, 22050, 44100, 48000};
+
 const HandlersMap<ParakeetConfig> PARAKEET_MODEL_HANDLERS = {
-    {"model",
-     [](ParakeetConfig &config, const JSValueVariant &value) {
-       // model is passed in as a reset argument but handled separately
-       // This handler exists for compatibility
-     }},
+    {"model", [](ParakeetConfig &config, const JSValueVariant &value) {}},
 
     {"modelPath",
      [](ParakeetConfig &config, const JSValueVariant &value) {
@@ -35,7 +32,6 @@ const HandlersMap<ParakeetConfig> PARAKEET_MODEL_HANDLERS = {
 
     {"path",
      [](ParakeetConfig &config, const JSValueVariant &value) {
-       // Alias for modelPath (compatibility with JsInterface)
        const auto &path = std::get<std::string>(value);
        if (path.empty()) {
          throw qvac_errors::StatusError(
@@ -84,14 +80,11 @@ const HandlersMap<ParakeetConfig> PARAKEET_MODEL_HANDLERS = {
      }},
 };
 
-// Audio configuration handlers
 const HandlersMap<ParakeetConfig> PARAKEET_AUDIO_HANDLERS = {
     {"sampleRate",
      [](ParakeetConfig &config, const JSValueVariant &value) {
-       constexpr std::array validRates = {8000, 16000, 22050, 44100, 48000};
        int rate = static_cast<int>(std::get<double>(value));
-
-       if (!std::ranges::contains(validRates, rate)) {
+       if (!std::ranges::contains(VALID_SAMPLE_RATES, rate)) {
          throw qvac_errors::StatusError(
              qvac_errors::general_error::InvalidArgument,
              "sampleRate must be one of: 8000, 16000, 22050, 44100, 48000");
@@ -111,10 +104,8 @@ const HandlersMap<ParakeetConfig> PARAKEET_AUDIO_HANDLERS = {
      }},
 };
 
-// Transcription configuration handlers (reserved for future use)
 const HandlersMap<ParakeetConfig> PARAKEET_TRANSCRIPTION_HANDLERS = {};
 
-// Miscellaneous configuration handlers (for future expansion)
 const HandlersMap<MiscConfig> PARAKEET_MISC_HANDLERS = {
     {"captionEnabled",
      [](MiscConfig &config, const JSValueVariant &value) {
