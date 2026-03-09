@@ -1,4 +1,4 @@
-name: General CI/CD (rag)
+name: General CI/CD (Qvac-lib-langdetect-text-cld2)
 # This workflow is used to call the reusable workflows in the qvac-devops repository
 # https://github.com/tetherto/qvac-devops/blob/production-workflows-tag/.github/workflows/public-reusable.yml
 
@@ -16,7 +16,13 @@ on:
       - feature-*
       - tmp-*
     paths:
-      - "packages/rag/**"
+      - "packages/qvac-lib-langdetect-text-cld2/**"
+  pull_request:
+    branches:
+      - main
+      - release-*
+    paths:
+      - "packages/qvac-lib-langdetect-text-cld2/**"
   workflow_dispatch:
     inputs:
       custom_input_1:
@@ -30,9 +36,41 @@ on:
         type: string
 
 jobs:
+  test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Run lint and unit tests
+        uses: ./.github/actions/run-lint-and-unit-tests
+        with:
+          workdir: packages/qvac-lib-langdetect-text-cld2
+          npm-token: ${{ secrets.NPM_TOKEN }}
+          gpr-token: ${{ secrets.GITHUB_TOKEN }}
+          pat-token: ${{ secrets.PAT_TOKEN }}
+          registry-type: gpr
+
+      - name: Run test coverage
+        working-directory: packages/qvac-lib-langdetect-text-cld2
+        run: npm run coverage
+        continue-on-error: true
+
+      - name: Comment PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const status = '${{ job.status }}' === 'success' ? '✅' : '❌';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${status} Tests completed for qvac-lib-langdetect-text-cld2`
+            })
   release-merge-guard:
     name: Release Merge Guard
-    continue-on-error: true
     if: >-
       github.event_name == 'push' &&
       startsWith(github.ref_name, 'release-') &&
@@ -48,9 +86,9 @@ jobs:
           base-ref: ${{ github.ref_name }}
           base-sha: ${{ github.event.before }}
           head-sha: ${{ github.sha }}
-          package-slug: rag
-          package-json-path: packages/rag/package.json
-          changelog-path: packages/rag/CHANGELOG.md
+          package-slug: qvac-lib-langdetect-text-cld2
+          package-json-path: packages/qvac-lib-langdetect-text-cld2/package.json
+          changelog-path: packages/qvac-lib-langdetect-text-cld2/CHANGELOG.md
 
   publish-logic:
     runs-on: ubuntu-latest
@@ -119,7 +157,7 @@ jobs:
           pat-token: ${{ secrets.PAT_TOKEN }}
           npm-token: ${{ secrets.NPM_TOKEN }}
           tag: ${{ needs.publish-logic.outputs.gpr_tag }}
-          workdir: packages/rag
+          workdir: packages/qvac-lib-langdetect-text-cld2
           name-suffix: "-mono"
 
   publish-release-npm:
@@ -132,23 +170,8 @@ jobs:
     uses: tetherto/qvac-devops/.github/workflows/public-reusable-npm.yml@monorepo_update
     secrets: inherit
     with:
-      workdir: packages/rag
-      repo_name: rag
-
-    # Create GitHub release only for actual releases (after NPM publish)
-  publish-release:
-    needs: [publish-release-npm]
-    if:  needs.publish-release-npm.result == 'success' && needs.publish-release-npm.outputs.published_version != ''
-    permissions:
-      contents: write
-    uses: ./.github/workflows/create-github-release.yml
-    secrets: inherit
-    with:
-      repo_name: "rag"
-      release_name: "QVAC rag Lib"
-      published_version: ${{ needs.publish-release-npm.outputs.published_version }}
-      prev_sha: ${{ github.event.before }}
-      workdir: "packages/rag"
+      workdir: packages/qvac-lib-langdetect-text-cld2
+      repo_name: langdetect-text-cld2
 
   publish-feature-gpr:
     needs: publish-logic
@@ -169,7 +192,7 @@ jobs:
           pat-token: ${{ secrets.PAT_TOKEN }}
           npm-token: ${{ secrets.NPM_TOKEN }}
           tag: ${{ needs.publish-logic.outputs.gpr_tag }}
-          workdir: packages/rag
+          workdir: packages/qvac-lib-langdetect-text-cld2
           name-suffix: "-mono"
 
   publish-tmp-gpr:
@@ -191,5 +214,5 @@ jobs:
           pat-token: ${{ secrets.PAT_TOKEN }}
           npm-token: ${{ secrets.NPM_TOKEN }}
           tag: ${{ needs.publish-logic.outputs.gpr_tag }}
-          workdir: packages/rag
+          workdir: packages/qvac-lib-langdetect-text-cld2
           name-suffix: "-mono"
