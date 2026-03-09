@@ -104,7 +104,8 @@ void SdModel::load() {
   params.enable_mmap = config_.mmap;
   params.offload_params_to_cpu = config_.offloadToCpu;
 
-  // device: "cpu" skips GPU backend entirely (sets env var read by init_backend())
+  // device: "cpu" skips GPU backend entirely (sets env var read by
+  // init_backend())
   if (config_.device == "cpu") {
 #ifdef _WIN32
     _putenv_s("SD_CPU_ONLY", "1");
