@@ -157,6 +157,13 @@ private:
   void applyContextDiscard();
   void handleStopRequestAndAddEot(LlamaBatch& batch);
 
+  // threadpools must outlive llamaInit_ because llama_free (called by
+  // llamaInit_ destructor) may access attached threadpool pointers.
+  // C++ destroys members in reverse declaration order, so declare
+  // threadpools before llamaInit_.
+  ThreadPoolPtr threadpool_;
+  ThreadPoolPtr threadpoolBatch_;
+
   common_init_result llamaInit_;
   llama_model* model_;
   llama_context* lctx_;
@@ -170,8 +177,6 @@ private:
   llama_pos nPast_ = 0;
   llama_pos nDiscarded_ = 0;
   llama_pos firstMsgTokens_ = 0;
-  ThreadPoolPtr threadpool_;
-  ThreadPoolPtr threadpoolBatch_;
 
   // UTF-8 token buffer for handling incomplete emoji sequences
   qvac_lib_inference_addon_llama::UTF8TokenBuffer utf8Buffer_;
