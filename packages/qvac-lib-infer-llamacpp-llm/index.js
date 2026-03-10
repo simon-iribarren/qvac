@@ -232,9 +232,9 @@ class LlmLlamacpp extends BaseInference {
         promptMessages.push({ type: 'media', content: mediaData })
       }
 
-      const { samplingConfig } = runOptions
-      if (samplingConfig && typeof samplingConfig === 'object' && Object.keys(samplingConfig).length > 0) {
-        textMessages.unshift({ type: 'sampling_config', ...samplingConfig })
+      const { config } = runOptions
+      if (config && typeof config === 'object' && Object.keys(config).length > 0) {
+        textMessages.unshift({ type: 'sampling_config', ...config })
       }
 
       // Send text messages

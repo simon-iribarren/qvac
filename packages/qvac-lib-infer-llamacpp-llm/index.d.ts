@@ -108,7 +108,7 @@ export interface SamplingConfig {
 
 export interface RunOptions {
   prefill?: boolean
-  samplingConfig?: SamplingConfig
+  config?: SamplingConfig
 }
 
 export interface DownloadWeightsOptions {
