@@ -5,7 +5,13 @@ import { sdkEmbed } from '../../../core/sdk.js'
 import type { RouteContext } from '../../types.js'
 
 export async function handleEmbeddings (req: IncomingMessage, res: ServerResponse, ctx: RouteContext): Promise<void> {
-  const body = await readBody(req)
+  let body: Record<string, unknown>
+  try {
+    body = await readBody(req)
+  } catch {
+    sendError(res, 400, 'invalid_json', 'Request body must be valid JSON.')
+    return
+  }
 
   if (!body['model']) {
     sendError(res, 400, 'missing_model', '"model" is required.')

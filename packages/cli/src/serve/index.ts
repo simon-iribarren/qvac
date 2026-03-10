@@ -46,6 +46,10 @@ export async function startServer (options: StartServerOptions): Promise<http.Se
 
     if (method === 'OPTIONS') {
       if (options.cors) handleCors(req, res)
+      else {
+        res.writeHead(204)
+        res.end()
+      }
       return
     }
 

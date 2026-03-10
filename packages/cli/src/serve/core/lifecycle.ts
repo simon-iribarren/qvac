@@ -69,12 +69,14 @@ export async function unloadModel (alias: string, registry: ModelRegistry, logge
       await sdkUnloadModel(entry.sdkModelId)
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err)
-      logger.warn(`SDK unload for "${alias}" failed: ${message}`)
+      logger.error(`SDK unload for "${alias}" failed: ${message}`)
+      registry.setError(alias, err)
+      throw new Error(`Failed to unload model "${alias}": ${message}`)
     }
   }
 
-  logger.info(`Unloaded model "${alias}".`)
   registry.remove(alias)
+  logger.info(`Unloaded model "${alias}".`)
 }
 
 export async function shutdownSDK (logger: Logger): Promise<void> {

@@ -41,8 +41,9 @@ let sdk: SDKModule | null = null
 export async function getSDK (): Promise<SDKModule> {
   if (sdk) return sdk
 
+  let loaded: SDKModule
   try {
-    sdk = await import(SDK_SPECIFIER) as unknown as SDKModule
+    loaded = await import(SDK_SPECIFIER) as unknown as SDKModule
   } catch {
     throw new Error(
       '@qvac/sdk is required for "qvac serve". Install it: npm install @qvac/sdk'
@@ -57,6 +58,7 @@ export async function getSDK (): Promise<SDKModule> {
     )
   }
 
+  sdk = loaded
   return sdk
 }
 
