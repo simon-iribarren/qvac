@@ -4,12 +4,11 @@
 
 #include <llama.h>
 
-#include "common/common.h"
-
 #include "../utils/ChatTemplateUtils.hpp"
 #include "../utils/Qwen3ReasoningUtils.hpp"
 #include "../utils/UTF8TokenBuffer.hpp"
 #include "LlmContext.hpp"
+#include "common/common.h"
 #include "qvac-lib-inference-addon-cpp/Logger.hpp"
 
 class TextLlmContext: public LlmContext {

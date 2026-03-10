@@ -305,12 +305,14 @@ std::string LlamaModel::processPrompt(const Prompt& prompt) {
     QLOG_IF(
         Priority::DEBUG,
         "Inference was interrupted during prompt evaluation\n");
-    if (hasOverrides) llmContext_->restoreSamplingDefaults();
+    if (hasOverrides)
+      llmContext_->restoreSamplingDefaults();
     return out;
   }
 
   if (prompt.prefill) {
-    if (hasOverrides) llmContext_->restoreSamplingDefaults();
+    if (hasOverrides)
+      llmContext_->restoreSamplingDefaults();
     return out;
   }
 
@@ -322,7 +324,8 @@ std::string LlamaModel::processPrompt(const Prompt& prompt) {
 
   bool generationOk = llmContext_->generateResponse(callback);
 
-  if (hasOverrides) llmContext_->restoreSamplingDefaults();
+  if (hasOverrides)
+    llmContext_->restoreSamplingDefaults();
 
   if (!generationOk) {
     resetState();

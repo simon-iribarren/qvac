@@ -493,7 +493,8 @@ bool TextLlmContext::generateResponse(
 
 void TextLlmContext::applySamplingOverrides(
     const SamplingOverrides& overrides) {
-  if (!overrides.hasOverrides()) return;
+  if (!overrides.hasOverrides())
+    return;
 
   originalSamplingParams_ = params_.sampling;
   originalNPredict_ = params_.n_predict;
@@ -515,7 +516,8 @@ void TextLlmContext::applySamplingOverrides(
 }
 
 void TextLlmContext::restoreSamplingDefaults() {
-  if (!overridesActive_) return;
+  if (!overridesActive_)
+    return;
 
   params_.sampling = originalSamplingParams_;
   params_.n_predict = originalNPredict_;
