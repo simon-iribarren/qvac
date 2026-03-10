@@ -213,4 +213,6 @@ private:
   llama_pos configuredNDiscarded_ = 0;
   std::optional<CacheManager> cacheManager_;
   bool lastRunWasPrefill_ = false;
+
+  SamplingOverrides pendingOverrides_;
 };

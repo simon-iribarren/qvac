@@ -1,11 +1,29 @@
 #pragma once
 
+#include <optional>
+
 #include "addon/LlmErrors.hpp"
 #include "common/chat.h"
 #include "common/sampling.h"
 #include "llama.h"
 
 using namespace qvac_lib_inference_addon_llama::errors;
+
+struct SamplingOverrides {
+  std::optional<int> n_predict;
+  std::optional<float> temp;
+  std::optional<float> top_p;
+  std::optional<int> top_k;
+  std::optional<float> frequency_penalty;
+  std::optional<float> presence_penalty;
+  std::optional<float> repeat_penalty;
+  std::optional<uint32_t> seed;
+
+  [[nodiscard]] bool hasOverrides() const {
+    return n_predict || temp || top_p || top_k || frequency_penalty ||
+           presence_penalty || repeat_penalty || seed;
+  }
+};
 
 struct CommonSamplerDeleter {
   void operator()(common_sampler* ptr) {
@@ -200,6 +218,9 @@ public:
    * @throws std::runtime_error if media loading fails in multimodal contexts
    */
   virtual void loadMedia(const std::string& fname) {};
+
+  virtual void applySamplingOverrides(const SamplingOverrides& overrides) {}
+  virtual void restoreSamplingDefaults() {}
 
   /**
    * The reset state method. It resets the context.

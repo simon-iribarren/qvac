@@ -274,6 +274,8 @@ std::string LlamaModel::processPrompt(const Prompt& prompt) {
     loadMedia(media);
   }
 
+  pendingOverrides_ = SamplingOverrides{};
+
   std::string out;
   ResolvedPrompt resolved = resolveChatAndTools(prompt.input);
 
@@ -282,6 +284,11 @@ std::string LlamaModel::processPrompt(const Prompt& prompt) {
         Priority::INFO,
         "No messages to process after session commands - returning early\n");
     return out;
+  }
+
+  const bool hasOverrides = pendingOverrides_.hasOverrides();
+  if (hasOverrides) {
+    llmContext_->applySamplingOverrides(pendingOverrides_);
   }
 
   bool evalOk =
@@ -298,10 +305,12 @@ std::string LlamaModel::processPrompt(const Prompt& prompt) {
     QLOG_IF(
         Priority::DEBUG,
         "Inference was interrupted during prompt evaluation\n");
+    if (hasOverrides) llmContext_->restoreSamplingDefaults();
     return out;
   }
 
   if (prompt.prefill) {
+    if (hasOverrides) llmContext_->restoreSamplingDefaults();
     return out;
   }
 
@@ -311,7 +320,11 @@ std::string LlamaModel::processPrompt(const Prompt& prompt) {
     callback = [&](const std::string& token) { oss << token; };
   }
 
-  if (!llmContext_->generateResponse(callback)) {
+  bool generationOk = llmContext_->generateResponse(callback);
+
+  if (hasOverrides) llmContext_->restoreSamplingDefaults();
+
+  if (!generationOk) {
     resetState();
     std::string errorMsg = string_format("%s: context overflow\n", __func__);
     throw qvac_errors::StatusError(
@@ -647,6 +660,33 @@ LlamaModel::formatPrompt(const std::string& input) {
             tool.parameters = jsonObj["parameters"].serialize();
           }
           tools.push_back(tool);
+          continue;
+        }
+
+        if (jsonObj.find("type") != jsonObj.end() &&
+            jsonObj["type"].get<std::string>() == "sampling_config") {
+          auto readDouble = [&](const char* key) -> std::optional<double> {
+            if (jsonObj.count(key) != 0 && jsonObj[key].is<double>()) {
+              return jsonObj[key].get<double>();
+            }
+            return std::nullopt;
+          };
+          if (auto v = readDouble("temp"))
+            pendingOverrides_.temp = static_cast<float>(*v);
+          if (auto v = readDouble("top_p"))
+            pendingOverrides_.top_p = static_cast<float>(*v);
+          if (auto v = readDouble("top_k"))
+            pendingOverrides_.top_k = static_cast<int>(*v);
+          if (auto v = readDouble("predict"))
+            pendingOverrides_.n_predict = static_cast<int>(*v);
+          if (auto v = readDouble("seed"))
+            pendingOverrides_.seed = static_cast<uint32_t>(*v);
+          if (auto v = readDouble("frequency_penalty"))
+            pendingOverrides_.frequency_penalty = static_cast<float>(*v);
+          if (auto v = readDouble("presence_penalty"))
+            pendingOverrides_.presence_penalty = static_cast<float>(*v);
+          if (auto v = readDouble("repeat_penalty"))
+            pendingOverrides_.repeat_penalty = static_cast<float>(*v);
           continue;
         }
 

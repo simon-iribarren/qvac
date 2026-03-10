@@ -4,6 +4,8 @@
 
 #include <llama.h>
 
+#include "common/common.h"
+
 #include "../utils/ChatTemplateUtils.hpp"
 #include "../utils/Qwen3ReasoningUtils.hpp"
 #include "../utils/UTF8TokenBuffer.hpp"
@@ -57,6 +59,9 @@ public:
    */
   bool generateResponse(
       const std::function<void(const std::string&)>& outputCallback) override;
+
+  void applySamplingOverrides(const SamplingOverrides& overrides) override;
+  void restoreSamplingDefaults() override;
 
   /**
    * The stop method. It stops the model inference.
@@ -177,6 +182,10 @@ private:
   bool isQwen3Model_ = false;
 
   std::atomic<bool> stopGeneration_ = false;
+
+  common_params_sampling originalSamplingParams_;
+  int originalNPredict_ = -1;
+  bool overridesActive_ = false;
 };
 
 

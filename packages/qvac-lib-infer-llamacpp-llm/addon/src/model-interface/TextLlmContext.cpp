@@ -491,6 +491,39 @@ bool TextLlmContext::generateResponse(
   return true;
 }
 
+void TextLlmContext::applySamplingOverrides(
+    const SamplingOverrides& overrides) {
+  if (!overrides.hasOverrides()) return;
+
+  originalSamplingParams_ = params_.sampling;
+  originalNPredict_ = params_.n_predict;
+  overridesActive_ = true;
+
+  if (overrides.temp) params_.sampling.temp = *overrides.temp;
+  if (overrides.top_p) params_.sampling.top_p = *overrides.top_p;
+  if (overrides.top_k) params_.sampling.top_k = *overrides.top_k;
+  if (overrides.n_predict) params_.n_predict = *overrides.n_predict;
+  if (overrides.seed) params_.sampling.seed = *overrides.seed;
+  if (overrides.frequency_penalty)
+    params_.sampling.penalty_freq = *overrides.frequency_penalty;
+  if (overrides.presence_penalty)
+    params_.sampling.penalty_present = *overrides.presence_penalty;
+  if (overrides.repeat_penalty)
+    params_.sampling.penalty_repeat = *overrides.repeat_penalty;
+
+  smpl_.reset(common_sampler_init(model_, params_.sampling));
+}
+
+void TextLlmContext::restoreSamplingDefaults() {
+  if (!overridesActive_) return;
+
+  params_.sampling = originalSamplingParams_;
+  params_.n_predict = originalNPredict_;
+  overridesActive_ = false;
+
+  smpl_.reset(common_sampler_init(model_, params_.sampling));
+}
+
 void TextLlmContext::stop() { stopGeneration_.store(true); }
 
 void TextLlmContext::resetState(bool resetStats) {
