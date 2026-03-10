@@ -12,7 +12,12 @@ function Download-IfMissing {
         return
     }
     Write-Host "Downloading $Name..."
-    Invoke-WebRequest -Uri $Url -OutFile $Name -UseBasicParsing -MaximumRedirection 5
+    try {
+        Invoke-WebRequest -Uri $Url -OutFile $Name -UseBasicParsing -MaximumRedirection 5 -TimeoutSec 3600
+    } catch {
+        Write-Error "Failed to download $Name : $_"
+        throw
+    }
     $size = (Get-Item $Name).Length / 1MB
     Write-Host "✓ $Name ready ($([math]::Round($size, 1)) MB)"
 }
