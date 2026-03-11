@@ -63,23 +63,25 @@ inline js_value_t* runJob(js_env_t* env, js_callback_info_t* info) try {
         inputObj.getOptionalPropertyAs<js::Boolean, bool>(env, "prefill")
             .value_or(false);
 
-    auto configObj = inputObj.getOptionalProperty<js::Object>(env, "generationParams");
+    auto configObj =
+        inputObj.getOptionalProperty<js::Object>(env, "generationParams");
     if (configObj.has_value()) {
-      auto readNum = [&](const char* key) -> std::optional<double> {
-        return configObj->getOptionalPropertyAs<js::Number, double>(env, key);
+      auto readNum = [&](const char* key, auto& out) {
+        auto v =
+            configObj->getOptionalPropertyAs<js::Number, double>(env, key);
+        if (v.has_value()) {
+          out = static_cast<std::decay_t<decltype(out)>>(*v);
+        }
       };
       GenerationParams& ov = prompt.generationParams;
-      if (auto v = readNum("temp")) ov.temp = static_cast<float>(*v);
-      if (auto v = readNum("top_p")) ov.top_p = static_cast<float>(*v);
-      if (auto v = readNum("top_k")) ov.top_k = static_cast<int>(*v);
-      if (auto v = readNum("predict")) ov.n_predict = static_cast<int>(*v);
-      if (auto v = readNum("seed")) ov.seed = static_cast<uint32_t>(*v);
-      if (auto v = readNum("frequency_penalty"))
-        ov.frequency_penalty = static_cast<float>(*v);
-      if (auto v = readNum("presence_penalty"))
-        ov.presence_penalty = static_cast<float>(*v);
-      if (auto v = readNum("repeat_penalty"))
-        ov.repeat_penalty = static_cast<float>(*v);
+      readNum("temp", ov.temp);
+      readNum("top_p", ov.top_p);
+      readNum("top_k", ov.top_k);
+      readNum("predict", ov.n_predict);
+      readNum("seed", ov.seed);
+      readNum("frequency_penalty", ov.frequency_penalty);
+      readNum("presence_penalty", ov.presence_penalty);
+      readNum("repeat_penalty", ov.repeat_penalty);
     }
   };
 

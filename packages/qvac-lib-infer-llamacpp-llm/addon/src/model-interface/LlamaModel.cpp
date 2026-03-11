@@ -26,6 +26,7 @@
 #include "qvac-lib-inference-addon-cpp/LlamacppUtils.hpp"
 #include "utils/BackendSelection.hpp"
 #include "utils/LoggingMacros.hpp"
+#include "utils/ScopeGuard.hpp"
 
 using namespace qvac_lib_inference_addon_llama::errors;
 using namespace qvac_lib_inference_addon_cpp::logger;
@@ -286,56 +287,47 @@ std::string LlamaModel::processPrompt(const Prompt& prompt) {
 
   auto restore =
       llmContext_->applyGenerationParams(prompt.generationParams);
+  ScopeGuard paramsGuard([&] { restore(); });
 
-  try {
-    bool evalOk =
-        resolved.tools.empty()
-            ? llmContext_->evalMessage(
-                  resolved.chatMsgs, resolved.isCacheLoaded, prompt.prefill)
-            : llmContext_->evalMessageWithTools(
-                  resolved.chatMsgs,
-                  resolved.tools,
-                  resolved.isCacheLoaded,
-                  prompt.prefill);
+  bool evalOk =
+      resolved.tools.empty()
+          ? llmContext_->evalMessage(
+                resolved.chatMsgs, resolved.isCacheLoaded, prompt.prefill)
+          : llmContext_->evalMessageWithTools(
+                resolved.chatMsgs,
+                resolved.tools,
+                resolved.isCacheLoaded,
+                prompt.prefill);
 
-    if (!evalOk) {
-      QLOG_IF(
-          Priority::DEBUG,
-          "Inference was interrupted during prompt evaluation\n");
-      restore();
-      return out;
-    }
+  if (!evalOk) {
+    QLOG_IF(
+        Priority::DEBUG,
+        "Inference was interrupted during prompt evaluation\n");
+    return out;
+  }
 
-    if (prompt.prefill) {
-      restore();
-      return out;
-    }
+  if (prompt.prefill) {
+    return out;
+  }
 
-    std::ostringstream oss;
-    auto callback = prompt.outputCallback;
-    if (!prompt.outputCallback) {
-      callback = [&](const std::string& token) { oss << token; };
-    }
+  std::ostringstream oss;
+  auto callback = prompt.outputCallback;
+  if (!prompt.outputCallback) {
+    callback = [&](const std::string& token) { oss << token; };
+  }
 
-    bool generationOk = llmContext_->generateResponse(callback);
-    restore();
+  if (!llmContext_->generateResponse(callback)) {
+    resetState();
+    std::string errorMsg = string_format("%s: context overflow\n", __func__);
+    throw qvac_errors::StatusError(
+        ADDON_ID, toString(ContextOverflow), errorMsg);
+  }
 
-    if (!generationOk) {
-      resetState();
-      std::string errorMsg = string_format("%s: context overflow\n", __func__);
-      throw qvac_errors::StatusError(
-          ADDON_ID, toString(ContextOverflow), errorMsg);
-    }
-
-    if (!prompt.outputCallback) {
-      out = oss.str();
-    }
-    if (resolved.shouldResetAfterInference) {
-      resetState(false);
-    }
-  } catch (...) {
-    restore();
-    throw;
+  if (!prompt.outputCallback) {
+    out = oss.str();
+  }
+  if (resolved.shouldResetAfterInference) {
+    resetState(false);
   }
   return out;
 }

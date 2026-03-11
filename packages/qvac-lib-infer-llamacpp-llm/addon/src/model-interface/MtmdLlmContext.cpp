@@ -430,23 +430,26 @@ bool MtmdLlmContext::generateResponse(
 
 std::function<void()> MtmdLlmContext::applyGenerationParams(
     const GenerationParams& overrides) {
-  if (!overrides.hasOverrides())
+  if (!overrides.hasOverrides()) {
     return []() {};
+  }
 
-  auto savedSampling = params_.sampling;
-  auto savedPredict = params_.n_predict;
+  common_params_sampling savedSampling = params_.sampling;
+  int savedPredict = params_.n_predict;
 
-  if (overrides.temp) params_.sampling.temp = *overrides.temp;
-  if (overrides.top_p) params_.sampling.top_p = *overrides.top_p;
-  if (overrides.top_k) params_.sampling.top_k = *overrides.top_k;
-  if (overrides.n_predict) params_.n_predict = *overrides.n_predict;
-  if (overrides.seed) params_.sampling.seed = *overrides.seed;
-  if (overrides.frequency_penalty)
-    params_.sampling.penalty_freq = *overrides.frequency_penalty;
-  if (overrides.presence_penalty)
-    params_.sampling.penalty_present = *overrides.presence_penalty;
-  if (overrides.repeat_penalty)
-    params_.sampling.penalty_repeat = *overrides.repeat_penalty;
+  auto setIf = [](const auto& src, auto& dst) {
+    if (src) {
+      dst = *src;
+    }
+  };
+  setIf(overrides.temp, params_.sampling.temp);
+  setIf(overrides.top_p, params_.sampling.top_p);
+  setIf(overrides.top_k, params_.sampling.top_k);
+  setIf(overrides.n_predict, params_.n_predict);
+  setIf(overrides.seed, params_.sampling.seed);
+  setIf(overrides.frequency_penalty, params_.sampling.penalty_freq);
+  setIf(overrides.presence_penalty, params_.sampling.penalty_present);
+  setIf(overrides.repeat_penalty, params_.sampling.penalty_repeat);
 
   smpl_.reset(common_sampler_init(model_, params_.sampling));
 
