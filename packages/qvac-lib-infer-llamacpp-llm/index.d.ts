@@ -95,7 +95,7 @@ export type Message =
   | UserMediaMessage
   | ChatFunctionDefinition
 
-export interface SamplingConfig {
+export interface GenerationParams {
   temp?: number
   top_p?: number
   top_k?: number
@@ -108,7 +108,7 @@ export interface SamplingConfig {
 
 export interface RunOptions {
   prefill?: boolean
-  generationParams?: SamplingConfig
+  generationParams?: GenerationParams
 }
 
 export interface DownloadWeightsOptions {

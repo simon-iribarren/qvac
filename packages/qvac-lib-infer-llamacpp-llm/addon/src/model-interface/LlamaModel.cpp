@@ -323,7 +323,7 @@ std::string LlamaModel::processPrompt(const Prompt& prompt) {
   bool generationOk = llmContext_->generateResponse(callback);
 
   if (hasOverrides)
-    llmContext_->restoreSamplingDefaults();
+    llmContext_->restoreDefaultGenerationParams();
 
   if (!generationOk) {
     resetState();
