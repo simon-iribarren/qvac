@@ -491,14 +491,14 @@ bool TextLlmContext::generateResponse(
   return true;
 }
 
-void TextLlmContext::applySamplingOverrides(
-    const SamplingOverrides& overrides) {
+void TextLlmContext::applyGenerationParams(
+    const GenerationParams& overrides) {
   if (!overrides.hasOverrides())
     return;
 
-  originalSamplingParams_ = params_.sampling;
-  originalNPredict_ = params_.n_predict;
-  overridesActive_ = true;
+  defaultSamplingParams_ = params_.sampling;
+  defaultNPredict_ = params_.n_predict;
+  generationParamsActive_ = true;
 
   if (overrides.temp) params_.sampling.temp = *overrides.temp;
   if (overrides.top_p) params_.sampling.top_p = *overrides.top_p;
@@ -515,13 +515,13 @@ void TextLlmContext::applySamplingOverrides(
   smpl_.reset(common_sampler_init(model_, params_.sampling));
 }
 
-void TextLlmContext::restoreSamplingDefaults() {
-  if (!overridesActive_)
+void TextLlmContext::restoreDefaultGenerationParams() {
+  if (!generationParamsActive_)
     return;
 
-  params_.sampling = originalSamplingParams_;
-  params_.n_predict = originalNPredict_;
-  overridesActive_ = false;
+  params_.sampling = defaultSamplingParams_;
+  params_.n_predict = defaultNPredict_;
+  generationParamsActive_ = false;
 
   smpl_.reset(common_sampler_init(model_, params_.sampling));
 }

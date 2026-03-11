@@ -80,7 +80,7 @@ public:
   struct Prompt {
     std::string input;
     bool prefill = false;
-    SamplingOverrides overrides;
+    GenerationParams generationParams;
     std::vector<std::vector<uint8_t>> media;
     std::function<void(const std::string&)> outputCallback;
   };

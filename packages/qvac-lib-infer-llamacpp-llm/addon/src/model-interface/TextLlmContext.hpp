@@ -59,8 +59,8 @@ public:
   bool generateResponse(
       const std::function<void(const std::string&)>& outputCallback) override;
 
-  void applySamplingOverrides(const SamplingOverrides& overrides) override;
-  void restoreSamplingDefaults() override;
+  void applyGenerationParams(const GenerationParams& overrides) override;
+  void restoreDefaultGenerationParams() override;
 
   /**
    * The stop method. It stops the model inference.
@@ -182,9 +182,9 @@ private:
 
   std::atomic<bool> stopGeneration_ = false;
 
-  common_params_sampling originalSamplingParams_;
-  int originalNPredict_ = -1;
-  bool overridesActive_ = false;
+  common_params_sampling defaultSamplingParams_;
+  int defaultNPredict_ = -1;
+  bool generationParamsActive_ = false;
 };
 
 

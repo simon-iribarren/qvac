@@ -9,7 +9,7 @@
 
 using namespace qvac_lib_inference_addon_llama::errors;
 
-struct SamplingOverrides {
+struct GenerationParams {
   std::optional<int> n_predict;
   std::optional<float> temp;
   std::optional<float> top_p;
@@ -220,19 +220,19 @@ public:
   virtual void loadMedia(const std::string& fname) {};
 
   /**
-   * Apply per-inference sampling parameter overrides.
+   * Apply per-inference generation parameter overrides.
    * Saves original parameters internally so they can be restored.
    * Default implementation is a no-op (e.g. for multimodal contexts).
    *
-   * @param overrides - the sampling parameter overrides to apply.
+   * @param params - the generation parameter overrides to apply.
    */
-  virtual void applySamplingOverrides(const SamplingOverrides& overrides) {}
+  virtual void applyGenerationParams(const GenerationParams& params) {}
 
   /**
-   * Restore sampling parameters to their original (load-time) values.
+   * Restore generation parameters to their original (load-time) values.
    * Default implementation is a no-op.
    */
-  virtual void restoreSamplingDefaults() {}
+  virtual void restoreDefaultGenerationParams() {}
 
   /**
    * The reset state method. It resets the context.

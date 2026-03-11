@@ -68,7 +68,7 @@ inline js_value_t* runJob(js_env_t* env, js_callback_info_t* info) try {
       auto readNum = [&](const char* key) -> std::optional<double> {
         return configObj->getOptionalPropertyAs<js::Number, double>(env, key);
       };
-      SamplingOverrides& ov = prompt.overrides;
+      GenerationParams& ov = prompt.generationParams;
       if (auto v = readNum("temp")) ov.temp = static_cast<float>(*v);
       if (auto v = readNum("top_p")) ov.top_p = static_cast<float>(*v);
       if (auto v = readNum("top_k")) ov.top_k = static_cast<int>(*v);
