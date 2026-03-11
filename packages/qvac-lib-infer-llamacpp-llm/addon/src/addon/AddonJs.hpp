@@ -62,6 +62,25 @@ inline js_value_t* runJob(js_env_t* env, js_callback_info_t* info) try {
     prompt.prefill =
         inputObj.getOptionalPropertyAs<js::Boolean, bool>(env, "prefill")
             .value_or(false);
+
+    auto configObj = inputObj.getOptionalProperty<js::Object>(env, "generationParams");
+    if (configObj.has_value()) {
+      auto readNum = [&](const char* key) -> std::optional<double> {
+        return configObj->getOptionalPropertyAs<js::Number, double>(env, key);
+      };
+      SamplingOverrides& ov = prompt.overrides;
+      if (auto v = readNum("temp")) ov.temp = static_cast<float>(*v);
+      if (auto v = readNum("top_p")) ov.top_p = static_cast<float>(*v);
+      if (auto v = readNum("top_k")) ov.top_k = static_cast<int>(*v);
+      if (auto v = readNum("predict")) ov.n_predict = static_cast<int>(*v);
+      if (auto v = readNum("seed")) ov.seed = static_cast<uint32_t>(*v);
+      if (auto v = readNum("frequency_penalty"))
+        ov.frequency_penalty = static_cast<float>(*v);
+      if (auto v = readNum("presence_penalty"))
+        ov.presence_penalty = static_cast<float>(*v);
+      if (auto v = readNum("repeat_penalty"))
+        ov.repeat_penalty = static_cast<float>(*v);
+    }
   };
 
   auto parseMedia = [&](js::Object& inputObj) {

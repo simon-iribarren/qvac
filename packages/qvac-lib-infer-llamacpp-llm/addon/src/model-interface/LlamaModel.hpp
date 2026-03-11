@@ -80,6 +80,7 @@ public:
   struct Prompt {
     std::string input;
     bool prefill = false;
+    SamplingOverrides overrides;
     std::vector<std::vector<uint8_t>> media;
     std::function<void(const std::string&)> outputCallback;
   };
@@ -213,6 +214,4 @@ private:
   llama_pos configuredNDiscarded_ = 0;
   std::optional<CacheManager> cacheManager_;
   bool lastRunWasPrefill_ = false;
-
-  SamplingOverrides pendingOverrides_;
 };
