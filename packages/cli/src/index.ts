@@ -57,9 +57,13 @@ function setupCli (): void {
       }
     })
 
-  program
+  const serveCmd = program
     .command('serve')
-    .description('Start an OpenAI-compatible REST API server backed by QVAC')
+    .description('Start an API server backed by QVAC')
+
+  serveCmd
+    .command('openai')
+    .description('Start an OpenAI-compatible REST API server')
     .option('-c, --config <path>', 'Config file path (default: auto-detect qvac.config.*)')
     .option('-p, --port <number>', 'Port to listen on', '11434')
     .option('-H, --host <address>', 'Host to bind to', '127.0.0.1')

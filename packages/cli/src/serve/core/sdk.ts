@@ -46,7 +46,7 @@ export async function getSDK (): Promise<SDKModule> {
     loaded = await import(SDK_SPECIFIER) as unknown as SDKModule
   } catch {
     throw new Error(
-      '@qvac/sdk is required for "qvac serve". Install it: npm install @qvac/sdk'
+      '@qvac/sdk is required for "qvac serve openai". Install it: npm install @qvac/sdk'
     )
   }
 
