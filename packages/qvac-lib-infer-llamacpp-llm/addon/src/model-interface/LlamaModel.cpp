@@ -380,6 +380,13 @@ std::string LlamaModel::processPromptImpl(const Prompt& prompt) {
     resetState(true);
   }
 
+  if (toolsAtEnd_ && !resolved.tools.empty() &&
+      llmContext_->getNPastBeforeTools() > 0 &&
+      llmContext_->getNPast() > llmContext_->getNPastBeforeTools()) {
+    llmContext_->removeLastNTokens(
+        llmContext_->getNPast() - llmContext_->getNPastBeforeTools());
+  }
+
   if (resolved.chatMsgs.empty() && resolved.tools.empty()) {
     QLOG_IF(
         Priority::INFO,
