@@ -428,6 +428,38 @@ bool MtmdLlmContext::generateResponse(
   return true;
 }
 
+std::function<void()> MtmdLlmContext::applyGenerationParams(
+    const GenerationParams& overrides) {
+  if (!overrides.hasOverrides())
+    return []() {};
+
+  auto savedSampling = params_.sampling;
+  auto savedPredict = params_.n_predict;
+
+  if (overrides.temp) params_.sampling.temp = *overrides.temp;
+  if (overrides.top_p) params_.sampling.top_p = *overrides.top_p;
+  if (overrides.top_k) params_.sampling.top_k = *overrides.top_k;
+  if (overrides.n_predict) params_.n_predict = *overrides.n_predict;
+  if (overrides.seed) params_.sampling.seed = *overrides.seed;
+  if (overrides.frequency_penalty)
+    params_.sampling.penalty_freq = *overrides.frequency_penalty;
+  if (overrides.presence_penalty)
+    params_.sampling.penalty_present = *overrides.presence_penalty;
+  if (overrides.repeat_penalty)
+    params_.sampling.penalty_repeat = *overrides.repeat_penalty;
+
+  smpl_.reset(common_sampler_init(model_, params_.sampling));
+
+  bool restored = false;
+  return [this, savedSampling, savedPredict, restored]() mutable {
+    if (restored) return;
+    restored = true;
+    params_.sampling = savedSampling;
+    params_.n_predict = savedPredict;
+    smpl_.reset(common_sampler_init(model_, params_.sampling));
+  };
+}
+
 void MtmdLlmContext::stop() { stopGeneration_.store(true); }
 
 llama_context* MtmdLlmContext::getCtx() { return lctx_; }
