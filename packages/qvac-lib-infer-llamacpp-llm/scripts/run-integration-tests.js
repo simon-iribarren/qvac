@@ -38,7 +38,6 @@ function main () {
         clearInterval(poll)
         bare.kill('SIGTERM')
         setTimeout(() => { bare.kill('SIGKILL') }, 2000)
-        return
       }
     } catch (_) {}
   }, 1000)

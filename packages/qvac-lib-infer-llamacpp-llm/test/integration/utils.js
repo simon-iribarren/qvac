@@ -201,7 +201,7 @@ async function ensureModel ({ modelName, downloadUrl }) {
       if (attempt < MAX_RETRIES) {
         const delay = attempt * 10_000
         console.log(`Retrying in ${delay / 1000}s...`)
-        await new Promise(r => setTimeout(r, delay))
+        await new Promise(resolve => setTimeout(resolve, delay))
       }
     }
   }
