@@ -491,14 +491,13 @@ bool TextLlmContext::generateResponse(
   return true;
 }
 
-void TextLlmContext::applyGenerationParams(
+std::function<void()> TextLlmContext::applyGenerationParams(
     const GenerationParams& overrides) {
   if (!overrides.hasOverrides())
-    return;
+    return []() {};
 
-  defaultSamplingParams_ = params_.sampling;
-  defaultNPredict_ = params_.n_predict;
-  generationParamsActive_ = true;
+  auto savedSampling = params_.sampling;
+  auto savedPredict = params_.n_predict;
 
   if (overrides.temp) params_.sampling.temp = *overrides.temp;
   if (overrides.top_p) params_.sampling.top_p = *overrides.top_p;
@@ -513,17 +512,15 @@ void TextLlmContext::applyGenerationParams(
     params_.sampling.penalty_repeat = *overrides.repeat_penalty;
 
   smpl_.reset(common_sampler_init(model_, params_.sampling));
-}
 
-void TextLlmContext::restoreDefaultGenerationParams() {
-  if (!generationParamsActive_)
-    return;
-
-  params_.sampling = defaultSamplingParams_;
-  params_.n_predict = defaultNPredict_;
-  generationParamsActive_ = false;
-
-  smpl_.reset(common_sampler_init(model_, params_.sampling));
+  bool restored = false;
+  return [this, savedSampling, savedPredict, restored]() mutable {
+    if (restored) return;
+    restored = true;
+    params_.sampling = savedSampling;
+    params_.n_predict = savedPredict;
+    smpl_.reset(common_sampler_init(model_, params_.sampling));
+  };
 }
 
 void TextLlmContext::stop() { stopGeneration_.store(true); }

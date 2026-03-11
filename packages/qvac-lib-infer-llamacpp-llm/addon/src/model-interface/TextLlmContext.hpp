@@ -59,8 +59,8 @@ public:
   bool generateResponse(
       const std::function<void(const std::string&)>& outputCallback) override;
 
-  void applyGenerationParams(const GenerationParams& overrides) override;
-  void restoreDefaultGenerationParams() override;
+  std::function<void()> applyGenerationParams(
+      const GenerationParams& overrides) override;
 
   /**
    * The stop method. It stops the model inference.
@@ -181,10 +181,6 @@ private:
   bool isQwen3Model_ = false;
 
   std::atomic<bool> stopGeneration_ = false;
-
-  common_params_sampling defaultSamplingParams_;
-  int defaultNPredict_ = -1;
-  bool generationParamsActive_ = false;
 };
 
 

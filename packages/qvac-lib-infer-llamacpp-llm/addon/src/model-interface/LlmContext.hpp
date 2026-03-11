@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <optional>
 
 #include "addon/LlmErrors.hpp"
@@ -220,19 +221,18 @@ public:
   virtual void loadMedia(const std::string& fname) {};
 
   /**
-   * Apply per-inference generation parameter overrides.
-   * Saves original parameters internally so they can be restored.
+   * Apply per-inference generation parameter overrides and return a callable
+   * that restores the original (load-time) values when invoked.
    * Default implementation is a no-op (e.g. for multimodal contexts).
    *
    * @param params - the generation parameter overrides to apply.
+   * @return a callable that restores original parameters; safe to call
+   *         multiple times (subsequent calls are no-ops).
    */
-  virtual void applyGenerationParams(const GenerationParams& params) {}
-
-  /**
-   * Restore generation parameters to their original (load-time) values.
-   * Default implementation is a no-op.
-   */
-  virtual void restoreDefaultGenerationParams() {}
+  virtual std::function<void()> applyGenerationParams(
+      const GenerationParams& params) {
+    return []() {};
+  }
 
   /**
    * The reset state method. It resets the context.

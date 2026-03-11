@@ -284,59 +284,58 @@ std::string LlamaModel::processPrompt(const Prompt& prompt) {
     return out;
   }
 
-  const bool hasOverrides = prompt.generationParams.hasOverrides();
-  if (hasOverrides) {
-    llmContext_->applyGenerationParams(prompt.generationParams);
-  }
+  auto restore =
+      llmContext_->applyGenerationParams(prompt.generationParams);
 
-  bool evalOk =
-      resolved.tools.empty()
-          ? llmContext_->evalMessage(
-                resolved.chatMsgs, resolved.isCacheLoaded, prompt.prefill)
-          : llmContext_->evalMessageWithTools(
-                resolved.chatMsgs,
-                resolved.tools,
-                resolved.isCacheLoaded,
-                prompt.prefill);
+  try {
+    bool evalOk =
+        resolved.tools.empty()
+            ? llmContext_->evalMessage(
+                  resolved.chatMsgs, resolved.isCacheLoaded, prompt.prefill)
+            : llmContext_->evalMessageWithTools(
+                  resolved.chatMsgs,
+                  resolved.tools,
+                  resolved.isCacheLoaded,
+                  prompt.prefill);
 
-  if (!evalOk) {
-    QLOG_IF(
-        Priority::DEBUG,
-        "Inference was interrupted during prompt evaluation\n");
-    if (hasOverrides)
-      llmContext_->restoreDefaultGenerationParams();
-    return out;
-  }
+    if (!evalOk) {
+      QLOG_IF(
+          Priority::DEBUG,
+          "Inference was interrupted during prompt evaluation\n");
+      restore();
+      return out;
+    }
 
-  if (prompt.prefill) {
-    if (hasOverrides)
-      llmContext_->restoreDefaultGenerationParams();
-    return out;
-  }
+    if (prompt.prefill) {
+      restore();
+      return out;
+    }
 
-  std::ostringstream oss;
-  auto callback = prompt.outputCallback;
-  if (!prompt.outputCallback) {
-    callback = [&](const std::string& token) { oss << token; };
-  }
+    std::ostringstream oss;
+    auto callback = prompt.outputCallback;
+    if (!prompt.outputCallback) {
+      callback = [&](const std::string& token) { oss << token; };
+    }
 
-  bool generationOk = llmContext_->generateResponse(callback);
+    bool generationOk = llmContext_->generateResponse(callback);
+    restore();
 
-  if (hasOverrides)
-    llmContext_->restoreDefaultGenerationParams();
+    if (!generationOk) {
+      resetState();
+      std::string errorMsg = string_format("%s: context overflow\n", __func__);
+      throw qvac_errors::StatusError(
+          ADDON_ID, toString(ContextOverflow), errorMsg);
+    }
 
-  if (!generationOk) {
-    resetState();
-    std::string errorMsg = string_format("%s: context overflow\n", __func__);
-    throw qvac_errors::StatusError(
-        ADDON_ID, toString(ContextOverflow), errorMsg);
-  }
-
-  if (!prompt.outputCallback) {
-    out = oss.str();
-  }
-  if (resolved.shouldResetAfterInference) {
-    resetState(false);
+    if (!prompt.outputCallback) {
+      out = oss.str();
+    }
+    if (resolved.shouldResetAfterInference) {
+      resetState(false);
+    }
+  } catch (...) {
+    restore();
+    throw;
   }
   return out;
 }
