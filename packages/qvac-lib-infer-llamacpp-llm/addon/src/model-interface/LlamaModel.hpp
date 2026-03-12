@@ -244,7 +244,7 @@ private:
    */
   std::unique_ptr<LlmContext> createContext(
       std::string&& projectionPath, common_params& params,
-      common_init_result&& llamaInit);
+      common_init_result&& llamaInit, bool toolsAtEnd);
 
   /**
    * The Load media method. It loads the media.

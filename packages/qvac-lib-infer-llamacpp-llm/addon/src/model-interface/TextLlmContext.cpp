@@ -23,8 +23,8 @@ using namespace qvac_lib_inference_addon_llama::utils;
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TextLlmContext::TextLlmContext(
-    common_params& commonParams, common_init_result&& llamaInit)
-    : llamaInit_(std::move(llamaInit)), params_(commonParams) {
+    common_params& commonParams, common_init_result&& llamaInit, bool toolsAtEnd)
+    : llamaInit_(std::move(llamaInit)), params_(commonParams), toolsAtEnd_(toolsAtEnd) {
   {
 
     model_ = llamaInit_.model.get();

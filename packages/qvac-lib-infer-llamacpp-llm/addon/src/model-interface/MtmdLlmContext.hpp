@@ -18,7 +18,7 @@ public:
    * @param _llama_init - The result of initializing/loading the model using
    * .gguf file(s)
    */
-  MtmdLlmContext(common_params& commonParams, common_init_result&& llamaInit);
+  MtmdLlmContext(common_params& commonParams, common_init_result&& llamaInit, bool toolsAtEnd = false);
 
   /**
    * The destructor.

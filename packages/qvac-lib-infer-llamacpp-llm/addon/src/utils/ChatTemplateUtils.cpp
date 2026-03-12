@@ -69,8 +69,7 @@ std::string getChatTemplateForModel(
 
   if (isQwen3Model(model)) {
     printf("ChatTemplateUtils::getChatTemplateForModel - Qwen3 - toolsAtEnd=%d\n", toolsAtEnd);
-    return getToolsDynamicQwen3Template();
-    // return toolsAtEnd ? getToolsDynamicQwen3Template() : getFixedQwen3Template();
+    return toolsAtEnd ? getToolsDynamicQwen3Template() : getFixedQwen3Template();
   }
 
   printf("ChatTemplateUtils::getChatTemplateForModel - empty\n");

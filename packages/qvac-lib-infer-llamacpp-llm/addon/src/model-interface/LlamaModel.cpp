@@ -233,7 +233,8 @@ void LlamaModel::init(bool acquireLock) {
   snap->llmContext_ = createContext(
       std::string(constructionArgs_.projectionPath),
       params,
-      std::move(llamaInit));
+      std::move(llamaInit),
+      snap->toolsAtEnd_);
 
   // Apply tools_at_end flag
   if (snap->llmContext_) {
@@ -850,12 +851,12 @@ void LlamaModel::resetState(bool resetStats) {
 
 std::unique_ptr<LlmContext> LlamaModel::createContext(
     std::string&& projectionPath, common_params& params,
-    common_init_result&& llamaInit) {
+    common_init_result&& llamaInit, bool toolsAtEnd) {
   if (!projectionPath.empty()) {
     params.mmproj.path = std::move(projectionPath);
-    return std::make_unique<MtmdLlmContext>(params, std::move(llamaInit));
+    return std::make_unique<MtmdLlmContext>(params, std::move(llamaInit), toolsAtEnd);
   }
-  return std::make_unique<TextLlmContext>(params, std::move(llamaInit));
+  return std::make_unique<TextLlmContext>(params, std::move(llamaInit), toolsAtEnd);
 }
 
 bool LlamaModel::loadMedia(const std::vector<uint8_t>& input) {

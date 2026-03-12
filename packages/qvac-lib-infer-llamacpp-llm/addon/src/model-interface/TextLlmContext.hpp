@@ -17,7 +17,7 @@ public:
   TextLlmContext(TextLlmContext&&) = delete;
   TextLlmContext& operator=(TextLlmContext&&) = delete;
   // Constructor
-  TextLlmContext(common_params& commonParams, common_init_result&& llamaInit);
+  TextLlmContext(common_params& commonParams, common_init_result&& llamaInit, bool toolsAtEnd = false);
 
   // Destructor
   ~TextLlmContext() override = default;
