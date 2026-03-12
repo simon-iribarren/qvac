@@ -437,8 +437,9 @@ class QVACRegistryClient extends ReadyResource {
 
   async _clearBlobBlocks (core, start, end) {
     try {
-      await core.clear(start, end)
-      this.logger.debug('Cleared blob blocks from corestore', { start, end, blocks: end - start })
+      const cleared = await core.clear(start, end, { diff: true })
+      await core.compact()
+      this.logger.info('Cleared blob blocks from corestore', { start, end, blocks: cleared ? cleared.blocks : end - start })
     } catch (err) {
       this.logger.warn('Failed to clear blob blocks from corestore', { error: err.message })
     }
