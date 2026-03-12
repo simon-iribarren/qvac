@@ -252,12 +252,16 @@ class QVACRegistryClient extends ReadyResource {
         length: model.blobBinding.blockLength
       })
 
+      const blockStart = model.blobBinding.blockOffset
+      const blockEnd = blockStart + model.blobBinding.blockLength
+
       let artifact
       if (options.outputFile) {
         await this._streamBlobToFile(blobs, core, model.blobBinding, options.outputFile, options)
         artifact = { path: options.outputFile, totalSize }
 
         rangeDownload.destroy()
+        await this._clearBlobBlocks(core, blockStart, blockEnd)
         if (blobs) await blobs.close()
         if (core) await core.close()
       } else {
@@ -269,6 +273,7 @@ class QVACRegistryClient extends ReadyResource {
 
         const cleanup = async () => {
           rangeDownload.destroy()
+          await this._clearBlobBlocks(core, blockStart, blockEnd)
           if (blobs) {
             try {
               await blobs.close()
@@ -366,6 +371,9 @@ class QVACRegistryClient extends ReadyResource {
       }
       const totalSize = blobBinding.byteLength
 
+      const blockStart = pointer.blockOffset
+      const blockEnd = blockStart + pointer.blockLength
+
       const rangeDownload = core.download({
         start: pointer.blockOffset,
         length: pointer.blockLength
@@ -377,6 +385,7 @@ class QVACRegistryClient extends ReadyResource {
         artifact = { path: options.outputFile, totalSize }
 
         rangeDownload.destroy()
+        await this._clearBlobBlocks(core, blockStart, blockEnd)
         if (blobs) await blobs.close()
         if (core) await core.close()
       } else {
@@ -388,6 +397,7 @@ class QVACRegistryClient extends ReadyResource {
 
         const cleanup = async () => {
           rangeDownload.destroy()
+          await this._clearBlobBlocks(core, blockStart, blockEnd)
           if (blobs) {
             try { await blobs.close() } catch (e) {
               this.logger.warn('Error closing blob instance', { error: e.message })
@@ -422,6 +432,15 @@ class QVACRegistryClient extends ReadyResource {
       }
 
       throw error
+    }
+  }
+
+  async _clearBlobBlocks (core, start, end) {
+    try {
+      await core.clear(start, end)
+      this.logger.debug('Cleared blob blocks from corestore', { start, end, blocks: end - start })
+    } catch (err) {
+      this.logger.warn('Failed to clear blob blocks from corestore', { error: err.message })
     }
   }
 
