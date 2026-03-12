@@ -1158,9 +1158,8 @@ jobs:
           }
 
           schedule_run_with_filter() {
-            local manufacturer="$1"
-            local name="$2"
-            local filter='{"filters":[{"attribute":"MANUFACTURER","operator":"EQUALS","values":["'"$manufacturer"'"]},{"attribute":"AVAILABILITY","operator":"EQUALS","values":["HIGHLY_AVAILABLE"]},{"attribute":"PLATFORM","operator":"EQUALS","values":["ANDROID"]}],"maxDevices":1}'
+            local name="$1"
+            local filter="$2"
             aws devicefarm schedule-run \
               --project-arn "$PROJECT_ARN" \
               --device-selection-configuration "$filter" \
@@ -1172,10 +1171,14 @@ jobs:
           }
 
           if [ "${{ matrix.platform }}" == "Android" ]; then
-            echo "Scheduling parallel Android runs (Samsung + Google Pixel)..."
-            RUN_ARN_1=$(schedule_run_with_filter "Samsung" "$RUN_NAME-Samsung")
+            echo "Scheduling parallel Android runs (Samsung Galaxy S25 Ultra + Google Pixel)..."
+
+            SAMSUNG_FILTER='{"filters":[{"attribute":"MANUFACTURER","operator":"EQUALS","values":["Samsung"]},{"attribute":"MODEL","operator":"EQUALS","values":["Galaxy S25 Ultra"]},{"attribute":"AVAILABILITY","operator":"EQUALS","values":["HIGHLY_AVAILABLE"]},{"attribute":"PLATFORM","operator":"EQUALS","values":["ANDROID"]}],"maxDevices":1}'
+            RUN_ARN_1=$(schedule_run_with_filter "$RUN_NAME-Samsung" "$SAMSUNG_FILTER")
             echo "Samsung run scheduled: $RUN_ARN_1"
-            RUN_ARN_2=$(schedule_run_with_filter "Google" "$RUN_NAME-Pixel")
+
+            PIXEL_FILTER='{"filters":[{"attribute":"MANUFACTURER","operator":"EQUALS","values":["Google"]},{"attribute":"MODEL","operator":"EQUALS","values":["Pixel 9"]},{"attribute":"AVAILABILITY","operator":"EQUALS","values":["HIGHLY_AVAILABLE"]},{"attribute":"PLATFORM","operator":"EQUALS","values":["ANDROID"]}],"maxDevices":1}'
+            RUN_ARN_2=$(schedule_run_with_filter "$RUN_NAME-Pixel" "$PIXEL_FILTER")
             echo "Pixel run scheduled: $RUN_ARN_2"
             echo "run_arn_1=$RUN_ARN_1" >> $GITHUB_OUTPUT
             echo "run_arn_2=$RUN_ARN_2" >> $GITHUB_OUTPUT
