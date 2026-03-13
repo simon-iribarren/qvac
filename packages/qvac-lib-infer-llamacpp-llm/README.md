@@ -158,6 +158,7 @@ const config = {
 | presence_penalty  | float                                       | 0                            | Presence penalty for sampling                         |
 | frequency_penalty | float                                       | 0                            | Frequency penalty for sampling                        |
 | tools             | `"true"` or `"false"`                       | `"false"`                    | Enable tool calling with jinja templating             |
+| tools_at_end      | `"true"` or `"false"`                       | `"false"`                    | Place tools at end of prompt ([details](./docs/tools-at-end.md)) |
 | verbosity         | 0 – 3 (0=ERROR, 1=WARNING, 2=INFO, 3=DEBUG) | 0                            | Logging verbosity level                               |
 | n_discarded       | integer                                     | 0                            | Tokens to discard in sliding window context           |
 | main-gpu          | integer, `"integrated"`, or `"dedicated"`   | —                            | GPU selection for multi-GPU systems                   |
