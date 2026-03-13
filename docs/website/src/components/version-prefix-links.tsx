@@ -6,12 +6,19 @@ import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import type { Node } from 'fumadocs-core/page-tree';
 import { getVersionFromPath } from '@/lib/versions';
 
+function shouldPrefix(url: string | undefined): boolean {
+  if (!url || !url.startsWith('/')) return false;
+  if (url === '/') return false;
+  if (url.startsWith('/#')) return false;
+  return true;
+}
+
 function prefixTreeUrls(nodes: Node[], prefix: string): Node[] {
   return nodes.map((node) => {
     if (node.type === 'separator') return node;
 
     if (node.type === 'page') {
-      const url = node.url && node.url.startsWith('/')
+      const url = shouldPrefix(node.url)
         ? `${prefix}${node.url}`
         : node.url;
       return { ...node, url };
@@ -22,7 +29,7 @@ function prefixTreeUrls(nodes: Node[], prefix: string): Node[] {
       const index = node.index
         ? {
             ...node.index,
-            url: node.index.url && node.index.url.startsWith('/')
+            url: shouldPrefix(node.index.url)
               ? `${prefix}${node.index.url}`
               : node.index.url,
           }
