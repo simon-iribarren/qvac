@@ -291,7 +291,7 @@ class QVACRegistryClient extends ReadyResource {
           this.logger.debug('Blob resources closed after stream end')
         }
 
-        stream.on('close', cleanup)
+        stream.once('end', cleanup)
       }
 
       this.logger.info('Model downloaded successfully')
@@ -411,7 +411,7 @@ class QVACRegistryClient extends ReadyResource {
           this.logger.debug('Blob resources closed after stream end')
         }
 
-        stream.on('close', cleanup)
+        stream.once('end', cleanup)
       }
 
       this.logger.info('Blob download complete (direct)')
