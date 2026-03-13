@@ -292,8 +292,8 @@ async function runScenario (dirPath, modelName, opts) {
             ? [{ role: 'system', content: 'You are a helpful assistant.' }, { role: 'user', content: turn.user }]
             : [
               ...(lastAssistantResponse ? [{ role: 'assistant', content: lastAssistantResponse }] : []),
-              { role: 'user', content: turn.user }
-            ]),
+                { role: 'user', content: turn.user }
+              ]),
           ...turnTools
         ]
       } else if (dynamicTools) {
@@ -400,7 +400,7 @@ function printComparison (labelA, statsA, labelB, statsB) {
 
   console.log('-----|-------------|-------------|----------|----------|----------|---------|---------|---------|--------')
   console.log(
-    ` TOT ` +
+    ' TOT ' +
     `| ${totalA.toFixed(2).padStart(11)} ` +
     `| ${totalB.toFixed(2).padStart(11)} ` +
     `| ${(totalA - totalB).toFixed(2).padStart(8)} |`

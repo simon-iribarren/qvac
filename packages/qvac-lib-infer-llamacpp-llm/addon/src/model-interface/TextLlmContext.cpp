@@ -517,9 +517,7 @@ void TextLlmContext::resetState(bool resetStats) {
   // Reset the n_past
 
   // Reset conversation-only tokens and nPastBeforeTools
-  if (resetStats) {
-    nPastBeforeTools_ = -1;
-  }
+  nPastBeforeTools_ = -1;
   nPast_ = 0;
 
   // Reset the first msg token length

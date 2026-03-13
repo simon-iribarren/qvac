@@ -121,7 +121,7 @@ async function main () {
     lastResponse = stripInternalBlocks(r1.output)
     const calls1 = extractToolCalls(r1.output)
     console.log(`   Response tools called: [${calls1.join(', ') || 'none'}]`)
-    console.log(`   Expected: [getWeather]`)
+    console.log('   Expected: [getWeather]')
     console.log(`   ${calls1.includes('getWeather') ? 'PASS ✓' : 'FAIL ✗'}`)
     console.log('')
 
@@ -137,7 +137,7 @@ async function main () {
     lastResponse = stripInternalBlocks(r2.output)
     const calls2 = extractToolCalls(r2.output)
     console.log(`   Response tools called: [${calls2.join(', ') || 'none'}]`)
-    console.log(`   Expected: [calculate]`)
+    console.log('   Expected: [calculate]')
     console.log(`   ${calls2.includes('calculate') && !calls2.includes('getWeather') ? 'PASS ✓' : 'FAIL ✗'}`)
     console.log('')
 
@@ -154,7 +154,7 @@ async function main () {
     lastResponse = stripInternalBlocks(r3.output)
     const calls3 = extractToolCalls(r3.output)
     console.log(`   Response tools called: [${calls3.join(', ') || 'none'}]`)
-    console.log(`   Expected: NOT getWeather (it's not available)`)
+    console.log('   Expected: NOT getWeather (it\'s not available)')
     const weatherLeak = calls3.includes('getWeather')
     console.log(`   ${weatherLeak ? 'FAIL ✗ — stale tool leak! getWeather was called despite being removed' : 'PASS ✓ — model did not call removed tool'}`)
     console.log('')
@@ -172,7 +172,7 @@ async function main () {
     lastResponse = stripInternalBlocks(r4.output)
     const calls4 = extractToolCalls(r4.output)
     console.log(`   Response tools called: [${calls4.join(', ') || 'none'}]`)
-    console.log(`   Expected: NOT calculate (it's not available)`)
+    console.log('   Expected: NOT calculate (it\'s not available)')
     const calcLeak = calls4.includes('calculate')
     console.log(`   ${calcLeak ? 'FAIL ✗ — stale tool leak! calculate was called despite being removed' : 'PASS ✓ — model did not call removed tool'}`)
     console.log('')
@@ -195,7 +195,6 @@ async function main () {
     console.log(allPass
       ? '  ALL PASSED — tool trimming correctly prevents stale tool usage'
       : '  FAILURES DETECTED — removed tools leaked through the cache')
-
   } finally {
     await model.unload()
     await loader.close()
@@ -245,7 +244,7 @@ async function mainInSystem () {
     history.push({ role: 'assistant', content: stripInternalBlocks(r1.output) })
     const calls1 = extractToolCalls(r1.output)
     console.log(`   Response tools called: [${calls1.join(', ') || 'none'}]`)
-    console.log(`   Expected: [getWeather]`)
+    console.log('   Expected: [getWeather]')
     console.log(`   ${calls1.includes('getWeather') ? 'PASS ✓' : 'FAIL ✗'}`)
     console.log('')
 
@@ -264,7 +263,7 @@ async function mainInSystem () {
     history.push({ role: 'assistant', content: stripInternalBlocks(r2.output) })
     const calls2 = extractToolCalls(r2.output)
     console.log(`   Response tools called: [${calls2.join(', ') || 'none'}]`)
-    console.log(`   Expected: [calculate]`)
+    console.log('   Expected: [calculate]')
     console.log(`   ${calls2.includes('calculate') && !calls2.includes('getWeather') ? 'PASS ✓' : 'FAIL ✗'}`)
     console.log('')
 
@@ -284,7 +283,7 @@ async function mainInSystem () {
     history.push({ role: 'assistant', content: stripInternalBlocks(r3.output) })
     const calls3 = extractToolCalls(r3.output)
     console.log(`   Response tools called: [${calls3.join(', ') || 'none'}]`)
-    console.log(`   Expected: NOT getWeather (it's not available)`)
+    console.log('   Expected: NOT getWeather (it\'s not available)')
     const weatherLeak = calls3.includes('getWeather')
     console.log(`   ${weatherLeak ? 'FAIL ✗ — stale tool leak! getWeather was called despite being removed' : 'PASS ✓ — model did not call removed tool'}`)
     console.log('')
@@ -303,7 +302,7 @@ async function mainInSystem () {
     const r4 = await runAndCollect(model, prompt4)
     const calls4 = extractToolCalls(r4.output)
     console.log(`   Response tools called: [${calls4.join(', ') || 'none'}]`)
-    console.log(`   Expected: NOT calculate (it's not available)`)
+    console.log('   Expected: NOT calculate (it\'s not available)')
     const calcLeak = calls4.includes('calculate')
     console.log(`   ${calcLeak ? 'FAIL ✗ — stale tool leak! calculate was called despite being removed' : 'PASS ✓ — model did not call removed tool'}`)
     console.log('')
@@ -326,7 +325,6 @@ async function mainInSystem () {
     console.log(allPass
       ? '  ALL PASSED — tool switching correctly prevents stale tool usage'
       : '  FAILURES DETECTED — removed tools leaked from conversation history')
-
   } finally {
     await model.unload()
     await loader.close()
