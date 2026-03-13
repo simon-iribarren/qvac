@@ -45,7 +45,8 @@ inline std::string headshotPath() {
 }
 
 // Create a W×H solid-colour PNG in memory. Channels = RGB (3).
-std::vector<uint8_t> makeSolidPng(int w, int h, uint8_t r, uint8_t g, uint8_t b) {
+std::vector<uint8_t>
+makeSolidPng(int w, int h, uint8_t r, uint8_t g, uint8_t b) {
   std::vector<uint8_t> pixels(w * h * 3);
   for (int i = 0; i < w * h; ++i) {
     pixels[i * 3 + 0] = r;
@@ -59,14 +60,19 @@ std::vector<uint8_t> makeSolidPng(int w, int h, uint8_t r, uint8_t g, uint8_t b)
         const auto* b = static_cast<const uint8_t*>(data);
         v->insert(v->end(), b, b + size);
       },
-      &out, w, h, 3, pixels.data(), w * 3);
+      &out,
+      w,
+      h,
+      3,
+      pixels.data(),
+      w * 3);
   return out;
 }
 
 // Read a file from disk into a byte vector.
 std::vector<uint8_t> readFile(const std::string& path) {
   std::ifstream f(path, std::ios::binary);
-  return { std::istreambuf_iterator<char>(f), {} };
+  return {std::istreambuf_iterator<char>(f), {}};
 }
 
 // Decode PNG/JPEG bytes with stb_image and return the (w, h) dimensions.
@@ -75,8 +81,9 @@ std::pair<int, int> decodeDimensions(const std::vector<uint8_t>& bytes) {
   int w = 0, h = 0, c = 0;
   uint8_t* px = stbi_load_from_memory(
       bytes.data(), static_cast<int>(bytes.size()), &w, &h, &c, 0);
-  if (px) stbi_image_free(px);
-  return { w, h };
+  if (px)
+    stbi_image_free(px);
+  return {w, h};
 }
 
 // Serialise bytes to a JSON array string: [0,255,128,...]
@@ -84,7 +91,8 @@ std::string bytesToJsonArray(const std::vector<uint8_t>& bytes) {
   std::ostringstream oss;
   oss << "[";
   for (size_t i = 0; i < bytes.size(); ++i) {
-    if (i) oss << ",";
+    if (i)
+      oss << ",";
     oss << static_cast<int>(bytes[i]);
   }
   oss << "]";
@@ -94,16 +102,16 @@ std::string bytesToJsonArray(const std::vector<uint8_t>& bytes) {
 // Build paramsJson for an img2img job.
 // If w/h == 0 they are omitted (the model sees the SdGenConfig defaults).
 std::string makeImg2ImgParams(
-    const std::vector<uint8_t>& initBytes,
-    int w, int h,
-    int steps = 1,
+    const std::vector<uint8_t>& initBytes, int w, int h, int steps = 1,
     int64_t seed = 42) {
   std::ostringstream oss;
   oss << R"({"mode":"img2img","prompt":"a professional portrait",)"
       << R"("negative_prompt":"blurry","steps":)" << steps
       << R"(,"strength":0.5,"seed":)" << seed;
-  if (w > 0) oss << R"(,"width":)" << w;
-  if (h > 0) oss << R"(,"height":)" << h;
+  if (w > 0)
+    oss << R"(,"width":)" << w;
+  if (h > 0)
+    oss << R"(,"height":)" << h;
   oss << R"(,"init_image_bytes":)" << bytesToJsonArray(initBytes) << "}";
   return oss.str();
 }
@@ -119,11 +127,11 @@ protected:
   static void SetUpTestSuite() {
     const auto dir = img2img_helpers::modelsDir();
     const std::string diffModel = dir + "/flux-2-klein-4b-Q8_0.gguf";
-    const std::string llmModel  = dir + "/Qwen3-4B-Q4_K_M.gguf";
-    const std::string vaeModel  = dir + "/flux2-vae.safetensors";
+    const std::string llmModel = dir + "/Qwen3-4B-Q4_K_M.gguf";
+    const std::string vaeModel = dir + "/flux2-vae.safetensors";
 
     if (!std::filesystem::exists(diffModel) ||
-        !std::filesystem::exists(llmModel)  ||
+        !std::filesystem::exists(llmModel) ||
         !std::filesystem::exists(vaeModel)) {
       std::cout << "[SKIP] FLUX2 models not found in: " << dir << "\n"
                 << "       Run ./scripts/download-model-i2i.sh first.\n";
@@ -132,16 +140,16 @@ protected:
 
     SdCtxConfig cfg{};
     cfg.diffusionModelPath = diffModel;
-    cfg.llmPath            = llmModel;
-    cfg.vaePath            = vaeModel;
-    cfg.prediction         = FLUX2_FLOW_PRED;
-    cfg.nThreads           = sd_test_helpers::getTestThreads();
-    cfg.device             = sd_test_helpers::getTestDevice();
+    cfg.llmPath = llmModel;
+    cfg.vaePath = vaeModel;
+    cfg.prediction = FLUX2_FLOW_PRED;
+    cfg.nThreads = sd_test_helpers::getTestThreads();
+    cfg.device = sd_test_helpers::getTestDevice();
 
     std::cout << "[SdImg2ImgTest] Loading FLUX2-klein...\n"
               << "  diffusion : " << diffModel << "\n"
-              << "  llm       : " << llmModel  << "\n"
-              << "  vae       : " << vaeModel  << "\n";
+              << "  llm       : " << llmModel << "\n"
+              << "  vae       : " << vaeModel << "\n";
 
     model = std::make_unique<SdModel>(std::move(cfg));
     model->load();
@@ -149,7 +157,10 @@ protected:
   }
 
   static void TearDownTestSuite() {
-    if (model) { model->unload(); model.reset(); }
+    if (model) {
+      model->unload();
+      model.reset();
+    }
   }
 
   void SetUp() override {
@@ -173,18 +184,20 @@ TEST(SdImg2ImgDiagnostics, PrintHeadshotDimensions) {
 
   const auto [w, h] = img2img_helpers::decodeDimensions(bytes);
   std::cout << "\n[Diagnostic] Headshot path     : " << path << "\n"
-            << "[Diagnostic] Headshot file size : " << bytes.size() << " bytes\n"
+            << "[Diagnostic] Headshot file size : " << bytes.size()
+            << " bytes\n"
             << "[Diagnostic] Decoded dimensions : " << w << " x " << h << "\n"
             << "[Diagnostic] SdGenConfig default: 512 x 512\n"
-            << "[Diagnostic] Dimension match    : " << (w == 512 && h == 512 ? "YES" : "NO")
-            << "\n";
+            << "[Diagnostic] Dimension match    : "
+            << (w == 512 && h == 512 ? "YES" : "NO") << "\n";
 
   if (w != 512 || h != 512) {
     std::cout << "[Diagnostic] ROOT CAUSE: init_image is " << w << "x" << h
               << " but genParams.width/height default to 512x512.\n"
               << "             GGML_ASSERT(image.width == tensor->ne[0]) fires "
               << "because " << w << " != 512.\n"
-              << "             FIX: SdModel::process() must set genParams.width/height\n"
+              << "             FIX: SdModel::process() must set "
+                 "genParams.width/height\n"
               << "             from the decoded init_image dimensions.\n";
   }
 
@@ -209,11 +222,13 @@ TEST_F(SdImg2ImgTest, Img2Img_512x512_ExplicitDimensions_Succeeds) {
   std::mutex mu;
 
   SdModel::GenerationJob job;
-  job.paramsJson = img2img_helpers::makeImg2ImgParams(initPng, W, H, /*steps=*/1);
+  job.paramsJson =
+      img2img_helpers::makeImg2ImgParams(initPng, W, H, /*steps=*/1);
 
   std::cout << "[Test] paramsJson width/height: " << W << " x " << H << "\n"
             << "[Test] init_image width/height: " << dw << " x " << dh << "\n"
-            << "[Test] Match: " << (W == dw && H == dh ? "YES ✓" : "NO ✗") << "\n";
+            << "[Test] Match: " << (W == dw && H == dh ? "YES ✓" : "NO ✗")
+            << "\n";
 
   job.progressCallback = [](const std::string& json) {
     std::cout << "\r  progress: " << json << std::flush;
@@ -227,12 +242,14 @@ TEST_F(SdImg2ImgTest, Img2Img_512x512_ExplicitDimensions_Succeeds) {
   EXPECT_NO_THROW(model->process(std::any(job)));
   EXPECT_EQ(images.size(), 1u) << "Expected 1 output image";
   if (!images.empty())
-    EXPECT_TRUE(sd_test_helpers::isPng(images[0])) << "Output must be valid PNG";
+    EXPECT_TRUE(sd_test_helpers::isPng(images[0]))
+        << "Output must be valid PNG";
 }
 
-// ── Real headshot: auto-detected dimensions ───────────────────────────────────
-// This test verifies the fix: genParams.width/height are auto-set from
-// the decoded init_image, so no explicit width/height is required.
+// ── Real headshot: auto-detected dimensions
+// ─────────────────────────────────── This test verifies the fix:
+// genParams.width/height are auto-set from the decoded init_image, so no
+// explicit width/height is required.
 
 TEST_F(SdImg2ImgTest, Img2Img_Headshot_AutoDetectedDimensions_Succeeds) {
   const auto path = img2img_helpers::headshotPath();
@@ -244,7 +261,8 @@ TEST_F(SdImg2ImgTest, Img2Img_Headshot_AutoDetectedDimensions_Succeeds) {
 
   const auto [dw, dh] = img2img_helpers::decodeDimensions(initBytes);
   std::cout << "\n[Test] Headshot dimensions: " << dw << "x" << dh << "\n"
-            << "[Test] Passing NO explicit width/height — relying on auto-detect fix\n";
+            << "[Test] Passing NO explicit width/height — relying on "
+               "auto-detect fix\n";
 
   std::vector<std::vector<uint8_t>> images;
   std::mutex mu;
@@ -268,8 +286,9 @@ TEST_F(SdImg2ImgTest, Img2Img_Headshot_AutoDetectedDimensions_Succeeds) {
     const std::string outPath =
         std::string(PROJECT_ROOT) + "/temp/cpp-img2img-headshot-output.png";
     std::ofstream ofs(outPath, std::ios::binary);
-    ofs.write(reinterpret_cast<const char*>(png.data()),
-              static_cast<std::streamsize>(png.size()));
+    ofs.write(
+        reinterpret_cast<const char*>(png.data()),
+        static_cast<std::streamsize>(png.size()));
     std::cout << "[Test] Saved → " << outPath << "\n";
 #endif
   };
@@ -277,5 +296,6 @@ TEST_F(SdImg2ImgTest, Img2Img_Headshot_AutoDetectedDimensions_Succeeds) {
   EXPECT_NO_THROW(model->process(std::any(job)));
   EXPECT_EQ(images.size(), 1u) << "Expected 1 output image";
   if (!images.empty())
-    EXPECT_TRUE(sd_test_helpers::isPng(images[0])) << "Output must be valid PNG";
+    EXPECT_TRUE(sd_test_helpers::isPng(images[0]))
+        << "Output must be valid PNG";
 }

@@ -8,12 +8,11 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <ggml-backend.h>
 #include <picojson/picojson.h>
 #include <qvac-lib-inference-addon-cpp/Errors.hpp>
 #include <qvac-lib-inference-addon-cpp/Logger.hpp>
 #include <stb_image_write.h>
-
-#include <ggml-backend.h>
 
 #include "utils/BackendSelection.hpp"
 #include "utils/LoggingMacros.hpp"
@@ -138,8 +137,9 @@ void SdModel::load() {
         backendsDirPath = backendsDirPath / BACKENDS_SUBDIR;
         backendsDirPath = backendsDirPath.lexically_normal();
 #endif
-        QLOG_IF(Priority::INFO,
-                 "Loading GPU backends from: " + backendsDirPath.string());
+        QLOG_IF(
+            Priority::INFO,
+            "Loading GPU backends from: " + backendsDirPath.string());
         ggml_backend_load_all_from_path(backendsDirPath.string().c_str());
       } else {
         QLOG_IF(Priority::INFO, "Loading GPU backends from default path");
@@ -363,21 +363,24 @@ std::any SdModel::process(const std::any& input) {
       const int imgH = static_cast<int>(initImg.height);
 
       // (1) Auto-detect genParams.width/height from the decoded init image.
-      //     generate_image() builds latent tensors of size genParams.width×height
-      //     then calls sd_image_to_ggml_tensor which asserts image.width == ne[0].
-      //     Keeping the defaults (512×512) when the image is 800×800 crashes.
-      QLOG_IF(qvac_lib_inference_addon_cpp::logger::Priority::INFO,
-              "img2img: init_image " + std::to_string(imgW) + "x" +
-                  std::to_string(imgH) + " overrides genParams " +
-                  std::to_string(genParams.width) + "x" +
-                  std::to_string(genParams.height));
-      genParams.width  = imgW;
+      //     generate_image() builds latent tensors of size
+      //     genParams.width×height then calls sd_image_to_ggml_tensor which
+      //     asserts image.width == ne[0]. Keeping the defaults (512×512) when
+      //     the image is 800×800 crashes.
+      QLOG_IF(
+          qvac_lib_inference_addon_cpp::logger::Priority::INFO,
+          "img2img: init_image " + std::to_string(imgW) + "x" +
+              std::to_string(imgH) + " overrides genParams " +
+              std::to_string(genParams.width) + "x" +
+              std::to_string(genParams.height));
+      genParams.width = imgW;
       genParams.height = imgH;
 
       // (2) Provide a white-fill mask (all 255) so that sd_image_to_ggml_tensor
       //     never sees mask_image.width == 0.
-      //     generate_image() always calls sd_image_to_ggml_tensor(mask_image, ...)
-      //     before init_image, with no null-guard — a zero-width mask aborts.
+      //     generate_image() always calls sd_image_to_ggml_tensor(mask_image,
+      //     ...) before init_image, with no null-guard — a zero-width mask
+      //     aborts.
       maskBuf.assign(static_cast<size_t>(imgW) * imgH, 255);
       maskImg = sd_image_t{
           static_cast<uint32_t>(imgW),
