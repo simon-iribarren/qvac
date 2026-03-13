@@ -30,6 +30,10 @@ async function runDynamicToolsTest (options = {}) { // eslint-disable-line no-un
   return runIntegrationModule('../integration/dynamic-tools.test.js', options)
 }
 
+async function runGenerationParamsTest (options = {}) { // eslint-disable-line no-unused-vars
+  return runIntegrationModule('../integration/generation-params.test.js', options)
+}
+
 async function runImageTest (options = {}) { // eslint-disable-line no-unused-vars
   return runIntegrationModule('../integration/image.test.js', options)
 }
