@@ -187,13 +187,6 @@ public:
   virtual void setToolsAtEnd(bool toolsAtEnd) = 0;
 
   /**
-   * Get the number of conversation-only tokens (without tools).
-   * This is used for double-tokenization to find the boundary between
-   * conversation tokens and tool tokens.
-   */
-  [[nodiscard]] virtual llama_pos getNConversationOnlyTokens() const = 0;
-
-  /**
    * Get the nPast position before tool evaluation.
    * This is used to find the boundary in the KV cache after evaluating
    * conversation tokens but before tool tokens.

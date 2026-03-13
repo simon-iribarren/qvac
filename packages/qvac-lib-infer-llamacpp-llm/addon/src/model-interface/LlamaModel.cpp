@@ -265,14 +265,6 @@ bool LlamaModel::isLoaded() {
   return static_cast<bool>(state_->llmContext_);
 }
 
-llama_pos LlamaModel::getNConversationOnlyTokens() const {
-  std::shared_lock lock(stateMtx_);
-  if (state_->llmContext_) {
-    return state_->llmContext_->getNConversationOnlyTokens();
-  }
-  return 0;
-}
-
 llama_pos LlamaModel::getNPastBeforeTools() const {
   std::shared_lock lock(stateMtx_);
   if (state_->llmContext_) {

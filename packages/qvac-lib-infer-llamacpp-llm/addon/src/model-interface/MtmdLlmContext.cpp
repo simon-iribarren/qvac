@@ -481,10 +481,6 @@ void MtmdLlmContext::setToolsAtEnd(bool toolsAtEnd) {
   this->toolsAtEnd_ = toolsAtEnd;
 }
 
-llama_pos MtmdLlmContext::getNConversationOnlyTokens() const {
-  return nConversationOnlyTokens_;
-}
-
 llama_pos MtmdLlmContext::getNPastBeforeTools() const {
   return nPastBeforeTools_;
 }

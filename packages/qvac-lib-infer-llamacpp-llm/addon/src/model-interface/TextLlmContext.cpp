@@ -220,10 +220,8 @@ void TextLlmContext::tokenizeChat(
       Priority::DEBUG,
       string_format("[TextLlm] formatted prompt: %s\n", prompt.c_str()));
 
-  printf("TextLlmContext::tokenizeChat prompt=%s\n", prompt.c_str());
   if (!prompt.empty()) {
     inputTokens = common_tokenize(lctx_, prompt, addSpecial, true);
-    printf("TextLlmContext::tokenizeChat inputTokens.size=%lu\n", inputTokens.size());
 
     if (toolsAtEnd_ && !tools.empty()) {
       auto savedTools = inputs.tools;
@@ -233,7 +231,6 @@ void TextLlmContext::tokenizeChat(
 
       inputs.tools = savedTools;
       nConversationOnlyTokens_ = tokensNoTools.size();
-      printf("TextLlmContext::tokenizeChat nConversationOnlyTokens_=%d\n", nConversationOnlyTokens_);
     } else {
       nConversationOnlyTokens_ = 0;
     }
@@ -288,7 +285,6 @@ bool TextLlmContext::evalMessageWithTools(
 
   size_t nTokens = inputTokens.size();
   const bool isFirstMsg = (nPast_ == 0);
-  printf("TextLlmContext::evalMessageWithTools nPast_=%d nTokens=%zu\n", nPast_, nTokens);
 
   if (nTokens >= llama_n_ctx(lctx_)) {
     std::string errorMsg = string_format(
@@ -518,7 +514,6 @@ bool TextLlmContext::generateResponse(
 void TextLlmContext::stop() { stopGeneration_.store(true); }
 
 void TextLlmContext::resetState(bool resetStats) {
-  printf("TextLlmContext::resetState resetStats=%d\n", resetStats);
   // Reset the n_past
 
   // Reset conversation-only tokens and nPastBeforeTools
@@ -566,10 +561,6 @@ void TextLlmContext::setNDiscarded(llama_pos nDiscarded) {
 
 void TextLlmContext::setToolsAtEnd(bool toolsAtEnd) {
   this->toolsAtEnd_ = toolsAtEnd;
-}
-
-llama_pos TextLlmContext::getNConversationOnlyTokens() const {
-  return nConversationOnlyTokens_;
 }
 
 void TextLlmContext::setNPastBeforeTools(llama_pos nPastBeforeTools) {

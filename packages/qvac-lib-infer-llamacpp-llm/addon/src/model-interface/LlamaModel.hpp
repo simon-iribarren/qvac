@@ -127,12 +127,6 @@ public:
   bool isLoaded();
 
   /**
-   * Get the number of conversation-only tokens (without tools).
-   * This is set when toolsAtEnd is enabled and tools are provided.
-   */
-  llama_pos getNConversationOnlyTokens() const;
-
-  /**
    * Get the nPast position before tool evaluation.
    * This is used to find the boundary in the KV cache after evaluating
    * conversation tokens but before tool tokens.

@@ -63,16 +63,13 @@ std::string getChatTemplateForModel(
     const std::string& manualOverride,
     bool toolsAtEnd) {
   if (!manualOverride.empty()) {
-    printf("ChatTemplateUtils::getChatTemplateForModel - manualOverride\n");
     return manualOverride;
   }
 
   if (isQwen3Model(model)) {
-    printf("ChatTemplateUtils::getChatTemplateForModel - Qwen3 - toolsAtEnd=%d\n", toolsAtEnd);
     return toolsAtEnd ? getToolsDynamicQwen3Template() : getFixedQwen3Template();
   }
 
-  printf("ChatTemplateUtils::getChatTemplateForModel - empty\n");
   return "";
 }
 

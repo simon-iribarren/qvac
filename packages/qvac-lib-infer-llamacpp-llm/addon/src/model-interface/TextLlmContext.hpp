@@ -106,8 +106,6 @@ public:
 
   void setToolsAtEnd(bool toolsAtEnd) override;
 
-  [[nodiscard]] llama_pos getNConversationOnlyTokens() const override;
-
   [[nodiscard]] llama_pos getNPastBeforeTools() const override;
   void setNPastBeforeTools(llama_pos nPastBeforeTools) override;
 
