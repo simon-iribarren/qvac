@@ -23,11 +23,24 @@ export interface SDKTool {
   parameters: Record<string, unknown>
 }
 
+export interface SDKToolCallEvent {
+  type: 'toolCall'
+  call: SDKToolCall
+}
+
+export interface SDKToolCallErrorEvent {
+  type: 'toolCallError'
+  error: { code: string; message: string; raw?: string }
+}
+
+export type SDKToolEvent = SDKToolCallEvent | SDKToolCallErrorEvent
+
 export interface CompletionResult {
   text: Promise<string>
   stats: Promise<Record<string, unknown>>
   toolCalls: Promise<SDKToolCall[] | null>
   tokenStream: AsyncIterable<string>
+  toolCallStream: AsyncIterable<SDKToolEvent>
 }
 
 export interface SDKToolCall {

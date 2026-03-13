@@ -4,6 +4,12 @@ import type { SDKTool, SDKToolCall } from '../../core/sdk.js'
 interface OpenAIMessage {
   role: string
   content: string | null | undefined
+  tool_calls?: Array<{
+    id: string
+    type: string
+    function: { name: string; arguments: string }
+  }>
+  tool_call_id?: string
 }
 
 interface OpenAITool {
@@ -24,13 +30,37 @@ interface OpenAIToolCall {
   }
 }
 
+interface OpenAIToolCallDelta extends OpenAIToolCall {
+  index: number
+}
+
 export function openaiMessagesToHistory (messages: OpenAIMessage[]): Array<{ role: string; content: string }> {
-  return messages.map((msg) => ({
-    role: msg.role,
-    content: typeof msg.content === 'string'
-      ? msg.content
-      : (msg.content ?? '').toString()
-  }))
+  return messages.map((msg) => {
+    if (msg.role === 'assistant' && msg.tool_calls && msg.tool_calls.length > 0) {
+      return { role: 'assistant', content: synthesizeToolCallContent(msg.tool_calls) }
+    }
+
+    return {
+      role: msg.role,
+      content: typeof msg.content === 'string'
+        ? msg.content
+        : (msg.content ?? '').toString()
+    }
+  })
+}
+
+function synthesizeToolCallContent (toolCalls: NonNullable<OpenAIMessage['tool_calls']>): string {
+  return toolCalls.map((tc) => {
+    let args: Record<string, unknown>
+    try {
+      args = JSON.parse(tc.function.arguments) as Record<string, unknown>
+    } catch {
+      args = {}
+    }
+
+    const callObj = { name: tc.function.name, arguments: args }
+    return `<tool_call>\n${JSON.stringify(callObj)}\n</tool_call>`
+  }).join('\n')
 }
 
 export function openaiToolsToSdk (tools: OpenAITool[] | undefined): SDKTool[] | undefined {
@@ -54,6 +84,22 @@ export function sdkToolCallsToOpenai (toolCalls: SDKToolCall[] | null | undefine
   if (!toolCalls || toolCalls.length === 0) return undefined
 
   return toolCalls.map((tc) => ({
+    id: tc.id,
+    type: 'function',
+    function: {
+      name: tc.name,
+      arguments: typeof tc.arguments === 'string'
+        ? tc.arguments
+        : JSON.stringify(tc.arguments)
+    }
+  }))
+}
+
+export function sdkToolCallsToOpenaiDeltas (toolCalls: SDKToolCall[] | null | undefined): OpenAIToolCallDelta[] | undefined {
+  if (!toolCalls || toolCalls.length === 0) return undefined
+
+  return toolCalls.map((tc, i) => ({
+    index: i,
     id: tc.id,
     type: 'function',
     function: {

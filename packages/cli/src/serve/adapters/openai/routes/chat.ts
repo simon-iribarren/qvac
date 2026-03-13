@@ -7,6 +7,7 @@ import {
   openaiMessagesToHistory,
   openaiToolsToSdk,
   sdkToolCallsToOpenai,
+  sdkToolCallsToOpenaiDeltas,
   logUnsupportedParams
 } from '../translate.js'
 import type { RouteContext } from '../../types.js'
@@ -54,7 +55,12 @@ export async function handleChatCompletions (req: IncomingMessage, res: ServerRe
   logUnsupportedParams(body, ctx.logger)
 
   const sdkModelId = registryEntry.sdkModelId ?? registryEntry.id
-  const history = openaiMessagesToHistory(body['messages'] as Array<{ role: string; content: string }>)
+  const history = openaiMessagesToHistory(body['messages'] as Array<{
+    role: string
+    content: string | null | undefined
+    tool_calls?: Array<{ id: string; type: string; function: { name: string; arguments: string } }>
+    tool_call_id?: string
+  }>)
   const tools = openaiToolsToSdk(body['tools'] as Array<{ type: string; function?: { name: string; description?: string; parameters?: Record<string, unknown> } }> | undefined)
   const modelAlias = alias
   const streaming = Boolean(body['stream'])
@@ -97,7 +103,10 @@ async function handleBlockingCompletion (res: ServerResponse, params: Completion
   const hasToolCalls = toolCalls !== null && toolCalls !== undefined && toolCalls.length > 0
   const finishReason = hasToolCalls ? 'tool_calls' : 'stop'
 
-  const message: Record<string, unknown> = { role: 'assistant', content: text || null }
+  const message: Record<string, unknown> = {
+    role: 'assistant',
+    content: hasToolCalls ? null : (text || null)
+  }
   if (hasToolCalls) {
     message['tool_calls'] = sdkToolCallsToOpenai(toolCalls)
   }
@@ -137,68 +146,37 @@ async function handleStreamingCompletion (res: ServerResponse, params: Completio
   const id = `chatcmpl-${randomId()}`
   const created = Math.floor(Date.now() / 1000)
 
-  sendSSE(res, {
+  const chunk = (delta: Record<string, unknown>, finishReason: string | null, extra?: Record<string, unknown>) => ({
     id,
     object: 'chat.completion.chunk',
     created,
     model: params.modelAlias,
-    choices: [{
-      index: 0,
-      delta: { role: 'assistant', content: '' },
-      finish_reason: null
-    }]
+    choices: [{ index: 0, delta, finish_reason: finishReason }],
+    ...extra
   })
+
+  sendSSE(res, chunk({ role: 'assistant', content: '' }, null))
 
   let tokenCount = 0
 
   for await (const token of result.tokenStream) {
     tokenCount++
-    sendSSE(res, {
-      id,
-      object: 'chat.completion.chunk',
-      created,
-      model: params.modelAlias,
-      choices: [{
-        index: 0,
-        delta: { content: token },
-        finish_reason: null
-      }]
-    })
+    sendSSE(res, chunk({ content: token }, null))
   }
 
   params.logger.info(`  streaming done tokens=${tokenCount}`)
 
   const toolCalls = await result.toolCalls
-  if (toolCalls && toolCalls.length > 0) {
-    const openaiToolCalls = sdkToolCallsToOpenai(toolCalls)
-    sendSSE(res, {
-      id,
-      object: 'chat.completion.chunk',
-      created,
-      model: params.modelAlias,
-      choices: [{
-        index: 0,
-        delta: { tool_calls: openaiToolCalls },
-        finish_reason: 'tool_calls'
-      }]
-    })
+  const hasToolCalls = toolCalls !== null && toolCalls !== undefined && toolCalls.length > 0
+
+  if (hasToolCalls) {
+    const openaiToolCalls = sdkToolCallsToOpenaiDeltas(toolCalls)
+    sendSSE(res, chunk({ tool_calls: openaiToolCalls }, null))
+    sendSSE(res, chunk({}, 'tool_calls'))
   } else {
-    sendSSE(res, {
-      id,
-      object: 'chat.completion.chunk',
-      created,
-      model: params.modelAlias,
-      choices: [{
-        index: 0,
-        delta: {},
-        finish_reason: 'stop'
-      }],
-      usage: {
-        prompt_tokens: 0,
-        completion_tokens: tokenCount,
-        total_tokens: tokenCount
-      }
-    })
+    sendSSE(res, chunk({}, 'stop', {
+      usage: { prompt_tokens: 0, completion_tokens: tokenCount, total_tokens: tokenCount }
+    }))
   }
 
   endSSE(res)
