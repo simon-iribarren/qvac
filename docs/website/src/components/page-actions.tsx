@@ -245,6 +245,7 @@ export function VersionSelector() {
   const pathname = usePathname();
 
   const currentVersion = getVersionFromPath(pathname) ?? LATEST_VERSION;
+  const currentLabel = VERSIONS.find((v) => v.value === currentVersion)?.label ?? currentVersion;
 
   function handleVersionChange(targetVersion: string) {
     if (targetVersion === currentVersion) return;
@@ -265,7 +266,7 @@ export function VersionSelector() {
         )}
       >
         <Tag className="size-3.5 text-fd-muted-foreground" />
-        {currentVersion}
+        {currentLabel}
         <ChevronDown className="size-3.5 text-fd-muted-foreground" />
       </PopoverTrigger>
       <PopoverContent className="flex flex-col">

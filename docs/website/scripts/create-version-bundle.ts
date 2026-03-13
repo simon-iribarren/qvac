@@ -1,19 +1,28 @@
 #!/usr/bin/env bun
 /**
- * Create a versioned documentation bundle from (latest).
+ * Freeze the current (latest) docs as a versioned bundle.
  *
- * 1. Copies content/docs/(latest)/ to content/docs/v{version}/
- * 2. Rewrites all internal links in MDX files to add the version prefix
- * 3. Snapshots src/lib/trees/latest.ts to src/lib/trees/v{version}.ts
- * 4. Updates src/lib/trees/index.ts to import the new tree
- * 5. Refreshes src/lib/versions.ts
+ * Run this BEFORE updating (latest) with new content. It snapshots the
+ * current state of (latest) into a versioned folder so the outgoing
+ * version remains accessible when a newer version takes over.
+ *
+ * Example: when releasing SDK v0.8.0, first freeze the outgoing v0.7.0:
+ *   bun run scripts/create-version-bundle.ts 0.7.0
+ * Then update (latest) with v0.8.0 content and versions.ts.
+ *
+ * Steps:
+ *   1. Copies content/docs/(latest)/ to content/docs/v{version}/
+ *   2. Rewrites all internal links in MDX files to add the version prefix
+ *   3. Snapshots src/lib/trees/latest.ts to src/lib/trees/v{version}.ts
+ *   4. Updates src/lib/trees/index.ts to import the new tree
+ *   5. Refreshes src/lib/versions.ts
  *
  * Usage:
- *   bun run scripts/create-version-bundle.ts <version>
+ *   bun run scripts/create-version-bundle.ts <outgoing-version>
  *
  * Examples:
- *   bun run scripts/create-version-bundle.ts 0.8.0
- *   bun run scripts/create-version-bundle.ts 0.7.0
+ *   bun run scripts/create-version-bundle.ts 0.7.0   # freeze v0.7.0 before releasing v0.8.0
+ *   bun run scripts/create-version-bundle.ts 0.6.1   # freeze v0.6.1 before releasing v0.7.0
  */
 
 import * as fs from "fs/promises";
@@ -172,15 +181,15 @@ const args = process.argv.slice(2);
 const versionArg = args[0];
 
 if (!versionArg || args.includes("--help") || args.includes("-h")) {
-  console.log("Usage: bun run scripts/create-version-bundle.ts <version>");
+  console.log("Usage: bun run scripts/create-version-bundle.ts <outgoing-version>");
   console.log("");
-  console.log("Creates a versioned docs bundle from (latest).");
-  console.log("Copies all content, rewrites internal links, snapshots the");
-  console.log("sidebar tree, and updates the versions list.");
+  console.log("Freezes the current (latest) docs as a versioned bundle.");
+  console.log("Run BEFORE updating (latest) with the new SDK version content.");
   console.log("");
-  console.log("Examples:");
-  console.log("  bun run scripts/create-version-bundle.ts 0.8.0");
-  console.log("  bun run scripts/create-version-bundle.ts 0.7.0");
+  console.log("Example workflow when releasing v0.8.0:");
+  console.log("  1. bun run scripts/create-version-bundle.ts 0.7.0   # freeze outgoing");
+  console.log("  2. Update (latest) with v0.8.0 content");
+  console.log("  3. Update versions.ts to mark v0.8.0 as latest");
   process.exit(versionArg ? 0 : 1);
 }
 
