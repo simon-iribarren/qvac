@@ -1,11 +1,18 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { Check, ChevronDown, Copy, ExternalLinkIcon, MessageSquare, Sparkles, Tag } from 'lucide-react';
 import { cn } from '../lib/cn';
 import { useCopyButton } from 'fumadocs-ui/utils/use-copy-button';
 import { buttonVariants } from './ui/button';
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cva } from 'class-variance-authority';
+import {
+  VERSIONS,
+  LATEST_VERSION,
+  getVersionFromPath,
+  computeVersionedUrl,
+} from '@/lib/versions';
 
 const cache = new Map<string, string>();
 
@@ -234,13 +241,16 @@ export function ViewOptions({
   );
 }
 
-const VERSIONS = [
-  { value: 'v0.7.0', label: 'v0.7.0 (latest)' },
-  { value: 'v0.6.1', label: 'v0.6.1' },
-] as const;
-
 export function VersionSelector() {
-  const [selected, setSelected] = useState<string>(VERSIONS[0].value);
+  const pathname = usePathname();
+
+  const currentVersion = getVersionFromPath(pathname) ?? LATEST_VERSION;
+
+  function handleVersionChange(targetVersion: string) {
+    if (targetVersion === currentVersion) return;
+    const targetUrl = computeVersionedUrl(pathname, targetVersion);
+    window.location.href = targetUrl;
+  }
 
   return (
     <Popover>
@@ -255,7 +265,7 @@ export function VersionSelector() {
         )}
       >
         <Tag className="size-3.5 text-fd-muted-foreground" />
-        {selected}
+        {currentVersion}
         <ChevronDown className="size-3.5 text-fd-muted-foreground" />
       </PopoverTrigger>
       <PopoverContent className="flex flex-col">
@@ -264,12 +274,12 @@ export function VersionSelector() {
             <button
               type="button"
               className={cn(optionVariants())}
-              onClick={() => setSelected(version.value)}
+              onClick={() => handleVersionChange(version.value)}
             >
               <Check
                 className={cn(
                   'text-fd-muted-foreground',
-                  selected === version.value ? 'opacity-100' : 'opacity-0',
+                  currentVersion === version.value ? 'opacity-100' : 'opacity-0',
                 )}
               />
               {version.label}

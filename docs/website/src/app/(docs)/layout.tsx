@@ -6,6 +6,7 @@ import type { LinkItemType } from 'fumadocs-ui/layouts/shared';
 import { FaGithub, FaDiscord } from 'react-icons/fa6';
 import { SiHuggingface } from '@icons-pack/react-simple-icons';
 import { FeaturebaseIcon } from '@/components/featurebase-icon';
+import { VersionPrefixLinks } from '@/components/version-prefix-links';
 
 export default function Layout({ children }: LayoutProps<'/'>) {
 
@@ -56,17 +57,17 @@ export default function Layout({ children }: LayoutProps<'/'>) {
   ];
 
   return (
-    <DocsLayout 
-      {...baseOptions()}  
-      tree={{ 
-          name: 'docs',
-          children: customTree
-        }} 
-      //{...base}
-      //nav={{ ...nav, mode: 'top' }}
-      links={linkItems}
-      >
-      {children}
-    </DocsLayout>
+    <VersionPrefixLinks>
+      <DocsLayout 
+        {...baseOptions()}  
+        tree={{ 
+            name: 'docs',
+            children: customTree
+          }} 
+        links={linkItems}
+        >
+        {children}
+      </DocsLayout>
+    </VersionPrefixLinks>
   );
 }
