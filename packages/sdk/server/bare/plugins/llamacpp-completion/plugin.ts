@@ -140,6 +140,7 @@ export const llmPlugin = definePlugin({
           modelId: request.modelId,
           kvCache: request.kvCache,
           ...(request.tools && { tools: request.tools }),
+          ...(request.generationParams && { generationParams: request.generationParams }),
         });
 
         let stats: CompletionStats | undefined;
