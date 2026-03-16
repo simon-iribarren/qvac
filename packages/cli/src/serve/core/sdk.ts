@@ -163,14 +163,27 @@ export async function sdkEmbed (opts: {
 export async function sdkTranscribe (opts: {
   modelId: string
   audioChunk: Buffer
+  fileName: string
   prompt?: string | undefined
 }): Promise<string> {
-  const { transcribe } = await getSDK()
-  return transcribe({
-    modelId: opts.modelId,
-    audioChunk: opts.audioChunk,
-    ...(opts.prompt && { prompt: opts.prompt })
-  })
+  const fs = await import('node:fs')
+  const os = await import('node:os')
+  const path = await import('node:path')
+
+  const ext = path.extname(opts.fileName) || '.wav'
+  const tmpFile = path.join(os.tmpdir(), `qvac-audio-${Date.now()}${ext}`)
+  fs.writeFileSync(tmpFile, opts.audioChunk)
+
+  try {
+    const { transcribe } = await getSDK()
+    return await transcribe({
+      modelId: opts.modelId,
+      audioChunk: tmpFile,
+      ...(opts.prompt && { prompt: opts.prompt })
+    })
+  } finally {
+    try { fs.unlinkSync(tmpFile) } catch {}
+  }
 }
 
 export async function sdkClose (): Promise<void> {

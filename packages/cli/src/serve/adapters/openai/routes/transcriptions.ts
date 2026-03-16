@@ -88,6 +88,7 @@ export async function handleTranscriptions (req: IncomingMessage, res: ServerRes
     const text = await sdkTranscribe({
       modelId: sdkModelId,
       audioChunk: file.data,
+      fileName: file.fileName,
       prompt
     })
 
