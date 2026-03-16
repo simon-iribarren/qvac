@@ -24,6 +24,7 @@ interface SDKModule {
     generationParams?: SDKGenerationParams
   }) => Promise<CompletionResult>
   embed: (opts: { modelId: string; text: string | string[] }) => Promise<number[] | number[][]>
+  transcribe: (opts: { modelId: string; audioChunk: string | Buffer; prompt?: string }) => Promise<string>
   close: () => Promise<void>
   [key: string]: unknown
 }
@@ -157,6 +158,19 @@ export async function sdkEmbed (opts: {
 }): Promise<number[] | number[][]> {
   const { embed } = await getSDK()
   return embed({ modelId: opts.modelId, text: opts.text })
+}
+
+export async function sdkTranscribe (opts: {
+  modelId: string
+  audioChunk: Buffer
+  prompt?: string | undefined
+}): Promise<string> {
+  const { transcribe } = await getSDK()
+  return transcribe({
+    modelId: opts.modelId,
+    audioChunk: opts.audioChunk,
+    ...(opts.prompt && { prompt: opts.prompt })
+  })
 }
 
 export async function sdkClose (): Promise<void> {
