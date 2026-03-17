@@ -171,7 +171,8 @@ export async function sdkTranscribe (opts: {
   const path = await import('node:path')
 
   const ext = path.extname(opts.fileName) || '.wav'
-  const tmpFile = path.join(os.tmpdir(), `qvac-audio-${Date.now()}${ext}`)
+  const id = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+  const tmpFile = path.join(os.tmpdir(), `qvac-audio-${id}${ext}`)
   fs.writeFileSync(tmpFile, opts.audioChunk)
 
   try {
