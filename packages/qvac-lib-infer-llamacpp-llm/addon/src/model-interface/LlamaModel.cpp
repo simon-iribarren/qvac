@@ -423,7 +423,7 @@ std::string LlamaModel::processPromptImpl(const Prompt& prompt) {
       state_->llmContext_->getNPast() > dts.nPastBeforeTools()) {
     state_->llmContext_->removeLastNTokens(
         state_->llmContext_->getNPast() - dts.nPastBeforeTools());
-    dts.setNPastBeforeTools(-1);
+    dts.reset();
     if (state_->llmContext_->getFirstMsgTokens() > state_->llmContext_->getNPast()) {
       state_->llmContext_->setFirstMsgTokens(state_->llmContext_->getNPast());
     }
