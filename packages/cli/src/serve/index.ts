@@ -115,7 +115,7 @@ const CATEGORY_ENDPOINTS: Record<string, string[]> = {
   transcription: ['POST /v1/audio/transcriptions']
 }
 
-const ALWAYS_ENDPOINTS = [
+const MANAGEMENT_ENDPOINTS = [
   'GET  /v1/models',
   'GET  /v1/models/:id',
   'DELETE /v1/models/:id'
@@ -167,7 +167,7 @@ function logStartupSummary (serveConfig: ServeConfig, logger: Logger): void {
       for (const ep of endpoints) logger.info(`  ${ep}`)
     }
   }
-  for (const ep of ALWAYS_ENDPOINTS) logger.info(`  ${ep}`)
+  for (const ep of MANAGEMENT_ENDPOINTS) logger.info(`  ${ep}`)
   logger.info('')
 }
 

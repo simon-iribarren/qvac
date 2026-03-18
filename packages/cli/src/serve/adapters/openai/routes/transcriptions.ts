@@ -1,5 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { readMultipart, sendJson, sendText, sendError } from '../../../http.js'
+import { sendJson, sendText, sendError } from '../../../http.js'
+import { readMultipart } from '../../../multipart.js'
 import { resolveModelAlias } from '../../../config.js'
 import { sdkTranscribe } from '../../../core/sdk.js'
 import type { RouteContext } from '../../types.js'
