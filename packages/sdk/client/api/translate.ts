@@ -8,7 +8,7 @@ import {
   type TranslationStats,
   type RPCOptions,
 } from "@/schemas";
-import { detectOne } from "@tetherto/langdetect-text-cld2-mono";
+import { detectOne } from "@qvac/langdetect-text-cld2";
 import { TranslationFailedError } from "@/utils/errors-client";
 
 /**

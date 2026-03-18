@@ -9,7 +9,7 @@ import {
 } from "@/schemas";
 import type TranslationNmtcpp from "@qvac/translation-nmtcpp";
 
-import { getLangName } from "@tetherto/langdetect-text-cld2-mono";
+import { getLangName } from "@qvac/langdetect-text-cld2";
 
 export function getLanguage(code: string | undefined): string {
   if (!code) return "";
