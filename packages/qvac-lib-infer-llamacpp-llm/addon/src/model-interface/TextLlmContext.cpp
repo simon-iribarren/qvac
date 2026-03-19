@@ -221,11 +221,10 @@ void TextLlmContext::tokenizeChat(
     if (dynamicToolsState().toolsAtEnd() && !tools.empty()) {
       inputs.tools = {};
       inputs.add_generation_prompt = false;
+      inputs.use_jinja = params_.use_jinja;
       auto promptNoTools = getPrompt(tmpls_.get(), inputs);
       auto tokensNoTools =
           common_tokenize(lctx_, promptNoTools, addSpecial, true);
-
-      inputs.use_jinja = params_.use_jinja;
       dynamicToolsState().setConversationOnlyTokens(tokensNoTools.size());
       assert(
           dynamicToolsState().conversationOnlyTokens() <=
