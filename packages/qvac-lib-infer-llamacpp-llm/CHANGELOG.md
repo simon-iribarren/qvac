@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.12.3] - 2026-03-16
+## [0.12.4] - 2026-03-19
 
 ### Dynamic tool management feature
 
@@ -12,6 +12,17 @@ New `tools_at_end` configuration option (`"true"` or `"false"`, default: `"false
 - **Conversation history reuse**: History tokens are preserved in cache, saving recomputation on long conversations
 - **Dynamic tool replacement**: Different tool sets can be used per turn without cache bloat from unused tools
 
+## [0.12.3] - 2026-03-17
+
+### Added
+
+#### `contextSlides` runtime stat
+
+`runtimeStats()` now includes a `contextSlides` counter that reports how many times the KV cache context window was slid during inference. This replaces the previous approach of parsing log messages to detect sliding context events, providing a reliable, structured stat for downstream consumers.
+
+#### `RuntimeStats` TypeScript interface
+
+Added a `RuntimeStats` type to `index.d.ts` covering all stats keys returned by the C++ addon: `TTFT`, `TPS`, `CacheTokens`, `generatedTokens`, `promptTokens`, and `contextSlides`.
 
 ## [0.12.2] - 2026-03-13
 
