@@ -2,6 +2,7 @@
 
 Native C++ addon for text-to-image and image-to-image generation using [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp), built for the Bare Runtime. Supports **Stable Diffusion 1.x / 2.x / XL / 3** and **FLUX.2 [klein]**.
 
+
 ## Table of Contents
 
 - [Supported platforms](#supported-platforms)

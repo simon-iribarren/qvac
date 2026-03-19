@@ -2,7 +2,6 @@
 
 This library provides standardized error handling capabilities for all QVAC libraries. It ensures consistency in error reporting, serialization, and handling across the entire QVAC ecosystem.
 
-
 ## Installation
 
 ```bash
