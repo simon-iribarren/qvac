@@ -205,11 +205,10 @@ void MtmdLlmContext::tokenizeChat(
   }
 
   if (dynamicToolsState().toolsAtEnd() && !tools.empty()) {
-    auto savedUseJinja = inputs.use_jinja;
     inputs.tools = {};
     inputs.add_generation_prompt = false;
     auto promptNoTools = getPrompt(tmpls_.get(), inputs);
-    inputs.use_jinja = savedUseJinja;
+    inputs.use_jinja = params_.use_jinja;
 
     if (!promptNoTools.empty()) {
       mtmd_input_text textNoTools;
