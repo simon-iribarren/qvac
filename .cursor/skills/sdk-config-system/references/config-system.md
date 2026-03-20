@@ -1,9 +1,3 @@
----
-description: SDK Configuration System - Immutable Config Loaded at Initialization
-globs:
-  - packages/sdk/**
-alwaysApply: false
----
 
 # SDK Configuration System
 
@@ -105,7 +99,7 @@ export const myHandler = async (request: MyRequest) => {
 
 ### Step 4: Document the Option
 
-Update `.cursor/rules/sdk/docs/config-system.mdc` (this file) with the new option:
+Update `.cursor/skills/sdk-config-system/references/config-system.md` (this file) with the new option:
 - Add to "Available Config Options" section
 - Describe purpose, type, default value
 
@@ -460,4 +454,4 @@ Possible additions:
 ## Related Documentation
 
 - **Error Handling:** See `.cursor/rules/sdk/error-handling.mdc` for adding config-related errors
-- **Cache Management:** See `.cursor/rules/sdk/docs/cache-management-api.mdc` for how cacheDirectory is used
+- **Cache Management:** See `.cursor/skills/sdk-cache-management/references/cache-management-api.md` for how cacheDirectory is used

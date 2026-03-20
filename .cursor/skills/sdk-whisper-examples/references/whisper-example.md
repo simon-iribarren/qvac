@@ -1,9 +1,3 @@
----
-description:
-globs:
-  - packages/sdk/**
-alwaysApply: false
----
 import FilesystemDL from "@qvac/dl-filesystem";
 // This dependency is not installed by default. Please make sure to install it before running the example
 import TranscriptionWhispercpp from "@qvac/transcription-whispercpp";

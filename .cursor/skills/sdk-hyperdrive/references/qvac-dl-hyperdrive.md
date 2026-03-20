@@ -1,9 +1,3 @@
----
-description:
-globs:
-  - packages/sdk/**
-alwaysApply: false
----
 
 'use strict'
 

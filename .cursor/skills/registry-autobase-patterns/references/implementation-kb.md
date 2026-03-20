@@ -1,10 +1,3 @@
----
-description: Registry-specific gotchas for Corestore, Autobase, and multi-indexer patterns. Consult when working with storage, keypairs, writer/indexer management, or schema generation.
-globs:
-  - packages/qvac-lib-registry-server/**
-alwaysApply: false
----
-
 # QVAC Registry Implementation Knowledge Base
 
 Gotchas and patterns **specific to this codebase**. Update this file when discovering new non-obvious behaviors.

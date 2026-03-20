@@ -1,9 +1,3 @@
----
-description:
-globs:
-  - packages/sdk/**
-alwaysApply: false
----
 # Hyperdrive
 
 [See API docs at docs.pears.com](https://docs.pears.com/building-blocks/hyperdrive)

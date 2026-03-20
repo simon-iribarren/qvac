@@ -1,9 +1,3 @@
----
-description: Model Cache Management APIs
-globs:
-  - packages/sdk/**
-alwaysApply: false
----
 
 # Model Cache Management API
 
@@ -418,5 +412,5 @@ try {
 
 ## See Also
 
-- [Model Constants and Sources](./model-constants-and-sources.mdc) - Object-based model constants
-- [Config Persistence](./config-persistence.mdc) - Config persistence across worker restarts
+- [Model Constants and Sources](../../sdk-model-constants/references/model-constants-and-sources.md) - Object-based model constants
+- [Config System](../../sdk-config-system/references/config-system.md) - SDK configuration including cache directories

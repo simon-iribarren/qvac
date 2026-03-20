@@ -1,7 +1,3 @@
----
-description: KV Cache System - Inference Context Caching for LLM Completion
-alwaysApply: false
----
 
 # KV Cache System
 
@@ -325,5 +321,5 @@ modelConfig: {
 
 ## See Also
 
-- [Cache Management API](./cache-management-api.mdc) - Model download/load caching (different from KV Cache)
-- [Config System](./config-system.mdc) - SDK configuration including cache directories
+- [Cache Management API](../../sdk-cache-management/references/cache-management-api.md) - Model download/load caching (different from KV Cache)
+- [Config System](../../sdk-config-system/references/config-system.md) - SDK configuration including cache directories

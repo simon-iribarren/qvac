@@ -1,9 +1,3 @@
----
-description: when basic autobase examples not enough or blind-peer usage involved
-globs:
-  - packages/qvac-lib-registry-server/**
-alwaysApply: false
----
 # Autobase + HyperDB Multi-Writer Architecture
 
 ## Overview
@@ -11,10 +5,8 @@ alwaysApply: false
 Multi-writer distributed database using Autobase with HyperDB view layer, event sourcing patterns, and peer discovery.
 
 **Reference Priority:**
-1. **Primary**: `@hyperdb-autobase-learnings.md` - Comprehensive multi-writer patterns, deployment procedures, RPC setup
-2. **Secondary**: `@holepunchto-autopass-8a5edab282632443.txt` - Detailed implementation with blind pairing/peering patterns
-
-Consult the primary reference first for multi-writer setup, Autobase patterns, and production deployment. Use the secondary reference only when you need specific blind pairing/peering implementation details not covered in the primary reference.
+1. **Primary**: Comprehensive multi-writer patterns, deployment procedures, RPC setup (see references in the `registry-autobase-patterns` skill)
+2. **Secondary**: Blind pairing/peering implementation details (inline below)
 
 ## Core Architecture
 
@@ -325,23 +317,4 @@ Use autopass pattern when you need:
 
 ## References
 
-### Primary Reference: hyperdb-autobase-learnings.md
-Comprehensive guide covering:
-- Multi-writer deployment procedures (3-writer setup)
-- Autobase service implementation patterns
-- Hyperdispatch router setup
-- RPC layer (server and client)
-- CLI implementation
-- Testing multi-writer scenarios
-- Operational considerations and disaster recovery
-- Load balancing with RPC client pool
-
-### Secondary Reference: holepunchto-autopass-8a5edab282632443.txt
-Detailed implementation for blind pairing/peering specifics:
-- `index.js` - AutopassPairer and Autopass classes
-- `schema.js` - Complete schema build pipeline
-- `spec/db/index.js` - Generated collection encoders
-- `spec/hyperdispatch/index.js` - Generated router with handlers
-- `test.js` - Blind pairing test patterns
-- Invite lifecycle management
-- Read-only mirror configuration
+For comprehensive Autobase multi-writer patterns, deployment procedures, RPC setup, and HyperDB learnings, use the `registry-autobase-patterns` skill.

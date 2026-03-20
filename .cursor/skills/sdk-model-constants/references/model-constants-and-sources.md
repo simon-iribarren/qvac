@@ -1,9 +1,3 @@
----
-description: Model Constants and Model Source Union Type
-globs:
-  - packages/sdk/**
-alwaysApply: false
----
 
 # Model Constants and Model Source
 
