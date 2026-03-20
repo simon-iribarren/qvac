@@ -68,6 +68,7 @@ jobs:
       MQTT_PORT: ${{ secrets.MQTT_PORT }}
       MQTT_USERNAME: ${{ secrets.MQTT_USERNAME }}
       MQTT_PASSWORD: ${{ secrets.MQTT_PASSWORD }}
+      QVAC_SDK_VERSION: ${{ format('{0}@{1}', inputs.test-version || github.ref_name, github.sha) }}
     steps:
       - uses: actions/checkout@v6
         with:
