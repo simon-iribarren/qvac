@@ -2,6 +2,7 @@
 
 This decoder library leverages FFmpeg for efficient audio decoding. It simplifies processing of input audio, particularly as a preprocessing step for other addons.
 
+
 ## Table of Contents
 
 - [Supported Platforms](#supported-platforms)
