@@ -99,7 +99,7 @@ export const myHandler = async (request: MyRequest) => {
 
 ### Step 4: Document the Option
 
-Update `.cursor/skills/sdk-config-system/references/config-system.md` (this file) with the new option:
+Update this file with the new option:
 - Add to "Available Config Options" section
 - Describe purpose, type, default value
 

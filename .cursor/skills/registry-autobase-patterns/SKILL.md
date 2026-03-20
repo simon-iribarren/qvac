@@ -22,3 +22,4 @@ Reference material for Autobase, HyperDB, Hyperdispatch, and multi-writer distri
 | `references/implementation-kb.md` | Registry-specific gotchas: Corestore locking, named keypairs, writer vs indexer, Protomux connection order |
 | `references/hyperdb-learnings.md` | HyperDB workshop: schema definition, CRUD operations, indexes, query patterns, networking, testing |
 | `references/hyperdb-autobase-learnings.md` | Multi-writer workshop: Autobase architecture, Hyperdispatch, RPC layer, 3-writer deployment, disaster recovery |
+| `references/hyperdb-query-reference.md` | Concise HyperDB query reference: query API, index design (single/compound/mapped), query patterns, limitations, QVAC registry indexes |
