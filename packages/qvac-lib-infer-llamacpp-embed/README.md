@@ -4,6 +4,7 @@ This native C++ addon, built using the `Bare` Runtime, simplifies running text e
 
 ## Table of Contents
 
+
 - [Supported platforms](#supported-platforms)
 - [Installation](#installation)
 - [Building from Source](#building-from-source)

@@ -6,7 +6,6 @@ This package also exports `QvacResponse`, the response class used by all QVAC in
 
 ## Installation
 
-
 Before proceeding with the installation, please generate a **granular Personal Access Token (PAT)** with the `read-only` scope. Once generated, add the token to your environment variables using the name `NPM_TOKEN`.
 
 ```bash
