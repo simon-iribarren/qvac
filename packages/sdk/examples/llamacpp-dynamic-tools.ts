@@ -1,12 +1,12 @@
-/* eslint-disable */
-// @ts-nocheck
 import { z } from "zod";
 import {
   completion,
   loadModel,
   unloadModel,
+  type ToolInput,
   type ToolCall,
   type CompletionStats,
+  type CompletionParams,
   QWEN3_1_7B_INST_Q4,
 } from "@/index";
 
@@ -42,7 +42,10 @@ const tools2 = [
   },
 ];
 
-async function chatSession ({ modelId, history, tools, kvCache }) {
+type ChatSesssionParam = CompletionParams & {
+  tools: ToolInput[]
+}
+async function chatSession ({ modelId, history, tools, kvCache }: ChatSesssionParam) {
   const result = completion({ modelId, history, kvCache, stream: true, tools });
 
   // Consume token stream
@@ -150,7 +153,10 @@ async function chatSession ({ modelId, history, tools, kvCache }) {
   console.log("\n\n📊 Follow-up Stats:", followUpStats);
 }
 
-async function runToolInvocationTest({ kvCache, toolVariants }) {
+type ToolInvocationParam = Pick<CompletionParams, 'kvCache'> & {
+  toolVariants: [ToolInput[], ToolInput[]]
+}
+async function runToolInvocationTest({ kvCache, toolVariants }: ToolInvocationParam) {
   try {
     // Load model from provided file path with tools support enabled
     const modelId = await loadModel({

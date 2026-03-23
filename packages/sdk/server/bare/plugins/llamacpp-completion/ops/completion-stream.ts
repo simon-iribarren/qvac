@@ -32,7 +32,7 @@ import {
 import {
   checkForToolEvents,
   appendToolsToHistory,
-  insertToolsIntoHistory,
+  prependToolsToHistory,
   setupToolGrammar,
 } from "@/server/utils/tool-integration";
 import { parseToolCalls } from "@/server/utils/tool-parser";
@@ -277,7 +277,7 @@ export async function* completion(
     if (toolsMode === "dynamic") {
       historyWithTools = appendToolsToHistory(history, tools);
     } else {
-      historyWithTools = insertToolsIntoHistory(history, tools);
+      historyWithTools = prependToolsToHistory(history, tools);
     }
     setupToolGrammar(modelConfig as Record<string, unknown>, tools);
   }

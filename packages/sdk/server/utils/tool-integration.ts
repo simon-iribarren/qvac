@@ -10,7 +10,7 @@ interface HistoryMessage {
   attachments?: { path: string }[] | undefined;
 }
 
-export function insertToolsIntoHistory(
+export function prependToolsToHistory(
   history: HistoryMessage[],
   tools: Tool[],
 ): Array<HistoryMessage | Tool> {
