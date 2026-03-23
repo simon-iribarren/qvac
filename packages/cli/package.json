@@ -40,7 +40,8 @@
     "lint": "tsc --noEmit",
     "test": "tsx test/translate.test.ts && tsx test/serve.test.ts",
     "test:unit": "tsx test/translate.test.ts",
-    "test:serve": "tsx test/serve.test.ts"
+    "test:serve": "tsx test/serve.test.ts",
+    "test:e2e": "tsx test/e2e.test.ts"
   },
   "dependencies": {
     "bare-pack": "^2.0.0",
@@ -48,6 +49,7 @@
     "tsx": "^4.21.0"
   },
   "devDependencies": {
+    "@qvac/sdk": "^0.8.0",
     "@types/node": "^25.3.3",
     "typescript": "^5.9.3"
   }
