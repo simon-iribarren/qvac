@@ -10,10 +10,6 @@ export const downloadParallel: TestDefinition = {
     estimatedDurationMs: 180000,
     expectedCount: 2,
   },
-  skip: {
-    reason: "Download test not suitable for mobile (OOM/bandwidth)",
-    platforms: ["mobile-ios", "mobile-android"],
-  },
 };
 
 export const downloadCancelIsolation: TestDefinition = {
@@ -24,10 +20,6 @@ export const downloadCancelIsolation: TestDefinition = {
     category: "download",
     dependency: "none",
     estimatedDurationMs: 180000,
-  },
-  skip: {
-    reason: "Download test not suitable for mobile (OOM/bandwidth)",
-    platforms: ["mobile-ios", "mobile-android"],
   },
 };
 
