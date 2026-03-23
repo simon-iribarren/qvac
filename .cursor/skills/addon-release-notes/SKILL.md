@@ -1,3 +1,8 @@
+---
+name: addon-release-notes
+description: Generate release notes for addon packages (non-SDK inference addons, decoder, OCR). Use when preparing release notes or user asks to "generate release notes" for an addon package.
+---
+
 # Addon Release Notes Generator
 
 ## What
@@ -83,3 +88,29 @@ Create `release-notes/vX.Y.Z.md` with these guidelines:
    - Keep code examples clean and commented
    - Remove internal jargon, make it accessible
    - **Skip entries with no informational value** -- generic entries like "Updated models" or "Bumped dependencies" without specific details should be omitted
+
+### Example
+
+**release-notes/vX.Y.Z.md:**
+```markdown
+# QVAC OCR Addon v0.4.0 Release Notes
+
+This release introduces automated GitHub releases and improves mobile test reliability.
+
+## Features
+
+### Automated GitHub Releases
+
+The release process is now automated with enforced release notes. When a version bump is detected on merge to main, a GitHub release is automatically created using the corresponding release notes file.
+
+## Bug Fixes
+
+### Mobile E2E Test Workflow Fix
+
+Fixed an issue where mobile E2E tests would fail when the "On PR Trigger" workflow was manually run via workflow_dispatch.
+
+## Pull Requests
+
+- [#67](https://github.com/tetherto/qvac/pull/67) - Fix mobile E2E tests workflow_dispatch
+- [#70](https://github.com/tetherto/qvac/pull/70) - feat: automate GitHub releases with mandatory release notes
+```

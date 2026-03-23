@@ -1,3 +1,7 @@
+---
+description: Hyperdrive P2P filesystem API and qvac-lib-dl-hyperdrive download integration
+alwaysApply: false
+---
 # Hyperdrive
 
 [See API docs at docs.pears.com](https://docs.pears.com/building-blocks/hyperdrive)

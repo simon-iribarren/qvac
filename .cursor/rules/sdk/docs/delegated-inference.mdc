@@ -1,3 +1,8 @@
+---
+description: Delegated inference implementation - remote peer completion via Hyperswarm
+alwaysApply: false
+---
+
 # Delegated Inference Implementation Plan
 
 ## 🕚 Overview

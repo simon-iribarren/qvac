@@ -1,3 +1,8 @@
+---
+name: addon-pr-create
+description: Generate PR descriptions for addon packages (non-SDK inference addons, decoder, OCR). Use when creating a PR description or user asks to "prepare PR description" for an addon package.
+---
+
 # Addon PR Description Generator
 
 ## What
@@ -38,6 +43,6 @@ The goal is a single combined change set: all commits on the remote tracked bran
 
 ### Step 2: Generate the PR description
 
-Use `PULL_REQUEST_TEMPLATE.md` as the template. Fill it in based on the combined change set. If there are additional instructions in the template file, follow them too. Return the completed PR description to the user as a message.
+Use `@PULL_REQUEST_TEMPLATE.md` as the template. Fill it in based on the combined change set. If there are additional instructions in the template file, follow them too. Return the completed PR description to the user as a message.
 
 Do NOT create or modify any additional files when producing the PR description.
