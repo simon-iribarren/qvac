@@ -1,12 +1,14 @@
 import { describe, it, before, after } from 'node:test'
 import assert from 'node:assert/strict'
-import http from 'node:http'
+import type http from 'node:http'
 import { tmpdir } from 'node:os'
 import { mkdtempSync } from 'node:fs'
 import path from 'node:path'
+import { createTestClient, assertErrorEnvelope } from './helpers.js'
 
 const TEST_PORT = 19876
 const BASE = `http://127.0.0.1:${TEST_PORT}`
+const { req, multipartReq } = createTestClient(BASE)
 
 let server: http.Server
 
@@ -21,87 +23,6 @@ async function startTestServer (opts: { apiKey?: string; cors?: boolean } = {}):
     cors: opts.cors,
     verbose: false
   })
-}
-
-async function req (
-  method: string,
-  urlPath: string,
-  body?: unknown,
-  headers?: Record<string, string>
-): Promise<{ status: number; headers: http.IncomingHttpHeaders; body: unknown }> {
-  const payload = body !== undefined ? JSON.stringify(body) : undefined
-  const res = await fetch(`${BASE}${urlPath}`, {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      ...headers
-    },
-    body: payload
-  })
-  const text = await res.text()
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(text)
-  } catch {
-    parsed = text
-  }
-  return {
-    status: res.status,
-    headers: Object.fromEntries(res.headers.entries()),
-    body: parsed
-  }
-}
-
-function assertErrorEnvelope (body: unknown, code: string): void {
-  assert.ok(typeof body === 'object' && body !== null)
-  const err = (body as Record<string, unknown>)['error']
-  assert.ok(typeof err === 'object' && err !== null)
-  assert.equal((err as Record<string, unknown>)['code'], code)
-  assert.ok(typeof (err as Record<string, unknown>)['message'] === 'string')
-}
-
-async function multipartReq (
-  urlPath: string,
-  fields: Record<string, string>,
-  file?: { name: string; data: Buffer }
-): Promise<{ status: number; headers: http.IncomingHttpHeaders; body: unknown }> {
-  const boundary = '----TestBoundary' + Math.random().toString(36).slice(2)
-  const parts: Buffer[] = []
-
-  for (const [key, value] of Object.entries(fields)) {
-    parts.push(Buffer.from(
-      `--${boundary}\r\nContent-Disposition: form-data; name="${key}"\r\n\r\n${value}\r\n`
-    ))
-  }
-
-  if (file) {
-    parts.push(Buffer.from(
-      `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${file.name}"\r\nContent-Type: application/octet-stream\r\n\r\n`
-    ))
-    parts.push(file.data)
-    parts.push(Buffer.from('\r\n'))
-  }
-
-  parts.push(Buffer.from(`--${boundary}--\r\n`))
-  const body = Buffer.concat(parts)
-
-  const res = await fetch(`${BASE}${urlPath}`, {
-    method: 'POST',
-    headers: { 'Content-Type': `multipart/form-data; boundary=${boundary}` },
-    body
-  })
-  const text = await res.text()
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(text)
-  } catch {
-    parsed = text
-  }
-  return {
-    status: res.status,
-    headers: Object.fromEntries(res.headers.entries()),
-    body: parsed
-  }
 }
 
 describe('serve (no models)', () => {
