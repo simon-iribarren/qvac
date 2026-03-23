@@ -170,6 +170,7 @@ bun run examples/path/to/example.ts
 - `llama.cpp` with Hyperdrive: [`examples/llamacpp-hyperdrive.ts`](examples/llamacpp-hyperdrive.ts)
 - `llama.cpp` with HTTP: [`examples/llamacpp-http.ts`](examples/llamacpp-http.ts)
 - `llama.cpp` with tools/function calls: [`examples/llamacpp-native-tools.ts`](examples/llamacpp-native-tools.ts)
+- `llama.cpp` with tools/function calls (dynamic mode): [`examples/llamacpp-dynamic-tools.ts`](examples/llamacpp-dynamic-tools.ts)
 - `llama.cpp` with multimodal inference: [`examples/llamacpp-multimodal.ts`](examples/llamacpp-multimodal.ts)
 - `llama.cpp` with KV cache: [`examples/kv-cache-example.ts`](examples/kv-cache-example.ts)
 

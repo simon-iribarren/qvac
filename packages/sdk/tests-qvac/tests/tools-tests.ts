@@ -179,8 +179,253 @@ const additionalToolsTests: TestDefinition[] = toolsTestIds.map((testId) => ({
   },
 }));
 
+
+// Helper for creating tools tests with toolsMode
+const createToolsModeTest = (
+  testId: string,
+  userPrompt: string,
+  tools: Array<{
+    type: "function";
+    name: string;
+    description: string;
+    parameters: {
+      type: "object";
+      properties: Record<string, unknown>;
+      required?: string[];
+    };
+  }>,
+  toolsMode?: "static" | "dynamic",
+  expectation: {
+    validation: "type";
+    expectedType: "string" | "number" | "array" | "embedding";
+  } = {
+    validation: "type",
+    expectedType: "string",
+  },
+): TestDefinition => ({
+  testId,
+  params: {
+    history: [{ role: "user", content: userPrompt }],
+    tools,
+    stream: false,
+    ...(toolsMode && { toolsMode }),
+  },
+  expectation,
+  metadata: {
+    category: "tools",
+    dependency: "tools",
+    estimatedDurationMs: 15000,
+  },
+});
+
+// Test basic tool call with different possible tools modes and unset
+export const toolsModeStatic = createToolsModeTest(
+  "tools-mode-static",
+  "What's 25 degrees Celsius in Fahrenheit?",
+  [
+    {
+      type: "function",
+      name: "convert_temperature",
+      description: "Convert temperature between Celsius and Fahrenheit",
+      parameters: {
+        type: "object" as const,
+        properties: {
+          value: { type: "number", description: "Temperature value" },
+          from_unit: {
+            type: "string",
+            enum: ["celsius", "fahrenheit"],
+            description: "Source unit",
+          },
+          to_unit: {
+            type: "string",
+            enum: ["celsius", "fahrenheit"],
+            description: "Target unit",
+          },
+        },
+        required: ["value", "from_unit", "to_unit"],
+      },
+    },
+  ],
+  "static",
+);
+
+export const toolsModeDynamic = createToolsModeTest(
+  "tools-mode-dynamic",
+  "What's 25 degrees Celsius in Fahrenheit?",
+  [
+    {
+      type: "function",
+      name: "convert_temperature",
+      description: "Convert temperature between Celsius and Fahrenheit",
+      parameters: {
+        type: "object" as const,
+        properties: {
+          value: { type: "number", description: "Temperature value" },
+          from_unit: {
+            type: "string",
+            enum: ["celsius", "fahrenheit"],
+            description: "Source unit",
+          },
+          to_unit: {
+            type: "string",
+            enum: ["celsius", "fahrenheit"],
+            description: "Target unit",
+          },
+        },
+        required: ["value", "from_unit", "to_unit"],
+      },
+    },
+  ],
+  "dynamic",
+);
+
+export const toolsModeUnset = createToolsModeTest(
+  "tools-mode-unset",
+  "What's 25 degrees Celsius in Fahrenheit?",
+  [
+    {
+      type: "function",
+      name: "convert_temperature",
+      description: "Convert temperature between Celsius and Fahrenheit",
+      parameters: {
+        type: "object" as const,
+        properties: {
+          value: { type: "number", description: "Temperature value" },
+          from_unit: {
+            type: "string",
+            enum: ["celsius", "fahrenheit"],
+            description: "Source unit",
+          },
+          to_unit: {
+            type: "string",
+            enum: ["celsius", "fahrenheit"],
+            description: "Target unit",
+          },
+        },
+        required: ["value", "from_unit", "to_unit"],
+      },
+    },
+  ],
+);
+
+// Test multiple tools with correct selection
+export const toolsModeMultipleTools = createToolsModeTest(
+  "tools-mode-multiple-tools",
+  "Get the weather for London and calculate the time difference with New York",
+  [
+    {
+      type: "function",
+      name: "get_weather",
+      description: "Get current weather for a location",
+      parameters: {
+        type: "object" as const,
+        properties: {
+          location: { type: "string", description: "City name" },
+        },
+        required: ["location"],
+      },
+    },
+    {
+      type: "function",
+      name: "get_time_difference",
+      description: "Calculate time difference between two cities",
+      parameters: {
+        type: "object" as const,
+        properties: {
+          city1: { type: "string" },
+          city2: { type: "string" },
+        },
+        required: ["city1", "city2"],
+      },
+    },
+  ],
+  "dynamic",
+);
+
+// Test model declines tool use
+export const toolsModeModelDeclines = createToolsModeTest(
+  "tools-mode-model-declines",
+  "Tell me a joke about programming",
+  [
+    {
+      type: "function",
+      name: "get_weather",
+      description: "Get current weather for a location",
+      parameters: {
+        type: "object" as const,
+        properties: {
+          location: { type: "string", description: "City name" },
+        },
+        required: ["location"],
+      },
+    },
+  ],
+  "dynamic",
+);
+
+// Test no tools provided (empty array)
+export const toolsModeEmptyArray = createToolsModeTest(
+  "tools-mode-empty-array",
+  "What's the weather like?",
+  [],
+  "dynamic",
+);
+
+// Test single tool
+export const toolsModeSingleTool = createToolsModeTest(
+  "tools-mode-single-tool",
+  "Get the current time in Tokyo",
+  [
+    {
+      type: "function",
+      name: "get_time",
+      description: "Get current time for a location",
+      parameters: {
+        type: "object" as const,
+        properties: {
+          location: { type: "string", description: "City name" },
+        },
+        required: ["location"],
+      },
+    },
+  ],
+  "dynamic",
+);
+
+// Test large tool set (10+ tools)
+const largeToolSet = Array.from({ length: 12 }, (_, i) => ({
+  type: "function" as const,
+  name: `tool_function_${i}`,
+  description: `Test function number ${i}`,
+  parameters: {
+    type: "object" as const,
+    properties: {
+      param: { type: "string", description: `Parameter for function ${i}` },
+    },
+    required: ["param"],
+  },
+}));
+
+export const toolsModeLargeToolSet = createToolsModeTest(
+  "tools-mode-large-tool-set",
+  "Execute tool number 5",
+  largeToolSet,
+  "dynamic",
+);
+
+export const toolsModeTests = [
+  toolsModeStatic,
+  toolsModeDynamic,
+  toolsModeUnset,
+  toolsModeMultipleTools,
+  toolsModeModelDeclines,
+  toolsModeEmptyArray,
+  toolsModeSingleTool,
+  toolsModeLargeToolSet,
+];
 export const toolsTests = [
   toolsSimpleFunction,
   toolsMultipleFunctions,
   ...additionalToolsTests,
+  ...toolsModeTests,
 ];

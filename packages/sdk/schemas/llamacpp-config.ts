@@ -41,6 +41,7 @@ export const llmConfigBaseSchema = z.object({
   stop_sequences: z.array(z.string()).optional(),
   n_discarded: z.number().optional(),
   tools: z.boolean().optional(),
+  toolsMode: z.enum(["static", "dynamic"]).optional(),
   projectionModelSrc: modelSrcInputSchema.optional(),
 });
 
@@ -52,6 +53,7 @@ export const LLM_CONFIG_DEFAULTS = {
   gpu_layers: 99,
   device: "gpu",
   system_prompt: "You are a helpful assistant.",
+  toolsMode: "static",
 } as const satisfies Partial<LlmConfigInput>;
 
 // Full schema - applies defaults via transform (no duplication)

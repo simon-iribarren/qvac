@@ -31,6 +31,7 @@ import {
 } from "@/server/bare/registry/model-registry";
 import {
   checkForToolEvents,
+  appendToolsToHistory,
   insertToolsIntoHistory,
   setupToolGrammar,
 } from "@/server/utils/tool-integration";
@@ -161,13 +162,16 @@ function prepareMessagesForCache(
     content: string;
     attachments?: { path: string }[] | undefined;
   }[],
+  tools?: Tool[],
 ): ChatHistory[] {
+  const addTools = tools?.length ? transformMessages(tools) : [];
   if (cacheExists && history.length > 0) {
     const lastMessage = history[history.length - 1];
     const lastTransformedMessages = transformMessage(lastMessage!);
     return [
       { role: "session", content: cachePathToUse },
       ...lastTransformedMessages,
+      ...addTools,
     ];
   }
 
@@ -178,6 +182,7 @@ function prepareMessagesForCache(
   return [
     { role: "session", content: cachePathToUse },
     ...transformedHistoryWithoutSystem,
+    ...addTools,
   ];
 }
 
@@ -257,6 +262,7 @@ export async function* completion(
 
   const modelConfig = getModelConfig(modelId);
   const toolsEnabled = (modelConfig as { tools?: boolean }).tools === true;
+  const toolsMode = (modelConfig as { toolsMode?: string }).toolsMode;
 
   let historyWithTools: Array<
     | {
@@ -268,7 +274,11 @@ export async function* completion(
   > = history;
 
   if (tools && tools.length > 0 && toolsEnabled) {
-    historyWithTools = insertToolsIntoHistory(history, tools);
+    if (toolsMode === "dynamic") {
+      historyWithTools = appendToolsToHistory(history, tools);
+    } else {
+      historyWithTools = insertToolsIntoHistory(history, tools);
+    }
     setupToolGrammar(modelConfig as Record<string, unknown>, tools);
   }
 
@@ -278,7 +288,13 @@ export async function* completion(
   if (kvCache) {
     const modelConfig = getModelConfig(modelId);
     const systemPromptFromHistory = extractSystemPrompt(history);
-    const configHash = generateConfigHash(systemPromptFromHistory, tools);
+    const toolsModeForHash = (modelConfig as { toolsMode?: string }).toolsMode;
+    const systemTools = toolsMode !== "dynamic" && tools?.length && toolsEnabled;
+    const dynamicTools = toolsMode === "dynamic" && tools?.length && toolsEnabled;
+    const configHash = generateConfigHash(
+      systemPromptFromHistory,
+      toolsModeForHash !== "dynamic" ? tools : undefined,
+    );
 
     const systemPromptToUse =
       systemPromptFromHistory ||
@@ -298,7 +314,7 @@ export async function* completion(
           cachePathToUse,
           systemPromptToUse,
           kvCache,
-          tools && toolsEnabled ? tools : undefined,
+          systemTools ? tools : undefined,
         );
         markCacheInitialized(modelId, configHash, kvCache);
         cacheExists = true;
@@ -308,6 +324,7 @@ export async function* completion(
         cachePathToUse,
         cacheExists,
         history,
+        dynamicTools ? tools : undefined,
       );
       logMessagesToAddon(messagesToSend, "PROMPT_SEND");
 
@@ -345,7 +362,7 @@ export async function* completion(
           cachePathToUse,
           systemPromptToUse,
           "auto",
-          tools && toolsEnabled ? tools : undefined,
+          systemTools ? tools : undefined,
         );
         markCacheInitialized(modelId, configHash, currentCacheInfo.cacheKey);
         cacheExists = true;
@@ -355,6 +372,7 @@ export async function* completion(
         cachePathToUse,
         cacheExists,
         history,
+        dynamicTools ? tools : undefined,
       );
       logMessagesToAddon(messagesToSend, "PROMPT_SEND");
 

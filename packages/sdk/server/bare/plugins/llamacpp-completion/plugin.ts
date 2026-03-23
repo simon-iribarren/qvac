@@ -50,6 +50,11 @@ function transformLlmConfig(llmConfig: LlmConfig) {
     delete transformed["stop_sequences"];
   }
 
+  if ("tools_mode" in transformed) {
+    transformed["tools_at_end"] = transformed["tools_mode"] === "dynamic" ? "true" : "false";
+    delete transformed["tools_mode"];
+  }
+
   return transformed;
 }
 
