@@ -12,71 +12,82 @@ Multi-writer distributed database using Autobase with HyperDB view layer, event 
 
 ### 1. Autobase Configuration
 
+**Registry implementation** (from `registry-service.js`):
 ```javascript
-this.base = new Autobase(this.store, key, {
-  wakeup,
-  encrypt: true,
-  encryptionKey,
-  open(store) {
-    return HyperDB.bee(store.get('view'), dbSpec, {
-      extension: false,
-      autoUpdate: true
-    })
-  },
-  apply: this._apply.bind(this)
+this.base = new Autobase(this.store, this.autobaseBootstrap, {
+  open: this._openAutobase.bind(this),
+  apply: this._apply.bind(this),
+  close: this._closeAutobase.bind(this),
+  ackInterval: this.ackInterval,
+  ackThreshold: this.ackThreshold
 })
 ```
 
+The `open` callback returns a `RegistryDatabase` (a HyperDB wrapper from `@qvac/registry-schema`):
+```javascript
+_openAutobase (store) {
+  const dbCore = store.get('db-view')
+  return new RegistryDatabase(dbCore, { extension: false })
+}
+```
+
 **Key points:**
-- `open` returns HyperDB.bee instance with compiled spec
-- `apply` processes append-only log entries into materialized view
-- `wakeup` enables efficient peer coordination
-- Encryption enabled by default for security
+- `open` returns the view instance (here a `RegistryDatabase` wrapping HyperDB)
+- `apply` processes append-only log entries into the materialized view
+- `ackInterval`/`ackThreshold` control indexer acknowledgment timing
+- `close` callback handles view teardown
+
+> **Generic pattern (from Autobase workshops):** Other Autobase apps may use `encrypt: true` with `encryptionKey` and a `wakeup` option — the registry does not use these.
 
 ### 2. Router-Based Apply Function
 
+**Registry implementation:**
 ```javascript
-async _apply(nodes, view, base) {
+async _apply (nodes, view, base) {
+  if (!view.opened) await view.ready()
+
   for (const node of nodes) {
-    await this.router.dispatch(node.value, { view, base })
+    await this.applyRouter.dispatch(node.value, { view, base })
   }
-  await view.flush()
+
+  await view.db.flush()
 }
 ```
 
 **Pattern:**
 - Iterate through nodes from autobase
-- Dispatch encoded operations to handlers
+- Dispatch encoded operations to handlers via the Hyperdispatch `Router`
 - Router decodes and routes to registered handler
 - Flush view after batch processing
 
 ### 3. Router Setup with Hyperdispatch
 
+**Registry implementation:**
 ```javascript
-this.router = new Router() // from compiled spec
+this.applyRouter = new Router()
 
-this.router.add('@namespace/operation', async (data, context) => {
-  await context.view.insert('@namespace/collection', data)
+this.applyRouter.add('@qvac-registry/put-model', async (model, context) => {
+  await context.view.putModel(model)
 })
 
-this.router.add('@namespace/delete-op', async (data, context) => {
-  await context.view.delete('@namespace/collection', { key: data.key })
+this.applyRouter.add('@qvac-registry/add-indexer', async ({ key }, context) => {
+  await context.base.addWriter(key, { indexer: true })
 })
 ```
 
 **Context object:**
-- `context.view` - HyperDB instance for queries/mutations
-- `context.base` - Autobase instance for writer management
+- `context.view` - The RegistryDatabase (HyperDB) instance for queries/mutations
+- `context.base` - Autobase instance for writer/indexer management
 
-### 4. Blind Pairing Pattern
+### 4. Blind Pairing Pattern (Generic / Workshop Reference)
+
+> **Note:** The registry server does **not** use blind pairing. It uses **blind peering** (section 5) for read-only mirror synchronization. This section is included as a generic Autobase pattern reference from Holepunch workshops.
 
 **Creator (inviter):**
 ```javascript
-// Create invite
 const inv = await pass.createInvite()
 console.log('Share this:', inv) // z32-encoded
 
-// Setup member handler
 this.pairing = new BlindPairing(this.swarm)
 this.member = this.pairing.addMember({
   discoveryKey: this.base.discoveryKey,
@@ -84,7 +95,7 @@ this.member = this.pairing.addMember({
     const inv = await this.base.view.findOne('@namespace/invite', {})
     if (inv && b4a.equals(inv.id, candidate.inviteId)) {
       candidate.open(inv.publicKey)
-      await this.addWriter(candidate.userData) // userData = writer key
+      await this.addWriter(candidate.userData)
       candidate.confirm({ key: this.base.key, encryptionKey: this.base.encryptionKey })
       await this.deleteInvite()
     }
@@ -100,9 +111,8 @@ await core.ready()
 
 this.candidate = this.pairing.addCandidate({
   invite: z32.decode(inviteString),
-  userData: core.key, // Send local writer key
+  userData: core.key,
   onadd: async (result) => {
-    // Receive base key and encryption key
     this.pass = new Autopass(this.store, {
       swarm: this.swarm,
       key: result.key,
@@ -115,23 +125,28 @@ this.candidate = this.pairing.addCandidate({
 
 ### 5. Blind Peering (Mirrors)
 
-For read-only mirrors that sync without write access:
+For read-only mirrors that sync without write access. **This is what the registry uses.**
 
+**Registry implementation** (from `_setupBlindPeering`):
 ```javascript
-const mirrors = [/* array of mirror keys */]
-this.peering = new BlindPeering(this.swarm, this.store, {
-  wakeup: this.base.wakeupProtocol,
-  autobaseMirrors: mirrors
+this.blindPeering = new BlindPeering(this.swarm, this.store, {
+  mirrors: this.blindPeerKeys
 })
-this.peering.addAutobaseBackground(this.base)
+
+await this.blindPeering.addAutobase(this.base)
+await this.blindPeering.addCore(this.view.core, this.view.core.key, { announce: true })
 ```
 
 ## Schema Build Pipeline
 
-### Step 1: Define Schema (schema.js)
+Generated specs live under `shared/spec/` in the registry server package. Run `npm run build:spec` (which executes `scripts/build-db-spec.js`) to regenerate after schema changes.
+
+### Step 1: Define Schema
 
 ```javascript
-const schema = Hyperschema.from('./spec/schema')
+const SCHEMA_DIR = path.join(__dirname, '..', 'shared', 'spec', 'hyperschema')
+
+const schema = Hyperschema.from(SCHEMA_DIR)
 const ns = schema.namespace('myapp')
 
 ns.register({
@@ -146,10 +161,13 @@ ns.register({
 Hyperschema.toDisk(schema)
 ```
 
-### Step 2: Define Collections (schema.js)
+### Step 2: Define Collections
 
 ```javascript
-const dbTemplate = HyperdbBuilder.from('./spec/schema', './spec/db')
+const SCHEMA_DIR = path.join(__dirname, '..', 'shared', 'spec', 'hyperschema')
+const DB_DIR = path.join(__dirname, '..', 'shared', 'spec', 'hyperdb')
+
+const dbTemplate = HyperDBBuilder.from(SCHEMA_DIR, DB_DIR)
 const collections = dbTemplate.namespace('myapp')
 
 collections.register({
@@ -158,13 +176,15 @@ collections.register({
   key: ['key']
 })
 
-HyperdbBuilder.toDisk(dbTemplate)
+HyperDBBuilder.toDisk(dbTemplate)
 ```
 
-### Step 3: Define Dispatch Routes (schema.js)
+### Step 3: Define Dispatch Routes
 
 ```javascript
-const dispatch = Hyperdispatch.from('./spec/schema', './spec/hyperdispatch')
+const DISPATCH_DIR = path.join(__dirname, '..', 'shared', 'spec', 'hyperdispatch')
+
+const dispatch = Hyperdispatch.from(SCHEMA_DIR, DISPATCH_DIR)
 const routes = dispatch.namespace('myapp')
 
 routes.register({
@@ -182,20 +202,15 @@ Hyperdispatch.toDisk(dispatch)
 
 ### Step 4: Use Compiled Specs
 
-```javascript
-const { Router, encode, decode } = require('./spec/hyperdispatch')
-const dbSpec = require('./spec/db')
+In the registry, compiled specs are published as the `@qvac/registry-schema` package (from `shared/`). The service imports them directly:
 
-// In autobase config
-open(store) {
-  return HyperDB.bee(store.get('view'), dbSpec, {
-    extension: false,
-    autoUpdate: true
-  })
-}
+```javascript
+const schema = require('@qvac/registry-schema')
+const { Router, encode: encodeDispatch } = schema.hyperdispatchSpec
+const RegistryDatabase = schema.RegistryDatabase
 
 // To append operations
-await this.base.append(encode('@myapp/put', { key, value }))
+await this.base.append(encodeDispatch('@qvac-registry/put-model', modelData))
 ```
 
 ## Common Operations
@@ -238,25 +253,35 @@ async removeWriter(key) {
 
 ## Hyperswarm Integration
 
+**Registry implementation** (from `scripts/bin.js`):
 ```javascript
-this.swarm = new Hyperswarm({
-  keyPair: await this.store.createKeyPair('hyperswarm'),
-  bootstrap: opts.bootstrap // optional testnet
-})
-
-this.swarm.on('connection', (connection, peerInfo) => {
-  this.base.replicate(connection)
-})
-
-this.swarm.join(this.base.discoveryKey)
+const keyPair = await store.createKeyPair('rpc-key')
+const dht = new DHT({ keyPair })
+const swarm = new Hyperswarm({ dht, keyPair })
 ```
 
-## Suspend/Resume Pattern
+**Named keypairs in the registry codebase:**
+- `'rpc-key'` — Hyperswarm/DHT identity for the server
+- `'writer-key'` — Client authentication keypair for add-model RPC
+
+Connection handling (from `registry-service.js`):
+```javascript
+this.swarm.on('connection', (conn, peerInfo) => {
+  this._setupRpc(conn)
+  const replicationStream = this.store.replicate(conn)
+  this.base.replicate(replicationStream)
+})
+
+this.swarm.join(this.base.discoveryKey, { server: true, client: true })
+```
+
+## Suspend/Resume Pattern (Generic)
+
+> This is a generic Autobase pattern. The registry server does not currently implement suspend/resume.
 
 ```javascript
 async suspend() {
   if (this.swarm) {
-    await this.pairing.suspend()
     await this.swarm.suspend()
     await this.store.suspend()
   }
@@ -266,7 +291,6 @@ async resume() {
   if (this.swarm) {
     await this.store.resume()
     await this.swarm.resume()
-    await this.pairing.resume()
   }
 }
 ```
@@ -286,12 +310,11 @@ async resume() {
 ## Important Notes
 
 - **Corestore 7 required**: Uses RocksDB for atomicity
-- **Encryption by default**: Always use `encrypt: true` with `encryptionKey`
-- **Flush after apply**: Call `await view.flush()` after batch operations
+- **Flush after apply**: Call `await view.db.flush()` after batch operations (in the registry, `view` is a `RegistryDatabase` so flush is on `view.db`)
 - **Update events**: Listen to `base.on('update', ...)` for changes
-- **Writer locality**: Use `Autobase.getLocalCore()` to get writer key before opening base
-- **Invite lifecycle**: Delete invite after successful pairing
-- **Bootstrap**: Optional DHT bootstrap for testnet isolation
+- **ackInterval/ackThreshold**: Registry uses these to control indexer acknowledgment timing (not `encrypt`/`wakeup`)
+- **Bootstrap**: Optional autobase bootstrap key for joining existing autobases; optional DHT bootstrap for testnet isolation
+- **Encryption**: Some Autobase apps use `encrypt: true` with `encryptionKey` — the registry does not
 
 ## Testing Pattern
 
@@ -306,7 +329,7 @@ const pass = new MyApp(new Corestore(dir), {
 
 ## When to Use This Pattern
 
-Use autopass pattern when you need:
+Use these Autobase + HyperDB patterns when you need:
 - Multi-writer distributed database
 - Secure peer discovery without central coordination
 - Materialized view of append-only operations

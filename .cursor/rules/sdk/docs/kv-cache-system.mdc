@@ -95,6 +95,8 @@ When a new cache key is used for the first time:
 2. System prompt + tools (if any) sent to model to prime the cache
 3. Cache saved to disk as `.bin` file
 
+**Note:** The KV cache base directory is always `~/.qvac/kv-cache/` (via `getKVCacheDir()` → `getCacheDir("kv-cache")` → `path.join(HOME_DIR, ".qvac", "kv-cache")`). This is independent of the `cacheDirectory` config option, which only affects model download caches.
+
 ### Subsequent Requests (Same Cache Key)
 
 1. Cache file loaded into model memory
@@ -125,7 +127,7 @@ When a new cache key is used for the first time:
 
 ### When Caches Are Saved to Disk
 
-1. **After each completion** - Cache saved with `{ role: "session", content: "save" }`
+1. **After each completion** - Cache saved with `await model.run([{ role: "session", content: "save" }])`
 2. **Session switch** - Previous session flushed when switching to different cache key
 3. **Model unload** - All active caches flushed
 
@@ -144,13 +146,28 @@ await deleteCache({ kvCacheKey: "session-a" });
 await deleteCache({ kvCacheKey: "session-a", modelId: "model-123" });
 ```
 
+**Schema** (`schemas/delete-cache.ts`):
+
+```typescript
+const deleteCacheRequestSchema = z.union([
+  z.object({ type: z.literal("deleteCache"), all: z.literal(true) }),
+  z.object({
+    type: z.literal("deleteCache"),
+    kvCacheKey: z.string(),
+    modelId: z.string().optional(),
+  }),
+]);
+```
+
 ## Implementation Details
 
 ### Key Files
 
-- `server/bare/addons/llamacpp/handlers/completion-stream.ts` - Main completion handler with cache logic
-- `server/bare/addons/llamacpp/kv-cache-utils.ts` - Cache utilities (paths, hashing, file ops)
-- `server/bare/addons/llamacpp/cache-logger.ts` - Debug logging for cache operations
+- `server/bare/plugins/llamacpp-completion/ops/completion-stream.ts` - Main completion handler with cache logic
+- `server/bare/ops/kv-cache-utils.ts` - Cache utilities (paths, hashing, file ops, in-memory registry)
+- `server/bare/plugins/llamacpp-completion/ops/cache-logger.ts` - Debug logging for cache operations
+- `server/utils/cache.ts` - `getKVCacheDir()` (base cache directory)
+- `client/api/delete-cache.ts` - Client-side delete cache API
 
 ### In-Memory Cache Registry
 
@@ -158,17 +175,40 @@ The addon defers disk writes until session switch or model unload. To handle thi
 
 ```typescript
 // In kv-cache-utils.ts
-const initializedCaches = new Set<string>();  // Tracks caches initialized this session
+const initializedCaches = new Set<string>();
 
-function customCacheExists(modelId, configHash, cacheKey) {
-  // Check in-memory first (addon defers disk writes)
+function getCacheRegistryKey(modelId: string, configHash: string, cacheKey: string): string {
+  return `${modelId}:${configHash}:${cacheKey}`;
+}
+
+export function markCacheInitialized(modelId: string, configHash: string, cacheKey: string): void {
+  initializedCaches.add(getCacheRegistryKey(modelId, configHash, cacheKey));
+}
+
+export function isCacheInitialized(modelId: string, configHash: string, cacheKey: string): boolean {
+  return initializedCaches.has(getCacheRegistryKey(modelId, configHash, cacheKey));
+}
+
+export async function customCacheExists(
+  modelId: string,
+  configHash: string,
+  cacheKey: string,
+): Promise<boolean> {
   if (isCacheInitialized(modelId, configHash, cacheKey)) {
     return true;
   }
-  // Then check file system (for caches from previous runs)
-  return await fsPromises.access(cachePath);
+  const cachePath = await getCacheFilePath(modelId, configHash, cacheKey);
+  try {
+    await fsPromises.access(cachePath);
+    markCacheInitialized(modelId, configHash, cacheKey);
+    return true;
+  } catch {
+    return false;
+  }
 }
 ```
+
+Note: `customCacheExists` is **async** — it checks the in-memory set first, then falls back to a filesystem check. When a cache file is found on disk (from a previous run), it also marks it as initialized in the in-memory registry.
 
 ### Cache Flow (String Key)
 
@@ -177,39 +217,75 @@ function customCacheExists(modelId, configHash, cacheKey) {
 if (typeof kvCache === "string") {
   cachePathToUse = await getCacheFilePath(modelId, configHash, kvCache);
   let cacheExists = await customCacheExists(modelId, configHash, kvCache);
+  logCacheStatus(kvCache, cacheExists);
 
   if (!cacheExists) {
-    // Prime cache with system prompt + tools
-    await initSystemPromptCache(model, cachePathToUse, systemPrompt, tools);
-    markCacheInitialized(modelId, configHash, kvCache);  // Track in memory
+    await initSystemPromptCache(model, cachePathToUse, systemPromptToUse, kvCache, tools);
+    markCacheInitialized(modelId, configHash, kvCache);
     cacheExists = true;
   }
 
-  // Prepare messages - only last message if cache exists
   const messagesToSend = prepareMessagesForCache(cachePathToUse, cacheExists, history);
-  
-  // Process and save
-  return yield* processModelResponse(model, messagesToSend, true, tools);
+  logMessagesToAddon(messagesToSend, "PROMPT_SEND");
+
+  return yield* processModelResponse(model, messagesToSend, true, tools, generationParams);
 }
 ```
+
+### initSystemPromptCache
+
+Primes a new cache with the system prompt and optional tools:
+
+```typescript
+async function initSystemPromptCache(
+  model: AnyModel,
+  cachePathToUse: string,
+  systemPromptToUse: string,
+  cacheKey: string,
+  tools?: Tool[],
+) {
+  const primeMessages: ChatHistory[] = [
+    { role: "session", content: cachePathToUse },
+    { role: "system", content: systemPromptToUse },
+  ];
+
+  if (tools && tools.length > 0) {
+    const transformedTools = transformMessages(tools);
+    primeMessages.push(...transformedTools);
+  }
+
+  logCacheInit(cacheKey, systemPromptToUse, toolCount);
+  logMessagesToAddon(primeMessages, "CACHE_INIT");
+
+  const primeResponse = await model.run(primeMessages);
+  primeResponse.once("output", () => {
+    void primeResponse.cancel();
+  });
+  await primeResponse.await();
+}
+```
+
+The function cancels generation after the first output token — it only needs to process the cache priming, not produce a response.
 
 ### Message Preparation Logic
 
 ```typescript
-function prepareMessagesForCache(cachePath, cacheExists, history) {
+function prepareMessagesForCache(
+  cachePathToUse: string,
+  cacheExists: boolean,
+  history: { role: string; content: string; attachments?: { path: string }[] }[],
+): ChatHistory[] {
   if (cacheExists && history.length > 0) {
-    // Cache exists: send only session path + last message
     const lastMessage = history[history.length - 1];
     return [
-      { role: "session", content: cachePath },
+      { role: "session", content: cachePathToUse },
       ...transformMessage(lastMessage),
     ];
   }
 
-  // No cache: send session path + full history (minus system, which is in cache)
   const historyWithoutSystem = history.filter(msg => msg.role !== "system");
   return [
-    { role: "session", content: cachePath },
+    { role: "session", content: cachePathToUse },
     ...transformMessages(historyWithoutSystem),
   ];
 }
@@ -224,15 +300,24 @@ Cache validity is tied to a hash of:
 **Note:** Model config is NOT included in the hash (per addon team: doesn't affect cache validity).
 
 ```typescript
-function generateConfigHash(systemPrompt, tools) {
-  const toolNames = getToolNamesForHash(tools); // Extract and sort tool names
+export function generateConfigHash(systemPrompt: string | null, tools?: unknown): string {
   const hash = crypto.createHash("sha256");
-  hash.update(JSON.stringify({ systemPrompt, toolNames }));
-  return hash.digest("hex").substring(0, 16);
+  const toolNames = getToolNamesForHash(tools);
+  hash.update(Buffer.from(JSON.stringify({ systemPrompt, toolNames }), "utf8"));
+  return (hash.digest("hex") as string).substring(0, 16);
 }
 ```
 
 **Important:** If you change tools mid-session, a new cache is created with the new tools anchored in the first message.
+
+### Auto-Generated Cache Flow
+
+When `kvCache: true`, the cache key is derived from a hash of the conversation history:
+
+1. `generateCacheKey(messages)` hashes the full history → 16-char hex key
+2. `findMatchingCache()` checks if a cache exists for `history[0..n-1]` (history minus last message)
+3. If found, reuses the existing cache and sends only the last message
+4. After completion, renames the cache file from the old hash to the new hash (via `renameCacheFile`) to reflect the updated history
 
 ## Context Overflow with KV Cache
 
@@ -263,10 +348,12 @@ const modelId = await loadModel({
 Enable debug logs to see cache operations:
 
 1. Set `loggerLevel: "debug"` in `qvac.config.json`
-2. Logs show:
-   - `[kv-cache] [session-a] REUSING existing cache` / `Creating NEW cache`
-   - `[kv-cache] Sending N messages to addon: [...]`
-   - `[kv-cache] Cache disabled for this request`
+2. Logs from `cache-logger.ts` show:
+   - `[kv-cache] [session-a] REUSING cache` / `CREATING cache`
+   - `[kv-cache] [session-a] Initializing cache (prompt: N chars, tools: N)`
+   - `[kv-cache] [PROMPT_SEND] Sending N msg(s): [...]`
+   - `[kv-cache] Cache disabled`
+   - `[kv-cache] Saving session: ...{path}`
 
 ## MCP Compatibility
 

@@ -7,33 +7,47 @@ alwaysApply: false
 
 ## Overview
 
-Model constants are now rich objects containing all metadata, not just URI strings. This provides better TypeScript support, eliminates the need for helper functions, and maintains backward compatibility.
+Model constants are rich objects containing all registry metadata, not just URI strings. This provides better TypeScript support, eliminates the need for helper functions, and maintains backward compatibility with plain string sources.
 
 ## Model Constants Structure
 
-Model constants are objects with complete metadata:
+Model constants are objects with complete metadata, generated from the registry:
 
 ```typescript
 export const WHISPER_TINY = {
   name: "WHISPER_TINY",
-  src: `pear://${models[96].hyperdriveKey}/${models[96].modelId}`,
-  modelId: models[96].modelId,
-  hyperdriveKey: models[96].hyperdriveKey,
-  hyperbeeKey: models[96].hyperbeeKey,
-  expectedSize: models[96].expectedSize,
-  sha256Checksum: models[96].sha256Checksum,
-  addon: models[96].addon,
+  src: `registry://${models[279].registrySource}/${models[279].registryPath}`,
+  registryPath: models[279].registryPath,
+  registrySource: models[279].registrySource,
+  blobCoreKey: models[279].blobCoreKey,
+  blobBlockOffset: models[279].blobBlockOffset,
+  blobBlockLength: models[279].blobBlockLength,
+  blobByteOffset: models[279].blobByteOffset,
+  modelId: models[279].modelId,
+  expectedSize: models[279].expectedSize,
+  sha256Checksum: models[279].sha256Checksum,
+  addon: models[279].addon,
+  engine: models[279].engine,
+  quantization: models[279].quantization,
+  params: models[279].params,
 } as const;
 
 export type ModelConstant = {
   name: string;
   src: string;
+  registryPath: string;
+  registrySource: string;
+  blobCoreKey: string;
+  blobBlockOffset: number;
+  blobBlockLength: number;
+  blobByteOffset: number;
   modelId: string;
-  hyperdriveKey: string;
-  hyperbeeKey: string;
   expectedSize: number;
   sha256Checksum: string;
-  addon: "llm" | "whisper" | "embeddings" | "nmt" | "vad" | "tts";
+  addon: "llm" | "whisper" | "embeddings" | "nmt" | "vad" | "tts" | "ocr" | "parakeet" | "other";
+  engine: string;
+  quantization: string;
+  params: string;
 };
 ```
 
@@ -51,12 +65,16 @@ console.log(model.expectedSize); // Had to look up separately
 
 **After:**
 ```typescript
-// Rich object
+// Rich object with registry:// source
 export const WHISPER_TINY = {
   name: "WHISPER_TINY",
-  src: "pear://key/model.bin",
-  modelId: "model.bin",
-  expectedSize: 75628544,
+  src: "registry://hf/ggerganov/whisper.cpp/...",
+  registryPath: "ggerganov/whisper.cpp/...",
+  registrySource: "hf",
+  blobCoreKey: "4035e...",
+  engine: "whisper.cpp",
+  quantization: "fp16",
+  params: "39M",
   // ... all metadata
 } as const;
 
@@ -64,26 +82,28 @@ export const WHISPER_TINY = {
 console.log(WHISPER_TINY.name);         // "WHISPER_TINY"
 console.log(WHISPER_TINY.expectedSize); // 75628544
 console.log(WHISPER_TINY.addon);        // "whisper"
+console.log(WHISPER_TINY.engine);       // "whisper.cpp"
 ```
 
 ## Model Source Union Type
 
-APIs now accept both strings and objects with a `src` property for backward compatibility:
+APIs accept both strings and objects with a `src` property for backward compatibility:
 
 ```typescript
-// Model descriptor schema
 export const modelDescriptorSchema = z.object({
   src: z.string(),
   name: z.string().optional(),
   modelId: z.string().optional(),
-  hyperdriveKey: z.string().optional(),
-  hyperbeeKey: z.string().optional(),
+  registryPath: z.string().optional(),
+  registrySource: z.string().optional(),
+  blobCoreKey: z.string().optional(),
+  blobIndex: z.number().optional(),
+  engine: z.string().optional(),
   expectedSize: z.number().optional(),
   sha256Checksum: z.string().optional(),
-  addon: z.enum(["llm", "whisper", "embeddings", "nmt", "vad", "tts"]).optional(),
+  addon: addonSchema.optional(), // union of modelTypeInputSchema | "vad"
 });
 
-// Union of string or object
 export const modelSrcInputSchema = z.union([z.string(), modelDescriptorSchema]);
 
 export type ModelDescriptor = z.infer<typeof modelDescriptorSchema>;
@@ -96,50 +116,43 @@ All these work:
 
 ```typescript
 // String (backward compatible)
-await loadModel({ 
-  modelSrc: "pear://key/model.gguf", 
-  modelType: "whisper" 
+await loadModel({
+  modelSrc: "registry://hf/path/to/model.gguf",
+  modelType: "whisper"
 });
 
 // Object constant (recommended)
-await loadModel({ 
-  modelSrc: WHISPER_TINY, 
-  modelType: "whisper" 
+await loadModel({
+  modelSrc: WHISPER_TINY,
+  modelType: "whisper"
 });
 
 // Extract src string if needed
-await loadModel({ 
-  modelSrc: WHISPER_TINY.src, 
-  modelType: "whisper" 
+await loadModel({
+  modelSrc: WHISPER_TINY.src,
+  modelType: "whisper"
 });
 ```
 
 ### Applied To
 
 The `modelSrcInputSchema` is used in:
-- `loadModelOptionsSchema` - `modelSrc`, `projectionModelSrc`, `vadModelSrc`, `configSrc`
+- `loadModelOptionsSchema` - `modelSrc`
 - `downloadAssetOptionsSchema` - `assetSrc`
-- `downloadAssetRequestSchema` - `assetSrc`
 
 ## Model Source Transform Schemas
 
-Located in `schemas/model-src-utils.ts` - all utilities are Zod transform schemas for consistent validation and extraction:
+Located in `schemas/model-src-utils.ts`:
 
 ```typescript
-/**
- * Schema that transforms ModelSrcInput to its src string
- * Usage: modelInputToSrcSchema.parse(modelSrc)
- */
+// Transforms ModelSrcInput to its src string
 export const modelInputToSrcSchema = modelSrcInputSchema.transform(
   (modelSrc) => {
     return typeof modelSrc === "string" ? modelSrc : modelSrc.src;
   },
 );
 
-/**
- * Schema that transforms ModelSrcInput to its optional name
- * Usage: modelInputToNameSchema.parse(modelSrc)
- */
+// Transforms ModelSrcInput to its optional name
 export const modelInputToNameSchema = modelSrcInputSchema.transform(
   (modelSrc) => {
     if (typeof modelSrc === "object" && "name" in modelSrc) {
@@ -152,65 +165,42 @@ export const modelInputToNameSchema = modelSrcInputSchema.transform(
 
 ### Usage
 
-**Using transform schemas directly:**
-
 ```typescript
 import { modelInputToSrcSchema, modelInputToNameSchema } from "@/schemas";
 
-// Extract src string - validates and transforms
 const modelSrcStr = modelInputToSrcSchema.parse(modelSrc);
-
-// Extract optional name - validates and transforms
 const modelName = modelInputToNameSchema.parse(modelSrc);
 ```
 
-**Real-world examples:**
+**Files using these utilities:**
+- `client/api/load-model.ts` - `modelInputToSrcSchema.parse()`
+- `client/api/download-asset.ts` - `modelInputToSrcSchema.parse()`
+- `server/rpc/handlers/load-model.ts` - Both `modelInputToSrcSchema` and `modelInputToNameSchema`
+- `server/rpc/handlers/load-model/resolve.ts` - `modelInputToSrcSchema.parse()`
+- `server/rpc/handlers/load-model-delegated.ts` - `modelInputToSrcSchema.parse()`
+- `server/rpc/handlers/download-asset.ts` - `modelInputToSrcSchema.parse()`
+
+## Registry URL Schemas
+
+Source strings use `registry://` or `pear://` format, parsed by dedicated schemas in `schemas/load-model.ts`:
 
 ```typescript
-// In server/rpc/handlers/load-model/resolve.ts
-const srcString = modelInputToSrcSchema.parse(modelSrc);
+// registry://source/path/to/model.gguf → { registrySource, registryPath }
+export const registryUrlSchema = z.string()
+  .regex(/^registry:\/\/([^/]+)\/(.+)$/)
+  .transform((url) => {
+    const match = url.match(/^registry:\/\/([^/]+)\/(.+)$/)!;
+    return { registrySource: match[1]!, registryPath: match[2]! };
+  });
 
-// In client/api/load-model.ts
-const modelId = response.modelId ?? modelInputToSrcSchema.parse(options.modelSrc);
-
-// In server/rpc/handlers/download-asset.ts
-return {
-  type: "downloadAsset",
-  success: true,
-  assetId: modelInputToSrcSchema.parse(assetSrc),
-};
-
-// In server/rpc/handlers/load-model.ts - Extract both src and name separately
-const parsedSrc = modelInputToSrcSchema.parse(modelSrc);
-const parsedName = modelInputToNameSchema.parse(modelSrc);
-
-await loadModel({
-  modelId,
-  modelPath,
-  options: request,
-  projectionModelPath,
-  vadModelPath,
-  ttsConfigModelPath,
-  eSpeakDataPath,
-  modelName: parsedName,
-});
+// pear://64-char-hex-key/path/to/model.gguf → { key, path }
+export const hyperdriveUrlSchema = z.string()
+  .regex(/^pear:\/\/[0-9a-fA-F]{64}\/(.+)$/)
+  .transform((url) => {
+    const match = url.match(/^pear:\/\/([0-9a-fA-F]{64})\/(.+)$/)!;
+    return { key: match[1]!, path: match[2]! };
+  });
 ```
-
-**Benefits of Zod transform schemas:**
-- ✅ Direct `.parse()` usage - idiomatic Zod pattern
-- ✅ Runtime validation ensures type safety
-- ✅ Automatic error messages for invalid input
-- ✅ Single source of truth for validation logic
-- ✅ Composable with other Zod schemas
-- ✅ Type inference works seamlessly
-
-**Files using these utilities:**
-- `client/api/load-model.ts` - Uses `modelInputToSrcSchema.parse()`
-- `client/api/download-asset.ts` - Uses `modelInputToSrcSchema.parse()`
-- `server/rpc/handlers/load-model.ts` - Uses both `modelInputToSrcSchema.parse()` and `modelInputToNameSchema.parse()`
-- `server/rpc/handlers/load-model/resolve.ts` - Uses `modelInputToSrcSchema.parse()`
-- `server/rpc/handlers/load-model-delegated.ts` - Uses `modelInputToSrcSchema.parse()`
-- `server/rpc/handlers/download-asset.ts` - Uses `modelInputToSrcSchema.parse()`
 
 ## Model Registry Integration
 
@@ -222,74 +212,76 @@ export type LocalOptions = {
   path: string;
   config?: unknown;
   loadedAt: Date;
-  name?: string; // Optional model name for identification
+  name?: string;
 };
 
-// When registering a model
 registerModel(modelId, {
   local: {
     path: cachePath,
     config,
     loadedAt: new Date(),
-    name: modelName, // Extracted from modelSrc
+    name: modelName,
   },
 });
 ```
 
-This enables better identification in `getModelInfo` API.
+This enables name-based matching in `getModelInfo` API.
 
 ## Code Generation
 
-The `scripts/update-models.js` script generates `models/hyperdrive/models.ts`:
+The `models/update-models` module generates `models/registry/models.ts`:
 
 ### Generated Structure
 
 ```typescript
-export type HyperdriveItem = {
+// THIS FILE IS AUTO-GENERATED BY models/update-models
+
+export type RegistryItem = {
   name: string;
-  hyperdriveKey: string;
-  hyperbeeKey: string;
+  registryPath: string;
+  registrySource: string;
+  blobCoreKey: string;
+  blobBlockOffset: number;
+  blobBlockLength: number;
+  blobByteOffset: number;
   modelId: string;
-  addon: "llm" | "whisper" | "embeddings" | "nmt" | "vad" | "tts";
+  addon: "llm" | "whisper" | "embeddings" | "nmt" | "vad" | "tts" | "ocr" | "parakeet" | "other";
   expectedSize: number;
   sha256Checksum: string;
+  engine: string;
+  quantization: string;
+  params: string;
+  shardMetadata?: readonly {
+    filename: string;
+    expectedSize: number;
+    sha256Checksum: string;
+    blobCoreKey: string;
+    blobBlockOffset: number;
+    blobBlockLength: number;
+    blobByteOffset: number;
+  }[];
 };
 
 export const models = [
-  // Array of all models
-] as const satisfies readonly HyperdriveItem[];
+  // Array of all RegistryItem entries
+] as const satisfies readonly RegistryItem[];
 
-// Individual model constants
-export const WHISPER_TINY = {
-  name: "WHISPER_TINY",
-  src: `pear://${models[96].hyperdriveKey}/${models[96].modelId}`,
-  modelId: models[96].modelId,
-  hyperdriveKey: models[96].hyperdriveKey,
-  hyperbeeKey: models[96].hyperbeeKey,
-  expectedSize: models[96].expectedSize,
-  sha256Checksum: models[96].sha256Checksum,
-  addon: models[96].addon,
-} as const;
+// Individual model constants (ModelConstant type)
+export const WHISPER_TINY = { ... } as const;
 
 // Helper function
-export function getModelByName(name: string): HyperdriveItem | undefined {
+export function getModelByName(name: string): RegistryItem | undefined {
   return models.find((model) => model.name === name);
 }
 ```
 
 ### Name Generation
 
-Unique names are generated from `hyperbeeKey` components:
-- Split by `/` and take last two parts
-- Convert to uppercase with underscores
-- Add counter suffix for duplicates
-- Examples: `WHISPER_TINY`, `LLAMA_3_2_1B_INST_Q4_0`
-
-### Running Generation
-
-```bash
-bun run scripts/update-models.js
-```
+Unique names are generated by `models/update-models/naming.ts` from registry path components:
+- Derived from model path, engine, quantization, and params
+- Converted to uppercase with underscores
+- Counter suffix added for duplicates
+- Examples: `WHISPER_TINY`, `LLAMA_3_2_1B_INST_Q4_0`, `EMBEDDINGGEMMA_300M_Q4_0`
 
 ## Benefits
 
@@ -297,31 +289,29 @@ bun run scripts/update-models.js
 2. **Better TypeScript support** - Full autocomplete for all properties
 3. **Backward compatible** - Accepts both strings and objects
 4. **Cleaner code** - No need for separate lookups
-5. **Type safety** - `ModelSrc` union type ensures correctness
-6. **Centralized parsing** - Utility functions prevent code duplication
+5. **Type safety** - `ModelSrcInput` union type ensures correctness
+6. **Centralized parsing** - Zod transform schemas prevent code duplication
 
 ## Migration Guide
 
 ### Existing String-Based Code
 
-No migration needed! String-based usage still works:
+No migration needed. String-based usage still works:
 
 ```typescript
-// This still works exactly the same
 await loadModel({
-  modelSrc: "pear://key/model.gguf",
+  modelSrc: "registry://hf/path/to/model.gguf",
   modelType: "whisper",
 });
 ```
 
 ### Adopting New Features
 
-To use the new object-based constants:
+To use the object-based constants:
 
 ```typescript
 import { WHISPER_TINY } from "sdk";
 
-// Use constant directly
 await loadModel({
   modelSrc: WHISPER_TINY,
   modelType: "whisper",
@@ -331,4 +321,7 @@ await loadModel({
 console.log(WHISPER_TINY.name);         // "WHISPER_TINY"
 console.log(WHISPER_TINY.expectedSize); // 75628544
 console.log(WHISPER_TINY.addon);        // "whisper"
+console.log(WHISPER_TINY.engine);       // "whisper.cpp"
+console.log(WHISPER_TINY.quantization); // "fp16"
+console.log(WHISPER_TINY.params);       // "39M"
 ```
