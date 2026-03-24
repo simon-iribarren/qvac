@@ -41,7 +41,8 @@
     "test": "tsx test/translate.test.ts && tsx test/serve.test.ts",
     "test:unit": "tsx test/translate.test.ts",
     "test:serve": "tsx test/serve.test.ts",
-    "test:e2e": "tsx test/e2e.test.ts"
+    "test:e2e": "tsx test/e2e.test.ts",
+    "test:bats": "npm run build && bats test/cli.bats"
   },
   "dependencies": {
     "bare-pack": "^2.0.0",
