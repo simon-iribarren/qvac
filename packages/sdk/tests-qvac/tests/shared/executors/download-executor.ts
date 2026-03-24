@@ -8,56 +8,16 @@ import {
   BaseExecutor,
   type TestResult,
 } from "@tetherto/qvac-test-suite";
-import {
-  downloadParallel,
-  downloadCancelIsolation,
-} from "../../download-tests.js";
+import { downloadCancelIsolation } from "../../download-tests.js";
 
-const downloadTests = [downloadParallel, downloadCancelIsolation] as const;
+const downloadTests = [downloadCancelIsolation] as const;
 
 export class DownloadExecutor extends BaseExecutor<typeof downloadTests> {
   pattern = /^download-/;
 
   protected handlers = {
-    [downloadParallel.testId]: this.parallel.bind(this),
     [downloadCancelIsolation.testId]: this.cancelIsolation.bind(this),
   };
-
-  async parallel(
-    params: typeof downloadParallel.params,
-    expectation: typeof downloadParallel.expectation,
-  ): Promise<TestResult> {
-    const assets = [
-      { name: "Whisper Tiny", src: WHISPER_TINY },
-      { name: "VAD Silero", src: VAD_SILERO_5_1_2 },
-    ];
-
-    const results = await Promise.all(
-      assets.map((asset) =>
-        downloadAsset({ assetSrc: asset.src, onProgress: () => {} }).then(
-          (id) => ({ name: asset.name, status: "ok" as const, id }),
-          (err: unknown) => ({
-            name: asset.name,
-            status: "fail" as const,
-            err: err instanceof Error ? err.message : String(err),
-          }),
-        ),
-      ),
-    );
-
-    const succeeded = results.filter((r) => r.status === "ok");
-    const detail = results
-      .map((r) =>
-        r.status === "ok"
-          ? `${r.name}: OK (${r.id})`
-          : `${r.name}: FAILED (${r.err})`,
-      )
-      .join(", ");
-
-    const passed = succeeded.length === assets.length;
-
-    return { passed, output: `${succeeded.length}/${results.length} succeeded. ${detail}` };
-  }
 
   async cancelIsolation(
     params: typeof downloadCancelIsolation.params,

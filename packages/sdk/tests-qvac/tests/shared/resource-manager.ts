@@ -28,18 +28,29 @@ export class ResourceManager {
     if (this.downloaded) return;
     this.downloaded = true;
 
-    const entries = Array.from(this.definitions.entries());
-    log?.(`📥 Downloading ${entries.length} models...`);
+    const entries = Array.from(this.definitions.entries()).filter(
+      ([, def]) => !def.skipPreDownload,
+    );
+    const skipped = this.definitions.size - entries.length;
+    if (skipped > 0) log?.(`⏭️  Skipping ${skipped} models marked skipPreDownload`);
 
-    // Sequential — SDK p2p downloads don't handle parallel well
-    for (const [dep, def] of entries) {
-      if (def.skipPreDownload) {
-        log?.(`⏭️  ${dep}: skipping pre-download`);
-        continue;
+    log?.(`📥 Downloading ${entries.length} models in parallel...`);
+
+    const results = await Promise.allSettled(
+      entries.map(async ([dep, def]) => {
+        log?.(`📥 ${dep}: ${def.constant.name}...`);
+        await downloadAsset({ assetSrc: def.constant as never });
+        log?.(`✅ ${dep} cached`);
+        return dep;
+      }),
+    );
+
+    const failed = results.filter((r) => r.status === "rejected");
+    if (failed.length > 0) {
+      for (const f of failed) {
+        log?.(`❌ download failed: ${(f as PromiseRejectedResult).reason}`);
       }
-      log?.(`📥 ${dep}: ${def.constant.name}...`);
-      await downloadAsset({ assetSrc: def.constant as never });
-      log?.(`✅ ${dep} cached`);
+      throw new Error(`${failed.length}/${entries.length} downloads failed`);
     }
 
     log?.(`📦 All ${entries.length} models pre-cached`);

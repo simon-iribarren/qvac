@@ -202,7 +202,7 @@ export const tests = [
   // Vision tests
   ...visionTests,
 
-  // Download tests (parallel + cancel isolation)
+  // Download tests (cancel isolation)
   ...downloadTests,
 
   // Additional model tests
