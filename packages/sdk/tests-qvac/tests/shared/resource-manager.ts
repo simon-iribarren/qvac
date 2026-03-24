@@ -36,10 +36,28 @@ export class ResourceManager {
 
     log?.(`📥 Downloading ${entries.length} models in parallel...`);
 
+    const active = new Set<string>();
+    let maxConcurrent = 0;
+    let parallelDetected = false;
+
     const results = await Promise.allSettled(
       entries.map(async ([dep, def]) => {
         log?.(`📥 ${dep}: ${def.constant.name}...`);
-        await downloadAsset({ assetSrc: def.constant as never });
+        await downloadAsset({
+          assetSrc: def.constant as never,
+          onProgress: () => {
+            active.add(dep);
+            if (active.size > maxConcurrent) {
+              maxConcurrent = active.size;
+            }
+            if (!parallelDetected && active.size >= 2) {
+              parallelDetected = true;
+              const names = Array.from(active).join(", ");
+              log?.(`🔀 Parallel downloads confirmed (active: ${names})`);
+            }
+          },
+        });
+        active.delete(dep);
         log?.(`✅ ${dep} cached`);
         return dep;
       }),
@@ -53,7 +71,9 @@ export class ResourceManager {
       throw new Error(`${failed.length}/${entries.length} downloads failed`);
     }
 
-    log?.(`📦 All ${entries.length} models pre-cached`);
+    log?.(
+      `📦 All ${entries.length} models pre-cached (max concurrent: ${maxConcurrent})`,
+    );
   }
 
   setTestCount(n: number) {
