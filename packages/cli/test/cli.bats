@@ -1,35 +1,76 @@
 #!/usr/bin/env bats
 
-# CLI smoke tests — exercises the real `qvac` binary.
-# Requires: npm run build (tests run against dist/index.js)
+# CLI smoke tests + serve validation (no models needed, fast).
+# Requires: npm run build (tests run against dist/index.js), jq
 
 QVAC="node $BATS_TEST_DIRNAME/../dist/index.js"
 
-setup() {
-  TEST_DIR="$(mktemp -d)"
-}
+# ── Shared server lifecycle ───────────────────────────────────────────
+# Three server variants started once, shared across all serve tests.
 
-teardown() {
-  # Kill any server we started
-  if [[ -n "${SERVER_PID:-}" ]]; then
-    kill "$SERVER_PID" 2>/dev/null || true
-    wait "$SERVER_PID" 2>/dev/null || true
-  fi
-  rm -rf "$TEST_DIR"
-}
+setup_file() {
+  export FILE_TMPDIR="$BATS_FILE_TMPDIR"
 
-wait_for_server() {
-  local port=$1 max_wait=${2:-10}
-  for i in $(seq 1 "$max_wait"); do
-    if curl -sf "http://127.0.0.1:${port}/v1/models" >/dev/null 2>&1; then
-      return 0
-    fi
-    sleep 0.5
+  # Create config dirs
+  for name in default auth nocors; do
+    local dir="$FILE_TMPDIR/$name"
+    mkdir -p "$dir"
+    echo '{ "serve": { "models": {} } }' > "$dir/qvac.config.json"
   done
-  return 1
+
+  # Server 1: default (CORS enabled, no auth) — port 19920
+  cd "$FILE_TMPDIR/default"
+  $QVAC serve openai -p 19920 --cors &
+  echo $! > "$FILE_TMPDIR/pid_default"
+
+  # Server 2: auth enabled — port 19921
+  cd "$FILE_TMPDIR/auth"
+  $QVAC serve openai -p 19921 --api-key "test-secret-key-12345" &
+  echo $! > "$FILE_TMPDIR/pid_auth"
+
+  # Server 3: no CORS — port 19922
+  cd "$FILE_TMPDIR/nocors"
+  $QVAC serve openai -p 19922 &
+  echo $! > "$FILE_TMPDIR/pid_nocors"
+
+  # Wait for default and nocors servers (they return 200 on /v1/models)
+  for port in 19920 19922; do
+    for _ in $(seq 1 20); do
+      curl -sf "http://127.0.0.1:${port}/v1/models" >/dev/null 2>&1 && break
+      sleep 0.25
+    done
+  done
+
+  # Wait for auth server (returns 401 without key)
+  for _ in $(seq 1 20); do
+    local code
+    code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:19921/v1/models" 2>/dev/null)
+    [[ "$code" == "401" ]] && break
+    sleep 0.25
+  done
 }
 
-# ── Version & help ────────────────────────────────────────────────────
+teardown_file() {
+  for name in default auth nocors; do
+    local pid_file="$BATS_FILE_TMPDIR/pid_$name"
+    [[ -f "$pid_file" ]] && kill "$(cat "$pid_file")" 2>/dev/null || true
+  done
+  wait 2>/dev/null || true
+}
+
+# Helper: assert JSON error envelope
+assert_error() {
+  local body="$1" expected_code="$2"
+  echo "$body" | jq -e ".error.code == \"$expected_code\"" >/dev/null
+  echo "$body" | jq -e '.error.message | type == "string"' >/dev/null
+}
+
+# Helper: HTTP status code shorthand
+http_status() {
+  curl -s -o /dev/null -w "%{http_code}" "$@"
+}
+
+# ── CLI: version & help ───────────────────────────────────────────────
 
 @test "qvac --version prints semver" {
   run $QVAC --version
@@ -60,132 +101,222 @@ wait_for_server() {
   [[ "$output" =~ "--sdk-path" ]]
 }
 
-# ── Error handling ────────────────────────────────────────────────────
+# ── CLI: error handling ───────────────────────────────────────────────
 
-@test "qvac serve openai with missing config file exits 1" {
+@test "cli: missing config file exits 1" {
   run $QVAC serve openai -c nonexistent.json
   [[ "$status" -eq 1 ]]
   [[ "$output" =~ "Config file not found" ]]
 }
 
-@test "qvac serve openai with invalid config exits 1" {
-  echo "not json" > "$TEST_DIR/qvac.config.json"
-  cd "$TEST_DIR"
+@test "cli: invalid config file exits 1" {
+  local dir
+  dir=$(mktemp -d)
+  echo "not json" > "$dir/qvac.config.json"
+  cd "$dir"
   run $QVAC serve openai
   [[ "$status" -eq 1 ]]
+  rm -rf "$dir"
 }
 
-# ── Serve startup (no models) ────────────────────────────────────────
+# ── Serve: models endpoint ────────────────────────────────────────────
 
-@test "serve starts and responds to /v1/models" {
-  local port=19910
-
-  cat > "$TEST_DIR/qvac.config.json" <<'EOF'
-{ "serve": { "models": {} } }
-EOF
-
-  cd "$TEST_DIR"
-  $QVAC serve openai -p "$port" &
-  SERVER_PID=$!
-
-  wait_for_server "$port"
-  run curl -sf "http://127.0.0.1:${port}/v1/models"
-  [[ "$status" -eq 0 ]]
-  [[ "$output" =~ '"object":"list"' ]]
+@test "GET /v1/models returns empty list" {
+  local body
+  body=$(curl -sf "http://127.0.0.1:19920/v1/models")
+  echo "$body" | jq -e '.object == "list"' >/dev/null
+  echo "$body" | jq -e '.data | length == 0' >/dev/null
 }
 
-@test "serve with --cors includes CORS headers" {
-  local port=19911
+@test "GET /v1/models/:id returns 404 for unknown model" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/models/nonexistent")
+  [[ $(http_status "http://127.0.0.1:19920/v1/models/nonexistent") == "404" ]]
+  assert_error "$body" "model_not_found"
+}
 
-  cat > "$TEST_DIR/qvac.config.json" <<'EOF'
-{ "serve": { "models": {} } }
-EOF
+@test "DELETE /v1/models/:id returns 404 for unknown model" {
+  local body
+  body=$(curl -s -X DELETE "http://127.0.0.1:19920/v1/models/nonexistent")
+  assert_error "$body" "model_not_found"
+}
 
-  cd "$TEST_DIR"
-  $QVAC serve openai -p "$port" --cors &
-  SERVER_PID=$!
+# ── Serve: chat completions validation ────────────────────────────────
 
-  wait_for_server "$port"
+@test "chat: invalid JSON returns 400" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/chat/completions" \
+    -H "Content-Type: application/json" -d '{not valid json}')
+  assert_error "$body" "invalid_json"
+}
+
+@test "chat: missing model returns 400" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/chat/completions" \
+    -H "Content-Type: application/json" \
+    -d '{"messages":[{"role":"user","content":"hi"}]}')
+  assert_error "$body" "missing_model"
+}
+
+@test "chat: missing messages returns 400" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/chat/completions" \
+    -H "Content-Type: application/json" -d '{"model":"test"}')
+  assert_error "$body" "missing_messages"
+}
+
+@test "chat: unknown model returns 404" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/chat/completions" \
+    -H "Content-Type: application/json" \
+    -d '{"model":"nonexistent","messages":[{"role":"user","content":"hi"}]}')
+  assert_error "$body" "model_not_found"
+}
+
+# ── Serve: embeddings validation ──────────────────────────────────────
+
+@test "embeddings: invalid JSON returns 400" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/embeddings" \
+    -H "Content-Type: application/json" -d '{{bad')
+  assert_error "$body" "invalid_json"
+}
+
+@test "embeddings: missing model returns 400" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/embeddings" \
+    -H "Content-Type: application/json" -d '{"input":"hello"}')
+  assert_error "$body" "missing_model"
+}
+
+@test "embeddings: missing input returns 400" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/embeddings" \
+    -H "Content-Type: application/json" -d '{"model":"test"}')
+  assert_error "$body" "missing_input"
+}
+
+@test "embeddings: unknown model returns 404" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/embeddings" \
+    -H "Content-Type: application/json" -d '{"model":"nonexistent","input":"hello"}')
+  assert_error "$body" "model_not_found"
+}
+
+# ── Serve: transcriptions validation ──────────────────────────────────
+
+@test "transcriptions: JSON content-type returns 400" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/audio/transcriptions" \
+    -H "Content-Type: application/json" -d '{"model":"test"}')
+  assert_error "$body" "invalid_content_type"
+}
+
+@test "transcriptions: missing file returns 400" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/audio/transcriptions" -F "model=test")
+  assert_error "$body" "missing_file"
+}
+
+@test "transcriptions: missing model returns 400" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/audio/transcriptions" \
+    -F "file=@/dev/null;filename=audio.wav")
+  assert_error "$body" "missing_model"
+}
+
+@test "transcriptions: unsupported srt format returns 400" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/audio/transcriptions" \
+    -F "model=test" -F "response_format=srt" -F "file=@/dev/null;filename=audio.wav")
+  assert_error "$body" "unsupported_response_format"
+}
+
+@test "transcriptions: unsupported vtt format returns 400" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/audio/transcriptions" \
+    -F "model=test" -F "response_format=vtt" -F "file=@/dev/null;filename=audio.wav")
+  assert_error "$body" "unsupported_response_format"
+}
+
+@test "transcriptions: unsupported verbose_json format returns 400" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/audio/transcriptions" \
+    -F "model=test" -F "response_format=verbose_json" -F "file=@/dev/null;filename=audio.wav")
+  assert_error "$body" "unsupported_response_format"
+}
+
+@test "transcriptions: invalid xml format returns 400" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/audio/transcriptions" \
+    -F "model=test" -F "response_format=xml" -F "file=@/dev/null;filename=audio.wav")
+  assert_error "$body" "invalid_response_format"
+}
+
+@test "transcriptions: unknown model returns 404" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/audio/transcriptions" \
+    -F "model=nonexistent" -F "file=@/dev/null;filename=audio.wav")
+  assert_error "$body" "model_not_found"
+}
+
+# ── Serve: routing ────────────────────────────────────────────────────
+
+@test "GET /unknown returns 404" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/unknown")
+  assert_error "$body" "not_found"
+}
+
+@test "GET /v1/unknown returns 404" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19920/v1/unknown")
+  assert_error "$body" "not_found"
+}
+
+# ── Serve: CORS ───────────────────────────────────────────────────────
+
+@test "OPTIONS /v1/models returns 204 with CORS headers" {
+  local code headers
+  headers=$(curl -sf -D- -o /dev/null -X OPTIONS "http://127.0.0.1:19920/v1/models")
+  [[ "$headers" =~ "204" ]]
+  [[ "$headers" =~ [Aa]ccess-[Cc]ontrol-[Aa]llow-[Oo]rigin ]]
+  [[ "$headers" =~ "POST" ]]
+}
+
+@test "CORS headers present on regular GET" {
   local headers
-  headers="$(curl -sf -D- -o /dev/null "http://127.0.0.1:${port}/v1/models")"
+  headers=$(curl -sf -D- -o /dev/null "http://127.0.0.1:19920/v1/models")
   [[ "$headers" =~ [Aa]ccess-[Cc]ontrol-[Aa]llow-[Oo]rigin ]]
 }
 
-@test "serve with --api-key rejects unauthenticated requests" {
-  local port=19912
-
-  cat > "$TEST_DIR/qvac.config.json" <<'EOF'
-{ "serve": { "models": {} } }
-EOF
-
-  cd "$TEST_DIR"
-  $QVAC serve openai -p "$port" --api-key "test-secret" &
-  SERVER_PID=$!
-
-  # Wait for server (auth endpoint still returns 401, so check differently)
-  for i in $(seq 1 10); do
-    if curl -sf -o /dev/null -w "%{http_code}" "http://127.0.0.1:${port}/v1/models" 2>/dev/null | grep -q "401"; then
-      break
-    fi
-    sleep 0.5
-  done
-
-  # Without key → 401
-  run curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${port}/v1/models"
-  [[ "$output" == "401" ]]
-
-  # With key → 200
-  run curl -s -o /dev/null -w "%{http_code}" -H "Authorization: Bearer test-secret" "http://127.0.0.1:${port}/v1/models"
-  [[ "$output" == "200" ]]
+@test "no-CORS: OPTIONS returns 204 without CORS headers" {
+  local headers
+  headers=$(curl -s -D- -o /dev/null -X OPTIONS "http://127.0.0.1:19922/v1/models")
+  [[ "$headers" =~ "204" ]]
+  ! [[ "$headers" =~ [Aa]ccess-[Cc]ontrol-[Aa]llow-[Oo]rigin ]]
 }
 
-@test "serve returns 404 for unknown endpoints" {
-  local port=19913
-
-  cat > "$TEST_DIR/qvac.config.json" <<'EOF'
-{ "serve": { "models": {} } }
-EOF
-
-  cd "$TEST_DIR"
-  $QVAC serve openai -p "$port" &
-  SERVER_PID=$!
-
-  wait_for_server "$port"
-  run curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${port}/v1/nonexistent"
-  [[ "$output" == "404" ]]
+@test "no-CORS: regular GET has no CORS headers" {
+  local headers
+  headers=$(curl -sf -D- -o /dev/null "http://127.0.0.1:19922/v1/models")
+  ! [[ "$headers" =~ [Aa]ccess-[Cc]ontrol-[Aa]llow-[Oo]rigin ]]
 }
 
-@test "serve rejects chat completion without model" {
-  local port=19914
+# ── Serve: auth ───────────────────────────────────────────────────────
 
-  cat > "$TEST_DIR/qvac.config.json" <<'EOF'
-{ "serve": { "models": {} } }
-EOF
-
-  cd "$TEST_DIR"
-  $QVAC serve openai -p "$port" &
-  SERVER_PID=$!
-
-  wait_for_server "$port"
-  run curl -s "http://127.0.0.1:${port}/v1/chat/completions" \
-    -H "Content-Type: application/json" \
-    -d '{"messages":[{"role":"user","content":"hi"}]}'
-  [[ "$status" -eq 0 ]]
-  [[ "$output" =~ '"code":"missing_model"' ]]
+@test "auth: no key returns 401" {
+  local body
+  body=$(curl -s "http://127.0.0.1:19921/v1/models")
+  assert_error "$body" "invalid_api_key"
 }
 
-@test "serve on custom port via -p flag" {
-  local port=19915
+@test "auth: wrong key returns 401" {
+  local body
+  body=$(curl -s -H "Authorization: Bearer wrong-key" "http://127.0.0.1:19921/v1/models")
+  assert_error "$body" "invalid_api_key"
+}
 
-  cat > "$TEST_DIR/qvac.config.json" <<'EOF'
-{ "serve": { "models": {} } }
-EOF
-
-  cd "$TEST_DIR"
-  $QVAC serve openai -p "$port" &
-  SERVER_PID=$!
-
-  wait_for_server "$port"
-  run curl -sf "http://127.0.0.1:${port}/v1/models"
-  [[ "$status" -eq 0 ]]
+@test "auth: correct key returns 200" {
+  [[ $(http_status -H "Authorization: Bearer test-secret-key-12345" "http://127.0.0.1:19921/v1/models") == "200" ]]
 }

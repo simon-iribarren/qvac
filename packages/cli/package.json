@@ -38,11 +38,10 @@
     "build:watch": "tsc --watch",
     "typecheck": "tsc --noEmit",
     "lint": "tsc --noEmit",
-    "test": "tsx test/translate.test.ts && tsx test/serve.test.ts",
+    "test": "tsx test/translate.test.ts",
     "test:unit": "tsx test/translate.test.ts",
-    "test:serve": "tsx test/serve.test.ts",
-    "test:e2e": "tsx test/e2e.test.ts",
-    "test:bats": "npm run build && bats test/cli.bats"
+    "test:bats": "npm run build && bats test/cli.bats",
+    "test:e2e": "npm run build && bats test/cli.bats test/e2e.bats"
   },
   "dependencies": {
     "bare-pack": "^2.0.0",
