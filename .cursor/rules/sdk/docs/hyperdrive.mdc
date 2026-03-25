@@ -1,5 +1,5 @@
 ---
-description: Hyperdrive P2P filesystem API and qvac-lib-dl-hyperdrive download integration
+description: Hyperdrive P2P filesystem API and SDK pear:// download integration
 alwaysApply: false
 ---
 # Hyperdrive
@@ -61,28 +61,19 @@ The SDK uses `pear://` URLs to reference files on Hyperdrive:
 pear://<64-char-hex-key>/path/to/model.gguf
 ```
 
-Validated by `hyperdriveUrlSchema` in `packages/sdk/schemas/load-model.ts`:
-
-```typescript
-const hyperdriveUrlSchema = z.string()
-  .regex(/^pear:\/\/[0-9a-fA-F]{64}\/(.+)$/)
-  .transform((url) => {
-    const match = url.match(/^pear:\/\/([0-9a-fA-F]{64})\/(.+)$/)!
-    return { key: match[1]!, path: match[2]! }
-  })
-```
+Validated by `hyperdriveUrlSchema` in `packages/sdk/schemas/load-model.ts`.
 
 ### Load-Model Hyperdrive Flow
 
-Located in `packages/sdk/server/rpc/handlers/load-model/hyperdrive.ts`.
+Located in `packages/sdk/server/rpc/handlers/load-model/hyperdrive.ts`:
 
-1. **Setup** — `setupHyperdrive(hyperdriveKey, corestoreDir)` creates a `Corestore` at `~/.qvac/corestore/<key>`, a `Hyperdrive` instance, and a `Hyperswarm` with relay support. Joins the drive's discovery key as client-only.
-2. **File lookup** — `findFileInHyperdrive()` tries path variations (`file`, `/file`, `./file`). If not found, lists available files for debugging.
-3. **Download** — `downloadAndValidateFile()` calls `drive.download(targetPath)` then `drive.createReadStream()`, piping to a `fs.createWriteStream()`. Tracks per-block progress via `blobs.core.on('download', handler)`.
+1. **Setup** — `setupHyperdrive()` creates Corestore at `~/.qvac/corestore/<key>`, Hyperdrive instance, and Hyperswarm with relay support. Joins discovery key as client-only.
+2. **File lookup** — `findFileInHyperdrive()` tries path variations (`file`, `/file`, `./file`). Lists available files for debugging if not found.
+3. **Download** — `downloadAndValidateFile()` calls `drive.download()` then `drive.createReadStream()`, piping to `fs.createWriteStream()`. Tracks per-block progress via `blobs.core.on('download', handler)`.
 4. **Validation** — file size check + optional SHA-256 checksum validation.
-5. **Sharded models** — `downloadShardedFilesToFilesystem()` handles multi-file models, downloading each shard sequentially with per-shard and overall progress tracking.
-6. **Cleanup** — after download: swarm is suspended/destroyed, drive and corestore are closed, and the corestore directory is deleted (unless seeding).
-7. **Caching** — `validateCachedFile()` checks if a local file already exists with correct size and checksum before downloading. Active downloads are tracked via a download manager to prevent duplicates.
+5. **Sharded models** — `downloadShardedFilesToFilesystem()` handles multi-file models sequentially with per-shard and overall progress tracking.
+6. **Cleanup** — swarm suspended/destroyed, drive and corestore closed, corestore directory deleted (unless seeding).
+7. **Caching** — `validateCachedFile()` checks local file before downloading. Active downloads tracked via download manager to prevent duplicates.
 
 ### Key Differences: SDK vs `@qvac/dl-hyperdrive`
 
