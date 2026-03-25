@@ -6,19 +6,16 @@ const FilesystemDL = require('@qvac/dl-filesystem')
 const ImgStableDiffusion = require('../index')
 
 /**
- * FLUX2-klein img2img example
- *
- * Transforms an input image using a text prompt via in-context conditioning.
- * The model attends to the reference image through joint attention, preserving
- * features like skin tone and structure while generating a new image.
+ * FLUX2-klein F16 img2img example
+ * 
+ * Full precision (F16) version for comparison with Q8_0 quantized model.
+ * This should have much less quantization bias.
  */
 
 async function main () {
   const modelDir = path.join(__dirname, '../models')
-  // const inputImagePath = path.join(__dirname, '../temp/benjaminrutz.jpeg')
-  // const outputImagePath = path.join(__dirname, '../temp/benjaminrutz_transformed.png')
-const inputImagePath = path.join(__dirname, '../temp/nik_headshot_832.jpeg')
-const outputImagePath = path.join(__dirname, '../temp/nik_headshot_832_transformed.jpeg')
+  const inputImagePath = path.join(__dirname, '../temp/nik_headshot_832.jpeg')
+  const outputImagePath = path.join(__dirname, '../temp/nik_headshot_832_transformed_f16.png')
 
   // Check if input image exists
   if (!fs.existsSync(inputImagePath)) {
@@ -26,7 +23,7 @@ const outputImagePath = path.join(__dirname, '../temp/nik_headshot_832_transform
     process.exit(1)
   }
 
-  console.log('Loading FLUX2-klein model...')
+  console.log('Loading FLUX2-klein F16 model (full precision)...')
 
   const loader = new FilesystemDL({ dirPath: modelDir })
 
@@ -35,13 +32,13 @@ const outputImagePath = path.join(__dirname, '../temp/nik_headshot_832_transform
       loader,
       logger: console,
       diskPath: modelDir,
-      modelName: 'flux-2-klein-4b-Q8_0.gguf',
-      llmModel: 'Qwen3-4B-Q4_K_M.gguf',
+      modelName: 'flux-2-klein-4b-F16.gguf',      // F16 full precision
+      llmModel: 'Qwen3-4B-Q8_0.gguf',             // Q8 text encoder
       vaeModel: 'flux2-vae.safetensors'
     },
     {
       threads: 4,
-      device: 'gpu', // or 'cpu' for MacBook Air
+      device: 'gpu',
       prediction: 'flux2_flow'
     }
   )
@@ -55,24 +52,27 @@ const outputImagePath = path.join(__dirname, '../temp/nik_headshot_832_transform
     const initImage = fs.readFileSync(inputImagePath)
     console.log(`Input image: ${initImage.length} bytes`)
 
-    const STEPS = 30
-    const GUIDANCE = 6.0
-    const SEED = -1
+    const STEPS = 20
+    const STRENGTH = 1.0   // CRITICAL: Default is 0.75! Must be 1.0 for full denoising
+    const GUIDANCE = 9.0   // Match Iris exactly
+    const SEED = -1        // Match Iris exactly
 
-    console.log(`\n=== FLUX2-klein img2img ===`)
-    console.log(`  Model    : flux-2-klein-4b-Q8_0.gguf`)
+    console.log(`\n=== F16 Full Precision Model (Iris-matched settings) ===`)
+    console.log(`  Model    : flux-2-klein-4b-F16.gguf (16-bit)`)
     console.log(`  Steps    : ${STEPS}`)
+    console.log(`  Strength : ${STRENGTH} (EXPLICIT - addon defaults to 0.75!)`)
+    console.log(`  Effective: ${Math.round(STEPS * STRENGTH)} steps (matches Iris's 20 full steps)`)
     console.log(`  Guidance : ${GUIDANCE}`)
-    console.log(`  Seed     : ${SEED}`)
-    console.log(`  Note     : VAE encode runs first (no progress tick) — please wait...\n`)
+    console.log(`  Seed     : ${SEED}\n`)
 
     const tGenStart = Date.now()
     let lastStepTime = tGenStart
 
     const response = await model.run({
-      prompt: 'put this person in a fast car driving in a drift with flames on the wheels, the persons face is visible, he looks cool, make sure the face is the same',
+      prompt: 'a sporty version of this photo, professional headshot.',
       negative_prompt: 'blurry, low quality, distorted',
       init_image: initImage,
+      strength: STRENGTH,
       cfg_scale: 1.0,
       steps: STEPS,
       guidance: GUIDANCE,
@@ -86,8 +86,8 @@ const outputImagePath = path.join(__dirname, '../temp/nik_headshot_832_transform
           console.log(`\n✓ Image generated in ${(totalMs / 1000).toFixed(1)}s`)
           fs.writeFileSync(outputImagePath, data)
           console.log(`✓ Saved to: ${outputImagePath}`)
-          console.log(`\nFor comparison, run the F16 version:`)
-          console.log(`  bare examples/img2img-flux2-f16.js`)
+          console.log(`\nFor comparison, run the Q8 version:`)
+          console.log(`  bare examples/img2img-flux2.js`)
         } else if (typeof data === 'string') {
           try {
             const tick = JSON.parse(data)

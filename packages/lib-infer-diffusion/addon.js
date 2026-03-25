@@ -105,17 +105,21 @@ class SdInterface {
    * @returns {Promise<boolean>} true if job was accepted, false if busy
    */
   async runJob (params) {
-    // Convert init_image Uint8Array to array for JSON serialization (img2img).
+    // Convert image Uint8Array fields to byte arrays for JSON serialization.
     // Also auto-detect width/height from the image header so the C++ tensor
     // dimensions always match the decoded image — without this, generate_image()
     // hits GGML_ASSERT(image.width == tensor->ne[0]).
-    if (params.init_image) {
+    const imgBuf = params.ref_image || params.init_image
+    if (imgBuf) {
       const serializable = { ...params }
-      serializable.init_image_bytes = Array.from(params.init_image)
       delete serializable.init_image
+      delete serializable.ref_image
+
+      // Always route through ref_image_bytes for in-context conditioning.
+      serializable.ref_image_bytes = Array.from(imgBuf)
 
       if (!serializable.width || !serializable.height) {
-        const dims = readImageDimensions(params.init_image)
+        const dims = readImageDimensions(imgBuf)
         if (dims) {
           serializable.width = dims.width
           serializable.height = dims.height

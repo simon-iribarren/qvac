@@ -295,11 +295,11 @@ std::any SdModel::process(const std::any& input) {
   qvac_lib_inference_addon_sd::applySdGenHandlers(
       gen, v.get<picojson::object>());
 
-  if (gen.mode != "txt2img" && gen.mode != "img2img")
+  if (gen.mode != "txt2img" && gen.mode != "img2img" && gen.mode != "ref2img")
     throw StatusError(
         general_error::InvalidArgument,
         "Unsupported mode: '" + gen.mode +
-            "'. Only txt2img and img2img are supported.");
+            "'. Supported: txt2img, img2img, ref2img.");
 
   // ── Build sd_img_gen_params_t ─────────────────────────────────────────────
   sd_img_gen_params_t genParams{};
@@ -340,21 +340,46 @@ std::any SdModel::process(const std::any& input) {
   if (gen.cacheEnd > 0.0f)
     genParams.cache.end_percent = gen.cacheEnd;
 
-  // ── img2img init image (bytes passed as JSON array) ───────────────────────
+  // ── img2img / ref2img image handling ─────────────────────────────────────
+  //
+  // Two distinct image-conditioned generation paths:
+  //
+  //   img2img  — Traditional: VAE-encode init image → add noise based on
+  //              strength → denoise from partially-noised latent.
+  //              The model never "sees" the original image through attention.
+  //
+  //   ref2img  — In-context conditioning (matches Iris C engine behaviour):
+  //              The reference image is VAE-encoded into separate latent tokens
+  //              that are concatenated with the target (which starts as pure
+  //              noise). The FLUX transformer attends to reference tokens via
+  //              joint attention with distinct RoPE positions. This allows the
+  //              model to reason about the reference's features (skin tone,
+  //              structure, etc.) while generating a fully new image.
+  //
   sd_image_t initImg{};
   sd_image_t maskImg{};
+  sd_image_t refImg{};
   std::vector<uint8_t> initPng;
+  std::vector<uint8_t> refPng;
   std::vector<uint8_t> maskBuf; // owns the white-fill mask pixel data
 
-  if (gen.mode == "img2img") {
-    if (auto it = v.get<picojson::object>().find("init_image_bytes");
+  // Helper: decode image bytes from a JSON array key
+  auto decodeImageBytesFromJson =
+      [&](const std::string& key) -> std::vector<uint8_t> {
+    std::vector<uint8_t> bytes;
+    if (auto it = v.get<picojson::object>().find(key);
         it != v.get<picojson::object>().end() &&
         it->second.is<picojson::array>()) {
       const auto& arr = it->second.get<picojson::array>();
-      initPng.reserve(arr.size());
+      bytes.reserve(arr.size());
       for (const auto& el : arr)
-        initPng.push_back(static_cast<uint8_t>(el.get<double>()));
+        bytes.push_back(static_cast<uint8_t>(el.get<double>()));
     }
+    return bytes;
+  };
+
+  if (gen.mode == "img2img") {
+    initPng = decodeImageBytesFromJson("init_image_bytes");
     if (!initPng.empty())
       initImg = decodePng(initPng);
 
@@ -362,11 +387,6 @@ std::any SdModel::process(const std::any& input) {
       const int imgW = static_cast<int>(initImg.width);
       const int imgH = static_cast<int>(initImg.height);
 
-      // (1) Auto-detect genParams.width/height from the decoded init image.
-      //     generate_image() builds latent tensors of size
-      //     genParams.width×height then calls sd_image_to_ggml_tensor which
-      //     asserts image.width == ne[0]. Keeping the defaults (512×512) when
-      //     the image is 800×800 crashes.
       QLOG_IF(
           qvac_lib_inference_addon_cpp::logger::Priority::INFO,
           "img2img: init_image " + std::to_string(imgW) + "x" +
@@ -376,17 +396,44 @@ std::any SdModel::process(const std::any& input) {
       genParams.width = imgW;
       genParams.height = imgH;
 
-      // (2) Provide a white-fill mask (all 255) so that sd_image_to_ggml_tensor
-      //     never sees mask_image.width == 0.
-      //     generate_image() always calls sd_image_to_ggml_tensor(mask_image,
-      //     ...) before init_image, with no null-guard — a zero-width mask
-      //     aborts.
       maskBuf.assign(static_cast<size_t>(imgW) * imgH, 255);
       maskImg = sd_image_t{
           static_cast<uint32_t>(imgW),
           static_cast<uint32_t>(imgH),
           1,
           maskBuf.data()};
+    }
+  } else if (gen.mode == "ref2img") {
+    // ref2img: decode the reference image and route it through ref_images
+    // so stable-diffusion.cpp uses FLUX in-context conditioning (like Iris).
+    // The target starts from pure noise (txt2img path internally).
+    refPng = decodeImageBytesFromJson("ref_image_bytes");
+    if (refPng.empty()) {
+      // Fall back to init_image_bytes if ref_image_bytes is not present
+      refPng = decodeImageBytesFromJson("init_image_bytes");
+    }
+    if (!refPng.empty())
+      refImg = decodePng(refPng);
+
+    if (refImg.data) {
+      const int imgW = static_cast<int>(refImg.width);
+      const int imgH = static_cast<int>(refImg.height);
+
+      QLOG_IF(
+          qvac_lib_inference_addon_cpp::logger::Priority::INFO,
+          "ref2img: reference_image " + std::to_string(imgW) + "x" +
+              std::to_string(imgH) +
+              " — using in-context conditioning (pure noise target)");
+
+      // Use the reference image dimensions for output if not explicitly set
+      if (gen.width == 512 && gen.height == 512) {
+        genParams.width = imgW;
+        genParams.height = imgH;
+      }
+
+      genParams.ref_images = &refImg;
+      genParams.ref_images_count = 1;
+      genParams.auto_resize_ref_image = true;
     }
   }
   genParams.init_image = initImg;
@@ -399,6 +446,8 @@ std::any SdModel::process(const std::any& input) {
 
   if (initImg.data)
     free(initImg.data);
+  if (refImg.data)
+    free(refImg.data);
   // maskBuf owns the mask pixel data — freed automatically via RAII.
 
   const bool wasCancelled = cancelRequested_.load();

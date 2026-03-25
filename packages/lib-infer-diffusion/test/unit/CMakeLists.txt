@@ -17,6 +17,7 @@ add_executable(
   test_full_generation.cpp
   test_cancel_context.cpp
   test_img2img.cpp
+  test_ref2img.cpp
   ${CMAKE_SOURCE_DIR}/addon/src/utils/BackendSelection.cpp
   ${CMAKE_SOURCE_DIR}/addon/src/utils/LoggingMacros.cpp
   ${CMAKE_SOURCE_DIR}/addon/src/model-interface/SdModel.cpp

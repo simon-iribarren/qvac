@@ -203,12 +203,17 @@ class ImgStableDiffusion extends BaseInference {
    * @param {number} [params.batch_count=1]         - Images per call
    * @param {boolean} [params.vae_tiling=false]     - Enable VAE tiling (for large images)
    * @param {string}  [params.cache_preset]         - Cache preset: slow/medium/fast/ultra
-   * @param {Uint8Array} [params.init_image]        - Source image bytes for img2img (PNG/JPEG)
-   * @param {number}    [params.strength=0.75]      - img2img: 0 = keep source, 1 = ignore source
+   * @param {Uint8Array} [params.init_image]        - Source image bytes for img2img (PNG/JPEG).
+   *                                                   For FLUX models this uses in-context conditioning
+   *                                                   (reference tokens + joint attention) which preserves
+   *                                                   features like skin tone and structure.
    * @returns {Promise<QvacResponse>}
    */
   async _runInternal (params) {
-    const mode = params.init_image ? 'img2img' : 'txt2img'
+    let mode = 'txt2img'
+    if (params.init_image || params.ref_image) {
+      mode = 'ref2img'
+    }
     this.logger.info('Starting generation with mode:', mode)
 
     return await this._withExclusiveRun(async () => {

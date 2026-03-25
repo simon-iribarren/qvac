@@ -6,27 +6,19 @@ const FilesystemDL = require('@qvac/dl-filesystem')
 const ImgStableDiffusion = require('../index')
 
 /**
- * FLUX2-klein img2img example
- *
- * Transforms an input image using a text prompt via in-context conditioning.
- * The model attends to the reference image through joint attention, preserving
- * features like skin tone and structure while generating a new image.
+ * Stable Diffusion XL img2img example
+ * 
+ * Transforms an input image using a text prompt.
+ * This example uses SDXL with standard configuration.
  */
 
 async function main () {
   const modelDir = path.join(__dirname, '../models')
-  // const inputImagePath = path.join(__dirname, '../temp/benjaminrutz.jpeg')
-  // const outputImagePath = path.join(__dirname, '../temp/benjaminrutz_transformed.png')
-const inputImagePath = path.join(__dirname, '../temp/nik_headshot_832.jpeg')
-const outputImagePath = path.join(__dirname, '../temp/nik_headshot_832_transformed.jpeg')
+//   const inputImagePath = path.join(__dirname, '../temp/nik_headshot_832.jpeg')
+  const inputImagePath = path.join(__dirname, '../temp/benjaminrutz.jpeg')
+  const outputImagePath = path.join(__dirname, '../temp/benjaminrutz_transformed_sdxl.png')
 
-  // Check if input image exists
-  if (!fs.existsSync(inputImagePath)) {
-    console.error(`Error: Input image not found at ${inputImagePath}`)
-    process.exit(1)
-  }
-
-  console.log('Loading FLUX2-klein model...')
+  console.log('Loading Stable Diffusion XL model...')
 
   const loader = new FilesystemDL({ dirPath: modelDir })
 
@@ -35,14 +27,11 @@ const outputImagePath = path.join(__dirname, '../temp/nik_headshot_832_transform
       loader,
       logger: console,
       diskPath: modelDir,
-      modelName: 'flux-2-klein-4b-Q8_0.gguf',
-      llmModel: 'Qwen3-4B-Q4_K_M.gguf',
-      vaeModel: 'flux2-vae.safetensors'
+      modelName: 'stable-diffusion-xl-base-1.0-Q8_0.gguf'
     },
     {
       threads: 4,
-      device: 'gpu', // or 'cpu' for MacBook Air
-      prediction: 'flux2_flow'
+      device: 'gpu'
     }
   )
 
@@ -55,28 +44,27 @@ const outputImagePath = path.join(__dirname, '../temp/nik_headshot_832_transform
     const initImage = fs.readFileSync(inputImagePath)
     console.log(`Input image: ${initImage.length} bytes`)
 
-    const STEPS = 30
-    const GUIDANCE = 6.0
-    const SEED = -1
+    const STEPS = 40        // effective denoising steps = floor(STEPS * STRENGTH)
+    const STRENGTH = 0.7   // effective denoising steps = floor(STEPS * STRENGTH)
 
-    console.log(`\n=== FLUX2-klein img2img ===`)
-    console.log(`  Model    : flux-2-klein-4b-Q8_0.gguf`)
-    console.log(`  Steps    : ${STEPS}`)
-    console.log(`  Guidance : ${GUIDANCE}`)
-    console.log(`  Seed     : ${SEED}`)
+    console.log(`\nGenerating transformed image...`)
+    console.log(`  Steps    : ${STEPS}  (effective denoising steps: ${Math.floor(STEPS * STRENGTH)})`)
+    console.log(`  Strength : ${STRENGTH}`)
     console.log(`  Note     : VAE encode runs first (no progress tick) — please wait...\n`)
 
     const tGenStart = Date.now()
     let lastStepTime = tGenStart
 
     const response = await model.run({
-      prompt: 'put this person in a fast car driving in a drift with flames on the wheels, the persons face is visible, he looks cool, make sure the face is the same',
+      prompt: 'a female version of this photo, professional headshot.',
       negative_prompt: 'blurry, low quality, distorted',
       init_image: initImage,
-      cfg_scale: 1.0,
+      width: 1024,
+      height: 1024,
+      strength: STRENGTH,
       steps: STEPS,
-      guidance: GUIDANCE,
-      seed: SEED
+      cfg_scale: 9.0,
+      seed: 42
     })
 
     await response
@@ -86,8 +74,6 @@ const outputImagePath = path.join(__dirname, '../temp/nik_headshot_832_transform
           console.log(`\n✓ Image generated in ${(totalMs / 1000).toFixed(1)}s`)
           fs.writeFileSync(outputImagePath, data)
           console.log(`✓ Saved to: ${outputImagePath}`)
-          console.log(`\nFor comparison, run the F16 version:`)
-          console.log(`  bare examples/img2img-flux2-f16.js`)
         } else if (typeof data === 'string') {
           try {
             const tick = JSON.parse(data)

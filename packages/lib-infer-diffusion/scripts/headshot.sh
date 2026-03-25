@@ -46,15 +46,13 @@ echo ""
   --mode img_gen \
   --init-img "$INPUT_IMG" \
   --output "$OUTPUT_IMG" \
-  --prompt "an anime version of the input image, professional anime lawyer headshot" \
+  --prompt "change my hairstyle to long hair, and do not do anything else" \
   --negative-prompt "blurry, low quality, distorted" \
-  --strength 0.5 \
-  --steps 10 \
-  --cfg-scale 7.0 \
+  --strength 0.30 \
+  --steps 40 \
+  --guidance 9.0 \
   --sampling-method euler \
-  --seed 42 \
-  --width 800 \
-  --height 800
+  --seed 42
 
 echo ""
 echo "Done! Output saved to: $OUTPUT_IMG"
