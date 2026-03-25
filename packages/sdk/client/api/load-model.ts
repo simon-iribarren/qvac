@@ -1,4 +1,3 @@
-import { send, stream } from "@/client/rpc/rpc-client";
 import { startLoggingStreamForModel } from "@/client/logging-stream-registry";
 import {
   type LoadModelOptions,
@@ -9,11 +8,8 @@ import {
   isModelTypeAlias,
   normalizeModelType,
 } from "@/schemas";
-import {
-  ModelLoadFailedError,
-  StreamEndedError,
-  InvalidResponseError,
-} from "@/utils/errors-client";
+import { rpc } from "@/client/rpc/caller";
+import { ModelLoadFailedError, StreamEndedError } from "@/utils/errors-client";
 import { getClientLogger } from "@/logging";
 
 const logger = getClientLogger();
@@ -156,7 +152,6 @@ export async function loadModel(
 ): Promise<string> {
   const isReloadConfig = "modelId" in options && !("modelSrc" in options);
 
-  // Warn about deprecated alias usage
   if (!isReloadConfig && isModelTypeAlias(options.modelType)) {
     const canonical = normalizeModelType(options.modelType);
     logger.warn(
@@ -171,8 +166,7 @@ export async function loadModel(
   const onProgress = isReloadConfig ? undefined : options.onProgress;
 
   if (onProgress) {
-    // Use streaming for progress updates
-    for await (const response of stream(request, rpcOptions)) {
+    for await (const response of rpc.loadModel.stream(request, rpcOptions)) {
       if (response.type === "modelProgress") {
         onProgress(response);
       } else if (response.type === "loadModel") {
@@ -182,7 +176,6 @@ export async function loadModel(
 
         const modelId = response.modelId!;
 
-        // Start logging stream in the background if logger is provided, catch to avoid failing the entire loadModel operation
         if (modelLogger) {
           try {
             startLoggingStreamForModel(modelId, modelLogger);
@@ -200,11 +193,7 @@ export async function loadModel(
     throw new StreamEndedError();
   }
 
-  // Use regular send for simple loading
-  const response = await send(request, rpcOptions);
-  if (response.type !== "loadModel") {
-    throw new InvalidResponseError("loadModel");
-  }
+  const response = await rpc.loadModel.call(request, rpcOptions);
 
   if (!response.success) {
     throw new ModelLoadFailedError(response.error);

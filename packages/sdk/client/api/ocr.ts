@@ -1,11 +1,10 @@
 import {
   ocrStreamResponseSchema,
-  type OCRStreamRequest,
   type OCRClientParams,
   type OCRTextBlock,
   type OCRStats,
 } from "@/schemas";
-import { stream as streamRpc } from "@/client/rpc/rpc-client";
+import { rpc } from "@/client/rpc/caller";
 
 /**
  * Performs Optical Character Recognition (OCR) on an image to extract text.
@@ -36,13 +35,15 @@ export function ocr(params: OCRClientParams): {
   blocks: Promise<OCRTextBlock[]>;
   stats: Promise<OCRStats | undefined>;
 } {
-  const request: OCRStreamRequest = {
-    type: "ocrStream",
+  const input = {
     modelId: params.modelId,
     image:
       typeof params.image === "string"
-        ? { type: "filePath", value: params.image }
-        : { type: "base64", value: params.image.toString("base64") },
+        ? ({ type: "filePath", value: params.image } as const)
+        : ({
+            type: "base64",
+            value: params.image.toString("base64"),
+          } as const),
     ...(params.options && { options: params.options }),
   };
 
@@ -54,16 +55,14 @@ export function ocr(params: OCRClientParams): {
 
   if (params.stream) {
     const blockStream = (async function* () {
-      for await (const response of streamRpc(request)) {
-        if (response.type === "ocrStream") {
-          const streamResponse = ocrStreamResponseSchema.parse(response);
-          if (streamResponse.blocks && streamResponse.blocks.length > 0) {
-            yield streamResponse.blocks;
-          }
-          if (streamResponse.done) {
-            ocrStats = streamResponse.stats;
-            statsResolver(ocrStats);
-          }
+      for await (const response of rpc.ocrStream.stream(input)) {
+        const streamResponse = ocrStreamResponseSchema.parse(response);
+        if (streamResponse.blocks && streamResponse.blocks.length > 0) {
+          yield streamResponse.blocks;
+        }
+        if (streamResponse.done) {
+          ocrStats = streamResponse.stats;
+          statsResolver(ocrStats);
         }
       }
     })();
@@ -73,32 +72,30 @@ export function ocr(params: OCRClientParams): {
       blocks: Promise.resolve([]),
       stats: statsPromise,
     };
-  } else {
-    const blockStream = (async function* () {
-      // Empty generator for non-streaming mode
-    })();
-
-    const blocksPromise = (async () => {
-      let allBlocks: OCRTextBlock[] = [];
-      for await (const response of streamRpc(request)) {
-        if (response.type === "ocrStream") {
-          const streamResponse = ocrStreamResponseSchema.parse(response);
-          if (streamResponse.blocks) {
-            allBlocks = allBlocks.concat(streamResponse.blocks);
-          }
-          if (streamResponse.done) {
-            ocrStats = streamResponse.stats;
-            statsResolver(ocrStats);
-          }
-        }
-      }
-      return allBlocks;
-    })();
-
-    return {
-      blockStream,
-      blocks: blocksPromise,
-      stats: statsPromise,
-    };
   }
+
+  const blockStream = (async function* () {
+    // empty generator for non-streaming mode
+  })();
+
+  const blocksPromise = (async () => {
+    let allBlocks: OCRTextBlock[] = [];
+    for await (const response of rpc.ocrStream.stream(input)) {
+      const streamResponse = ocrStreamResponseSchema.parse(response);
+      if (streamResponse.blocks) {
+        allBlocks = allBlocks.concat(streamResponse.blocks);
+      }
+      if (streamResponse.done) {
+        ocrStats = streamResponse.stats;
+        statsResolver(ocrStats);
+      }
+    }
+    return allBlocks;
+  })();
+
+  return {
+    blockStream,
+    blocks: blocksPromise,
+    stats: statsPromise,
+  };
 }

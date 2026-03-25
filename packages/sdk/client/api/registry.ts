@@ -1,11 +1,5 @@
-import type {
-  ModelRegistryListRequest,
-  ModelRegistrySearchRequest,
-  ModelRegistryGetModelRequest,
-  ModelRegistryEntry,
-  ModelRegistryEntryAddon,
-} from "@/schemas";
-import { send } from "@/client/rpc/rpc-client";
+import type { ModelRegistryEntry, ModelRegistryEntryAddon } from "@/schemas";
+import { rpc } from "@/client/rpc/caller";
 import { ModelRegistryQueryFailedError } from "@/utils/errors-client";
 
 export type { ModelRegistryEntry, ModelRegistryEntryAddon };
@@ -35,13 +29,8 @@ function validateRegistryResponse(
 }
 
 async function modelRegistryList(): Promise<ModelRegistryEntry[]> {
-  const request: ModelRegistryListRequest = {
-    type: "modelRegistryList",
-  };
-
-  const response = await send(request);
+  const response = await rpc.modelRegistryList.call({});
   validateRegistryResponse(response);
-
   return response.models!;
 }
 
@@ -49,15 +38,11 @@ async function modelRegistrySearch(
   params: ModelRegistrySearchParams = {},
 ): Promise<ModelRegistryEntry[]> {
   const { modelType, ...rest } = params;
-  const request: ModelRegistrySearchRequest = {
-    type: "modelRegistrySearch",
+  const response = await rpc.modelRegistrySearch.call({
     ...rest,
     addon: modelType ?? rest.addon,
-  };
-
-  const response = await send(request);
+  });
   validateRegistryResponse(response);
-
   return response.models!;
 }
 
@@ -65,18 +50,14 @@ async function modelRegistryGetModel(
   registryPath: string,
   registrySource: string,
 ): Promise<ModelRegistryEntry> {
-  const request: ModelRegistryGetModelRequest = {
-    type: "modelRegistryGetModel",
+  const response = await rpc.modelRegistryGetModel.call({
     registryPath,
     registrySource,
-  };
-
-  const response = await send(request);
+  });
   validateRegistryResponse(
     response,
     `Model not found: ${registrySource}/${registryPath}`,
   );
-
   return response.model!;
 }
 

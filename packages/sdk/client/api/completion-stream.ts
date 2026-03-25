@@ -1,16 +1,15 @@
-import { stream as streamRpc } from "@/client/rpc/rpc-client";
 import { getClientLogger } from "@/logging";
 import {
   completionStreamResponseSchema,
   type CompletionClientParams,
   type CompletionStats,
-  type CompletionStreamRequest,
   type McpClientInput,
   type Tool,
   type ToolCallEvent,
   type ToolCallWithCall,
   type RPCOptions,
 } from "@/schemas";
+import { rpc } from "@/client/rpc/caller";
 import { getMcpToolsWithHandlers } from "@/utils/mcp-adapter";
 import {
   attachHandlersToToolCalls,
@@ -147,8 +146,7 @@ export function completion(params: CompletionParams): {
         }
       }
 
-      const request: CompletionStreamRequest = {
-        type: "completionStream",
+      const input = {
         modelId: params.modelId,
         history: params.history,
         kvCache: params.kvCache,
@@ -157,18 +155,11 @@ export function completion(params: CompletionParams): {
         generationParams: params.generationParams,
       };
 
-      const responses: AsyncGenerator<unknown> = streamRpc(
-        request,
+      for await (const response of rpc.completionStream.stream(
+        input,
         params.rpcOptions,
-      );
-
-      for await (const response of responses) {
-        if (
-          response &&
-          typeof response === "object" &&
-          "type" in response &&
-          response.type === "completionStream"
-        ) {
+      )) {
+        {
           const streamResponse = completionStreamResponseSchema.parse(response);
 
           if (!streamResponse.done) {

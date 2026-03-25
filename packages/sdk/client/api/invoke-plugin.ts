@@ -1,10 +1,5 @@
-import { send, stream } from "@/client/rpc/rpc-client";
-import type {
-  PluginInvokeRequest,
-  PluginInvokeStreamRequest,
-  RPCOptions,
-} from "@/schemas";
-import { InvalidResponseError } from "@/utils/errors-client";
+import type { RPCOptions } from "@/schemas";
+import { rpc } from "@/client/rpc/caller";
 
 export interface InvokePluginOptions<TParams = unknown> {
   modelId: string;
@@ -19,18 +14,14 @@ export async function invokePlugin<TResponse = unknown, TParams = unknown>(
   options: InvokePluginOptions<TParams>,
   rpcOptions?: RPCOptions,
 ): Promise<TResponse> {
-  const request: PluginInvokeRequest = {
-    type: "pluginInvoke",
-    modelId: options.modelId,
-    handler: options.handler,
-    params: options.params,
-  };
-
-  const response = await send(request, rpcOptions);
-
-  if (response.type !== "pluginInvoke") {
-    throw new InvalidResponseError("pluginInvoke");
-  }
+  const response = await rpc.pluginInvoke.call(
+    {
+      modelId: options.modelId,
+      handler: options.handler,
+      params: options.params,
+    },
+    rpcOptions,
+  );
 
   return response.result as TResponse;
 }
@@ -45,20 +36,16 @@ export async function* invokePluginStream<
   options: InvokePluginOptions<TParams>,
   rpcOptions?: RPCOptions,
 ): AsyncGenerator<TResponse> {
-  const request: PluginInvokeStreamRequest = {
-    type: "pluginInvokeStream",
-    modelId: options.modelId,
-    handler: options.handler,
-    params: options.params,
-  };
-
-  for await (const chunk of stream(request, rpcOptions)) {
-    const response = chunk;
-    if (response.type !== "pluginInvokeStream") {
-      throw new InvalidResponseError("pluginInvokeStream");
-    }
-    if (!response.done) {
-      yield response.result as TResponse;
+  for await (const chunk of rpc.pluginInvokeStream.stream(
+    {
+      modelId: options.modelId,
+      handler: options.handler,
+      params: options.params,
+    },
+    rpcOptions,
+  )) {
+    if (!chunk.done) {
+      yield chunk.result as TResponse;
     }
   }
 }

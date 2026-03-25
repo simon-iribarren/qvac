@@ -1,10 +1,9 @@
 import {
   transcribeStreamResponseSchema,
-  type TranscribeStreamRequest,
   type TranscribeClientParams,
   type RPCOptions,
 } from "@/schemas";
-import { stream } from "@/client/rpc/rpc-client";
+import { rpc } from "@/client/rpc/caller";
 
 /**
  * This function streams audio transcription results in real-time, yielding
@@ -22,27 +21,27 @@ export async function* transcribeStream(
   params: TranscribeClientParams,
   options?: RPCOptions,
 ) {
-  const request: TranscribeStreamRequest = {
-    type: "transcribeStream",
+  const input = {
     modelId: params.modelId,
     audioChunk:
       typeof params.audioChunk === "string"
-        ? { type: "filePath", value: params.audioChunk }
-        : { type: "base64", value: params.audioChunk.toString("base64") },
+        ? ({ type: "filePath", value: params.audioChunk } as const)
+        : ({
+            type: "base64",
+            value: params.audioChunk.toString("base64"),
+          } as const),
     ...(params.prompt && { prompt: params.prompt }),
   };
 
-  for await (const response of stream(request, options)) {
-    if (response.type === "transcribeStream") {
-      const streamResponse = transcribeStreamResponseSchema.parse(response);
+  for await (const response of rpc.transcribeStream.stream(input, options)) {
+    const streamResponse = transcribeStreamResponseSchema.parse(response);
 
-      if (streamResponse.text) {
-        yield streamResponse.text;
-      }
+    if (streamResponse.text) {
+      yield streamResponse.text;
+    }
 
-      if (streamResponse.done) {
-        break;
-      }
+    if (streamResponse.done) {
+      break;
     }
   }
 }

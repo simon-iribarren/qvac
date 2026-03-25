@@ -1,9 +1,6 @@
-import { type ProvideParams, type ProvideRequest } from "@/schemas";
-import { send } from "@/client/rpc/rpc-client";
-import {
-  InvalidResponseError,
-  ProviderStartFailedError,
-} from "@/utils/errors-client";
+import type { ProvideParams } from "@/schemas";
+import { rpc } from "@/client/rpc/caller";
+import { ProviderStartFailedError } from "@/utils/errors-client";
 
 /**
  * Starts a provider service that offers QVAC capabilities to remote peers.
@@ -16,16 +13,10 @@ import {
  * @throws {QvacErrorBase} When the response type is not "provide" or the request fails
  */
 export async function startQVACProvider(params: ProvideParams) {
-  const request: ProvideRequest = {
-    type: "provide",
+  const response = await rpc.provide.call({
     topic: params.topic,
     firewall: params.firewall,
-  };
-
-  const response = await send(request);
-  if (response.type !== "provide") {
-    throw new InvalidResponseError("provide");
-  }
+  });
 
   if (response.error) {
     throw new ProviderStartFailedError(response.error);

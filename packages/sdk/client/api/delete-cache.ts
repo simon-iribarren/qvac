@@ -1,5 +1,4 @@
-import type { DeleteCacheRequest } from "@/schemas";
-import { send } from "@/client/rpc/rpc-client";
+import { rpc } from "@/client/rpc/caller";
 import {
   InvalidDeleteCacheParamsError,
   DeleteCacheFailedError,
@@ -28,30 +27,21 @@ import {
 export async function deleteCache(
   params: { all: true } | { kvCacheKey: string; modelId?: string },
 ) {
-  let req: DeleteCacheRequest;
-
-  if ("all" in params && params.all) {
-    req = {
-      type: "deleteCache",
-      all: true,
-    };
-  } else if ("kvCacheKey" in params) {
-    req = {
-      type: "deleteCache",
-      kvCacheKey: params.kvCacheKey,
-      modelId: params.modelId,
-    };
-  } else {
+  if (!("all" in params) && !("kvCacheKey" in params)) {
     throw new InvalidDeleteCacheParamsError();
   }
 
-  const response = await send(req);
+  const response =
+    "all" in params && params.all
+      ? await rpc.deleteCache.call({ all: true })
+      : await rpc.deleteCache.call({
+          kvCacheKey: (params as { kvCacheKey: string }).kvCacheKey,
+          modelId: (params as { kvCacheKey: string; modelId?: string }).modelId,
+        });
 
   if (!response.success && response.error) {
     throw new DeleteCacheFailedError(response.error);
   }
 
-  return {
-    success: response.success,
-  };
+  return { success: response.success };
 }

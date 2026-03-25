@@ -1,6 +1,6 @@
-import { send } from "@/client/rpc/rpc-client";
-import { type CancelParams, type CancelRequest } from "@/schemas";
-import { InvalidResponseError, CancelFailedError } from "@/utils/errors-client";
+import type { CancelParams } from "@/schemas";
+import { rpc } from "@/client/rpc/caller";
+import { CancelFailedError } from "@/utils/errors-client";
 
 /**
  * Cancels an ongoing operation.
@@ -34,15 +34,7 @@ import { InvalidResponseError, CancelFailedError } from "@/utils/errors-client";
  * await cancel({ operation: "rag", workspace: "my-workspace" });
  */
 export async function cancel(params: CancelParams) {
-  const request: CancelRequest = {
-    type: "cancel",
-    ...params,
-  };
-
-  const response = await send(request);
-  if (response.type !== "cancel") {
-    throw new InvalidResponseError("cancel");
-  }
+  const response = await rpc.cancel.call(params);
 
   if (!response.success) {
     throw new CancelFailedError(response.error);

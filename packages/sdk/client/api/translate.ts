@@ -1,24 +1,19 @@
-import { stream as streamRpc } from "@/client/rpc/rpc-client";
 import {
   translateResponseSchema,
   normalizeModelType,
   ModelType,
-  type TranslateRequest,
   type TranslateClientParams,
   type TranslationStats,
   type RPCOptions,
 } from "@/schemas";
+import { rpc } from "@/client/rpc/caller";
 import { detectOne } from "@qvac/langdetect-text-cld2";
 import { TranslationFailedError } from "@/utils/errors-client";
 
-/**
- * Detects the source language if not provided for LLM models
- * @internal
- */
 async function detectSourceLanguage(
   text: string,
   providedLanguage: string | undefined,
-  isLlm: boolean
+  isLlm: boolean,
 ): Promise<string | undefined> {
   if (!isLlm) return undefined;
   if (providedLanguage) return providedLanguage;
@@ -89,82 +84,63 @@ export function translate(
     statsResolver = resolve;
   });
 
+  async function buildInput() {
+    const sourceLanguage = await detectSourceLanguage(
+      params.text as string,
+      isLlm ? (params as { from?: string }).from : undefined,
+      isLlm,
+    );
+    return {
+      ...params,
+      ...(isLlm && { from: sourceLanguage }),
+    };
+  }
+
   if (params.stream) {
     const tokenStream = (async function* () {
-      const sourceLanguage =  await detectSourceLanguage(
-        params.text as string,
-        isLlm ? (params as { from?: string }).from : undefined,
-       isLlm
-      );
+      const input = await buildInput();
 
-      const request: TranslateRequest = {
-        type: "translate",
-        ...params,
-        ...(isLlm && {
-          from: sourceLanguage,
-        }),
-      } as TranslateRequest;
-
-      for await (const response of streamRpc(request, options)) {
-        if (response.type === "translate") {
-          const streamResponse = translateResponseSchema.parse(response);
-          if (!streamResponse.done) {
-            yield streamResponse.token;
-          } else {
-            stats = streamResponse.stats;
-            statsResolver(stats);
-          }
+      for await (const response of rpc.translate.stream(input, options)) {
+        const streamResponse = translateResponseSchema.parse(response);
+        if (!streamResponse.done) {
+          yield streamResponse.token;
+        } else {
+          stats = streamResponse.stats;
+          statsResolver(stats);
         }
       }
     })();
 
-    const textPromise = Promise.resolve("");
-
     return {
       tokenStream,
-      text: textPromise,
-      stats: statsPromise,
-    };
-  } else {
-    const tokenStream = (async function* () {
-      //Empty generator for non-streaming mode
-    })();
-
-    const textPromise = (async () => {
-      const sourceLanguage = await detectSourceLanguage(
-        params.text as string,
-        isLlm ? (params as { from?: string }).from : undefined,
-        isLlm
-      );
-
-      const request: TranslateRequest = {
-        type: "translate",
-        ...params,
-        ...(isLlm && {
-          from: sourceLanguage,
-        }),
-      } as TranslateRequest;
-
-      let buffer = "";
-
-      for await (const response of streamRpc(request, options)) {
-        if (response.type === "translate") {
-          const streamResponse = translateResponseSchema.parse(response);
-          buffer += streamResponse.token;
-          if (streamResponse.done) {
-            stats = streamResponse.stats;
-            statsResolver(stats);
-          }
-        }
-      }
-
-      return buffer;
-    })();
-
-    return {
-      tokenStream,
-      text: textPromise,
+      text: Promise.resolve(""),
       stats: statsPromise,
     };
   }
+
+  const tokenStream = (async function* () {
+    // empty generator for non-streaming mode
+  })();
+
+  const textPromise = (async () => {
+    const input = await buildInput();
+    let buffer = "";
+
+    for await (const response of rpc.translate.stream(input, options)) {
+      const streamResponse = translateResponseSchema.parse(response);
+      buffer += streamResponse.token;
+      if (streamResponse.done) {
+        stats = streamResponse.stats;
+        statsResolver(stats);
+      }
+    }
+
+    return buffer;
+  })();
+
+  return {
+    tokenStream,
+    text: textPromise,
+    stats: statsPromise,
+  };
 }

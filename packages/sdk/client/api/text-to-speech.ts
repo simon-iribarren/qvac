@@ -1,10 +1,9 @@
 import {
   ttsResponseSchema,
   type TtsClientParams,
-  type TtsRequest,
   type RPCOptions,
 } from "@/schemas";
-import { stream as streamRpc } from "@/client/rpc/rpc-client";
+import { rpc } from "@/client/rpc/caller";
 
 export function textToSpeech(
   params: TtsClientParams,
@@ -14,8 +13,7 @@ export function textToSpeech(
   buffer: Promise<number[]>;
   done: Promise<boolean>;
 } {
-  const request: TtsRequest = {
-    type: "textToSpeech",
+  const input = {
     modelId: params.modelId,
     inputType: params.inputType,
     text: params.text,
@@ -29,15 +27,13 @@ export function textToSpeech(
 
   if (params.stream) {
     const bufferStream = (async function* () {
-      for await (const response of streamRpc(request, options)) {
-        if (response.type === "textToSpeech") {
-          const streamResponse = ttsResponseSchema.parse(response);
-          if (streamResponse.buffer.length > 0) {
-            yield* streamResponse.buffer;
-          }
-          if (streamResponse.done) {
-            doneResolver(true);
-          }
+      for await (const response of rpc.textToSpeech.stream(input, options)) {
+        const streamResponse = ttsResponseSchema.parse(response);
+        if (streamResponse.buffer.length > 0) {
+          yield* streamResponse.buffer;
+        }
+        if (streamResponse.done) {
+          doneResolver(true);
         }
       }
     })();
@@ -47,29 +43,27 @@ export function textToSpeech(
       buffer: Promise.resolve([]),
       done: donePromise,
     };
-  } else {
-    const bufferStream = (async function* () {
-      //Empty generator for non-streaming mode
-    })();
-
-    const bufferPromise = (async () => {
-      let buffer: number[] = [];
-      for await (const response of streamRpc(request, options)) {
-        if (response.type === "textToSpeech") {
-          const streamResponse = ttsResponseSchema.parse(response);
-          buffer = buffer.concat(streamResponse.buffer);
-          if (streamResponse.done) {
-            doneResolver(true);
-          }
-        }
-      }
-      return buffer;
-    })();
-
-    return {
-      bufferStream,
-      buffer: bufferPromise,
-      done: donePromise,
-    };
   }
+
+  const bufferStream = (async function* () {
+    // empty generator for non-streaming mode
+  })();
+
+  const bufferPromise = (async () => {
+    let buffer: number[] = [];
+    for await (const response of rpc.textToSpeech.stream(input, options)) {
+      const streamResponse = ttsResponseSchema.parse(response);
+      buffer = buffer.concat(streamResponse.buffer);
+      if (streamResponse.done) {
+        doneResolver(true);
+      }
+    }
+    return buffer;
+  })();
+
+  return {
+    bufferStream,
+    buffer: bufferPromise,
+    done: donePromise,
+  };
 }

@@ -1,13 +1,12 @@
-import { send, stream } from "@/client/rpc/rpc-client";
 import {
   type DownloadAssetOptions as BaseDownloadAssetOptions,
   type RPCOptions,
   downloadAssetOptionsToRequestSchema,
 } from "@/schemas";
+import { rpc } from "@/client/rpc/caller";
 import {
   DownloadAssetFailedError,
   StreamEndedError,
-  InvalidResponseError,
 } from "@/utils/errors-client";
 
 export type DownloadAssetOptions = BaseDownloadAssetOptions;
@@ -55,30 +54,27 @@ export async function downloadAsset(
   const request = downloadAssetOptionsToRequestSchema.parse(options);
 
   if (options.onProgress) {
-    // Use streaming for progress updates
-    for await (const response of stream(request, rpcOptions)) {
+    for await (const response of rpc.downloadAsset.stream(
+      request,
+      rpcOptions,
+    )) {
       if (response.type === "modelProgress") {
         options.onProgress(response);
       } else if (response.type === "downloadAsset") {
         if (!response.success) {
           throw new DownloadAssetFailedError(response.error);
         }
-
         return response.assetId!;
       }
     }
     throw new StreamEndedError();
-  } else {
-    // Use regular send for simple downloading
-    const response = await send(request, rpcOptions);
-    if (response.type !== "downloadAsset") {
-      throw new InvalidResponseError("downloadAsset");
-    }
-
-    if (!response.success) {
-      throw new DownloadAssetFailedError(response.error);
-    }
-
-    return response.assetId!;
   }
+
+  const response = await rpc.downloadAsset.call(request, rpcOptions);
+
+  if (!response.success) {
+    throw new DownloadAssetFailedError(response.error);
+  }
+
+  return response.assetId!;
 }
