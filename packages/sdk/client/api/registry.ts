@@ -1,10 +1,7 @@
 import type {
   ModelRegistryListRequest,
-  ModelRegistryListResponse,
   ModelRegistrySearchRequest,
-  ModelRegistrySearchResponse,
   ModelRegistryGetModelRequest,
-  ModelRegistryGetModelResponse,
   ModelRegistryEntry,
   ModelRegistryEntryAddon,
 } from "@/schemas";
@@ -42,7 +39,7 @@ async function modelRegistryList(): Promise<ModelRegistryEntry[]> {
     type: "modelRegistryList",
   };
 
-  const response = (await send(request)) as ModelRegistryListResponse;
+  const response = await send(request);
   validateRegistryResponse(response);
 
   return response.models!;
@@ -58,7 +55,7 @@ async function modelRegistrySearch(
     addon: modelType ?? rest.addon,
   };
 
-  const response = (await send(request)) as ModelRegistrySearchResponse;
+  const response = await send(request);
   validateRegistryResponse(response);
 
   return response.models!;
@@ -74,7 +71,7 @@ async function modelRegistryGetModel(
     registrySource,
   };
 
-  const response = (await send(request)) as ModelRegistryGetModelResponse;
+  const response = await send(request);
   validateRegistryResponse(
     response,
     `Model not found: ${registrySource}/${registryPath}`,

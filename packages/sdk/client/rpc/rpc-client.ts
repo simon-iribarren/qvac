@@ -5,6 +5,8 @@ import {
   PROFILING_TRAILER_KEY,
   type Request,
   type Response,
+  type ResponseFor,
+  type StreamResponseFor,
   type RPCOptions,
 } from "@/schemas";
 import { RPCError } from "./rpc-error";
@@ -99,13 +101,14 @@ export async function send<T extends Request>(
   request: T,
   options?: RPCOptions,
   rpc?: RPC,
-): Promise<Response> {
+): Promise<ResponseFor<T>> {
   const ctx = await prepareRPCContext(request.type, options?.profiling, rpc);
 
-  if (!ctx.profilingEnabled) {
-    return sendBase(request, ctx.rpc, options, ctx.signalDisable);
-  }
-  return sendProfiled(request, ctx.rpc, options);
+  const response = !ctx.profilingEnabled
+    ? await sendBase(request, ctx.rpc, options, ctx.signalDisable)
+    : await sendProfiled(request, ctx.rpc, options);
+
+  return response as ResponseFor<T>;
 }
 
 async function sendBase<T extends Request>(
@@ -212,14 +215,16 @@ export async function* stream<T extends Request>(
   request: T,
   options: RPCOptions = {},
   rpc?: RPC,
-): AsyncGenerator<Response> {
+): AsyncGenerator<StreamResponseFor<T>> {
   const ctx = await prepareRPCContext(request.type, options?.profiling, rpc);
 
-  if (!ctx.profilingEnabled) {
-    yield* streamBase(request, ctx.rpc, options, ctx.signalDisable);
-    return;
+  const source = !ctx.profilingEnabled
+    ? streamBase(request, ctx.rpc, options, ctx.signalDisable)
+    : streamProfiled(request, ctx.rpc, options);
+
+  for await (const response of source) {
+    yield response as StreamResponseFor<T>;
   }
-  yield* streamProfiled(request, ctx.rpc, options);
 }
 
 async function* streamBase<T extends Request>(

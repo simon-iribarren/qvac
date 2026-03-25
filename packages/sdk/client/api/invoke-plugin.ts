@@ -2,7 +2,6 @@ import { send, stream } from "@/client/rpc/rpc-client";
 import type {
   PluginInvokeRequest,
   PluginInvokeStreamRequest,
-  PluginInvokeStreamResponse,
   RPCOptions,
 } from "@/schemas";
 import { InvalidResponseError } from "@/utils/errors-client";
@@ -54,7 +53,7 @@ export async function* invokePluginStream<
   };
 
   for await (const chunk of stream(request, rpcOptions)) {
-    const response = chunk as PluginInvokeStreamResponse;
+    const response = chunk;
     if (response.type !== "pluginInvokeStream") {
       throw new InvalidResponseError("pluginInvokeStream");
     }

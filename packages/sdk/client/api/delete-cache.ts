@@ -1,4 +1,4 @@
-import type { DeleteCacheRequest, DeleteCacheResponse } from "@/schemas";
+import type { DeleteCacheRequest } from "@/schemas";
 import { send } from "@/client/rpc/rpc-client";
 import {
   InvalidDeleteCacheParamsError,
@@ -45,7 +45,7 @@ export async function deleteCache(
     throw new InvalidDeleteCacheParamsError();
   }
 
-  const response = (await send(req)) as DeleteCacheResponse;
+  const response = await send(req);
 
   if (!response.success && response.error) {
     throw new DeleteCacheFailedError(response.error);
