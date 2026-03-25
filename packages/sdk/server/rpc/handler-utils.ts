@@ -14,6 +14,7 @@ import {
 import { setSDKConfig } from "@/server/bare/registry/config-registry";
 import { setRuntimeContext } from "@/server/bare/registry/runtime-context-registry";
 import { type ServerProfiler } from "./profiling";
+import type { Procedure, ReplyProcedure, StreamProcedure } from "./procedure";
 
 function getProfilingMetaFromRequest(
   request: Request,
@@ -26,32 +27,19 @@ function getProfilingMetaFromRequest(
   return undefined;
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-type ReplyHandler = (
-  request: any,
-  ...args: any[]
-) => Promise<Response> | Response;
-type StreamHandler = (request: any, ...args: any[]) => AsyncGenerator<Response>;
-type ProgressHandler = (request: any, ...args: any[]) => Promise<Response>;
-/* eslint-enable @typescript-eslint/no-explicit-any */
-
-export type HandlerEntry = {
-  type: "reply" | "stream";
-  handler: ReplyHandler | StreamHandler | ProgressHandler;
-  delegatedHandler?: ReplyHandler | StreamHandler | ProgressHandler;
-  isDelegated?: (request: Request) => boolean;
-  supportsProgress?: boolean | ((request: Request) => boolean);
-};
-
 async function executeReplyHandler(
   req: RPC.IncomingRequest,
   request: Request,
-  handler: ReplyHandler,
+  procedure: ReplyProcedure,
   profiler: ServerProfiler,
   isDelegated: boolean,
 ) {
   profiler.startHandler();
   try {
+    const handler = isDelegated
+      ? procedure.delegatedHandler!
+      : procedure.handler;
+
     let response: Response;
     if (isDelegated) {
       const profilingMeta = getProfilingMetaFromRequest(request);
@@ -73,16 +61,19 @@ async function executeReplyHandler(
 async function executeStreamHandler(
   req: RPC.IncomingRequest,
   request: Request,
-  handler: StreamHandler,
+  procedure: StreamProcedure,
   profiler: ServerProfiler,
   isDelegated: boolean,
 ) {
-  const stream = req.createResponseStream();
+  const responseStream = req.createResponseStream();
   profiler.startHandler();
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let generator: AsyncGenerator<Response, any, any>;
+    const handler = isDelegated
+      ? procedure.delegatedHandler!
+      : procedure.handler;
+
+    let generator: AsyncGenerator<Response>;
     if (isDelegated) {
       const profilingMeta = getProfilingMetaFromRequest(request);
       generator = handler(
@@ -93,36 +84,40 @@ async function executeStreamHandler(
       generator = handler(request);
     }
     for await (const response of generator) {
-      stream.write(profiler.serialize(response, false) + "\n", "utf-8");
+      responseStream.write(profiler.serialize(response, false) + "\n", "utf-8");
     }
     profiler.endHandler();
     const trailer = profiler.serialize();
     if (trailer) {
-      stream.write(trailer + "\n", "utf-8");
+      responseStream.write(trailer + "\n", "utf-8");
     }
 
-    stream.end();
+    responseStream.end();
   } catch (error) {
     profiler.endHandler();
-    sendStreamErrorResponse(stream, error, profiler);
+    sendStreamErrorResponse(responseStream, error, profiler);
   }
 }
 
 async function executeProgressHandler(
   req: RPC.IncomingRequest,
   request: Request,
-  handler: ProgressHandler,
+  procedure: ReplyProcedure,
   profiler: ServerProfiler,
   isDelegated: boolean,
 ) {
-  const stream = req.createResponseStream();
+  const responseStream = req.createResponseStream();
   profiler.startHandler();
 
   const progressCallback = (update: Response) => {
-    stream.write(profiler.serialize(update, false) + "\n", "utf-8");
+    responseStream.write(profiler.serialize(update, false) + "\n", "utf-8");
   };
 
   try {
+    const handler = isDelegated
+      ? procedure.delegatedHandler!
+      : procedure.handler;
+
     let response: Response;
     if (isDelegated) {
       const profilingMeta = getProfilingMetaFromRequest(request);
@@ -138,57 +133,45 @@ async function executeProgressHandler(
       response = await handler(request, progressCallback);
     }
     profiler.endHandler();
-    stream.write(profiler.serialize(response, true) + "\n", "utf-8");
-    stream.end();
+    responseStream.write(profiler.serialize(response, true) + "\n", "utf-8");
+    responseStream.end();
   } catch (error) {
     profiler.endHandler();
-    sendStreamErrorResponse(stream, error, profiler);
+    sendStreamErrorResponse(responseStream, error, profiler);
   }
 }
 
-// Unified handler executor with delegation and progress support
 export async function executeHandler(
   req: RPC.IncomingRequest,
   request: Request,
-  entry: HandlerEntry,
+  procedure: Procedure,
   profiler: ServerProfiler,
 ) {
   const isDelegated = !!(
-    entry.delegatedHandler && entry.isDelegated?.(request)
+    procedure.delegatedHandler && procedure.isDelegated?.(request)
   );
-  const handler = isDelegated ? entry.delegatedHandler! : entry.handler;
 
-  const wantsProgress =
-    "withProgress" in request &&
-    request.withProgress &&
-    (typeof entry.supportsProgress === "function"
-      ? entry.supportsProgress(request)
-      : entry.supportsProgress);
-
-  if (entry.type === "stream") {
-    await executeStreamHandler(
-      req,
-      request,
-      handler as StreamHandler,
-      profiler,
-      isDelegated,
-    );
-  } else if (wantsProgress) {
-    await executeProgressHandler(
-      req,
-      request,
-      handler as ProgressHandler,
-      profiler,
-      isDelegated,
-    );
+  if (procedure.mode === "stream") {
+    await executeStreamHandler(req, request, procedure, profiler, isDelegated);
   } else {
-    await executeReplyHandler(
-      req,
-      request,
-      handler as ReplyHandler,
-      profiler,
-      isDelegated,
-    );
+    const wantsProgress =
+      "withProgress" in request &&
+      request.withProgress &&
+      (typeof procedure.supportsProgress === "function"
+        ? procedure.supportsProgress(request)
+        : procedure.supportsProgress);
+
+    if (wantsProgress) {
+      await executeProgressHandler(
+        req,
+        request,
+        procedure,
+        profiler,
+        isDelegated,
+      );
+    } else {
+      await executeReplyHandler(req, request, procedure, profiler, isDelegated);
+    }
   }
 }
 

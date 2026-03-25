@@ -1,4 +1,29 @@
-import { type Request } from "@/schemas";
+import {
+  type Request,
+  pingRequestSchema,
+  loadModelRequestSchema,
+  completionStreamRequestSchema,
+  unloadModelRequestSchema,
+  embedRequestSchema,
+  cancelRequestSchema,
+  provideRequestSchema,
+  stopProvideRequestSchema,
+  deleteCacheRequestSchema,
+  downloadAssetRequestSchema,
+  getModelInfoRequestSchema,
+  transcribeStreamRequestSchema,
+  loggingStreamRequestSchema,
+  translateRequestSchema,
+  ttsRequestSchema,
+  ocrStreamRequestSchema,
+  ragRequestSchema,
+  pluginInvokeRequestSchema,
+  pluginInvokeStreamRequestSchema,
+  modelRegistryListRequestSchema,
+  modelRegistrySearchRequestSchema,
+  modelRegistryGetModelRequestSchema,
+} from "@/schemas";
+import { reply, stream, type Router } from "./procedure";
 import { handleCompletionStream } from "@/server/rpc/handlers/completion-stream";
 import { handleDownloadAsset } from "@/server/rpc/handlers/download-asset";
 import { handleLoadModel } from "@/server/rpc/handlers/load-model";
@@ -29,7 +54,6 @@ import {
   handleModelRegistrySearch,
   handleModelRegistryGetModel,
 } from "@/server/rpc/handlers/registry";
-import type { HandlerEntry } from "./handler-utils";
 
 function ragSupportsProgress(request: Request): boolean {
   if (request.type !== "rag") return false;
@@ -42,63 +66,105 @@ function isModelDelegated(request: Request): boolean {
   return entry?.isDelegated ?? false;
 }
 
-export const registry: Record<string, HandlerEntry> = {
-  // Simple Reply handlers
-  ping: { type: "reply", handler: handlePing },
-  unloadModel: {
-    type: "reply",
+export const registry: Router = {
+  ping: reply({
+    input: pingRequestSchema,
+    handler: handlePing,
+  }),
+  unloadModel: reply({
+    input: unloadModelRequestSchema,
     handler: handleUnloadModel,
     delegatedHandler: handleUnloadModelDelegated,
     isDelegated: isModelDelegated,
-  },
-  embed: { type: "reply", handler: handleEmbed },
-  cancel: { type: "reply", handler: cancelHandler },
-  provide: { type: "reply", handler: provideHandler },
-  stopProvide: { type: "reply", handler: stopProvideHandler },
-  deleteCache: { type: "reply", handler: handleDeleteCache },
-  getModelInfo: { type: "reply", handler: handleGetModelInfo },
-  pluginInvoke: { type: "reply", handler: handlePluginInvoke },
-  modelRegistryList: { type: "reply", handler: handleModelRegistryList },
-  modelRegistrySearch: { type: "reply", handler: handleModelRegistrySearch },
-  modelRegistryGetModel: {
-    type: "reply",
+  }),
+  embed: reply({
+    input: embedRequestSchema,
+    handler: handleEmbed,
+  }),
+  cancel: reply({
+    input: cancelRequestSchema,
+    handler: cancelHandler,
+  }),
+  provide: reply({
+    input: provideRequestSchema,
+    handler: provideHandler,
+  }),
+  stopProvide: reply({
+    input: stopProvideRequestSchema,
+    handler: stopProvideHandler,
+  }),
+  deleteCache: reply({
+    input: deleteCacheRequestSchema,
+    handler: handleDeleteCache,
+  }),
+  getModelInfo: reply({
+    input: getModelInfoRequestSchema,
+    handler: handleGetModelInfo,
+  }),
+  pluginInvoke: reply({
+    input: pluginInvokeRequestSchema,
+    handler: handlePluginInvoke,
+  }),
+  modelRegistryList: reply({
+    input: modelRegistryListRequestSchema,
+    handler: handleModelRegistryList,
+  }),
+  modelRegistrySearch: reply({
+    input: modelRegistrySearchRequestSchema,
+    handler: handleModelRegistrySearch,
+  }),
+  modelRegistryGetModel: reply({
+    input: modelRegistryGetModelRequestSchema,
     handler: handleModelRegistryGetModel,
-  },
+  }),
 
-  // Simple Stream handlers
-  transcribeStream: { type: "stream", handler: handleTranscribeStream },
-  loggingStream: { type: "stream", handler: handleLoggingStream },
-  translate: { type: "stream", handler: handleTranslate },
-  textToSpeech: { type: "stream", handler: handleTextToSpeech },
-  ocrStream: { type: "stream", handler: handleOCRStream },
-  pluginInvokeStream: { type: "stream", handler: handlePluginInvokeStream },
-
-  // Handlers with delegation support
-  loadModel: {
-    type: "reply",
+  loadModel: reply({
+    input: loadModelRequestSchema,
     handler: handleLoadModel,
     delegatedHandler: handleLoadModelDelegated,
-    isDelegated: (r) => r.type === "loadModel" && !!r.delegate,
+    isDelegated: (r) =>
+      r.type === "loadModel" && "delegate" in r && !!r.delegate,
     supportsProgress: true,
-  },
+  }),
+  downloadAsset: reply({
+    input: downloadAssetRequestSchema,
+    handler: handleDownloadAsset,
+    supportsProgress: true,
+  }),
+  rag: reply({
+    input: ragRequestSchema,
+    handler: handleRag,
+    supportsProgress: ragSupportsProgress,
+  }),
 
-  completionStream: {
-    type: "stream",
+  completionStream: stream({
+    input: completionStreamRequestSchema,
     handler: handleCompletionStream,
     delegatedHandler: handleCompletionStreamDelegated,
     isDelegated: isModelDelegated,
-  },
-
-  // Handlers with progress support
-  downloadAsset: {
-    type: "reply",
-    handler: handleDownloadAsset,
-    supportsProgress: true,
-  },
-
-  rag: {
-    type: "reply",
-    handler: handleRag,
-    supportsProgress: ragSupportsProgress,
-  },
+  }),
+  transcribeStream: stream({
+    input: transcribeStreamRequestSchema,
+    handler: handleTranscribeStream,
+  }),
+  loggingStream: stream({
+    input: loggingStreamRequestSchema,
+    handler: handleLoggingStream,
+  }),
+  translate: stream({
+    input: translateRequestSchema,
+    handler: handleTranslate,
+  }),
+  textToSpeech: stream({
+    input: ttsRequestSchema,
+    handler: handleTextToSpeech,
+  }),
+  ocrStream: stream({
+    input: ocrStreamRequestSchema,
+    handler: handleOCRStream,
+  }),
+  pluginInvokeStream: stream({
+    input: pluginInvokeStreamRequestSchema,
+    handler: handlePluginInvokeStream,
+  }),
 };
