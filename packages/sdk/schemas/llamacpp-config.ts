@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { modelSrcInputSchema } from "./model-src-utils";
+import { ToolsModeType } from "./tools";
 
 export const VERBOSITY = {
   ERROR: 0,
@@ -41,7 +42,9 @@ export const llmConfigBaseSchema = z.object({
   stop_sequences: z.array(z.string()).optional(),
   n_discarded: z.number().optional(),
   tools: z.boolean().optional(),
-  toolsMode: z.enum(["static", "dynamic"]).optional(),
+  toolsMode: z.enum([ToolsModeType.static, ToolsModeType.dynamic])
+    .describe('"static" is a default way where tools belong to a chat session; "dynamic" mode allows to provide specific tools for each user prompt ')
+    .optional(),
   projectionModelSrc: modelSrcInputSchema.optional(),
 });
 

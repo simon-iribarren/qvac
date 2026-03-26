@@ -1,10 +1,11 @@
-import type {
-  CompletionParams,
-  CompletionStats,
-  GenerationParams,
-  Tool,
-  ToolCall,
-  ToolCallEvent,
+import {
+  ToolsModeType,
+  type CompletionParams,
+  type CompletionStats,
+  type GenerationParams,
+  type Tool,
+  type ToolCall,
+  type ToolCallEvent,
 } from "@/schemas";
 import {
   logCacheDisabled,
@@ -31,8 +32,7 @@ import {
 } from "@/server/bare/registry/model-registry";
 import {
   checkForToolEvents,
-  appendToolsToHistory,
-  prependToolsToHistory,
+  insertToolsToHistory,
   setupToolGrammar,
 } from "@/server/utils/tool-integration";
 import { parseToolCalls } from "@/server/utils/tool-parser";
@@ -274,11 +274,11 @@ export async function* completion(
   > = history;
 
   if (tools && tools.length > 0 && toolsEnabled) {
-    if (toolsMode === "dynamic") {
-      historyWithTools = appendToolsToHistory(history, tools);
-    } else {
-      historyWithTools = prependToolsToHistory(history, tools);
-    }
+    historyWithTools = insertToolsToHistory({
+      history,
+      tools,
+      append: toolsMode === ToolsModeType.dynamic,
+    })
     setupToolGrammar(modelConfig as Record<string, unknown>, tools);
   }
 
@@ -289,11 +289,11 @@ export async function* completion(
     const modelConfig = getModelConfig(modelId);
     const systemPromptFromHistory = extractSystemPrompt(history);
     const toolsModeForHash = (modelConfig as { toolsMode?: string }).toolsMode;
-    const systemTools = toolsMode !== "dynamic" && tools?.length && toolsEnabled;
-    const dynamicTools = toolsMode === "dynamic" && tools?.length && toolsEnabled;
+    const systemTools = toolsMode !== ToolsModeType.dynamic && tools?.length && toolsEnabled;
+    const dynamicTools = toolsMode === ToolsModeType.dynamic && tools?.length && toolsEnabled;
     const configHash = generateConfigHash(
       systemPromptFromHistory,
-      toolsModeForHash !== "dynamic" ? tools : undefined,
+      toolsModeForHash !== ToolsModeType.dynamic ? tools : undefined,
     );
 
     const systemPromptToUse =

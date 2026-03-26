@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+/**
+ * "static" tools is when a set of tools is provided to the whole chat session,
+ * in "dynamic" mode tools are attached with each message,
+ * so in a long conversation next message can have it's own tools
+ */
+export const ToolsModeType = {
+  static: "static",
+  dynamic: "dynamic",
+} as const;
+
 export const toolSchema = z.object({
   type: z.literal("function"),
   name: z.string(),

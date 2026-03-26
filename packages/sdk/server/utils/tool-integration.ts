@@ -10,10 +10,14 @@ interface HistoryMessage {
   attachments?: { path: string }[] | undefined;
 }
 
-export function prependToolsToHistory(
+export function insertToolsToHistory({ history, tools, append = false }: {
   history: HistoryMessage[],
   tools: Tool[],
-): Array<HistoryMessage | Tool> {
+  append?: boolean,
+}): Array<HistoryMessage | Tool> {
+  if (append) {
+    return [...history, ...tools];
+  }
   const systemMsgIndex = history.findIndex((msg) => msg.role === "system");
 
   if (systemMsgIndex >= 0) {
@@ -25,13 +29,6 @@ export function prependToolsToHistory(
   }
 
   return [...tools, ...history];
-}
-
-export function appendToolsToHistory(
-    history: HistoryMessage[],
-    tools: Tool[],
-): Array<HistoryMessage | Tool> {
-    return [...history, ...tools];
 }
 
 export function setupToolGrammar(

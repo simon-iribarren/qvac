@@ -18,6 +18,7 @@ import {
   type CompletionStats,
   type ToolCall,
   type TranslationStats,
+  ToolsModeType,
 } from "@/schemas";
 import { createStreamLogger, registerAddonLogger } from "@/logging";
 import { parseModelPath } from "@/server/utils";
@@ -51,7 +52,7 @@ function transformLlmConfig(llmConfig: LlmConfig) {
   }
 
   if ("tools_mode" in transformed) {
-    transformed["tools_at_end"] = transformed["tools_mode"] === "dynamic" ? "true" : "false";
+    transformed["tools_at_end"] = transformed["tools_mode"] === ToolsModeType.dynamic ? "true" : "false";
     delete transformed["tools_mode"];
   }
 
