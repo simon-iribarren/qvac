@@ -32,7 +32,7 @@ import {
 } from "@/server/bare/registry/model-registry";
 import {
   checkForToolEvents,
-  insertToolsToHistory,
+  insertToolsIntoHistory,
   setupToolGrammar,
 } from "@/server/utils/tool-integration";
 import { parseToolCalls } from "@/server/utils/tool-parser";
@@ -274,7 +274,7 @@ export async function* completion(
   > = history;
 
   if (tools && tools.length > 0 && toolsEnabled) {
-    historyWithTools = insertToolsToHistory({
+    historyWithTools = insertToolsIntoHistory({
       history,
       tools,
       append: toolsMode === ToolsModeType.dynamic,
