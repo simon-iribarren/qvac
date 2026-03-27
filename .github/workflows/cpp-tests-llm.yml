@@ -9,11 +9,6 @@ on:
         required: false
         default: "packages/qvac-lib-infer-llamacpp-llm"
   workflow_call:
-    secrets:
-      NPM_TOKEN:
-        required: true
-      PAT_TOKEN:
-        required: true
 
     inputs:
       ref:
@@ -35,6 +30,7 @@ permissions:
 
 jobs:
   test-cpp:
+    environment: release
     strategy:
       fail-fast: false
       matrix:
