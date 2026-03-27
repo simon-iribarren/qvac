@@ -504,6 +504,7 @@ jobs:
 
   publish-logic:
     runs-on: ubuntu-latest
+    environment: release
     outputs:
       publish_gpr: ${{ steps.logic.outputs.publish_gpr }}
       publish_npm: ${{ steps.logic.outputs.publish_npm }}
@@ -651,4 +652,5 @@ jobs:
           if npm view "${PACKAGE_NAME}@${VERSION}" version >/dev/null 2>&1; then
             echo "published_version=${VERSION}" >> "$GITHUB_OUTPUT"
           fi
+
 
