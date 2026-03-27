@@ -56,6 +56,8 @@ struct PipelineConfig {
   int recognizerBatchSize{DEFAULT_RECOGNIZER_BATCH_SIZE};   // Batch size for recognizer inference
   DecodingMethod decodingMethod{DecodingMethod::CTC};       // Recognition decoding: CTC for CRNN, ATTENTION for PARSeq
   bool straightenPages{false};                              // Detect and correct page rotation before detection
+  onnx_addon::SessionConfig sessionConfig{
+      .provider = onnx_addon::ExecutionProvider::CPU};
 };
 
 struct PipelineInput {
@@ -85,8 +87,8 @@ public:
   using Config = PipelineConfig;
 
   Pipeline(
-      const ORTCHAR_T* pathDetector, const ORTCHAR_T* pathRecognizer,
-      std::span<const std::string> langList, bool useGPU = true,
+      const std::string& pathDetector, const std::string& pathRecognizer,
+      std::span<const std::string> langList,
       int timeout = DEFAULT_PIPELINE_TIMEOUT_SECONDS,
       const PipelineConfig& config = PipelineConfig{});
 

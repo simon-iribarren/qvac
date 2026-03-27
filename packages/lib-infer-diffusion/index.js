@@ -23,9 +23,9 @@ class ImgStableDiffusion extends BaseInference {
    * @param {string} [args.clipLModel] - Optional CLIP-L model file name (FLUX.1 / SD3)
    * @param {string} [args.clipGModel] - Optional CLIP-G model file name (SDXL / SD3)
    * @param {string} [args.t5XxlModel] - Optional T5-XXL text encoder file name (FLUX.1 / SD3)
-   * @param {string} [args.llmModel] - Optional LLM text encoder file name (FLUX.2 klein → Qwen3 8B)
+   * @param {string} [args.llmModel] - Optional LLM text encoder file name (FLUX.2 klein → Qwen3 4B)
    * @param {string} [args.vaeModel] - Optional VAE file name
-   * @param {object} config - SD context configuration (threads, device, wtype, etc.)
+   * @param {object} config - SD context configuration (threads, device, type, etc.)
    */
   constructor (
     {
@@ -72,14 +72,15 @@ class ImgStableDiffusion extends BaseInference {
       // for SD3 split) the caller is using a pure diffusion GGUF that must be
       // loaded via diffusion_model_path.
       const isSplitLayout = !!this._llmModel || !!this._t5XxlModel
+      const resolve = (name) => name ? (path.isAbsolute(name) ? name : path.join(this._diskPath, name)) : ''
       const configurationParams = {
-        path: isSplitLayout ? '' : path.join(this._diskPath, this._modelName),
-        diffusionModelPath: isSplitLayout ? path.join(this._diskPath, this._modelName) : '',
-        clipLPath: this._clipLModel ? path.join(this._diskPath, this._clipLModel) : '',
-        clipGPath: this._clipGModel ? path.join(this._diskPath, this._clipGModel) : '',
-        t5XxlPath: this._t5XxlModel ? path.join(this._diskPath, this._t5XxlModel) : '',
-        llmPath: this._llmModel ? path.join(this._diskPath, this._llmModel) : '',
-        vaePath: this._vaeModel ? path.join(this._diskPath, this._vaeModel) : '',
+        path: isSplitLayout ? '' : resolve(this._modelName),
+        diffusionModelPath: isSplitLayout ? resolve(this._modelName) : '',
+        clipLPath: resolve(this._clipLModel),
+        clipGPath: resolve(this._clipGModel),
+        t5XxlPath: resolve(this._t5XxlModel),
+        llmPath: resolve(this._llmModel),
+        vaePath: resolve(this._vaeModel),
         config: this._config
       }
 
@@ -134,20 +135,21 @@ class ImgStableDiffusion extends BaseInference {
   }
 
   _addonOutputCallback (addon, event, data, error) {
-    if (typeof data === 'object' && data !== null && 'generation_time' in data) {
+    if (event.includes('Error')) {
+      return this._outputCallback(addon, 'Error', 'OnlyOneJob', data, error)
+    }
+
+    if (data instanceof Uint8Array || typeof data === 'string') {
+      return this._outputCallback(addon, 'Output', 'OnlyOneJob', data, error)
+    }
+
+    // RuntimeStats is the only plain-object payload the C++ addon emits.
+    // Matching structurally avoids coupling to specific stats key names.
+    if (typeof data === 'object' && data !== null) {
       return this._outputCallback(addon, 'JobEnded', 'OnlyOneJob', data, null)
     }
 
-    let mappedEvent = event
-    if (event.includes('Error')) {
-      mappedEvent = 'Error'
-    } else if (data instanceof Uint8Array) {
-      mappedEvent = 'Output'
-    } else if (typeof data === 'string') {
-      mappedEvent = 'Output'
-    }
-
-    return this._outputCallback(addon, mappedEvent, 'OnlyOneJob', data, error)
+    return this._outputCallback(addon, event, 'OnlyOneJob', data, error)
   }
 
   /**

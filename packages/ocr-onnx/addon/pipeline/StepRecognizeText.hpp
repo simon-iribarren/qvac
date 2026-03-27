@@ -1,10 +1,5 @@
 #pragma once
 
-#include "Steps.hpp"
-
-// #include <onnxruntime_cxx_api.h>
-#include <opencv2/imgproc.hpp>
-
 #include <array>
 #include <atomic>
 #include <chrono>
@@ -14,6 +9,11 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#include <opencv2/imgproc.hpp>
+#include <qvac-onnx/OnnxSession.hpp>
+
+#include "Steps.hpp"
 
 namespace qvac_lib_inference_addon_onnx_ocr_fasttext {
 
@@ -47,8 +47,14 @@ public:
   };
 
   StepRecognizeText(
-      const ORTCHAR_T* pathRecognizer, std::span<const std::string> langList,
-      bool useGPU = false, const Config& config = Config{});
+      const std::string& pathRecognizer, std::span<const std::string> langList,
+      const onnx_addon::SessionConfig& sessionConfig = {},
+      const Config& config = Config{});
+
+#if defined(_WIN32) || defined(_WIN64)
+  // On Windows, defer session destruction to avoid the ORT global-state crash.
+  ~StepRecognizeText() { deferWindowsSessionLeak(std::move(session_)); }
+#endif
 
   CONSTRUCT_FROM_TUPLE(StepRecognizeText)
 
@@ -64,7 +70,7 @@ public:
 
 private:
   Config config_;
-  Ort::Session ortSession_{nullptr};
+  onnx_addon::OnnxSession session_;
 
   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter_;
   std::u32string_view utf32Characters_;
@@ -72,6 +78,7 @@ private:
   bool isLeftToRightScript_;
 
   std::vector<std::vector<SubImage>> imgListOfLists_;
+  std::vector<float> batchBuffer_;
 
   /**
    * @brief populates imgListOfLists_ with the SubImages from the original image based on bounding boxes information
@@ -105,7 +112,8 @@ private:
    * @param img : the recognizer input
    * @return cv::Mat : the recognizer predictions
    */
-  cv::Mat runInferenceOnImg(const cv::Mat &img);
+  std::pair<std::vector<Ort::Value>, cv::Mat>
+  runInferenceOnImg(const cv::Mat& img);
 
   /**
    * @brief runs ONNX batch inference on multiple images with dynamic width
@@ -114,7 +122,8 @@ private:
    * @param dynamicWidth : the width of input images (for dynamic-width models)
    * @return cv::Mat : the recognizer predictions with shape [batch, seq_len, num_chars]
    */
-  cv::Mat runBatchInference(const std::vector<cv::Mat> &images, int dynamicWidth);
+  std::pair<std::vector<Ort::Value>, cv::Mat>
+  runBatchInference(const std::vector<cv::Mat>& images, int dynamicWidth);
 
   /**
    * @brief processes the sub image to run recognizer inference and populate text and confidence score

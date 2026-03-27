@@ -63,6 +63,10 @@ export const INDICTRANS_LANGUAGES = [
   "urd_Arab", // Urdu
 ] as const;
 
+export const AFRICAN_LANGUAGES_SET = new Set([
+  "Afrikaans","Swahili","Somali","Amharic","Hausa","Kinyarwanda","Zulu","Igbo","Xhosa","Shona","Yoruba","Nyanja","Southern Sotho","Tigrinya","Oromo","Tswana","Moroccan Arabic","Egyptian Arabic","Malagasy","Tunisian Arabic"
+]);
+
 // Union of all NMT languages (for general type usage)
 export const NMT_LANGUAGES = [
   ...MARIAN_LANGUAGES,
@@ -93,6 +97,16 @@ const opusConfigSchema = nmtGenerationParamsSchema.extend({
   to: z.enum(MARIAN_LANGUAGES),
 });
 
+// Pivot model configuration for Bergamot (for translation via intermediate language)
+const bergamotPivotModelSchema = nmtGenerationParamsSchema
+  .extend({
+    modelSrc: modelSrcInputSchema,
+    srcVocabSrc: modelSrcInputSchema.optional(),
+    dstVocabSrc: modelSrcInputSchema.optional(),
+    normalize: z.number().optional(),
+  })
+  .optional();
+
 // Bergamot engine config - supports BERGAMOT_LANGUAGES
 const bergamotConfigSchema = nmtGenerationParamsSchema.extend({
   engine: z.literal("Bergamot"),
@@ -101,6 +115,7 @@ const bergamotConfigSchema = nmtGenerationParamsSchema.extend({
   srcVocabSrc: modelSrcInputSchema.optional(),
   dstVocabSrc: modelSrcInputSchema.optional(),
   normalize: z.number().optional(),
+  pivotModel: bergamotPivotModelSchema,
 });
 
 // IndicTrans engine config - supports INDICTRANS_LANGUAGES

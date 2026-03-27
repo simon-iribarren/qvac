@@ -3,14 +3,14 @@
 const test = require('brittle')
 const path = require('bare-path')
 const fs = require('bare-fs')
-const binding = require('../../binding')
-const { ParakeetInterface } = require('../../parakeet')
 const {
+  binding,
+  ParakeetInterface,
   detectPlatform,
   setupJsLogger,
   getTestPaths,
   ensureModel,
-  readFileChunked,
+  getNamedPathsConfig,
   isMobile
 } = require('./helpers.js')
 
@@ -55,7 +55,8 @@ test('Multiple consecutive transcriptions should work without errors', { timeout
     maxThreads: 4,
     useGPU: false,
     sampleRate: 16000,
-    channels: 1
+    channels: 1,
+    ...getNamedPathsConfig('tdt', modelPath)
   }
 
   let parakeet = null
@@ -77,33 +78,6 @@ test('Multiple consecutive transcriptions should work without errors', { timeout
 
     parakeet = new ParakeetInterface(binding, config, outputCallback)
 
-    // Load model weights once
-    const modelFiles = [
-      'encoder-model.onnx',
-      'encoder-model.onnx.data',
-      'decoder_joint-model.onnx',
-      'vocab.txt',
-      'preprocessor.onnx'
-    ]
-
-    for (const file of modelFiles) {
-      const filePath = path.join(modelPath, file)
-      if (fs.existsSync(filePath)) {
-        const stat = fs.statSync(filePath)
-        const fileSize = stat.size
-
-        const chunks = []
-        for (const buffer of readFileChunked(filePath)) {
-          chunks.push(buffer)
-        }
-        const fullBuffer = Buffer.concat(chunks)
-        const chunk = new Uint8Array(fullBuffer.buffer, fullBuffer.byteOffset, fullBuffer.byteLength)
-        await parakeet.loadWeights({ filename: file, chunk, completed: true })
-        console.log(`   Loaded ${file} (${(fileSize / 1024 / 1024).toFixed(2)} MB)`)
-      }
-    }
-
-    // Activate
     await parakeet.activate()
     console.log('   Model activated\n')
 
@@ -190,7 +164,7 @@ test('Multiple consecutive transcriptions should work without errors', { timeout
 
     // Verify each run produced output
     const runsWithOutput = new Set(allResults.map(r => r.jobId)).size
-    t.ok(runsWithOutput >= 1, `Multiple runs should produce output (got ${runsWithOutput} unique job IDs)`)
+    t.ok(runsWithOutput === NUM_TRANSCRIPTIONS, `Multiple runs should produce output for every job (got ${runsWithOutput}/${NUM_TRANSCRIPTIONS} unique job IDs)`)
 
     console.log('✅ Multiple transcriptions test completed successfully!\n')
   } finally {
@@ -198,7 +172,7 @@ test('Multiple consecutive transcriptions should work without errors', { timeout
     console.log('=== Cleanup ===')
     if (parakeet) {
       try {
-        parakeet.destroyInstance()
+        await parakeet.destroyInstance()
         console.log('   Instance destroyed')
       } catch (e) {
         console.log('   Instance destroy error:', e.message)
@@ -264,10 +238,10 @@ test('Fresh model instance per transcription (app restart simulation)', { timeou
             transcriptions.push(segment)
           }
         }
-        if (transcriptions.length > 0 && outputResolve) {
-          outputResolve()
-          outputResolve = null
-        }
+      }
+      if ((event === 'JobEnded' || event === 'Error') && outputResolve) {
+        outputResolve()
+        outputResolve = null
       }
     }
 
@@ -277,34 +251,13 @@ test('Fresh model instance per transcription (app restart simulation)', { timeou
       maxThreads: 4,
       useGPU: false,
       sampleRate: 16000,
-      channels: 1
+      channels: 1,
+      ...getNamedPathsConfig('tdt', modelPath)
     }
 
     let parakeet = null
     try {
       parakeet = new ParakeetInterface(binding, config, outputCallback)
-
-      // Load weights
-      const modelFiles = [
-        'encoder-model.onnx',
-        'encoder-model.onnx.data',
-        'decoder_joint-model.onnx',
-        'vocab.txt',
-        'preprocessor.onnx'
-      ]
-
-      for (const file of modelFiles) {
-        const filePath = path.join(modelPath, file)
-        if (fs.existsSync(filePath)) {
-          const chunks = []
-          for (const buffer of readFileChunked(filePath)) {
-            chunks.push(buffer)
-          }
-          const fullBuffer = Buffer.concat(chunks)
-          const chunk = new Uint8Array(fullBuffer.buffer, fullBuffer.byteOffset, fullBuffer.byteLength)
-          await parakeet.loadWeights({ filename: file, chunk, completed: true })
-        }
-      }
 
       const loadTime = Date.now() - instanceStartTime
 
@@ -340,7 +293,7 @@ test('Fresh model instance per transcription (app restart simulation)', { timeou
     } finally {
       if (parakeet) {
         try {
-          parakeet.destroyInstance()
+          await parakeet.destroyInstance()
         } catch (e) {
           // Ignore cleanup errors
         }

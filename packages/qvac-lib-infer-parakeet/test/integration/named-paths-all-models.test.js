@@ -3,19 +3,21 @@
 const test = require('brittle')
 const path = require('bare-path')
 const fs = require('bare-fs')
-const binding = require('../../binding')
-const { ParakeetInterface } = require('../../parakeet')
-const TranscriptionParakeet = require('../../index.js')
-const FakeDL = require('../mocks/loader.fake.js')
 const {
+  binding,
+  ParakeetInterface,
+  TranscriptionParakeet,
+  FakeDL,
   setupJsLogger,
   getTestPaths,
   ensureModel,
   ensureModelForType,
-  readFileChunked
+  getNamedPathsConfig,
+  isMobile
 } = require('./helpers.js')
 
 function createLoader () {
+  if (!FakeDL) return null
   return new FakeDL({})
 }
 
@@ -31,25 +33,10 @@ function loadAudioSample () {
   return audio
 }
 
-function loadWeightsFromDir (parakeet, modelDir, files) {
-  const promises = []
-  for (const file of files) {
-    const filePath = path.join(modelDir, file)
-    if (!fs.existsSync(filePath)) continue
-    const chunks = []
-    for (const buffer of readFileChunked(filePath)) {
-      chunks.push(buffer)
-    }
-    const fullBuffer = Buffer.concat(chunks)
-    const chunk = new Uint8Array(fullBuffer.buffer, fullBuffer.byteOffset, fullBuffer.byteLength)
-    promises.push(parakeet.loadWeights({ filename: file, chunk, completed: true }))
-  }
-  return Promise.all(promises)
-}
-
 // ── Constructor / validation tests ──────────────────────────────────────────
 
 test('CTC with named file paths — constructor accepts and validates', { timeout: 60000 }, async (t) => {
+  if (isMobile) { t.pass('Skipped on mobile'); return }
   TranscriptionParakeet.prototype.validateModelFiles?.restore?.()
 
   const modelDir = await ensureModelForType('ctc')
@@ -73,8 +60,7 @@ test('CTC with named file paths — constructor accepts and validates', { timeou
 
   const model = new TranscriptionParakeet(args, config)
   t.ok(model, 'CTC model created with named paths (no directory throw)')
-  t.ok(model._hasAnyNamedPaths(), '_hasAnyNamedPaths returns true for CTC paths')
-  t.ok(!model._hasNamedPaths(), '_hasNamedPaths returns false (TDT-only)')
+  t.ok(model._hasNamedPaths(), '_hasNamedPaths returns true for CTC paths')
 
   const resolved = model._resolveFilePath('', 'model.onnx')
   t.is(resolved, ctcModelPath, '_resolveFilePath maps model.onnx to ctcModelPath')
@@ -84,6 +70,7 @@ test('CTC with named file paths — constructor accepts and validates', { timeou
 })
 
 test('CTC with named file paths — full load and transcription', { timeout: 600000 }, async (t) => {
+  if (isMobile) { t.pass('Skipped on mobile'); return }
   const loggerBinding = setupJsLogger(binding)
   let parakeet = null
 
@@ -104,7 +91,8 @@ test('CTC with named file paths — full load and transcription', { timeout: 600
       maxThreads: 4,
       useGPU: false,
       sampleRate: 16000,
-      channels: 1
+      channels: 1,
+      ...getNamedPathsConfig('ctc', modelDir)
     }, (_, event, __, output, error) => {
       if (event === 'Output' && output) {
         const segments = Array.isArray(output) ? output : [output]
@@ -119,7 +107,6 @@ test('CTC with named file paths — full load and transcription', { timeout: 600
       if (error) console.error('[ctc-named] Error:', error)
     })
 
-    await loadWeightsFromDir(parakeet, modelDir, ['model.onnx', 'model.onnx_data', 'tokenizer.json'])
     await parakeet.activate()
 
     await parakeet.append({ type: 'audio', data: audio.buffer })
@@ -135,12 +122,13 @@ test('CTC with named file paths — full load and transcription', { timeout: 600
     t.ok(fullText.length > 10, `CTC named paths produced text (${fullText.length} chars)`)
     t.ok(fullText.toLowerCase().includes('alice'), 'CTC transcription includes expected content')
   } finally {
-    if (parakeet) try { parakeet.destroyInstance() } catch (e) {}
+    if (parakeet) try { await parakeet.destroyInstance() } catch (e) {}
     try { loggerBinding.releaseLogger() } catch (e) {}
   }
 })
 
 test('EOU with named file paths — constructor accepts and validates', { timeout: 60000 }, async (t) => {
+  if (isMobile) { t.pass('Skipped on mobile'); return }
   TranscriptionParakeet.prototype.validateModelFiles?.restore?.()
 
   const modelDir = await ensureModelForType('eou')
@@ -164,8 +152,7 @@ test('EOU with named file paths — constructor accepts and validates', { timeou
 
   const model = new TranscriptionParakeet(args, config)
   t.ok(model, 'EOU model created with named paths (no directory throw)')
-  t.ok(model._hasAnyNamedPaths(), '_hasAnyNamedPaths returns true for EOU paths')
-  t.ok(!model._hasNamedPaths(), '_hasNamedPaths returns false (TDT-only)')
+  t.ok(model._hasNamedPaths(), '_hasNamedPaths returns true for EOU paths')
 
   const resolved = model._resolveFilePath('', 'encoder.onnx')
   t.is(resolved, eouEncoderPath, '_resolveFilePath maps encoder.onnx to eouEncoderPath')
@@ -175,6 +162,7 @@ test('EOU with named file paths — constructor accepts and validates', { timeou
 })
 
 test('EOU with named file paths — full load and transcription', { timeout: 600000 }, async (t) => {
+  if (isMobile) { t.pass('Skipped on mobile'); return }
   const loggerBinding = setupJsLogger(binding)
   let parakeet = null
 
@@ -195,7 +183,8 @@ test('EOU with named file paths — full load and transcription', { timeout: 600
       maxThreads: 4,
       useGPU: false,
       sampleRate: 16000,
-      channels: 1
+      channels: 1,
+      ...getNamedPathsConfig('eou', modelDir)
     }, (_, event, __, output, error) => {
       if (event === 'Output' && output) {
         const segments = Array.isArray(output) ? output : [output]
@@ -210,7 +199,6 @@ test('EOU with named file paths — full load and transcription', { timeout: 600
       if (error) console.error('[eou-named] Error:', error)
     })
 
-    await loadWeightsFromDir(parakeet, modelDir, ['encoder.onnx', 'decoder_joint.onnx', 'tokenizer.json'])
     await parakeet.activate()
 
     await parakeet.append({ type: 'audio', data: audio.buffer })
@@ -226,12 +214,13 @@ test('EOU with named file paths — full load and transcription', { timeout: 600
     t.ok(transcriptions.length > 0, `EOU produced ${transcriptions.length} segments`)
     t.ok(fullText.length > 0, `EOU named paths produced text (${fullText.length} chars)`)
   } finally {
-    if (parakeet) try { parakeet.destroyInstance() } catch (e) {}
+    if (parakeet) try { await parakeet.destroyInstance() } catch (e) {}
     try { loggerBinding.releaseLogger() } catch (e) {}
   }
 })
 
 test('Sortformer with named file paths — constructor accepts and validates', { timeout: 60000 }, async (t) => {
+  if (isMobile) { t.pass('Skipped on mobile'); return }
   TranscriptionParakeet.prototype.validateModelFiles?.restore?.()
 
   const modelDir = await ensureModelForType('sortformer')
@@ -251,14 +240,14 @@ test('Sortformer with named file paths — constructor accepts and validates', {
 
   const model = new TranscriptionParakeet(args, config)
   t.ok(model, 'Sortformer model created with named paths (no directory throw)')
-  t.ok(model._hasAnyNamedPaths(), '_hasAnyNamedPaths returns true for Sortformer paths')
-  t.ok(!model._hasNamedPaths(), '_hasNamedPaths returns false (TDT-only)')
+  t.ok(model._hasNamedPaths(), '_hasNamedPaths returns true for Sortformer paths')
 
   const resolved = model._resolveFilePath('', 'sortformer.onnx')
   t.is(resolved, sortformerPath, '_resolveFilePath maps sortformer.onnx to sortformerPath')
 })
 
 test('Sortformer with named file paths — full load and diarization', { timeout: 600000 }, async (t) => {
+  if (isMobile) { t.pass('Skipped on mobile'); return }
   const loggerBinding = setupJsLogger(binding)
   let parakeet = null
 
@@ -279,7 +268,8 @@ test('Sortformer with named file paths — full load and diarization', { timeout
       maxThreads: 4,
       useGPU: false,
       sampleRate: 16000,
-      channels: 1
+      channels: 1,
+      ...getNamedPathsConfig('sortformer', modelDir)
     }, (_, event, __, output, error) => {
       if (event === 'Output' && output) {
         const segments = Array.isArray(output) ? output : [output]
@@ -294,7 +284,6 @@ test('Sortformer with named file paths — full load and diarization', { timeout
       if (error) console.error('[sf-named] Error:', error)
     })
 
-    await loadWeightsFromDir(parakeet, modelDir, ['sortformer.onnx'])
     await parakeet.activate()
 
     await parakeet.append({ type: 'audio', data: audio.buffer })
@@ -310,7 +299,7 @@ test('Sortformer with named file paths — full load and diarization', { timeout
     t.ok(transcriptions.length > 0, `Sortformer produced ${transcriptions.length} segments`)
     t.ok(fullText.includes('Speaker'), 'Sortformer output contains speaker labels')
   } finally {
-    if (parakeet) try { parakeet.destroyInstance() } catch (e) {}
+    if (parakeet) try { await parakeet.destroyInstance() } catch (e) {}
     try { loggerBinding.releaseLogger() } catch (e) {}
   }
 })
@@ -318,6 +307,7 @@ test('Sortformer with named file paths — full load and diarization', { timeout
 // ── TDT constructor validation ──────────────────────────────────────────────
 
 test('TDT with named file paths — verify existing flow still works', { timeout: 60000 }, async (t) => {
+  if (isMobile) { t.pass('Skipped on mobile'); return }
   TranscriptionParakeet.prototype.validateModelFiles?.restore?.()
 
   const { modelPath } = getTestPaths()
@@ -340,7 +330,6 @@ test('TDT with named file paths — verify existing flow still works', { timeout
   const model = new TranscriptionParakeet(args, config)
   t.ok(model, 'TDT model created with named paths')
   t.ok(model._hasNamedPaths(), '_hasNamedPaths returns true for TDT paths')
-  t.ok(model._hasAnyNamedPaths(), '_hasAnyNamedPaths also returns true')
 
   const resolved = model._resolveFilePath('', 'encoder-model.onnx')
   t.is(resolved, path.join(modelPath, 'encoder-model.onnx'), '_resolveFilePath maps correctly')

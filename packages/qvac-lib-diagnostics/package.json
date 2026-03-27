@@ -1,6 +1,6 @@
 {
   "name": "@qvac/diagnostics",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Diagnostic report generation library for QVAC",
   "main": "index.js",
   "types": "index.d.ts",
@@ -19,6 +19,13 @@
     "qvac"
   ],
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tetherto/qvac.git",
+    "directory": "packages/qvac-lib-diagnostics"
+  },
+  "bugs": "https://github.com/tetherto/qvac/issues",
+  "homepage": "https://github.com/tetherto/qvac/tree/main/packages/qvac-lib-diagnostics#readme",
   "exports": {
     ".": {
       "types": "./index.d.ts",

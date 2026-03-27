@@ -1,9 +1,12 @@
 #include "SdModel.hpp"
 
 #include <chrono>
+#include <cstdlib>
 #include <cstring>
 #include <filesystem>
 #include <sstream>
+#include <system_error>
+#include <vector>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -37,6 +40,158 @@ thread_local ProgressCtx tl_progressCtx;
 // sd_abort_cb_data when multiple SdModel instances could coexist.
 thread_local const SdModel* tl_abortModel = nullptr;
 
+std::string backendDeviceTypeToString(enum ggml_backend_dev_type type) {
+  switch (type) {
+  case GGML_BACKEND_DEVICE_TYPE_CPU:
+    return "CPU";
+  case GGML_BACKEND_DEVICE_TYPE_GPU:
+    return "GPU";
+  case GGML_BACKEND_DEVICE_TYPE_IGPU:
+    return "IGPU";
+  case GGML_BACKEND_DEVICE_TYPE_ACCEL:
+    return "ACCEL";
+  default:
+    return "UNKNOWN";
+  }
+}
+
+std::string preferredBackendToString(enum sd_backend_preference_t pref) {
+  switch (pref) {
+  case SD_BACKEND_PREF_AUTO:
+    return "auto";
+  case SD_BACKEND_PREF_CPU:
+    return "cpu";
+  case SD_BACKEND_PREF_GPU:
+    return "gpu";
+  case SD_BACKEND_PREF_OPENCL:
+    return "opencl";
+  default:
+    return "unknown";
+  }
+}
+
+void logBackendRegistrySnapshot() {
+  using Priority = qvac_lib_inference_addon_cpp::logger::Priority;
+
+  const size_t regCount = ggml_backend_reg_count();
+  const size_t devCount = ggml_backend_dev_count();
+  QLOG_IF(
+      Priority::INFO,
+      "GGML backend registry snapshot: " + std::to_string(regCount) +
+          " registry entries, " + std::to_string(devCount) + " devices");
+
+  for (size_t i = 0; i < regCount; ++i) {
+    ggml_backend_reg_t reg = ggml_backend_reg_get(i);
+    const char* regName = reg ? ggml_backend_reg_name(reg) : nullptr;
+    const size_t regDevCount = reg ? ggml_backend_reg_dev_count(reg) : 0;
+    QLOG_IF(
+        Priority::INFO,
+        "GGML backend registry[" + std::to_string(i) + "]: name='" +
+            std::string(regName ? regName : "<null>") +
+            "', devices=" + std::to_string(regDevCount));
+  }
+
+  for (size_t i = 0; i < devCount; ++i) {
+    ggml_backend_dev_t dev = ggml_backend_dev_get(i);
+    if (!dev) {
+      QLOG_IF(
+          Priority::WARNING,
+          "GGML backend device[" + std::to_string(i) + "]: null device handle");
+      continue;
+    }
+
+    const char* name = ggml_backend_dev_name(dev);
+    const char* desc = ggml_backend_dev_description(dev);
+    const auto type = ggml_backend_dev_type(dev);
+    size_t memFree = 0;
+    size_t memTotal = 0;
+    ggml_backend_dev_memory(dev, &memFree, &memTotal);
+
+    ggml_backend_reg_t reg = ggml_backend_dev_backend_reg(dev);
+    const char* regName = reg ? ggml_backend_reg_name(reg) : nullptr;
+
+    QLOG_IF(
+        Priority::INFO,
+        "GGML backend device[" + std::to_string(i) + "]: name='" +
+            std::string(name ? name : "<null>") + "', desc='" +
+            std::string(desc ? desc : "<null>") +
+            "', type=" + backendDeviceTypeToString(type) + ", reg='" +
+            std::string(regName ? regName : "<null>") +
+            "', mem_free=" + std::to_string(memFree) +
+            ", mem_total=" + std::to_string(memTotal));
+  }
+}
+
+void logBackendModulePathSnapshot(
+    const std::filesystem::path& backendsDirPath) {
+  using Priority = qvac_lib_inference_addon_cpp::logger::Priority;
+
+  std::error_code ec;
+  const bool exists = std::filesystem::exists(backendsDirPath, ec);
+  QLOG_IF(
+      Priority::INFO,
+      "Backend module path exists=" + std::string(exists ? "true" : "false") +
+          " path='" + backendsDirPath.string() + "'");
+  if (ec) {
+    QLOG_IF(
+        Priority::WARNING,
+        "Backend module path existence check error: " + ec.message());
+    return;
+  }
+  if (!exists) {
+    return;
+  }
+
+  const bool isDir = std::filesystem::is_directory(backendsDirPath, ec);
+  QLOG_IF(
+      Priority::INFO,
+      "Backend module path is_directory=" +
+          std::string(isDir ? "true" : "false"));
+  if (ec || !isDir) {
+    if (ec) {
+      QLOG_IF(
+          Priority::WARNING,
+          "Backend module path type check error: " + ec.message());
+    }
+    return;
+  }
+
+  std::vector<std::string> entries;
+  for (const auto& dirEntry :
+       std::filesystem::directory_iterator(backendsDirPath, ec)) {
+    if (ec) {
+      QLOG_IF(
+          Priority::WARNING,
+          "Backend module path iteration error: " + ec.message());
+      break;
+    }
+    const auto filename = dirEntry.path().filename().string();
+    if (filename.rfind("libqvac-diffusion-ggml-", 0) == 0 &&
+        dirEntry.path().extension() == ".so") {
+      entries.push_back(filename);
+    }
+  }
+
+  if (entries.empty()) {
+    QLOG_IF(
+        Priority::WARNING,
+        "No qvac diffusion GGML backend modules found under: " +
+            backendsDirPath.string());
+    return;
+  }
+
+  std::ostringstream oss;
+  for (size_t i = 0; i < entries.size(); ++i) {
+    if (i > 0) {
+      oss << ", ";
+    }
+    oss << entries[i];
+  }
+  QLOG_IF(
+      Priority::INFO,
+      "Detected qvac diffusion GGML backend modules: " + oss.str());
+}
+
 void sdProgressCallback(int step, int steps, float /*time*/, void* /*data*/) {
   if (!tl_progressCtx.job || !tl_progressCtx.job->progressCallback)
     return;
@@ -61,6 +216,40 @@ bool sdAbortCallback(void* /*data*/) {
   return tl_abortModel && tl_abortModel->isCancelRequested();
 }
 
+// RAII wrapper for the sd_image_t* array returned by generate_image().
+// Frees each image's pixel buffer and the array itself on destruction,
+// even if an exception is thrown mid-iteration (e.g. in encodeToPng or
+// outputCallback).  Call release(i) after processing image i to free
+// its pixel buffer immediately rather than waiting until destruction.
+class SdImageBatch {
+public:
+  SdImageBatch(sd_image_t* data, int count) : data_(data), count_(count) {}
+  ~SdImageBatch() {
+    for (int i = 0; i < count_; ++i) {
+      free(data_[i].data);
+    }
+    free(data_);
+  }
+
+  SdImageBatch(const SdImageBatch&) = delete;
+  SdImageBatch& operator=(const SdImageBatch&) = delete;
+  SdImageBatch(SdImageBatch&&) = delete;
+  SdImageBatch& operator=(SdImageBatch&&) = delete;
+
+  [[nodiscard]] int count() const { return count_; }
+  [[nodiscard]] const sd_image_t& operator[](int i) const { return data_[i]; }
+
+  // Release pixel buffer for image i immediately after it has been consumed.
+  void release(int i) {
+    free(data_[i].data);
+    data_[i].data = nullptr;
+  }
+
+private:
+  sd_image_t* const data_;
+  const int count_;
+};
+
 } // namespace
 
 // ---------------------------------------------------------------------------
@@ -74,10 +263,10 @@ SdModel::SdModel(qvac_lib_inference_addon_sd::SdCtxConfig config)
 }
 
 // ---------------------------------------------------------------------------
-// Destructor — delegates to unload()
+// Destructor — releases the sd_ctx and all associated GPU/CPU memory
 // ---------------------------------------------------------------------------
 
-SdModel::~SdModel() { unload(); }
+SdModel::~SdModel() = default;
 
 // ---------------------------------------------------------------------------
 // load() — maps SdCtxConfig → sd_ctx_params_t, then calls new_sd_ctx()
@@ -102,21 +291,17 @@ void SdModel::load() {
   // For FLUX.2 [klein] the GGUF contains only diffusion weights with no SD
   // version metadata KV pairs, so we must use diffusion_model_path.
   // Classic all-in-one SD1.x / SDXL checkpoints use model_path.
-  params.model_path =
-      config_.modelPath.empty() ? nullptr : config_.modelPath.c_str();
-  params.diffusion_model_path = config_.diffusionModelPath.empty()
-                                    ? nullptr
-                                    : config_.diffusionModelPath.c_str();
-  params.clip_l_path =
-      config_.clipLPath.empty() ? nullptr : config_.clipLPath.c_str();
-  params.clip_g_path =
-      config_.clipGPath.empty() ? nullptr : config_.clipGPath.c_str();
-  params.t5xxl_path =
-      config_.t5XxlPath.empty() ? nullptr : config_.t5XxlPath.c_str();
-  params.llm_path = config_.llmPath.empty() ? nullptr : config_.llmPath.c_str();
-  params.vae_path = config_.vaePath.empty() ? nullptr : config_.vaePath.c_str();
-  params.taesd_path =
-      config_.taesdPath.empty() ? nullptr : config_.taesdPath.c_str();
+  auto optPath = [](const std::string& s) -> const char* {
+    return s.empty() ? nullptr : s.c_str();
+  };
+  params.model_path = optPath(config_.modelPath);
+  params.diffusion_model_path = optPath(config_.diffusionModelPath);
+  params.clip_l_path = optPath(config_.clipLPath);
+  params.clip_g_path = optPath(config_.clipGPath);
+  params.t5xxl_path = optPath(config_.t5XxlPath);
+  params.llm_path = optPath(config_.llmPath);
+  params.vae_path = optPath(config_.vaePath);
+  params.taesd_path = optPath(config_.taesdPath);
 
   // ── Compute ────────────────────────────────────────────────────────────────
   params.n_threads = config_.nThreads;
@@ -140,12 +325,14 @@ void SdModel::load() {
         QLOG_IF(
             Priority::INFO,
             "Loading GPU backends from: " + backendsDirPath.string());
+        logBackendModulePathSnapshot(backendsDirPath);
         ggml_backend_load_all_from_path(backendsDirPath.string().c_str());
       } else {
         QLOG_IF(Priority::INFO, "Loading GPU backends from default path");
         ggml_backend_load_all();
       }
       backendsLoaded = true;
+      logBackendRegistrySnapshot();
     }
   }
 #endif
@@ -172,6 +359,12 @@ void SdModel::load() {
   } else {
     params.preferred_gpu_backend = SD_BACKEND_PREF_GPU;
   }
+
+  QLOG_IF(
+      qvac_lib_inference_addon_cpp::logger::Priority::INFO,
+      "Preferred backend passed to stable-diffusion: " +
+          preferredBackendToString(params.preferred_gpu_backend) + " (" +
+          std::to_string(static_cast<int>(params.preferred_gpu_backend)) + ")");
 
 #if defined(__APPLE__)
   // The ggml Metal backend does not fully support GGML_OP_NORM for
@@ -200,8 +393,6 @@ void SdModel::load() {
   // ── Convolution options ───────────────────────────────────────────────────
   params.diffusion_conv_direct = config_.diffusionConvDirect;
   params.vae_conv_direct = config_.vaeConvDirect;
-  params.circular_x = config_.circularX;
-  params.circular_y = config_.circularY;
   params.force_sdxl_vae_conv_scale = config_.forceSDXLVaeConvScale;
 
   // ── Internal ──────────────────────────────────────────────────────────────
@@ -221,29 +412,9 @@ void SdModel::load() {
 
   sdCtx_.reset(raw);
 
-  modelLoadMs_ = std::chrono::duration_cast<std::chrono::milliseconds>(
-                     std::chrono::steady_clock::now() - tLoadStart)
-                     .count();
-}
-
-// ---------------------------------------------------------------------------
-// unload() — releases the sd_ctx and all associated GPU/CPU memory
-// ---------------------------------------------------------------------------
-
-void SdModel::unload() {
-  if (!isLoaded())
-    return;
-  sdCtx_.reset(); // calls free_sd_ctx via custom deleter
-  lastStats_.clear();
-  cancelRequested_.store(false);
-
-  modelLoadMs_ = 0;
-  totalGenerationMs_ = 0;
-  totalWallMs_ = 0;
-  totalSteps_ = 0;
-  totalGenerations_ = 0;
-  totalImages_ = 0;
-  totalPixels_ = 0;
+  stats_.modelLoadMs = std::chrono::duration_cast<std::chrono::milliseconds>(
+                           std::chrono::steady_clock::now() - tLoadStart)
+                           .count();
 }
 
 // ---------------------------------------------------------------------------
@@ -361,9 +532,8 @@ std::any SdModel::process(const std::any& input) {
   sd_image_t refImg{};
   std::vector<uint8_t> initPng;
   std::vector<uint8_t> refPng;
-  std::vector<uint8_t> maskBuf; // owns the white-fill mask pixel data
+  std::vector<uint8_t> maskBuf;
 
-  // Helper: decode image bytes from a JSON array key
   auto decodeImageBytesFromJson =
       [&](const std::string& key) -> std::vector<uint8_t> {
     std::vector<uint8_t> bytes;
@@ -404,12 +574,8 @@ std::any SdModel::process(const std::any& input) {
           maskBuf.data()};
     }
   } else if (gen.mode == "ref2img") {
-    // ref2img: decode the reference image and route it through ref_images
-    // so stable-diffusion.cpp uses FLUX in-context conditioning (like Iris).
-    // The target starts from pure noise (txt2img path internally).
     refPng = decodeImageBytesFromJson("ref_image_bytes");
     if (refPng.empty()) {
-      // Fall back to init_image_bytes if ref_image_bytes is not present
       refPng = decodeImageBytesFromJson("init_image_bytes");
     }
     if (!refPng.empty())
@@ -425,7 +591,6 @@ std::any SdModel::process(const std::any& input) {
               std::to_string(imgH) +
               " — using in-context conditioning (pure noise target)");
 
-      // Use the reference image dimensions for output if not explicitly set
       if (gen.width == 512 && gen.height == 512) {
         genParams.width = imgW;
         genParams.height = imgH;
@@ -442,32 +607,29 @@ std::any SdModel::process(const std::any& input) {
   // ── Generate ──────────────────────────────────────────────────────────────
   const auto t0 = std::chrono::steady_clock::now();
 
-  sd_image_t* results = generate_image(sdCtx_.get(), &genParams);
+  SdImageBatch results(
+      generate_image(sdCtx_.get(), &genParams), gen.batchCount);
 
-  if (initImg.data)
+  if (initImg.data) {
     free(initImg.data);
-  if (refImg.data)
+  }
+  if (refImg.data) {
     free(refImg.data);
-  // maskBuf owns the mask pixel data — freed automatically via RAII.
+  }
 
   const bool wasCancelled = cancelRequested_.load();
 
-  // Always free native image buffers, whether cancelled or not.
   int outputCount = 0;
-  if (results) {
-    for (int i = 0; i < gen.batchCount; ++i) {
-      if (results[i].data) {
-        if (!wasCancelled) {
-          auto png = encodeToPng(results[i]);
-          if (!png.empty() && job.outputCallback) {
-            job.outputCallback(png);
-            ++outputCount;
-          }
-        }
-        free(results[i].data);
+  for (int i = 0; i < results.count(); ++i) {
+    if (results[i].data && !wasCancelled) {
+      auto png = encodeToPng(results[i]);
+      if (!png.empty() && job.outputCallback) {
+        job.outputCallback(png);
+        ++outputCount;
       }
     }
-    free(results);
+    results.release(
+        i); // free pixel buffer immediately; destructor handles the rest
   }
 
   // If cancelled, propagate as an exception so JobRunner emits
@@ -482,57 +644,40 @@ std::any SdModel::process(const std::any& input) {
   }
 
   const auto t1 = std::chrono::steady_clock::now();
-  const double genMs =
-      std::chrono::duration<double, std::milli>(t1 - t0).count();
 
   // ── Accumulate cumulative counters ─────────────────────────────────────────
-  const int64_t genMsI = static_cast<int64_t>(genMs);
-  totalGenerationMs_ += genMsI;
-  totalWallMs_ += genMsI;
-  totalSteps_ += gen.steps;
-  totalGenerations_++;
-  totalImages_ += outputCount;
-  totalPixels_ += static_cast<int64_t>(gen.width) * gen.height * outputCount;
-
-  // ── Derived metrics ────────────────────────────────────────────────────────
-  const double totalTimeSec = totalWallMs_ / 1000.0;
-  const double stepsPerSecond =
-      totalTimeSec > 0.0 ? (static_cast<double>(totalSteps_) / totalTimeSec)
-                         : 0.0;
-  const double msPerStep =
-      totalSteps_ > 0 ? (static_cast<double>(totalWallMs_) / totalSteps_) : 0.0;
-  const double megapixelsPerSecond =
-      totalTimeSec > 0.0
-          ? (static_cast<double>(totalPixels_) / 1e6 / totalTimeSec)
-          : 0.0;
+  const int64_t genMsI = static_cast<int64_t>(
+      std::chrono::duration<double, std::milli>(t1 - t0).count());
+  stats_.totalGenerationMs += genMsI;
+  stats_.totalWallMs += genMsI;
+  stats_.totalSteps += gen.steps;
+  stats_.totalGenerations++;
+  stats_.totalImages += outputCount;
+  stats_.totalPixels +=
+      static_cast<int64_t>(gen.width) * gen.height * outputCount;
 
   // ── Build stats for runtimeStats() ─────────────────────────────────────────
   // Stats are stored and emitted via queueJobEnded() → runtimeStats().
   // process() returns std::any{} (empty) so images delivered via
   // outputCallback are not duplicated as a queueResult event.
+  //
+  // Only primitive (non-derivable) values are reported. Callers can compute
+  // rates such as stepsPerSecond = totalSteps / (totalWallMs / 1000.0).
   lastStats_.clear();
 
-  lastStats_.emplace_back("generation_time", genMs);
-  lastStats_.emplace_back("totalTime", totalTimeSec);
-  lastStats_.emplace_back("stepsPerSecond", stepsPerSecond);
-  lastStats_.emplace_back("msPerStep", msPerStep);
-  lastStats_.emplace_back("megapixelsPerSecond", megapixelsPerSecond);
-
-  lastStats_.emplace_back("totalSteps", totalSteps_);
-  lastStats_.emplace_back("totalGenerations", totalGenerations_);
-  lastStats_.emplace_back("totalImages", totalImages_);
-  lastStats_.emplace_back("totalPixels", totalPixels_);
-
-  lastStats_.emplace_back("modelLoadMs", modelLoadMs_);
+  lastStats_.emplace_back("modelLoadMs", stats_.modelLoadMs);
   lastStats_.emplace_back("generationMs", genMsI);
-  lastStats_.emplace_back("totalGenerationMs", totalGenerationMs_);
-  lastStats_.emplace_back("totalWallMs", totalWallMs_);
+  lastStats_.emplace_back("totalGenerationMs", stats_.totalGenerationMs);
+  lastStats_.emplace_back("totalWallMs", stats_.totalWallMs);
 
-  lastStats_.emplace_back("steps", static_cast<int64_t>(gen.steps));
+  lastStats_.emplace_back("totalSteps", stats_.totalSteps);
+  lastStats_.emplace_back("totalGenerations", stats_.totalGenerations);
+  lastStats_.emplace_back("totalImages", stats_.totalImages);
+  lastStats_.emplace_back("totalPixels", stats_.totalPixels);
+
   lastStats_.emplace_back("width", static_cast<int64_t>(gen.width));
   lastStats_.emplace_back("height", static_cast<int64_t>(gen.height));
   lastStats_.emplace_back("seed", gen.seed);
-  lastStats_.emplace_back("output_count", static_cast<int64_t>(outputCount));
 
   // Return empty — images are already delivered via outputCallback,
   // and stats are emitted by queueJobEnded() → runtimeStats().

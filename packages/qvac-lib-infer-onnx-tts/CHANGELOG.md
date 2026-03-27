@@ -5,7 +5,68 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.6.1] - 2026-03-11
+## [0.7.0]
+
+This release moves Supertonic onto the official Supertone ONNX graphs and multilingual Hugging Face weights, expands the JS surface and tooling for multilingual runs, and hardens benchmark and native build paths. Consumers using Supertonic should plan for updated models and configuration aligned with the new graphs.
+
+## Breaking Changes
+
+### Supertonic graphs and weights
+
+Supertonic inference now targets the official Supertone ONNX graphs and multilingual Hugging Face weight layout bundled with this line of work. Existing model directories or download scripts built for the previous graph or artifact layout may no longer load. Prefer the updated `ensure-models` / download flows, `example-supertonic-multilingual-tts.js`, and the current Supertonic config types in `index.d.ts` when migrating.
+
+## Features
+
+### Multilingual Supertonic
+
+The native Supertonic path gains multilingual support and related stabilization (including work to address stuttering), with integration and benchmark updates so non-English datasets and clients can exercise the addon consistently.
+
+### Examples and TypeScript
+
+A dedicated multilingual example script documents the new flow, and `index.d.ts` is expanded so Supertonic options and multilingual parameters are described accurately for TypeScript consumers.
+
+## [0.6.6]
+
+Security hardening release from comprehensive security audit.
+
+### Fixed
+- Add 1 MB request body size limit to benchmark server to prevent DoS via memory exhaustion (#1102)
+- Validate `modelDir` path in benchmark server to prevent directory traversal outside allowed directories (#1103)
+- Remove filesystem paths from C++ error messages in `FileUtils.hpp` to prevent path leakage (#1105)
+
+## [0.6.5]
+
+This release improves TypeScript support for consumers of the ONNX TTS package. Runtime statistics that the native addon already exposes when `opts.stats` is enabled are now described in `index.d.ts`, and `run()` is typed so inference responses carry structured output chunks.
+
+## New APIs
+
+### `RuntimeStats` and related types in `index.d.ts`
+
+The `ONNXTTS` namespace now exports **`RuntimeStats`**, matching the keys returned by `TTSModel::runtimeStats()` in the addon: `totalTime`, `tokensPerSecond`, `realTimeFactor`, `audioDurationMs`, and `totalSamples`. **`TTSOutputChunk`** (`outputArray`) and **`TTSRunInput`** describe the `run()` input and streamed output shape. **`run()`** is declared to return **`Promise<QvacResponse<ONNXTTS.TTSOutputChunk>>`**, with documentation that `response.stats` aligns with **`RuntimeStats`** when stats collection is turned on at construction time.
+
+## [0.6.4]
+
+Fix q4f16 chatterbox models for linux-arm64
+
+## [0.6.3]
+
+This release fixes a logging issue in the JS layer where two log statements during model load were bypassing the addon logging pipeline.
+
+## Bug Fixes
+
+### JS Layer Logs Now Routed Through Addon Logger
+
+Two `console.log` calls in the `_load()` method — logging the active engine type and language — were writing directly to stdout instead of going through the addon's logger. This meant those messages would not be captured or filtered by the logging infrastructure used everywhere else in the package. Both calls have been replaced with `this.logger.info(...)`, consistent with all other logging in the file.
+
+## Pull Requests
+
+- [#875](https://github.com/tetherto/qvac/pull/875) - QVAC-14098 fix: route JS layer logs through addon logger
+
+## [0.6.2]
+
+Fix Chatterbox models with FP16 quantization not working on linux-arm64 platform.
+
+## [0.6.1]
 
 This release fixes CMake configuration errors that were preventing the TTS addon from building correctly with updated onnxruntime dependencies, and pins onnxruntime to a minimum version constraint to avoid future compatibility issues.
 

@@ -4,6 +4,10 @@ option(BUILD_TESTING "Build tests" OFF)
 option(ENABLE_XNNPACK "Enable XNNPack execution provider" ON)
 option(QVAC_ONNX_ANDROID_LOG "Enable Android logcat debug logging" OFF)
 
+if(BUILD_TESTING)
+  list(APPEND VCPKG_MANIFEST_FEATURES "tests")
+endif()
+
 if(ENABLE_XNNPACK)
   list(APPEND VCPKG_MANIFEST_FEATURES "xnnpack")
 endif()
@@ -63,6 +67,15 @@ if(QVAC_ONNX_ANDROID_LOG)
   target_compile_definitions(${qvac-onnx} PRIVATE QVAC_ONNX_ENABLE_ANDROID_LOG)
 endif()
 
+# Override install_name so that consumers using @loader_path rpath can resolve
+# this library as a companion dependency (cmake-bare sets INSTALL_NAME_DIR ""
+# which produces a bare filename install_name that dyld cannot resolve via rpath).
+if(APPLE)
+  set_target_properties(${qvac-onnx}_module PROPERTIES
+    INSTALL_NAME_DIR "@rpath"
+    BUILD_WITH_INSTALL_NAME_DIR ON)
+endif()
+
 # Version script
 if(UNIX AND NOT APPLE)
   target_link_options(${qvac-onnx}_module PRIVATE
@@ -70,6 +83,11 @@ if(UNIX AND NOT APPLE)
 elseif(APPLE)
   target_link_options(${qvac-onnx}_module PRIVATE
     -Wl,-exported_symbols_list,${CMAKE_CURRENT_SOURCE_DIR}/exports.txt)
+elseif(WIN32)
+  # Use /EXPORT instead of a .def file to avoid overriding the auto-generated
+  # exports from WINDOWS_EXPORT_ALL_SYMBOLS (which exports bare_* and napi_*).
+  target_link_options(${qvac-onnx}_module PRIVATE
+    /EXPORT:OrtGetApiBase)
 endif()
 
 # Strip .bare module

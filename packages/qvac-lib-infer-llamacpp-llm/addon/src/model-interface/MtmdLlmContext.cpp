@@ -1,6 +1,7 @@
 #include "MtmdLlmContext.hpp"
 
 #include <algorithm>
+#include <cassert>
 
 #include <common/log.h>
 #include <llama/mtmd/mtmd-helper.h>
@@ -20,9 +21,11 @@ using namespace qvac_lib_inference_addon_llama::utils;
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 MtmdLlmContext::MtmdLlmContext(
-    common_params& commonParams, common_init_result&& llamaInit)
+    common_params& commonParams, common_init_result&& llamaInit,
+    bool toolsAtEnd)
     : llamaInit_(std::move(llamaInit)), params_(commonParams),
       model_(llamaInit_.model.get()), lctx_(llamaInit_.context.get()) {
+  dynamicToolsState().setToolsAtEnd(toolsAtEnd);
 
   if (model_ == nullptr) {
     throw qvac_errors::StatusError(
@@ -40,7 +43,8 @@ MtmdLlmContext::MtmdLlmContext(
 
   vocab_ = llama_model_get_vocab(model_);
 
-  std::string chatTemplate = getChatTemplate(model_, params_);
+  std::string chatTemplate =
+      getChatTemplate(model_, params_, dynamicToolsState().toolsAtEnd());
   tmpls_ = common_chat_templates_init(model_, chatTemplate);
 
   smpl_.reset(common_sampler_init(model_, params_.sampling));
@@ -121,17 +125,12 @@ bool MtmdLlmContext::checkAntiprompt() {
     std::string lastOutput =
         common_sampler_prev_str(smpl_.get(), lctx_, kNPrev);
 
-    // Check if each of the reverse prompts appears at the end of the output.
-    for (std::string& antiprompt : params_.antiprompt) {
-      size_t extraPadding = 2;
-      size_t searchStartPos =
-          lastOutput.length() >
-                  static_cast<size_t>(antiprompt.length() + extraPadding)
-              ? lastOutput.length() -
-                    static_cast<size_t>(antiprompt.length() + extraPadding)
-              : 0;
-
-      if (lastOutput.find(antiprompt, searchStartPos) != std::string::npos) {
+    // Check if each of the reverse prompts appears anywhere in the recent
+    // output. We search the full kNPrev-token window because a single token
+    // can decode to many characters, and a short antiprompt like "\n" may
+    // appear at the start of such a token, far from the string's tail.
+    for (const std::string& antiprompt : params_.antiprompt) {
+      if (lastOutput.find(antiprompt) != std::string::npos) {
         return true;
       }
     }
@@ -158,6 +157,7 @@ void MtmdLlmContext::tokenizeChat(
   bool addSpecial = false;
 
   if (nPast_ == 0 && !isCacheLoaded) {
+    dynamicToolsState().reset();
     isLastMessageFromUser = true;
     addSpecial = true;
   } else if (nPast_ > 0) {
@@ -204,6 +204,40 @@ void MtmdLlmContext::tokenizeChat(
     throw qvac_errors::StatusError(ADDON_ID, toString(EncoderFailed), errorMsg);
   }
 
+  if (dynamicToolsState().toolsAtEnd() && !tools.empty()) {
+    inputs.tools = {};
+    inputs.add_generation_prompt = false;
+    inputs.use_jinja = params_.use_jinja;
+    auto promptNoTools = getPrompt(tmpls_.get(), inputs);
+
+    if (!promptNoTools.empty()) {
+      mtmd_input_text textNoTools;
+      textNoTools.text = promptNoTools.c_str();
+      textNoTools.add_special = addSpecial;
+      textNoTools.parse_special = true;
+
+      mtmd::input_chunks chunksNoTools(mtmd_input_chunks_init());
+      int32_t resNoTools = mtmd_tokenize(
+          ctxVision_.get(),
+          chunksNoTools.ptr.get(),
+          &textNoTools,
+          bitmapsCPtr.data(),
+          bitmapsCPtr.size());
+
+      if (resNoTools == 0) {
+        dynamicToolsState().setConversationOnlyTokens(
+            mtmd_helper_get_n_tokens(chunksNoTools.ptr.get()));
+        assert(
+            dynamicToolsState().conversationOnlyTokens() <=
+                static_cast<llama_pos>(
+                    mtmd_helper_get_n_tokens(chunks.ptr.get())) &&
+            "conversation-only tokens exceeds total tokens");
+      }
+    }
+  } else {
+    dynamicToolsState().setConversationOnlyTokens(0);
+  }
+
   resetMedia();
 }
 
@@ -245,6 +279,7 @@ bool MtmdLlmContext::evalMessageWithTools(
       llama_memory_seq_add(
           mem, 0, firstMsgTokens_ + nDiscarded_, nPast_, -nDiscarded_);
       nPast_ -= nDiscarded_;
+      ++nSlides_;
       QLOG_IF(
           Priority::DEBUG,
           string_format(
@@ -257,6 +292,7 @@ bool MtmdLlmContext::evalMessageWithTools(
       auto* mem = llama_get_memory(lctx_);
       llama_memory_seq_rm(mem, 0, firstMsgTokens_, nPast_);
       nPast_ = firstMsgTokens_;
+      ++nSlides_;
       QLOG_IF(
           Priority::DEBUG,
           string_format(
@@ -318,6 +354,8 @@ bool MtmdLlmContext::evalMessageWithTools(
       nDiscarded_ = ctxSize - firstMsgTokens_ - 1;
     }
   }
+  dynamicToolsState().recordToolBoundary(
+      nPast_, static_cast<llama_pos>(nTokens));
   return true;
 }
 
@@ -342,6 +380,7 @@ void MtmdLlmContext::applyContextDiscard() {
   llama_memory_seq_add(
       mem, 0, firstMsgTokens_ + nDiscarded_, nPast_, -nDiscarded_);
   nPast_ -= nDiscarded_;
+  ++nSlides_;
   QLOG_IF(
       Priority::DEBUG,
       string_format(
@@ -428,6 +467,42 @@ bool MtmdLlmContext::generateResponse(
   return true;
 }
 
+std::function<void()>
+MtmdLlmContext::applyGenerationParams(const GenerationParams& overrides) {
+  if (!overrides.hasOverrides()) {
+    return []() {};
+  }
+
+  common_params_sampling savedSampling = params_.sampling;
+  int savedPredict = params_.n_predict;
+
+  auto setIf = [](const auto& src, auto& dst) {
+    if (src) {
+      dst = *src;
+    }
+  };
+  setIf(overrides.temp, params_.sampling.temp);
+  setIf(overrides.top_p, params_.sampling.top_p);
+  setIf(overrides.top_k, params_.sampling.top_k);
+  setIf(overrides.n_predict, params_.n_predict);
+  setIf(overrides.seed, params_.sampling.seed);
+  setIf(overrides.frequency_penalty, params_.sampling.penalty_freq);
+  setIf(overrides.presence_penalty, params_.sampling.penalty_present);
+  setIf(overrides.repeat_penalty, params_.sampling.penalty_repeat);
+
+  smpl_.reset(common_sampler_init(model_, params_.sampling));
+
+  bool restored = false;
+  return [this, savedSampling, savedPredict, restored]() mutable {
+    if (restored)
+      return;
+    restored = true;
+    params_.sampling = savedSampling;
+    params_.n_predict = savedPredict;
+    smpl_.reset(common_sampler_init(model_, params_.sampling));
+  };
+}
+
 void MtmdLlmContext::stop() { stopGeneration_.store(true); }
 
 llama_context* MtmdLlmContext::getCtx() { return lctx_; }
@@ -445,6 +520,9 @@ void MtmdLlmContext::setFirstMsgTokens(llama_pos firstMsgTokens) {
 void MtmdLlmContext::setNDiscarded(llama_pos nDiscarded) {
   this->nDiscarded_ = nDiscarded;
 }
+
+int32_t MtmdLlmContext::getNSlides() const { return nSlides_; }
+void MtmdLlmContext::resetNSlides() { nSlides_ = 0; }
 
 void MtmdLlmContext::loadMedia(const std::vector<uint8_t>& media) {
   if (media.empty()) {
@@ -513,11 +591,20 @@ void MtmdLlmContext::loadMedia(const std::string& fname) {
 }
 
 void MtmdLlmContext::resetState(bool resetStats) {
+
+  dynamicToolsState().reset();
   // Reset the n_past
   nPast_ = 0;
 
   // Reset the first msg token length
   firstMsgTokens_ = 0;
+
+  // On partial reset (resetStats=false), preserve nSlides_ so
+  // runtimeStats() can read the per-inference value.
+  // On full reset (resetStats=true), clear it along with perf stats.
+  if (resetStats) {
+    nSlides_ = 0;
+  }
 
   // Clear UTF-8 buffer when resetting state
   utf8Buffer_.clear();

@@ -5,6 +5,81 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.5]
+
+### Changed
+- Switched desktop Parakeet prebuilds to static ONNX Runtime linking so packaged platform artifacts stay as a single `.bare` addon plus exports file
+- Aligned the secondary native build path and Linux linkage behavior with the desktop packaging update to keep runtime loading working after removing bundled shared libraries
+
+### Fixed
+- Apple prebuild compatibility by replacing the `std::ranges::find` sample-rate check with a `std::find` implementation that works on the current Xcode toolchains
+
+## [0.2.4]
+
+Security hardening release from comprehensive security audit.
+
+### Fixed
+- Add 500 MB buffer limit to audio accumulation to prevent OOM from unbounded buffering (#1080)
+- Add SHA-256 integrity verification to model download scripts using HuggingFace LFS checksums (#1081)
+- Sanitize error messages to remove filesystem paths from thrown errors (#1084)
+- Wrap job ID counter at `Number.MAX_SAFE_INTEGER` to prevent precision loss (#1085)
+- Harden benchmark server: add library allowlist, restrict file paths to allowed directories, remove dynamic `npm install`, add body size limit, restrict CORS to localhost (#1086)
+
+## [0.2.3]
+
+### Added
+- RTF benchmark integration test (`rtf-benchmark.test.js`) that captures Real-Time Factor and 12 other timing metrics from the C++ addon's `runtimeStats` callback
+- `test:benchmark:rtf` npm script for on-demand RTF benchmark runs
+- RTF benchmark step in integration test CI workflow (non-blocking, all 6 runners) with JSON artifact upload
+
+## [0.2.2]
+
+This release documents Parakeet runtime statistics and transcription output in TypeScript so consumers can type `response.stats` and `run()` results against the native addon.
+
+## New APIs
+
+### `RuntimeStats` and `ParakeetRunOutput` in `index.d.ts`
+
+The `TranscriptionParakeet` namespace now exports **`RuntimeStats`**, aligned with `ParakeetModel::runtimeStats()` (throughput, audio duration, token and transcription counts, pipeline timing fields through `totalEncodedFrames`). **`ParakeetRunOutput`** is **`TranscriptionSegment[] | TranscriptionSegment`**, matching array or single-segment updates from the addon. **`run()`** is typed to return **`Promise<QvacResponse<ParakeetRunOutput>>`**, with documentation that **`response.stats`** matches **`RuntimeStats`** when stats collection is enabled via `opts.stats`.
+
+## [0.2.1]
+
+This release fixes `reload()` for setups that use per-file model paths (TDT, CTC, EOU, Sortformer), so the native addon keeps receiving the same paths after a reload as on the initial load.
+
+## Bug Fixes
+
+### reload() missing named path passthrough
+
+`reload()` rebuilt configuration without the individual file paths (`encoderPath`, `decoderPath`, `vocabPath`, and the other named path fields). After `reload()`, the addon no longer saw those paths and could not load the model correctly. `reload()` now builds configuration through the same `_buildConfigurationParams()` helper as `_load()`, so named paths are always included. When named paths are in use, `reload()` also skips streaming weights via `_loadModelWeights`, matching initial load behavior and avoiding redundant large file reads.
+
+## Added
+
+### Integration coverage for reload with named paths
+
+A new integration test exercises `TranscriptionParakeet` with TDT named paths: transcribe, call `reload()` with updated `parakeetConfig`, then transcribe again and verify output quality.
+
+## [0.2.0]
+
+### Changed
+- Migrated the native addon implementation to `qvac-lib-inference-addon-cpp` 1.x (`IModel`/`IModelCancel` + `AddonJs`/`AddonCpp`), replacing the removed legacy templated addon API
+- Updated the JS/native pipeline to `createInstance` + `runJob` while preserving public transcription API behavior and output semantics
+- Hardened cancel/reload/job lifecycle behavior in runtime and integration paths to match expected production behavior
+
+### Added
+- Dedicated `AddonCpp` test coverage plus expanded cancellation and lifecycle regression coverage for the addon-cpp runtime path
+
+## [0.1.11]
+
+### Changed
+- All model types (TDT, CTC, EOU, Sortformer) now require named file paths — buffer-based `_loadModelWeights` fallback removed
+- `_hasNamedPaths()` unified to cover all model types; `_hasAnyNamedPaths()` removed
+- `_load()` passes all named paths (TDT, CTC, EOU, Sortformer) to C++
+- `JSAdapter` parses CTC (`ctcModelPath`, `ctcModelDataPath`, `tokenizerPath`), EOU (`eouEncoderPath`, `eouDecoderPath`), and Sortformer (`sortformerPath`) path properties
+- `loadTDTSessions` requires `encoderPath` and `decoderPath`, removes buffer fallback
+- `loadCTCSessions` requires `ctcModelPath`, loads with C++-side temp staging for ONNX external data, reads tokenizer from `tokenizerPath`
+- `loadEOUSessions` requires `eouEncoderPath` and `eouDecoderPath`, reads tokenizer from `tokenizerPath`
+- `loadSortformerSessions` requires `sortformerPath`
+
 ## [0.1.10]
 
 ### Added

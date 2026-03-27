@@ -1,6 +1,6 @@
 # Architecture Documentation
 
-**Package:** `@qvac/img-stable-diffusion-cpp` v0.1.0  
+**Package:** `@qvac/diffusion-cpp` v0.1.0  
 **Stack:** JavaScript, C++20, stable-diffusion.cpp, Bare Runtime, CMake, vcpkg  
 **License:** Apache-2.0
 
@@ -38,12 +38,12 @@
 
 ## Purpose
 
-`@qvac/img-stable-diffusion-cpp` is a cross-platform npm package providing diffusion model inference for Bare runtime applications. It wraps stable-diffusion.cpp in a JavaScript-friendly API, enabling local image and video generation on desktop and mobile with CPU/GPU acceleration.
+`@qvac/diffusion-cpp` is a cross-platform npm package providing diffusion model inference for Bare runtime applications. It wraps stable-diffusion.cpp in a JavaScript-friendly API, enabling local image generation on desktop and mobile with CPU/GPU acceleration.
 
 **Core value:**
 - High-level JavaScript API for diffusion model inference
 - Progress callback during generation steps
-- Text-to-image and image-to-image generation via single `run()` API
+- Text-to-image generation via `run()` API
 - Disk-local model files (no download/streaming layer)
 
 ## Key Features
@@ -51,10 +51,10 @@
 - **Cross-platform**: macOS, Linux, Windows, iOS, Android
 - **Disk-local models**: Files must be present on disk at `diskPath`
 - **Progress tracking**: Step-by-step generation progress callbacks
-- **GPU acceleration**: Metal, Vulkan, CUDA, OpenCL
+- **GPU acceleration**: Metal, Vulkan, OpenCL
 - **Quantized models**: GGUF, safetensors, checkpoint formats
 - **Diffusion models**: SD1.x, SD2.x, SDXL, SD3, FLUX.2 [klein]
-- **Generation modes**: txt2img, img2img (auto-detected via `init_image` parameter)
+- **Generation modes**: txt2img
 
 ## Target Platforms
 
@@ -62,9 +62,9 @@
 |----------|-------------|-------------|--------|-------------|
 | macOS | arm64, x64 | 14.0+ | ✅ Tier 1 | Metal |
 | iOS | arm64 | 17.0+ | ✅ Tier 1 | Metal |
-| Linux | arm64, x64 | Ubuntu-22+ | ✅ Tier 1 | Vulkan, CUDA |
+| Linux | arm64, x64 | Ubuntu-22+ | ✅ Tier 1 | Vulkan |
 | Android | arm64 | 12+ | ✅ Tier 1 | Vulkan, OpenCL |
-| Windows | x64 | 10+ | ✅ Tier 1 | Vulkan, CUDA |
+| Windows | x64 | 10+ | ✅ Tier 1 | Vulkan |
 
 **Dependencies:**
 - qvac-lib-inference-addon-cpp (≥1.1.2): C++ addon framework (single-job runner, runJob/activate/cancel/destroyInstance)
@@ -87,7 +87,7 @@ graph TB
     end
     
     subgraph "Inference Addons"
-        IMG[img-stable-diffusion-cpp<br/>Image/Video Gen]
+        IMG[diffusion-cpp<br/>Image Gen]
         LLM[llm-llamacpp<br/>LLMs]
         EMBED[embed-llamacpp<br/>Embeddings]
         WHISPER[whispercpp<br/>STT]
@@ -230,7 +230,7 @@ graph TB
     subgraph "Layer 5: Backend"
         SDCPP["stable-diffusion.cpp"]
         GGML["GGML"]
-        GPU["GPU Backends<br/>(Metal/Vulkan/CUDA/OpenCL)"]
+        GPU["GPU Backends<br/>(Metal/Vulkan/OpenCL)"]
     end
     
     APP --> IMGCLASS
@@ -340,10 +340,9 @@ graph TB
 
 **Responsibility:** GPU backend selection at runtime
 
-- Selects between CPU, Metal, Vulkan, CUDA, and OpenCL backends at runtime
+- Selects between CPU, Metal, Vulkan, and OpenCL backends at runtime
 - Metal compiled statically on macOS/iOS
-- CUDA available on Linux/Windows with NVIDIA GPUs
-- Vulkan as cross-platform fallback
+- Vulkan as cross-platform GPU backend
 - OpenCL for Adreno GPUs on Android
 
 #### **SamplerManager (model-interface/SamplerManager.cpp)**
@@ -468,7 +467,7 @@ Use stable-diffusion.cpp as the core inference engine instead of Python diffuser
 - Pure C/C++ implementation for maximum performance
 - GGML-based tensor operations (same as llama.cpp, familiar ecosystem)
 - Supports quantization reducing memory by 2-8x
-- GPU acceleration via Metal (Apple), Vulkan (cross-platform), CUDA (NVIDIA), OpenCL
+- GPU acceleration via Metal (Apple), Vulkan (cross-platform), OpenCL (Android/Adreno)
 
 **Model Support:**
 - Comprehensive support for diffusion models:
@@ -630,7 +629,7 @@ Need to pass complex generation parameters from JavaScript to C++:
 - Prompt and negative prompt
 - Image dimensions (width, height)
 - Sampling parameters (steps, cfg_scale, sampler, seed)
-- Optional inputs (init image for img2img, LoRA configs, ControlNet)
+- Optional inputs (LoRA configs, ControlNet)
 
 ### Decision
 
@@ -670,12 +669,8 @@ interface GenerationParams {
   batch_count?: number;       // default: 1
   vae_tiling?: boolean;       // Enable VAE tiling (for large images)
   cache_preset?: string;      // 'slow' | 'medium' | 'fast' | 'ultra'
-  init_image?: Uint8Array;    // PNG/JPEG bytes — if provided, runs img2img
-  strength?: number;          // img2img: 0.0 = keep source, 1.0 = full redraw
 }
 ```
-
-Mode is determined automatically: if `init_image` is provided, runs img2img; otherwise txt2img.
 
 ---
 

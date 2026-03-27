@@ -1,7 +1,11 @@
 'use strict'
 
 const path = require('bare-path')
-const { ensureChatterboxModels, ensureSupertonicModels } = require('../test/utils/downloadModel.js')
+const {
+  ensureChatterboxModels,
+  ensureSupertonicModels,
+  ensureSupertonicModelsMultilingual
+} = require('../test/utils/downloadModel.js')
 
 const baseDir = '.'
 const modelsDir = path.join(baseDir, 'models')
@@ -18,6 +22,8 @@ async function run () {
     const chatterboxSets = [
       { language: 'en', variant: 'fp32' },
       { language: 'en', variant: 'fp16' },
+      { language: 'en', variant: 'q4' },
+      { language: 'en', variant: 'q4f16' },
       { language: 'multilingual', variant: 'fp32' }
     ]
     for (const opts of chatterboxSets) {
@@ -27,7 +33,10 @@ async function run () {
     }
     const supertonicDir = path.join(modelsDir, 'supertonic')
     const rSuper = await ensureSupertonicModels({ targetDir: supertonicDir })
-    if (!rSuper.success) errors.push('Supertonic')
+    if (!rSuper.success) errors.push('Supertonic English')
+    const supertonicMultilingualDir = path.join(modelsDir, 'supertonic-multilingual')
+    const rSuperML = await ensureSupertonicModelsMultilingual({ targetDir: supertonicMultilingualDir })
+    if (!rSuperML.success) errors.push('Supertonic multilingual')
   } else {
     const chatterboxDir = path.join(modelsDir, language === 'en' ? 'chatterbox' : 'chatterbox-multilingual')
     const rChatter = await ensureChatterboxModels({ targetDir: chatterboxDir, variant, language })
@@ -35,7 +44,10 @@ async function run () {
 
     const supertonicDir = path.join(modelsDir, 'supertonic')
     const rSuper = await ensureSupertonicModels({ targetDir: supertonicDir })
-    if (!rSuper.success) errors.push('Supertonic')
+    if (!rSuper.success) errors.push('Supertonic English')
+    const supertonicMultilingualDir = path.join(modelsDir, 'supertonic-multilingual')
+    const rSuperML = await ensureSupertonicModelsMultilingual({ targetDir: supertonicMultilingualDir })
+    if (!rSuperML.success) errors.push('Supertonic multilingual')
   }
 
   if (errors.length) {

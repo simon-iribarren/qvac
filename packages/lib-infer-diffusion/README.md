@@ -1,16 +1,14 @@
 # qvac-lib-infer-stable-diffusion-cpp
 
-Native C++ addon for text-to-image and image-to-image generation using [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp), built for the Bare Runtime. Supports **Stable Diffusion 1.x / 2.x / XL / 3** and **FLUX.2 [klein]**.
-
-> **Scope:** Video generation (Wan2.x) is not yet supported.
+Native C++ addon for text-to-image generation using [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp), built for the Bare Runtime. Supports **Stable Diffusion 1.x / 2.x / XL / 3** and **FLUX.2 [klein]**.
 
 ## Table of Contents
 
 - [Supported platforms](#supported-platforms)
-- [Prerequisites](#prerequisites)
 - [Building from Source](#building-from-source)
 - [Downloading Model Files](#downloading-model-files)
-- [Running the Examples](#running-the-examples)
+- [Running the Example](#running-the-example)
+- [Other Examples](#other-examples)
 - [Usage](#usage)
   - [1. Import the Model Class](#1-import-the-model-class)
   - [2. Create the `args` object](#2-create-the-args-object)
@@ -30,7 +28,7 @@ Native C++ addon for text-to-image and image-to-image generation using [stable-d
 | Platform | Architecture | Status | GPU Backend |
 |----------|-------------|--------|-------------|
 | macOS | arm64 | ✅ Tier 1 | Metal |
-| macOS | x64 | ✅ Tier 1 | CPU / Metal |
+| macOS | x64 | ✅ Tier 1 | Metal |
 | Linux | arm64, x64 | ✅ Tier 1 | Vulkan |
 | Android | arm64 | ✅ Tier 1 | Vulkan, OpenCL |
 | iOS | arm64 | ✅ Tier 1 | Metal |
@@ -44,50 +42,17 @@ Native C++ addon for text-to-image and image-to-image generation using [stable-d
 
 ---
 
-## Prerequisites
-
-Install the Bare Runtime globally:
-
-```bash
-npm install -g bare@latest
-```
-
-Verify the build toolchain is available:
-
-```bash
-cmake --version       # must be 3.25+
-clang++ --version     # or g++ --version (g++-13 required on Ubuntu 22)
-git --version
-```
-
-On **macOS**, Xcode Command Line Tools are required for Metal support:
-
-```bash
-xcode-select --install
-```
-
----
-
 ## Building from Source
 
-**1. Install npm dependencies** (fetches cmake-bare, cmake-vcpkg, and all JS dependencies):
+See [build.md](./build.md) for prerequisites, platform-specific setup, cross-compilation, and troubleshooting.
+
+Quick start:
 
 ```bash
+npm install -g bare bare-make
 npm install
-```
-
-**2. Build the native addon** (generates, compiles, and installs the `.bare` shared library into `prebuilds/`):
-
-```bash
 npm run build
 ```
-
-The build process:
-- Runs `bare-make generate` to configure CMake and download/build vcpkg dependencies (including `stable-diffusion.cpp` and `ggml`)
-- Runs `bare-make build` to compile the C++ addon
-- Runs `bare-make install` to copy the built `.bare` file to `prebuilds/`
-
-> **First build note:** The vcpkg step clones and compiles `stable-diffusion.cpp` from source, which can take **5–15 minutes** depending on your machine and internet connection.
 
 ---
 
@@ -104,7 +69,7 @@ This downloads three files into the `models/` directory:
 | File | Size | Description |
 |------|------|-------------|
 | `flux-2-klein-4b-Q8_0.gguf` | ~4.0 GB | FLUX.2 [klein] 4B diffusion model (Q8_0 quantised) |
-| `Qwen3-4B-Q6_K.gguf` | ~3.1 GB | Qwen3 4B text encoder (Q6_K quantised) |
+| `Qwen3-4B-Q4_K_M.gguf` | ~2.5 GB | Qwen3 4B text encoder (Q4_K_M quantised) |
 | `flux2-vae.safetensors` | ~321 MB | VAE decoder |
 
 > **Note:** Downloads can be resumed if interrupted — the script uses `curl -C -` for resumable transfers.
@@ -114,7 +79,7 @@ This downloads three files into the `models/` directory:
 FLUX.2 [klein] uses a split model layout. Three separate components are required:
 
 - **Diffusion model** (`flux-2-klein-4b-Q8_0.gguf`) — the main image transformer. This GGUF has no SD metadata KV pairs so it must be loaded via `diffusion_model_path` internally, not `model_path`.
-- **Text encoder** (`Qwen3-4B-Q6_K.gguf`) — Qwen3 4B in standard GGML Q6_K format. The FP4 safetensors variant from ComfyUI (`qwen_3_4b_fp4_flux2.safetensors`) is **not supported** by ggml and will fail with a tensor shape error.
+- **Text encoder** (`Qwen3-4B-Q4_K_M.gguf`) — Qwen3 4B in standard GGML Q4_K_M format.
 - **VAE** (`flux2-vae.safetensors`) — standard safetensors format, compatible as-is.
 
 ### Disk and RAM requirements
@@ -122,27 +87,15 @@ FLUX.2 [klein] uses a split model layout. Three separate components are required
 | Component | Disk | RAM at runtime |
 |-----------|------|----------------|
 | Diffusion model (Q8_0) | 4.0 GB | ~4.1 GB |
-| Text encoder (Q6_K) | 3.1 GB | ~4.3 GB |
+| Text encoder (Q4_K_M) | 2.5 GB | ~4.3 GB |
 | VAE | 321 MB | ~95 MB |
-| **Total** | **~7.4 GB** | **~8.5 GB** |
+| **Total** | **~6.8 GB** | **~8.5 GB** |
 
 A machine with **16 GB of unified memory** (e.g. MacBook Air M-series) can run this model.
 
-### Image-to-image (img2img) models
-
-For img2img workflows, use the same models as txt2img. A convenience download script is provided:
-
-```bash
-./scripts/download-model-i2i.sh
-```
-
-This script downloads the same FLUX.2 [klein] models listed above. If you've already run `download-model.sh`, this script will detect the existing files and skip them.
-
-**Usage:** img2img transforms an existing image using a text prompt. See [`examples/img2img-flux2.js`](examples/img2img-flux2.js) for a complete example.
-
 ---
 
-## Running the Examples
+## Running the Example
 
 Two runnable examples are provided.
 
@@ -193,6 +146,14 @@ Source: [`examples/generate-image.js`](./examples/generate-image.js)
 
 > **Performance note:** On an M1 MacBook Air (16 GB) with Metal enabled, loading takes ~15 s and 20 steps at 512 × 512 take ~10 minutes. Reduce `STEPS` to 4 for quick tests — FLUX.2's distilled model is designed for low step counts.
 
+## Other Exampless
+
+-   [Quickstart](./examples/quickstart.js) – Minimal text-to-image generation with SD2.1.
+-   [Generate Image (SD2.1)](./examples/generate-image-sd2.js) – Text-to-image with an SD2.1 all-in-one GGUF model.
+-   [Generate Image (SD3)](./examples/generate-image-sd3.js) – Text-to-image with SD3 Medium (safetensors, diffusion + CLIP encoders).
+-   [Generate Image (SDXL)](./examples/generate-image-sdxl.js) – Text-to-image with an SDXL base all-in-one GGUF model.
+-   [Runtime Stats](./examples/runtime-stats-sd2.js) – Run SD2.1 inference and report runtime statistics.
+
 ---
 
 ## Usage
@@ -200,7 +161,7 @@ Source: [`examples/generate-image.js`](./examples/generate-image.js)
 ### 1. Import the Model Class
 
 ```js
-const ImgStableDiffusion = require('@qvac/img-stable-diffusion-cpp')
+const ImgStableDiffusion = require('@qvac/diffusion-cpp')
 ```
 
 ### 2. Create the `args` object
@@ -213,7 +174,7 @@ const args = {
   logger: console,
   diskPath: MODELS_DIR,
   modelName:  'flux-2-klein-4b-Q8_0.gguf',
-  llmModel:   'Qwen3-4B-Q6_K.gguf',   // Qwen3 text encoder for FLUX.2 [klein]
+  llmModel:   'Qwen3-4B-Q4_K_M.gguf',   // Qwen3 text encoder for FLUX.2 [klein]
   vaeModel:   'flux2-vae.safetensors'
 }
 ```
@@ -242,8 +203,8 @@ All config values are coerced to strings internally before being passed to the n
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `threads` | number | auto | Number of CPU threads for model loading and CPU ops |
-| `wtype` | `'f32'` \| `'f16'` \| `'q4_0'` \| `'q8_0'` \| … | auto | Override weight quantisation type |
-| `rng` | `'cpu'` \| `'cuda'` | `'cuda'` | RNG backend (`'cuda'` = philox; recommended — not GPU-specific) |
+| `type` | `'f32'` \| `'f16'` \| `'q4_0'` \| `'q8_0'` \| … | auto | Override weight quantisation type |
+| `rng` | `'cpu'` \| `'cuda'` \| `'std_default'` | `'cuda'` | RNG backend (`'cuda'` = philox RNG — not GPU-specific despite the name; recommended) |
 | `clip_on_cpu` | `true` \| `false` | `false` | Force CLIP encoder to run on CPU |
 | `vae_on_cpu` | `true` \| `false` | `false` | Force VAE to run on CPU |
 | `flash_attn` | `true` \| `false` | `false` | Enable flash attention (reduces memory) |
@@ -318,7 +279,9 @@ require('bare-fs').writeFileSync('output.png', images[0])
 
 > **Sampler note:** Do not set `sampling_method: 'euler_a'` for FLUX.2 models — it will produce random noise. Leave the field unset to let the library auto-select `euler` for flow-matching models.
 
-#### Image-to-image (via `model.run` with `init_image`)
+#### Image-to-image (not yet supported)
+
+> **Note:** img2img is not yet wired in the JS layer — calling `model.run()` with `init_image` will throw. The parameters below are reserved for a future release.
 
 ```js
 const inputPng = require('bare-fs').readFileSync('input.png')
@@ -328,13 +291,10 @@ const response = await model.run({
   init_image: inputPng,
   strength: 0.75,  // 0.0 = no change, 1.0 = full redraw
   steps: 20
-  // Note: width/height are auto-detected from init_image
 })
 ```
 
-**Important:** Do not specify `width` or `height` parameters for img2img - dimensions are automatically detected from the input image.
-
-### 8. Release Resources
+### 7. Release Resources
 
 ```js
 await model.unload()
@@ -350,11 +310,9 @@ await model.unload()
 
 | Role | File | Source |
 |------|------|--------|
-| Diffusion model | `flux-2-klein-4b-Q8_0.gguf` | `leejet/FLUX.2-klein-4B-GGUF` |
-| Text encoder | `Qwen3-4B-Q6_K.gguf` | `unsloth/Qwen3-4B-GGUF` |
-| VAE | `flux2-vae.safetensors` | `Comfy-Org/vae-text-encorder-for-flux-klein-4b` |
-
-> The `qwen_3_4b_fp4_flux2.safetensors` file from the ComfyUI repo **will not work** — FP4 quantisation is NVIDIA-specific and is not supported by ggml.
+| Diffusion model | `flux-2-klein-4b-Q8_0.gguf` | [leejet/FLUX.2-klein-4B-GGUF](https://huggingface.co/leejet/FLUX.2-klein-4B-GGUF) |
+| Text encoder | `Qwen3-4B-Q4_K_M.gguf` | [unsloth/Qwen3-4B-GGUF](https://huggingface.co/unsloth/Qwen3-4B-GGUF) |
+| VAE | `flux2-vae.safetensors` | [black-forest-labs/FLUX.2-klein-4B](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B) |
 
 ### Stable Diffusion 1.x / 2.x
 
@@ -462,7 +420,7 @@ rng_type_t rngType        = CPU_RNG;
 rng_type_t samplerRngType = CPU_RNG;
 
 // After
-rng_type_t rngType        = CUDA_RNG;       // philox — matches sd_ctx_params_init default
+rng_type_t rngType        = CUDA_RNG;       // philox RNG — matches sd_ctx_params_init default
 rng_type_t samplerRngType = RNG_TYPE_COUNT; // auto
 ```
 

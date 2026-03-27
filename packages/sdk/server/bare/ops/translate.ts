@@ -5,14 +5,20 @@ import {
   ModelType,
   type TranslateParams,
   type TranslationStats,
+  AFRICAN_LANGUAGES_SET,
 } from "@/schemas";
-import { getLangName } from "@qvac/langdetect-text";
 import type TranslationNmtcpp from "@qvac/translation-nmtcpp";
 
-function getLanguage(code: string | undefined): string {
+import { getLangName } from "@qvac/langdetect-text-cld2";
+
+export function getLanguage(code: string | undefined): string {
   if (!code) return "";
   const fullName = getLangName(code);
   return fullName ?? code.toUpperCase();
+}
+
+export function isAfrican(language: string | undefined) {
+  return !!language && AFRICAN_LANGUAGES_SET.has(language);
 }
 
 export async function* translate(
@@ -30,6 +36,7 @@ export async function* translate(
 
   const fromLanguage = getLanguage(from);
   const toLanguage = getLanguage(to);
+  const afriquePrompt = isLlm && (isAfrican(fromLanguage) || isAfrican(toLanguage));
 
   const startTime = Date.now();
   let processedTokens = 0;
@@ -70,8 +77,10 @@ export async function* translate(
       ? singleText
       : [
           {
-            role: "system",
-            content: `${context ? `${context}. ` : ""}Translate the following text from ${fromLanguage} into ${toLanguage}. Only output the translation, nothing else.\n\n${fromLanguage}: ${singleText}\n${toLanguage}:`,
+            role: afriquePrompt ? "user" : "system",
+            content: afriquePrompt
+              ? `Translate ${fromLanguage} to ${toLanguage}.\n${fromLanguage}: ${singleText}\n${toLanguage}:`
+              : `${context ? `${context}. ` : ""}Translate the following text from ${fromLanguage} into ${toLanguage}. Only output the translation, nothing else.\n\n${fromLanguage}: ${singleText}\n${toLanguage}:`,
           },
         ];
 

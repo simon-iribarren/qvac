@@ -1,0 +1,37 @@
+---
+title: "close( )"
+titleStyle: code
+description: "Closes the SDK client connection and releases all associated resources (RPC worker, IPC server). Safe to call multiple times — subsequent calls are a no-op if already closed."
+---
+
+```typescript
+function close(): Promise
+```
+
+
+
+## Returns
+
+```typescript
+Promise
+```
+
+## Example
+
+```typescript
+import { loadModel, completion, close } from "@qvac/sdk";
+
+const modelId = await loadModel({
+  modelSrc: "/path/to/model.gguf",
+  modelType: "llm",
+});
+
+const result = completion({
+  modelId,
+  history: [{ role: "user", content: "Hello" }],
+});
+
+console.log(await result.text);
+
+await close();
+```

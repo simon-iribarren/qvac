@@ -40,8 +40,10 @@ float boxScore(const cv::Mat& probMap, const cv::Rect& bbox) {
 
 } // namespace
 
-StepDoctrDetection::StepDoctrDetection(const ORTCHAR_T* pathDetector, bool useGPU)
-    : ortSession_(getSharedOrtEnv(), pathDetector, getOrtSessionOptions(useGPU)) {
+StepDoctrDetection::StepDoctrDetection(
+    const std::string& pathDetector,
+    const onnx_addon::SessionConfig& sessionConfig)
+    : session_(pathDetector, sessionConfig) {
   QLOG(qvac_lib_inference_addon_cpp::logger::Priority::INFO,
        "[DoctrDetection] ONNX session created");
   ALOG_INFO(std::string("[DoctrDetection] ONNX session created"));
@@ -105,33 +107,22 @@ cv::Mat StepDoctrDetection::runInference(const cv::Mat& preprocessed) {
   }
 
   std::vector<int64_t> inputShape = {1, numChannels, height, width};
-  size_t inputTensorSize = inputData.size();
 
-  Ort::MemoryInfo memInfo = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
-  Ort::Value inputTensor = Ort::Value::CreateTensor<float>(
-      memInfo, inputData.data(), inputTensorSize, inputShape.data(), inputShape.size());
+  onnx_addon::InputTensor inputTensor;
+  inputTensor.name = session_.inputName(0);
+  inputTensor.shape = inputShape;
+  inputTensor.type = onnx_addon::TensorType::FLOAT32;
+  inputTensor.data = inputData.data();
+  inputTensor.dataSize = inputData.size() * sizeof(float);
 
-  // Get input/output names from the model dynamically
-  Ort::AllocatorWithDefaultOptions allocator;
-  auto inputName = ortSession_.GetInputNameAllocated(0, allocator);
-  auto outputName = ortSession_.GetOutputNameAllocated(0, allocator);
+  auto ortOutputs = session_.runRaw(inputTensor);
 
-  const char* inputNames[] = {inputName.get()};
-  const char* outputNames[] = {outputName.get()};
-
-  std::array<Ort::Value, 1> inputTensors = {std::move(inputTensor)};
-
-  auto outputTensors = ortSession_.Run(
-      Ort::RunOptions{nullptr},
-      inputNames, inputTensors.data(), 1,
-      outputNames, 1);
-
-  // Extract probability map from output
-  Ort::Value& outTensor = outputTensors[0];
-  auto* outData = outTensor.GetTensorMutableData<float>();
-  auto typeInfo = outTensor.GetTypeInfo();
-  auto tensorInfo = typeInfo.GetTensorTypeAndShapeInfo();
-  std::vector<int64_t> outShape = tensorInfo.GetShape();
+  // Extract probability map from output (zero-copy access to ORT buffer)
+  auto& ortOutput = ortOutputs[0];
+  auto outTypeInfo = ortOutput.GetTypeInfo();
+  auto outTensorInfo = outTypeInfo.GetTensorTypeAndShapeInfo();
+  auto outShape = outTensorInfo.GetShape();
+  const float* outData = ortOutput.GetTensorData<float>();
 
   {
     std::string shapeStr = "[";
@@ -145,17 +136,19 @@ cv::Mat StepDoctrDetection::runInference(const cv::Mat& preprocessed) {
   }
 
   // Output can be [1, 1, H, W] or [1, H, W] - extract as 2D logit map
+  // No clone needed: probMap (computed via cv::exp) is independent of the ORT
+  // buffer, and ortOutputs stays alive until the end of this function
   cv::Mat logitMap;
   if (outShape.size() == 4) {
     // [batch, channels, height, width]
     int outH = static_cast<int>(outShape[2]);
     int outW = static_cast<int>(outShape[3]);
-    logitMap = cv::Mat(outH, outW, CV_32F, outData).clone();
+    logitMap = cv::Mat(outH, outW, CV_32F, const_cast<float*>(outData));
   } else if (outShape.size() == 3) {
     // [batch, height, width]
     int outH = static_cast<int>(outShape[1]);
     int outW = static_cast<int>(outShape[2]);
-    logitMap = cv::Mat(outH, outW, CV_32F, outData).clone();
+    logitMap = cv::Mat(outH, outW, CV_32F, const_cast<float*>(outData));
   } else {
     throw std::runtime_error("[DoctrDetection] Unexpected output tensor shape with " +
                              std::to_string(outShape.size()) + " dimensions");

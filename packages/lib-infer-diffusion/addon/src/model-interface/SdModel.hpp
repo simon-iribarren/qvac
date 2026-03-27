@@ -4,7 +4,6 @@
 #include <atomic>
 #include <functional>
 #include <memory>
-#include <streambuf>
 #include <string>
 #include <vector>
 
@@ -31,11 +30,10 @@
  *   1. Construct  — stores SdCtxConfig, allocates nothing
  *   2. load()     — calls new_sd_ctx(); weights are read from disk here
  *   3. process()  — runs txt2img / img2img via generate_image()
- *   4. unload()   — calls free_sd_ctx() and releases all GPU/CPU memory
- *      The destructor calls unload() automatically if the caller forgets.
+ *   4. Destroy    — destructor calls free_sd_ctx() and releases all GPU/CPU
+ *                   memory; to unload simply let the object go out of scope
  */
 class SdModel : public qvac_lib_inference_addon_cpp::model::IModel,
-                public qvac_lib_inference_addon_cpp::model::IModelAsyncLoad,
                 public qvac_lib_inference_addon_cpp::model::IModelCancel {
 public:
   SdModel(const SdModel&) = delete;
@@ -51,7 +49,7 @@ public:
   explicit SdModel(qvac_lib_inference_addon_sd::SdCtxConfig config);
 
   /**
-   * Calls unload() — releases the sd_ctx if still alive.
+   * Releases the sd_ctx and all associated GPU/CPU memory.
    */
   ~SdModel() override;
 
@@ -68,23 +66,9 @@ public:
   void load();
 
   /**
-   * Release all model memory (calls free_sd_ctx).
-   * Safe to call multiple times. The object can be load()-ed again afterwards.
-   */
-  void unload();
-
-  /**
    * Returns true if weights are currently loaded (sd_ctx is live).
    */
   [[nodiscard]] bool isLoaded() const noexcept { return sdCtx_ != nullptr; }
-
-  // ── IModelAsyncLoad ────────────────────────────────────────────────────────
-
-  void waitForLoadInitialization() final { load(); }
-
-  void setWeightsForFile(
-      const std::string& /*filename*/,
-      std::unique_ptr<std::basic_streambuf<char>>&& /*buf*/) final {}
 
   // ── IModel ─────────────────────────────────────────────────────────────────
 
@@ -133,11 +117,14 @@ private:
   mutable qvac_lib_inference_addon_cpp::RuntimeStats lastStats_{};
 
   // ── Cumulative stats ──────────────────────────────────────────────────────
-  int64_t modelLoadMs_{0};
-  int64_t totalGenerationMs_{0};
-  int64_t totalWallMs_{0};
-  int64_t totalSteps_{0};
-  int64_t totalGenerations_{0};
-  int64_t totalImages_{0};
-  int64_t totalPixels_{0};
+  struct CumulativeStats {
+    int64_t modelLoadMs{0};
+    int64_t totalGenerationMs{0};
+    int64_t totalWallMs{0};
+    int64_t totalSteps{0};
+    int64_t totalGenerations{0};
+    int64_t totalImages{0};
+    int64_t totalPixels{0};
+  };
+  CumulativeStats stats_{};
 };

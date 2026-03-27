@@ -6,9 +6,7 @@ const BaseInference = require('@qvac/infer-base/WeightsProvider/BaseInference')
 const WeightsProvider = require('@qvac/infer-base/WeightsProvider/WeightsProvider')
 
 const { ParakeetInterface } = require('./parakeet')
-const { QvacErrorAddonParakeet, ERR_CODES } = require('./lib/error')
-
-const END_OF_INPUT = 'end of job'
+const { QvacErrorAddonParakeet, ERR_CODES, END_OF_INPUT } = require('./lib/error')
 
 /**
  * Required model files for TDT model
@@ -112,6 +110,7 @@ class TranscriptionParakeet extends BaseInference {
     this.weightsProvider = new WeightsProvider(loader, this.logger)
 
     this.params = config.parakeetConfig || {}
+    this._hasActiveResponse = false
 
     this.logger.debug('TranscriptionParakeet constructor called', {
       params: this.params,
@@ -129,38 +128,37 @@ class TranscriptionParakeet extends BaseInference {
   validateModelFiles () {
     const modelPath = this._config.path || this._getModelFilePath()
 
-    // When using named path overrides, skip directory-level validation
-    if (this._hasAnyNamedPaths()) {
+    if (this._hasNamedPaths()) {
       const modelType = this.params.modelType || 'tdt'
       const requiredFiles = getRequiredModelFiles(modelType)
       for (const file of requiredFiles) {
         const filePath = this._resolveFilePath(modelPath, file)
         if (!fs.existsSync(filePath)) {
-          this.logger.warn(`Model file not found: ${file} (${filePath})`)
+          this.logger.warn('Model file not found', { file, path: filePath })
         }
       }
       return
     }
 
     if (!modelPath) {
-      return // Skip validation if no path specified yet
+      return
     }
 
     if (!fs.existsSync(modelPath)) {
+      this.logger.error('Model directory not found', { path: modelPath })
       throw new QvacErrorAddonParakeet({
         code: ERR_CODES.MODEL_NOT_FOUND,
-        adds: modelPath
+        adds: 'Model not found at the configured path'
       })
     }
 
-    // Check for required files based on model type
     const modelType = this.params.modelType || 'tdt'
     const requiredFiles = getRequiredModelFiles(modelType)
 
     for (const file of requiredFiles) {
       const filePath = path.join(modelPath, file)
       if (!fs.existsSync(filePath)) {
-        this.logger.warn(`Model file not found: ${file}`)
+        this.logger.warn('Required model file missing', { file })
       }
     }
   }
@@ -212,41 +210,27 @@ class TranscriptionParakeet extends BaseInference {
   }
 
   /**
-   * Whether TDT individual file paths have been provided via named config params.
-   * Only TDT paths are checked because the C++ addon can load directly from these.
-   * CTC/EOU/Sortformer named paths are handled by _resolveFilePath during
-   * JS-side weight loading.
+   * Whether individual file paths have been provided for any model type.
+   * When true, C++ loads directly from these paths (skip JS weight loading).
    * @returns {boolean}
    * @private
    */
   _hasNamedPaths () {
-    return !!(this._config.encoderPath || this._config.encoderDataPath ||
-      this._config.decoderPath || this._config.vocabPath || this._config.preprocessorPath)
+    return !!(
+      this._config.encoderPath || this._config.encoderDataPath ||
+      this._config.decoderPath || this._config.vocabPath || this._config.preprocessorPath ||
+      this._config.ctcModelPath || this._config.ctcModelDataPath || this._config.tokenizerPath ||
+      this._config.eouEncoderPath || this._config.eouDecoderPath ||
+      this._config.sortformerPath
+    )
   }
 
   /**
-   * Whether any named paths (TDT or CTC/EOU/Sortformer) have been provided.
-   * Used for validation to skip directory-level checks when individual paths are given.
-   * @returns {boolean}
+   * Build native addon configuration (shared by _load and reload).
+   * @returns {Object} configurationParams for createInstance / reload / activate
    * @private
    */
-  _hasAnyNamedPaths () {
-    return this._hasNamedPaths() ||
-      !!(this._config.ctcModelPath || this._config.ctcModelDataPath ||
-        this._config.tokenizerPath || this._config.eouEncoderPath ||
-        this._config.eouDecoderPath || this._config.sortformerPath)
-  }
-
-  /**
-   * Load model, weights, and activate addon.
-   * @param {boolean} [closeLoader=false] - Close loader when done.
-   * @param {Function} [reportProgressCallback] - Hook for progress updates.
-   */
-  async _load (closeLoader = false, reportProgressCallback) {
-    this.logger.debug('Loader ready')
-
-    await this.downloadWeights(reportProgressCallback, { closeLoader })
-
+  _buildConfigurationParams () {
     const modelPath = this._config.path || this._getModelFilePath()
     const modelType = this.params.modelType || 'tdt'
 
@@ -262,24 +246,37 @@ class TranscriptionParakeet extends BaseInference {
       seed: this.params.seed ?? -1
     }
 
-    // TDT named paths are passed to C++ which loads directly from disk
     if (this._hasNamedPaths()) {
       if (this._config.encoderPath) configurationParams.encoderPath = this._config.encoderPath
       if (this._config.encoderDataPath) configurationParams.encoderDataPath = this._config.encoderDataPath
       if (this._config.decoderPath) configurationParams.decoderPath = this._config.decoderPath
       if (this._config.vocabPath) configurationParams.vocabPath = this._config.vocabPath
       if (this._config.preprocessorPath) configurationParams.preprocessorPath = this._config.preprocessorPath
+      if (this._config.ctcModelPath) configurationParams.ctcModelPath = this._config.ctcModelPath
+      if (this._config.ctcModelDataPath) configurationParams.ctcModelDataPath = this._config.ctcModelDataPath
+      if (this._config.tokenizerPath) configurationParams.tokenizerPath = this._config.tokenizerPath
+      if (this._config.eouEncoderPath) configurationParams.eouEncoderPath = this._config.eouEncoderPath
+      if (this._config.eouDecoderPath) configurationParams.eouDecoderPath = this._config.eouDecoderPath
+      if (this._config.sortformerPath) configurationParams.sortformerPath = this._config.sortformerPath
     }
+
+    return configurationParams
+  }
+
+  /**
+   * Load model, weights, and activate addon.
+   * @param {boolean} [closeLoader=false] - Close loader when done.
+   * @param {Function} [reportProgressCallback] - Hook for progress updates.
+   */
+  async _load (closeLoader = false, reportProgressCallback) {
+    this.logger.debug('Loader ready')
+
+    await this.downloadWeights(reportProgressCallback, { closeLoader })
+
+    const configurationParams = this._buildConfigurationParams()
 
     this.logger.info('Creating Parakeet addon with configuration:', configurationParams)
     this.addon = this._createAddon(configurationParams)
-
-    // TDT with named paths: C++ loads directly from file paths, skip JS weight loading.
-    // CTC/EOU/Sortformer (with or without named paths): JS loads weights via
-    // _loadModelWeights which uses _resolveFilePath to handle custom paths.
-    if (!this._hasNamedPaths()) {
-      await this._loadModelWeights(modelPath, modelType)
-    }
 
     // Activate the model
     await this.addon.activate()
@@ -354,14 +351,28 @@ class TranscriptionParakeet extends BaseInference {
    * @returns {Promise<QvacResponse>} - Response object for tracking the transcription job
    */
   async _runInternal (audioStream) {
+    if (this.exclusiveRun && this._hasActiveResponse) {
+      throw new QvacErrorAddonParakeet({
+        code: ERR_CODES.JOB_ALREADY_RUNNING
+      })
+    }
+
     const jobId = await this.addon.append({
       type: 'audio',
       data: new Float32Array(0).buffer
     })
 
     const response = this._createResponse(jobId)
+    this._hasActiveResponse = true
+    const finalized = response.await().finally(() => { this._hasActiveResponse = false })
+    finalized.catch(() => {})
+    response.await = () => finalized
 
-    this._handleAudioStream(audioStream).catch(response.failed.bind(response))
+    const normalizedAudioStream = this._normalizeAudioStream(audioStream)
+    this._handleAudioStream(normalizedAudioStream).catch((error) => {
+      response.failed(error)
+      this._deleteJobMapping(jobId)
+    })
     return response
   }
 
@@ -397,6 +408,30 @@ class TranscriptionParakeet extends BaseInference {
     await this.addon.append({ type: END_OF_INPUT })
   }
 
+  _normalizeAudioStream (audioStream) {
+    if (!audioStream) {
+      throw new Error('audioStream is required')
+    }
+
+    if (typeof audioStream[Symbol.asyncIterator] === 'function') {
+      return audioStream
+    }
+
+    if (audioStream instanceof Uint8Array || audioStream instanceof Float32Array) {
+      return [audioStream]
+    }
+
+    if (Array.isArray(audioStream)) {
+      return audioStream
+    }
+
+    if (typeof audioStream[Symbol.iterator] === 'function') {
+      return [Uint8Array.from(audioStream)]
+    }
+
+    throw new Error('Unsupported audio input. Expected stream, TypedArray, or chunk array.')
+  }
+
   /**
    * Reload the model with new configuration parameters.
    * Useful for changing settings without destroying the instance.
@@ -404,33 +439,29 @@ class TranscriptionParakeet extends BaseInference {
    * @param {Object} [newConfig.parakeetConfig] - Parakeet-specific settings
    */
   async reload (newConfig = {}) {
-    this.logger.debug('Reloading addon with new configuration', newConfig)
+    return await this._withExclusiveRun(async () => {
+      this.logger.debug('Reloading addon with new configuration', newConfig)
 
-    // Merge new config with existing params
-    if (newConfig.parakeetConfig) {
-      this.params = { ...this.params, ...newConfig.parakeetConfig }
-    }
+      // Merge new config with existing params
+      if (newConfig.parakeetConfig) {
+        this.params = { ...this.params, ...newConfig.parakeetConfig }
+      }
 
-    const modelPath = this._config.path || this._getModelFilePath()
-    const modelType = this.params.modelType || 'tdt'
+      const configurationParams = this._buildConfigurationParams()
 
-    const configurationParams = {
-      modelPath,
-      modelType,
-      maxThreads: this.params.maxThreads || 4,
-      useGPU: this.params.useGPU || false,
-      sampleRate: this.params.sampleRate || 16000,
-      channels: this.params.channels || 1,
-      captionEnabled: this.params.captionEnabled || false,
-      timestampsEnabled: this.params.timestampsEnabled !== false, // default true
-      seed: this.params.seed ?? -1
-    }
+      await this.cancel()
+      this._failAndClearActiveResponse('Model was reloaded')
+      await this.addon.reload(configurationParams)
+      if (!this._hasNamedPaths()) {
+        await this._loadModelWeights(
+          configurationParams.modelPath,
+          configurationParams.modelType
+        )
+      }
+      await this.addon.activate()
 
-    await this.addon.reload(configurationParams)
-    await this._loadModelWeights(modelPath, modelType)
-    await this.addon.activate()
-
-    this.logger.debug('Addon reloaded and activated successfully')
+      this.logger.debug('Addon reloaded and activated successfully')
+    })
   }
 
   /**
@@ -441,7 +472,7 @@ class TranscriptionParakeet extends BaseInference {
    * @private
    */
   async _downloadWeights (reportProgressCallback, opts) {
-    if (this._hasAnyNamedPaths()) {
+    if (this._hasNamedPaths()) {
       this.logger.info('File paths provided via config, skipping WeightsProvider download')
       if (opts.closeLoader) {
         await this.weightsProvider.loader.close()
@@ -487,11 +518,42 @@ class TranscriptionParakeet extends BaseInference {
    * Override unload to call destroyInstance for proper cleanup.
    */
   async unload () {
-    if (this.addon) {
-      await this.addon.destroyInstance()
+    return await this._withExclusiveRun(async () => {
+      await this.cancel()
+      this._failAndClearActiveResponse('Model was unloaded')
+      if (this.addon) {
+        await this.addon.destroyInstance()
+      }
+      this.state.configLoaded = false
+      this.state.weightsLoaded = false
+    })
+  }
+
+  async cancel () {
+    if (this.addon?.cancel) {
+      await this.addon.cancel()
     }
-    this.state.configLoaded = false
-    this.state.weightsLoaded = false
+  }
+
+  async destroy () {
+    return await this._withExclusiveRun(async () => {
+      await this.cancel()
+      this._failAndClearActiveResponse('Model was destroyed')
+      if (this.addon) {
+        await this.addon.destroyInstance()
+      }
+      this.state.configLoaded = false
+      this.state.weightsLoaded = false
+      this.state.destroyed = true
+    })
+  }
+
+  _failAndClearActiveResponse (reason) {
+    for (const [jobId, response] of this._jobToResponse.entries()) {
+      response.failed(new Error(reason))
+      this._deleteJobMapping(jobId)
+    }
+    this._hasActiveResponse = false
   }
 }
 
