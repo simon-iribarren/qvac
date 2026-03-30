@@ -384,7 +384,7 @@ test("generateChangelogEntry: generates correct format with PR link", (t) => {
   const entry = generateChangelogEntry(basePR);
   t.ok(entry.includes("Add new feature."));
   t.ok(entry.includes("[#123]"));
-  t.ok(/\[#123\]\(https:\/\/github\.com\/test\/pull\/123\)/.test(entry));
+  t.ok(entry.includes("[#123](https://github.com/test/pull/123)"));
 });
 
 test("generateChangelogEntry: adds breaking changes link when applicable", (t) => {
