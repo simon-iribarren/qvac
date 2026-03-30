@@ -104,6 +104,10 @@ runs:
         tar xf /tmp/vulkansdk.tar.xz --strip-components=1 -C "$HOME/vulkan"
         host_arch="$(uname -m)"
         if [ "$host_arch" = "aarch64" ] || [ "$host_arch" = "arm64" ]; then
+          if [ ! -d "$HOME/vulkan/aarch64/include" ]; then
+            echo "Bootstrapping Vulkan SDK for ARM64 host..."
+            "$HOME/vulkan/vulkansdk" --maxjobs
+          fi
           vulkan_sdk_dir="$HOME/vulkan/aarch64"
         else
           vulkan_sdk_dir="$HOME/vulkan/x86_64"
