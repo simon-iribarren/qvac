@@ -12,6 +12,10 @@ import { getMDXComponents } from '@/mdx-components';
 import { resolveIcon } from "@/lib/resolveIcon";
 import { cloneElement, isValidElement } from "react";
 import { LLMCopyButton, ViewOptions, VersionSelector } from '@/components/page-actions';
+import {
+  buildCanonicalDocsUrl,
+  inferDiataxisOpenGraph,
+} from '@/lib/docs-open-graph';
 
 function TitleText({
   title,
@@ -101,8 +105,38 @@ export async function generateMetadata(
   if (!page) notFound();
   const isHomePage = !params.slug || params.slug.length === 0;
 
+  const title = page.data.title;
+  const description = page.data.description;
+  const canonicalUrl = buildCanonicalDocsUrl(params.slug);
+  const { section, tags } = inferDiataxisOpenGraph(page.path);
+
   return {
-    title: isHomePage ? { absolute: page.data.title } : page.data.title,
-    description: page.data.description,
+    title: isHomePage ? { absolute: title } : title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    openGraph: {
+      title,
+      description: description ?? undefined,
+      url: canonicalUrl,
+      siteName: 'QVAC',
+      locale: 'en_US',
+      type: 'article',
+      section,
+      tags,
+      images: [
+        {
+          url: '/qvac-logo.svg',
+          alt: 'QVAC',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description: description ?? undefined,
+      images: ['/qvac-logo.svg'],
+    },
   };
 }
