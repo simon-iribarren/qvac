@@ -14,6 +14,8 @@ import { cloneElement, isValidElement } from "react";
 import { LLMCopyButton, ViewOptions, VersionSelector } from '@/components/page-actions';
 import {
   buildCanonicalDocsUrl,
+  DOCS_OG_IMAGE,
+  DOCS_OG_IMAGE_PATH,
   inferDiataxisOpenGraph,
 } from '@/lib/docs-open-graph';
 
@@ -117,23 +119,20 @@ export async function generateMetadata(
     },
     openGraph: {
       title,
+      description: description ?? undefined,
       url: canonicalUrl,
       siteName: 'QVAC',
       locale: 'en_US',
       type: 'article',
       section,
       tags,
-      images: [
-        {
-          url: '/qvac-logo.svg',
-          alt: 'QVAC',
-        },
-      ],
+      images: [{ ...DOCS_OG_IMAGE }],
     },
     twitter: {
       card: 'summary_large_image',
       title,
-      images: ['/qvac-logo.svg'],
+      description: description ?? undefined,
+      images: [DOCS_OG_IMAGE_PATH],
     },
   };
 }
