@@ -1,0 +1,125 @@
+name: Reusable CPP Tests Addon
+
+on:
+  workflow_call:
+    inputs:
+      repository:
+        description: Repository to checkout
+        required: false
+        type: string
+      ref:
+        description: Git ref to checkout
+        required: false
+        type: string
+      workdir:
+        description: Package working directory
+        required: true
+        type: string
+      needs_vulkan:
+        description: Install Vulkan SDK
+        required: false
+        type: boolean
+        default: true
+      extra_generate_flags:
+        description: Extra flags for bare-make generate
+        required: false
+        type: string
+        default: ""
+    secrets:
+      NPM_TOKEN:
+        required: true
+      PAT_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  cpp-tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            platform: linux
+            arch: x64
+          - os: macos-14
+            platform: darwin
+            arch: arm64
+          - os: windows-11
+            platform: windows
+            arch: x64
+            runner: ai-run-windows11-gpu
+    runs-on: ${{ matrix.runner || matrix.os }}
+    environment: release
+    name: cpp-tests-${{ matrix.platform }}-${{ matrix.arch }}
+    env:
+      WORKDIR: ${{ inputs.workdir }}
+      VCPKG_BINARY_SOURCES: ${{ format('clear;files,{0}/{1}/vcpkg/cache,readwrite', github.workspace, inputs.workdir) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
+        with:
+          repository: ${{ inputs.repository || github.repository }}
+          ref: ${{ inputs.ref || github.ref }}
+          token: ${{ secrets.PAT_TOKEN }}
+
+      - name: Setup node
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # 6.3.0
+        with:
+          node-version: lts/*
+
+      - name: Configure npm auth
+        shell: bash
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          cat > .npmrc <<NPMRC
+          registry=https://registry.npmjs.org/
+          @qvac:registry=https://registry.npmjs.org/
+          @tetherto:registry=https://npm.pkg.github.com/
+          //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+          //npm.pkg.github.com/:_authToken=${{ secrets.PAT_TOKEN }}
+          NPMRC
+
+      - name: Install global dependencies
+        shell: bash
+        run: npm install -g bare bare-make bare-runtime
+
+      - name: Setup addon toolchain
+        uses: ./.github/actions/setup-addon-toolchain
+        with:
+          platform: ${{ matrix.platform == 'windows' && 'win32' || matrix.platform }}
+          arch: ${{ matrix.arch }}
+          ccache-scope: all-ubuntu
+          needs-vulkan: ${{ inputs.needs_vulkan }}
+          needs-rust-targets: "false"
+          needs-submodules: "false"
+
+      - name: Setup vcpkg cache
+        uses: ./.github/actions/setup-vcpkg-cache
+        with:
+          workdir: ${{ env.WORKDIR }}
+          platform: ${{ matrix.platform }}
+          arch: ${{ matrix.arch }}
+          backend: filesystem
+          cache-key-prefix: cpp-tests
+
+      - name: Install package dependencies
+        shell: bash
+        working-directory: ${{ env.WORKDIR }}
+        run: npm install
+
+      - name: Generate C++ build
+        shell: bash
+        working-directory: ${{ env.WORKDIR }}
+        run: bare-make generate --platform ${{ matrix.platform == 'windows' && 'win32' || matrix.platform }} --arch ${{ matrix.arch }} ${{ inputs.extra_generate_flags }}
+
+      - name: Build C++ targets
+        shell: bash
+        working-directory: ${{ env.WORKDIR }}
+        run: bare-make build
+
+      - name: Run C++ tests
+        shell: bash
+        working-directory: ${{ env.WORKDIR }}
+        run: npm run test:cpp

@@ -1,0 +1,75 @@
+name: Setup vcpkg cache
+description: Normalize vcpkg cache setup for addon workflows.
+
+inputs:
+  workdir:
+    description: Package working directory
+    required: true
+  platform:
+    description: Build platform
+    required: true
+  arch:
+    description: Build architecture
+    required: true
+  backend:
+    description: filesystem | s3
+    required: false
+    default: filesystem
+  s3-bucket-path:
+    description: S3 bucket/key prefix when backend=s3
+    required: false
+    default: ""
+  cache-key-prefix:
+    description: Prefix to isolate cache keys
+    required: false
+    default: addon-vcpkg
+  aws-region:
+    description: AWS region for S3 cache
+    required: false
+    default: us-east-1
+
+outputs:
+  cache-dir:
+    description: Effective vcpkg cache directory
+    value: ${{ steps.vars.outputs.cache_dir }}
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve cache directory
+      id: vars
+      shell: bash
+      run: echo "cache_dir=${{ inputs.workdir }}/vcpkg/cache" >> "$GITHUB_OUTPUT"
+
+    - name: Create cache directory
+      shell: bash
+      run: mkdir -p "${{ steps.vars.outputs.cache_dir }}"
+
+    - name: Configure vcpkg binary sources
+      shell: bash
+      run: echo "VCPKG_BINARY_SOURCES=clear;files,${{ github.workspace }}/${{ steps.vars.outputs.cache_dir }},readwrite" >> "$GITHUB_ENV"
+
+    - name: Restore filesystem cache
+      if: ${{ inputs.backend == 'filesystem' }}
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # 5.0.4
+      with:
+        key: ${{ inputs.cache-key-prefix }}-${{ inputs.platform }}-${{ inputs.arch }}-${{ hashFiles(format('{0}/vcpkg.json', inputs.workdir), format('{0}/vcpkg-configuration.json', inputs.workdir), format('{0}/vcpkg/ports/**', inputs.workdir)) }}
+        path: ${{ steps.vars.outputs.cache_dir }}
+        restore-keys: ${{ inputs.cache-key-prefix }}-${{ inputs.platform }}-${{ inputs.arch }}-
+
+    - name: Restore S3-backed cache
+      if: ${{ inputs.backend == 's3' && inputs.s3-bucket-path != '' }}
+      shell: bash
+      env:
+        AWS_DEFAULT_REGION: ${{ inputs.aws-region }}
+      run: |
+        set -e
+        KEY="${{ inputs.s3-bucket-path }}/${{ inputs.platform }}-${{ inputs.arch }}.tar.gz"
+        TMP_ARCHIVE="/tmp/vcpkg-cache-${{ inputs.platform }}-${{ inputs.arch }}.tar.gz"
+        if aws s3 cp "s3://${KEY}" "$TMP_ARCHIVE"; then
+          tar xzf "$TMP_ARCHIVE" -C "${{ steps.vars.outputs.cache_dir }}"
+          rm -f "$TMP_ARCHIVE"
+          echo "Restored S3 vcpkg cache from s3://${KEY}"
+        else
+          echo "No S3 cache found at s3://${KEY}; continuing without restore"
+        fi
