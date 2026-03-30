@@ -278,13 +278,31 @@ jobs:
           GIT_PAT: ${{ secrets.PAT_TOKEN }}
         run: |
           if [ -n "${GIT_PAT:-}" ]; then
-            git config --global url."https://${GIT_PAT}:@github.com/".insteadOf "https://github.com/"
-            git config --global url."https://${GIT_PAT}:@github.com/".insteadOf "git@github.com:"
-            git config --global url."https://${GIT_PAT}:@github.com/".insteadOf "ssh://git@github.com/"
+            git config --global url."https://x-access-token:${GIT_PAT}@github.com/".insteadOf "https://github.com/"
+            git config --global url."https://x-access-token:${GIT_PAT}@github.com/".insteadOf "git@github.com:"
+            git config --global url."https://x-access-token:${GIT_PAT}@github.com/".insteadOf "ssh://git@github.com/"
           else
-            git config --global url."https://${{ github.token }}:@github.com/".insteadOf "https://github.com/"
-            git config --global url."https://${{ github.token }}:@github.com/".insteadOf "git@github.com:"
-            git config --global url."https://${{ github.token }}:@github.com/".insteadOf "ssh://git@github.com/"
+            git config --global url."https://x-access-token:${{ github.token }}@github.com/".insteadOf "https://github.com/"
+            git config --global url."https://x-access-token:${{ github.token }}@github.com/".insteadOf "git@github.com:"
+            git config --global url."https://x-access-token:${{ github.token }}@github.com/".insteadOf "ssh://git@github.com/"
+          fi
+
+      - name: Verify GitHub registry auth path
+        shell: bash
+        env:
+          GIT_PAT: ${{ secrets.PAT_TOKEN }}
+        run: |
+          if [ -n "${GIT_PAT:-}" ]; then
+            echo "PAT_TOKEN present: true"
+          else
+            echo "PAT_TOKEN present: false"
+          fi
+          echo "Testing private registry access via git URL rewrite..."
+          if git ls-remote git@github.com:tetherto/qvac-registry-vcpkg.git HEAD; then
+            echo "Private registry auth check succeeded"
+          else
+            echo "::error::Private registry auth check failed. Verify PAT_TOKEN permissions and URL rewrite setup."
+            exit 1
           fi
 
       - name: Install global dependencies
