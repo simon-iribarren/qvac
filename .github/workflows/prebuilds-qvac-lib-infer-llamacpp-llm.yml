@@ -65,24 +65,7 @@ permissions:
   contents: read
 
 jobs:
-  purge-vcpkg-cache:
-    runs-on: ubuntu-latest
-    environment: release
-    steps:
-      - name: Purge stale vcpkg S3 cache
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          MODEL_S3_BUCKET: ${{ secrets.MODEL_S3_BUCKET }}
-        run: |
-          echo "Listing objects under s3://${MODEL_S3_BUCKET}/vcpkg-cache/ ..."
-          aws s3 ls "s3://${MODEL_S3_BUCKET}/vcpkg-cache/" --recursive || true
-          echo "Removing all objects under s3://${MODEL_S3_BUCKET}/vcpkg-cache/ ..."
-          aws s3 rm "s3://${MODEL_S3_BUCKET}/vcpkg-cache/" --recursive
-          echo "Done — vcpkg will rebuild from source."
-
   prebuild:
-    needs: [purge-vcpkg-cache]
     permissions:
       contents: write
       packages: write
