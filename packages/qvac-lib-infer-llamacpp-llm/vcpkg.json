@@ -6,8 +6,7 @@
     },
     "picojson",
     {
-      "name": "qvac-fabric",
-      "version>=": "7248.2.1#1"
+      "name": "qvac-fabric"
     },
     {
       "name": "qvac-lib-inference-addon-cpp",
