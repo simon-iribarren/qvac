@@ -376,7 +376,7 @@ export const dynamicToolsTests = [
   toolsModeEmptyArray,
   toolsModeSingleTool,
   toolsModeLargeToolSet,
-]
+];
 
 export const toolsTests = [
   toolsSimpleFunction,
