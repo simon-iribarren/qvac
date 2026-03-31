@@ -33,6 +33,7 @@ Implement the workflow unification initiative from `docs/pitches/unify-github-wo
 | 4 | Build reusable on-pr workflow and converge wrappers | `done` |
 | 5 | Build reusable cpp-tests workflow and migrate wrappers | `done` |
 | 6 | Validation, rollout, and legacy retirement | `in_progress` |
+| 7 | Add scheduled S3 vcpkg cache cleanup job (TTL/prune policy) to prevent unbounded growth | `todo` |
 
 ## Current Status Snapshot (2026-03-27)
 

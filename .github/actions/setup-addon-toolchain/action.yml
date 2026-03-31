@@ -36,6 +36,10 @@ inputs:
     description: Optional Xcode version to select on macOS
     required: false
     default: ""
+  vulkan-s3-key-prefix:
+    description: S3 key prefix for Vulkan ARM64 cache (bucket from MODEL_S3_BUCKET)
+    required: false
+    default: "vulkan-sdk-cache"
 
 runs:
   using: composite
@@ -104,9 +108,38 @@ runs:
         tar xf /tmp/vulkansdk.tar.xz --strip-components=1 -C "$HOME/vulkan"
         host_arch="$(uname -m)"
         if [ "$host_arch" = "aarch64" ] || [ "$host_arch" = "arm64" ]; then
-          if [ ! -d "$HOME/vulkan/aarch64/include" ]; then
+          sdk_version="$(grep -o 'sdk/[0-9]*\.[0-9]*' "$HOME/vulkan/README.txt" | head -1 | sed 's|sdk/||')"
+          if [ -z "${sdk_version}" ]; then
+            sdk_version="latest"
+          fi
+          cache_key_prefix="${{ inputs.vulkan-s3-key-prefix }}"
+          cache_key="${cache_key_prefix}/linux-arm64-${sdk_version}.tar.gz"
+          cache_archive="/tmp/vulkan-arm64-cache.tar.gz"
+          restored_from_s3="false"
+
+          if [ -n "${MODEL_S3_BUCKET:-}" ]; then
+            if aws s3 cp "s3://${MODEL_S3_BUCKET}/${cache_key}" "$cache_archive"; then
+              echo "Restoring ARM64 Vulkan SDK cache from s3://${MODEL_S3_BUCKET}/${cache_key}"
+              tar xzf "$cache_archive" -C "$HOME/vulkan"
+              rm -f "$cache_archive"
+              restored_from_s3="true"
+            else
+              echo "No ARM64 Vulkan SDK cache found at s3://${MODEL_S3_BUCKET}/${cache_key}"
+            fi
+          else
+            echo "MODEL_S3_BUCKET not set; skipping ARM64 Vulkan SDK cache restore"
+          fi
+
+          if [ "$restored_from_s3" != "true" ] || [ ! -d "$HOME/vulkan/aarch64/include" ]; then
             echo "Bootstrapping Vulkan SDK for ARM64 host..."
             "$HOME/vulkan/vulkansdk" --maxjobs
+
+            if [ -n "${MODEL_S3_BUCKET:-}" ] && [ -d "$HOME/vulkan/aarch64" ]; then
+              echo "Saving ARM64 Vulkan SDK cache to s3://${MODEL_S3_BUCKET}/${cache_key}"
+              tar czf "$cache_archive" -C "$HOME/vulkan" aarch64
+              aws s3 cp "$cache_archive" "s3://${MODEL_S3_BUCKET}/${cache_key}"
+              rm -f "$cache_archive"
+            fi
           fi
           vulkan_sdk_dir="$HOME/vulkan/aarch64"
         else
