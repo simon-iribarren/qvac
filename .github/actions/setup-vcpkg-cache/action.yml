@@ -67,7 +67,7 @@ runs:
         if [ -z "${PREFIX}" ]; then
           PREFIX="vcpkg-cache"
         fi
-        echo "VCPKG_BINARY_SOURCES=clear;x-aws,s3://${MODEL_S3_BUCKET}/${PREFIX}/,readwrite" >> "$GITHUB_ENV"
+        echo "VCPKG_BINARY_SOURCES=clear;x-aws,s3://${MODEL_S3_BUCKET}/${PREFIX}/${{ inputs.platform }}-${{ inputs.arch }}/,readwrite" >> "$GITHUB_ENV"
 
     - name: Restore filesystem cache
       if: ${{ inputs.backend == 'filesystem' }}
