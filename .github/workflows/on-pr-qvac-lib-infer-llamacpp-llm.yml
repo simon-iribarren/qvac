@@ -163,12 +163,7 @@ jobs:
     if: needs.authorize.outputs.allowed == 'true'
     needs: [authorize, prebuild]
     uses: ./.github/workflows/integration-test-qvac-lib-infer-llamacpp-llm.yml
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
-      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+    secrets: inherit
     with:
       repository: ${{ github.event.pull_request.head.repo.full_name }}
       ref: ${{ github.event.pull_request.head.ref }}
