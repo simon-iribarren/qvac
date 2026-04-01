@@ -1,3 +1,5 @@
+import "#install-bare-globals";
+
 // Public API exports only
 export {
   completion,
