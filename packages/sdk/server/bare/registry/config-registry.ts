@@ -1,5 +1,4 @@
-import fs from "bare-fs";
-import path from "bare-path";
+import { runtimeFs as fs, runtimePath as path } from "@/server/utils/runtime-bare-io";
 import { getEnv } from "@/server/env";
 import {
   CacheDirNotAbsoluteError,

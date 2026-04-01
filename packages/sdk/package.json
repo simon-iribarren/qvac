@@ -74,6 +74,8 @@
   },
   "imports": {
     "#install-bare-globals": {
+      "bun": "./dist/client/install-bare-globals-noop.js",
+      "node": "./dist/client/install-bare-globals-noop.js",
       "bare": "./dist/client/install-bare-globals-bare.js",
       "default": "./dist/client/install-bare-globals-noop.js"
     },

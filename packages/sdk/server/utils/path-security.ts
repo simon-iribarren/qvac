@@ -1,4 +1,4 @@
-import path from "bare-path";
+import { runtimePath as path } from "@/server/utils/runtime-bare-io";
 import { PathTraversalError } from "@/utils/errors-server";
 import {
   sanitizePathComponent,
@@ -19,7 +19,7 @@ export function isPathWithinBase(
   return checkPathWithinBase(
     basePath,
     targetPath,
-    path.resolve,
+    (...args: [string, ...string[]]) => path.resolve(...args),
     path.sep || "/",
   );
 }
