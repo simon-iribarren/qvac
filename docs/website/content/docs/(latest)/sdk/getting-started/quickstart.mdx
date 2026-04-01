@@ -44,11 +44,13 @@ Run the quickstart script with Node.js:
 node quickstart.js
 ```
 
-Or with the [Bare](https://bare.pears.com) runtime (same script; the SDK installs a Node-compatible `process` global on Bare so `process.stdout` and `process.exit` work without extra imports):
+Or with the [Bare](https://bare.pears.com) runtime (same script; the SDK installs a Node-compatible `process` global on Bare so `process.stdout` and `process.exit` work without importing `bare-process` in your own file):
 
 ```bash
 bare quickstart.js
 ```
+
+You still need Bare and the SDK’s **Bare peer dependencies** (including `bare-process` and the other `bare-*` packages listed for `@qvac/sdk`) installed in the project. Recent npm versions resolve peers when you run `npm i @qvac/sdk`; if resolution fails, install the peers your package manager reports as missing.
 </Step>
 
 </Steps>
