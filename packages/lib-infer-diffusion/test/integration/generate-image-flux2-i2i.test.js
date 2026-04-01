@@ -96,7 +96,7 @@ test('FLUX2-klein img2img — transforms an input image', { timeout: 900000, ski
     t.ok(loadMs < 180000, `Model loaded within 180s (took ${(loadMs / 1000).toFixed(1)}s)`)
 
     // ── Load init image ───────────────────────────────────────────────────────
-    const initImagePath = path.join(modelDir, '../assets/von-neumann.jpg')
+    const initImagePath = path.join(__dirname, '../../assets/von-neumann.jpg')
     if (!fs.existsSync(initImagePath)) {
       t.fail(`Init image not found at ${initImagePath}`)
       return
@@ -151,8 +151,8 @@ test('FLUX2-klein img2img — transforms an input image', { timeout: 900000, ski
     t.ok(img.length > 1000, `Image has meaningful size (${img.length} bytes)`)
     t.ok(isPng(img), 'Image has valid PNG magic bytes')
 
-    const outDir = path.join(modelDir, '..')
-    const outPath = path.join(outDir, 'temp', 'integration-img2img-output.png')
+    // Saved to modelDir so mobile has write permission to the same path
+    const outPath = path.join(modelDir, 'generate-image--flux2-i2i-seed42.png')
     fs.writeFileSync(outPath, img)
     console.log(`\nSaved → ${outPath}`)
 
