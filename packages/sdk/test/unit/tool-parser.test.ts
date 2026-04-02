@@ -2,6 +2,7 @@
 import test from "brittle";
 import type { Tool } from "@/schemas";
 import { parseToolCalls } from "@/server/utils/tool-parser";
+import { checkForToolEvents } from "@/server/utils/tool-integration";
 
 const weatherTool: Tool = {
   type: "function",
@@ -133,4 +134,27 @@ test("two same-name tools with different args → both parsed", (t) => {
 
   const { toolCalls } = parseToolCalls(text, tools);
   t.is(toolCalls.length, 2);
+});
+
+test("streaming: no events emitted while inside open <think> block", (t) => {
+  const accumulated = `<think>\n<tool_call>\n{"name": "weather", "arguments": {"args": ["Curitiba"]}}`;
+  const emitted = new Set<number>();
+  const events = checkForToolEvents(accumulated, "}", tools, emitted);
+  t.is(events.length, 0);
+});
+
+test("streaming: events emitted after <think> is closed", (t) => {
+  const accumulated = `<think>\nreasoning\n</think>\n\n<tool_call>\n{"name": "weather", "arguments": {"args": ["Curitiba"]}}\n</tool_call>`;
+  const emitted = new Set<number>();
+  const events = checkForToolEvents(accumulated, "</tool_call>", tools, emitted);
+  t.is(events.length, 1);
+  t.is(events[0]?.call?.name, "weather");
+});
+
+test("streaming: events emitted when no think tags present", (t) => {
+  const accumulated = `<tool_call>\n{"name": "weather", "arguments": {"args": ["London"]}}\n</tool_call>`;
+  const emitted = new Set<number>();
+  const events = checkForToolEvents(accumulated, "</tool_call>", tools, emitted);
+  t.is(events.length, 1);
+  t.is(events[0]?.call?.name, "weather");
 });
