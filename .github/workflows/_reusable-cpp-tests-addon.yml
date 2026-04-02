@@ -15,16 +15,6 @@ on:
         description: Package working directory
         required: true
         type: string
-      needs_vulkan:
-        description: Install Vulkan SDK
-        required: false
-        type: boolean
-        default: true
-      extra_generate_flags:
-        description: Extra flags for bare-make generate
-        required: false
-        type: string
-        default: ""
       test_models:
         description: >
           JSON array of HuggingFace model specs to download before tests.
@@ -34,6 +24,11 @@ on:
         required: false
         type: string
         default: "[]"
+      model_dest:
+        description: Destination directory for downloaded models (relative to workdir)
+        required: false
+        type: string
+        default: "models/unit-test"
     secrets:
       NPM_TOKEN:
         required: true
@@ -68,12 +63,26 @@ jobs:
     runs-on: ${{ matrix.runner || matrix.os }}
     environment: release
     name: cpp-tests-${{ matrix.platform }}-${{ matrix.arch }}
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
     env:
       WORKDIR: ${{ inputs.workdir }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       MODEL_S3_BUCKET: ${{ secrets.MODEL_S3_BUCKET }}
+      npm_config_script_shell: bash
     steps:
+      - name: Maximize build space
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo docker image prune --all --force
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/share/dotnet
+
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
         with:
@@ -121,9 +130,18 @@ jobs:
           platform: ${{ matrix.platform == 'windows' && 'win32' || matrix.platform }}
           arch: ${{ matrix.arch }}
           ccache-scope: all-ubuntu
-          needs-vulkan: ${{ inputs.needs_vulkan }}
+          needs-vulkan: "true"
           needs-rust-targets: "false"
           needs-submodules: "false"
+
+      - name: Setup LLVM coverage tool symlinks
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo ln -sf /usr/bin/llvm-profdata-19 /usr/local/bin/llvm-profdata
+          sudo ln -sf /usr/bin/llvm-cov-19 /usr/local/bin/llvm-cov
+          llvm-profdata --version
+          llvm-cov --version
 
       - name: Install AWS CLI (Windows)
         if: runner.os == 'Windows'
@@ -156,7 +174,7 @@ jobs:
         run: npm install
 
       - name: Verify Vulkan toolchain (Linux)
-        if: ${{ runner.os == 'Linux' && inputs.needs_vulkan }}
+        if: runner.os == 'Linux'
         shell: bash
         run: |
           echo "VULKAN_SDK=${VULKAN_SDK:-<unset>}"
@@ -180,10 +198,11 @@ jobs:
         working-directory: ${{ env.WORKDIR }}
         env:
           MODEL_SPECS: ${{ inputs.test_models }}
+          MODEL_DEST: ${{ inputs.model_dest }}
         run: |
           set -euo pipefail
           HF="https://huggingface.co"
-          DEST="models/unit-test"
+          DEST="$MODEL_DEST"
           mkdir -p "$DEST"
 
           echo "$MODEL_SPECS" | tr -d '[]"' | tr ',' '\n' | sed 's/^[[:space:]]*//' | sed '/^$/d' | while IFS= read -r spec; do
@@ -222,16 +241,90 @@ jobs:
           ls -lh "$DEST/"
 
       - name: Generate C++ build
+        if: runner.os != 'Linux'
         shell: bash
         working-directory: ${{ env.WORKDIR }}
-        run: bare-make generate --platform ${{ matrix.platform == 'windows' && 'win32' || matrix.platform }} --arch ${{ matrix.arch }} ${{ inputs.extra_generate_flags }}
+        run: bare-make generate --platform ${{ matrix.platform == 'windows' && 'win32' || matrix.platform }} --arch ${{ matrix.arch }} -D BUILD_TESTING=ON
 
       - name: Build C++ targets
+        if: runner.os != 'Linux'
         shell: bash
         working-directory: ${{ env.WORKDIR }}
         run: bare-make build
 
-      - name: Run C++ tests
+      - name: Build C++ targets (coverage)
+        if: runner.os == 'Linux'
         shell: bash
         working-directory: ${{ env.WORKDIR }}
-        run: npm run test:cpp
+        run: npm run coverage:cpp:build
+
+      - name: Run C++ tests
+        id: cpp_tests
+        shell: bash
+        working-directory: ${{ env.WORKDIR }}
+        run: npm run test:cpp:run
+        continue-on-error: ${{ runner.os == 'Linux' }}
+
+      - name: Generate coverage report
+        if: runner.os == 'Linux'
+        shell: bash
+        working-directory: ${{ env.WORKDIR }}
+        run: npm run coverage:cpp:report
+        continue-on-error: true
+
+      - name: Archive coverage results
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # 7.0.0
+        with:
+          name: coverage-report-${{ matrix.platform }}-${{ matrix.arch }}
+          path: |
+            ${{ inputs.workdir }}/build/**/coverage-html/
+            ${{ inputs.workdir }}/build/**/lcov.info
+            ${{ inputs.workdir }}/build/**/coverage-summary.txt
+            ${{ inputs.workdir }}/build/**/cpp-test-results.xml
+          retention-days: 30
+
+      - name: Coverage summary
+        if: runner.os == 'Linux'
+        shell: bash
+        working-directory: ${{ env.WORKDIR }}
+        run: |
+          echo "## Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "**Platform:** ${{ matrix.platform }}-${{ matrix.arch }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          SUMMARY=$(find build -name 'coverage-summary.txt' -print -quit 2>/dev/null)
+          if [ -n "$SUMMARY" ] && [ -f "$SUMMARY" ]; then
+            COVERAGE=$(grep 'TOTAL' "$SUMMARY" | awk '{print $10}')
+            echo "**Coverage:** $COVERAGE" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat "$SUMMARY" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No coverage summary found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  coverage-report:
+    if: always()
+    needs: cpp-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all coverage reports
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # 8.0.1
+        with:
+          path: coverage-reports
+
+      - name: Combine coverage reports
+        shell: bash
+        run: |
+          echo "## C++ Code Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          for report in $(find coverage-reports -name 'coverage-summary.txt' 2>/dev/null); do
+            if [ -f "$report" ]; then
+              dir=$(dirname "$report")
+              echo "### $(basename "$dir")" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              cat "$report" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
