@@ -158,7 +158,8 @@ void MtmdLlmContext::tokenizeChat(
 
   if (nPast_ == 0 && !isCacheLoaded) {
     dynamicToolsState().reset();
-    isLastMessageFromUser = true;
+    const auto& lastRole = chatMsgs.back().role;
+    isLastMessageFromUser = lastRole == "user" || lastRole == "tool";
     addSpecial = true;
   } else if (nPast_ > 0) {
     isLastMessageFromUser = chatMsgs.back().role == "user" ||

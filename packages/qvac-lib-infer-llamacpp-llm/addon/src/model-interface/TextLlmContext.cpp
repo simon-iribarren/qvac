@@ -194,7 +194,8 @@ void TextLlmContext::tokenizeChat(
 
   if (nPast_ == 0 && !isCacheLoaded) {
     dynamicToolsState().reset();
-    isLastMessageFromUser = true;
+    const auto& lastRole = chatMsgs.back().role;
+    isLastMessageFromUser = lastRole == "user" || lastRole == "tool";
     addSpecial = true;
   } else if (nPast_ > 0) {
     isLastMessageFromUser = chatMsgs.back().role == "user" ||
@@ -211,6 +212,16 @@ void TextLlmContext::tokenizeChat(
     inputs.tools = tools;
   }
   prompt = getPrompt(tmpls_.get(), inputs);
+
+  // Debug: dump full prompt to file for inspection
+  {
+    FILE* dbg = fopen("/tmp/addon-prompts.log", "a");
+    if (dbg) {
+      fprintf(dbg, "=== tokenizeChat nPast=%d msgs=%zu tools=%zu add_gen=%d prefill=? ===\n%s\n=== END ===\n\n",
+              nPast_, chatMsgs.size(), tools.size(), inputs.add_generation_prompt, prompt.c_str());
+      fclose(dbg);
+    }
+  }
 
   QLOG_IF(
       Priority::DEBUG,
