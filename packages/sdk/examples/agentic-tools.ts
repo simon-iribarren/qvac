@@ -153,6 +153,30 @@ interface RoundStats {
   nPastBeforeTools: number
   tokensPerSecond: number
   timeToFirstToken: number
+  toolsTrimmed: boolean
+}
+
+class AssertionError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = "AssertionError"
+  }
+}
+
+function assert(condition: boolean, message: string): void {
+  if (!condition) throw new AssertionError(message)
+}
+
+function lastStat(stats: RoundStats[]): RoundStats {
+  const s = stats[stats.length - 1]
+  if (!s) throw new AssertionError("no stats available")
+  return s
+}
+
+function firstStat(stats: RoundStats[]): RoundStats {
+  const s = stats[0]
+  if (!s) throw new AssertionError("no stats available")
+  return s
 }
 
 interface AgenticResult {
@@ -209,6 +233,7 @@ async function agenticTurn(
         nPastBeforeTools: stats.nPastBeforeTools ?? 0,
         tokensPerSecond: stats.tokensPerSecond ?? 0,
         timeToFirstToken: stats.timeToFirstToken ?? 0,
+        toolsTrimmed: stats.toolsTrimmed ?? false,
       }
       roundStats.push(rs)
       const trimmed = stats.toolsTrimmed ? " toolsTrimmed=YES" : ""
@@ -270,8 +295,16 @@ const scenarios: Scenario[] = [
         { role: "user", content: "What's the weather like in Tokyo right now?" },
       ]
       const result = await agenticTurn(modelId, history, [weatherTool], kvCache + "-s1", 1, verbose)
-      const hasWeather = result.toolCalls.some((tc) => tc.name === "get_weather")
-      return { passed: hasWeather, detail: `tool_calls=${result.toolCalls.map((t) => t.name).join(",")}` }
+      const s = result.roundStats
+
+      assert(result.toolCalls.some((tc) => tc.name === "get_weather"), "should call get_weather")
+      assert(s.length >= 1, "should have at least 1 round of stats")
+      assert(firstStat(s).nPastBeforeTools > 0, `nPastBeforeTools should be > 0, got ${firstStat(s).nPastBeforeTools}`)
+      assert(firstStat(s).promptTokens > 0, `promptTokens should be > 0, got ${firstStat(s).promptTokens}`)
+      assert(firstStat(s).generatedTokens > 0, `generatedTokens should be > 0, got ${firstStat(s).generatedTokens}`)
+      assert(firstStat(s).contextSlides === 0, `contextSlides should be 0, got ${firstStat(s).contextSlides}`)
+
+      return { passed: true, detail: `tools=${result.toolCalls.map((t) => t.name).join(",")}, nPBT=${firstStat(s).nPastBeforeTools}` }
     },
   },
   {
@@ -283,9 +316,15 @@ const scenarios: Scenario[] = [
         { role: "user", content: "What is the capital of France?" },
       ]
       const result = await agenticTurn(modelId, history, [weatherTool, searchTool], kvCache + "-s2", 1, verbose)
-      const noTools = result.toolCalls.length === 0
-      const mentionsParis = result.answer.toLowerCase().includes("paris")
-      return { passed: noTools && mentionsParis, detail: `tools=${result.toolCalls.length}, paris=${mentionsParis}` }
+      const s = result.roundStats
+
+      assert(result.toolCalls.length === 0, `should not call tools, got ${result.toolCalls.length}`)
+      assert(result.answer.toLowerCase().includes("paris"), "answer should mention Paris")
+      assert(s.length >= 1, "should have stats")
+      assert(firstStat(s).nPastBeforeTools > 0, `nPastBeforeTools should be > 0 (tools were in prompt), got ${firstStat(s).nPastBeforeTools}`)
+      assert(firstStat(s).toolsTrimmed, "toolsTrimmed should be true (model didn't use tools)")
+
+      return { passed: true, detail: `nPBT=${firstStat(s).nPastBeforeTools}, trimmed=${firstStat(s).toolsTrimmed}` }
     },
   },
   {
@@ -298,13 +337,33 @@ const scenarios: Scenario[] = [
       ]
       const result = await agenticTurn(modelId, history, [weatherTool, searchTool], kvCache + "-s3", 5, verbose)
       const names = result.toolCalls.map((tc) => tc.name)
-      const hasSearch = names.includes("search_web")
-      const hasWeather = names.includes("get_weather")
-      const correctOrder = hasSearch && hasWeather && names.indexOf("search_web") < names.indexOf("get_weather")
-      return {
-        passed: correctOrder,
-        detail: `chain=${names.join(" → ")}, order=${correctOrder ? "correct" : "wrong"}`,
+      const s = result.roundStats
+
+      assert(names.includes("search_web"), "should call search_web")
+      assert(names.includes("get_weather"), "should call get_weather")
+      assert(names.indexOf("search_web") < names.indexOf("get_weather"), "search should come before weather")
+      assert(result.rounds >= 3, `should have at least 3 rounds, got ${result.rounds}`)
+
+      // Stats: anchor should be stable across all rounds
+      const anchor = firstStat(s).nPastBeforeTools
+      assert(anchor > 0, `round 1 nPastBeforeTools should be > 0, got ${anchor}`)
+      for (let i = 1; i < s.length; i++) {
+        const ri = s[i]
+        assert(ri !== undefined && ri.nPastBeforeTools === anchor, `round ${i + 1} nPBT should be ${anchor}, got ${ri?.nPastBeforeTools}`)
       }
+
+      // Chain rounds should have small prompt (only tool_response, no tools re-sent)
+      for (let i = 1; i < s.length - 1; i++) {
+        const ri = s[i]
+        assert(ri !== undefined && ri.promptTokens < 200, `chain round ${i + 1} prompt should be < 200, got ${ri?.promptTokens}`)
+      }
+
+      // Final round: toolsTrimmed, cache drops to anchor
+      const last = lastStat(s)
+      assert(last.toolsTrimmed, "final round should have toolsTrimmed=true")
+      assert(last.cacheTokens === anchor, `final cache should equal anchor ${anchor}, got ${last.cacheTokens}`)
+
+      return { passed: true, detail: `chain=${names.join(" → ")}, anchor=${anchor}, rounds=${result.rounds}` }
     },
   },
   {
@@ -317,7 +376,14 @@ const scenarios: Scenario[] = [
       ]
       const result = await agenticTurn(modelId, history, [weatherTool, stockTool], kvCache + "-s4", 1, verbose)
       const names = new Set(result.toolCalls.map((tc) => tc.name))
-      return { passed: names.size >= 2, detail: `tools=${[...names].join(",")}` }
+      const s = result.roundStats
+
+      assert(names.has("get_weather"), "should call get_weather")
+      assert(names.has("get_stock_price"), "should call get_stock_price")
+      assert(s.length >= 1, "should have stats")
+      assert(firstStat(s).nPastBeforeTools > 0, `nPastBeforeTools should be > 0, got ${firstStat(s).nPastBeforeTools}`)
+
+      return { passed: true, detail: `tools=${[...names].join(",")}, nPBT=${firstStat(s).nPastBeforeTools}` }
     },
   },
   {
@@ -331,13 +397,19 @@ const scenarios: Scenario[] = [
       const result = await agenticTurn(modelId, history, [weatherTool, stockTool], kvCache + "-s5b", 3, verbose)
       const names = result.toolCalls.map((tc) => tc.name)
       const weatherCount = names.filter((n) => n === "get_weather").length
-      const hasStock = names.includes("get_stock_price")
-      // Pass if model called at least 2 weather + 1 stock, AND produced a final answer
-      const passed = weatherCount >= 2 && hasStock && result.answer.length > 10
-      return {
-        passed,
-        detail: `tools=${names.join(",")}, weather=${weatherCount}, stock=${hasStock ? "yes" : "no"}, answer_len=${result.answer.length}`,
-      }
+      const s = result.roundStats
+
+      assert(weatherCount >= 2, `should call get_weather at least twice, got ${weatherCount}`)
+      assert(names.includes("get_stock_price"), "should call get_stock_price")
+      assert(result.answer.length > 10, `answer should be meaningful, got ${result.answer.length} chars`)
+      assert(result.rounds === 2, `should be exactly 2 rounds (tools + answer), got ${result.rounds}`)
+
+      // Round 2 should have all tool responses and trimmed tools
+      const lastRound = lastStat(s)
+      assert(lastRound.toolsTrimmed, "final round should have toolsTrimmed=true")
+      assert(lastRound.cacheTokens === firstStat(s).nPastBeforeTools, `final cache ${lastRound.cacheTokens} should equal anchor ${firstStat(s).nPastBeforeTools}`)
+
+      return { passed: true, detail: `tools=${names.join(",")}, rounds=${result.rounds}, anchor=${firstStat(s).nPastBeforeTools}` }
     },
   },
   {
@@ -351,12 +423,26 @@ const scenarios: Scenario[] = [
       const result = await agenticTurn(modelId, history, [weatherTool, searchTool], kvCache + "-s5", 8, verbose)
       const names = result.toolCalls.map((tc) => tc.name)
       const searchCount = names.filter((n) => n === "search_web").length
-      const hasWeather = names.includes("get_weather")
-      const weatherLast = names.length > 0 && names[names.length - 1] === "get_weather"
-      return {
-        passed: searchCount >= 2 && hasWeather,
-        detail: `chain=${names.join(" → ")}, searches=${searchCount}`,
+      const s = result.roundStats
+
+      assert(searchCount >= 2, `should have at least 2 searches, got ${searchCount}`)
+      assert(names.includes("get_weather"), "should call get_weather")
+      assert(result.rounds >= 4, `should have at least 4 rounds, got ${result.rounds}`)
+
+      // Anchor stable across all rounds
+      const anchor = firstStat(s).nPastBeforeTools
+      assert(anchor > 0, `anchor should be > 0, got ${anchor}`)
+      for (let i = 1; i < s.length; i++) {
+        const ri = s[i]
+        assert(ri !== undefined && ri.nPastBeforeTools === anchor, `round ${i + 1} nPBT should be ${anchor}, got ${ri?.nPastBeforeTools}`)
       }
+
+      // Final round trimmed
+      const last = lastStat(s)
+      assert(last.toolsTrimmed, "final round should trim tools")
+      assert(last.cacheTokens === anchor, `final cache ${last.cacheTokens} should equal anchor ${anchor}`)
+
+      return { passed: true, detail: `chain=${names.join(" → ")}, anchor=${anchor}, rounds=${result.rounds}` }
     },
   },
   {
@@ -370,11 +456,18 @@ const scenarios: Scenario[] = [
         { role: "user", content: "And in London?" },
       ]
       const result = await agenticTurn(modelId, history, [weatherTool], kvCache + "-s6", 2, verbose)
-      const hasWeather = result.toolCalls.some((tc) => tc.name === "get_weather")
-      const hasLondon = result.toolCalls.some((tc) =>
-        JSON.stringify(tc.arguments).toLowerCase().includes("london"),
-      )
-      return { passed: hasWeather && hasLondon, detail: `weather=${hasWeather}, london=${hasLondon}` }
+      const s = result.roundStats
+
+      assert(result.toolCalls.some((tc) => tc.name === "get_weather"), "should call get_weather")
+      assert(result.toolCalls.some((tc) => JSON.stringify(tc.arguments).toLowerCase().includes("london")), "should request London")
+      assert(s.length >= 1, "should have stats")
+      assert(firstStat(s).nPastBeforeTools > 0, `nPastBeforeTools should be > 0, got ${firstStat(s).nPastBeforeTools}`)
+
+      // Final round should trim
+      const last = lastStat(s)
+      assert(last.toolsTrimmed, "final round should trim tools")
+
+      return { passed: true, detail: `nPBT=${firstStat(s).nPastBeforeTools}, trimmed=${last.toolsTrimmed}` }
     },
   },
   {
@@ -388,11 +481,17 @@ const scenarios: Scenario[] = [
         { role: "user", content: "Who is their CEO?" },
       ]
       const result = await agenticTurn(modelId, history, [searchTool], kvCache + "-s7", 3, verbose)
-      const searchedNexora = result.toolCalls.some((tc) =>
-        JSON.stringify(tc.arguments).toLowerCase().includes("nexora"),
-      )
-      const mentionsCeo = result.answer.toLowerCase().includes("elena") || result.answer.toLowerCase().includes("voss")
-      return { passed: searchedNexora && mentionsCeo, detail: `searched=${searchedNexora}, found_ceo=${mentionsCeo}` }
+      const s = result.roundStats
+
+      assert(result.toolCalls.some((tc) => JSON.stringify(tc.arguments).toLowerCase().includes("nexora")), "should search for Nexora")
+      const answer = result.answer.toLowerCase()
+      assert(answer.includes("elena") || answer.includes("voss"), "answer should mention Elena Voss")
+      assert(firstStat(s).nPastBeforeTools > 0, `nPastBeforeTools should be > 0, got ${firstStat(s).nPastBeforeTools}`)
+
+      const last = lastStat(s)
+      assert(last.toolsTrimmed, "final round should trim tools")
+
+      return { passed: true, detail: `nPBT=${firstStat(s).nPastBeforeTools}, trimmed=${last.toolsTrimmed}` }
     },
   },
   {
@@ -406,11 +505,16 @@ const scenarios: Scenario[] = [
         { role: "user", content: "No, I meant Paris, Texas, not France. Can you check again?" },
       ]
       const result = await agenticTurn(modelId, history, [weatherTool], kvCache + "-s8", 2, verbose)
-      const hasWeather = result.toolCalls.some((tc) => tc.name === "get_weather")
-      const hasTexas = result.toolCalls.some((tc) =>
-        JSON.stringify(tc.arguments).toLowerCase().includes("texas"),
-      )
-      return { passed: hasWeather && hasTexas, detail: `weather=${hasWeather}, texas=${hasTexas}` }
+      const s = result.roundStats
+
+      assert(result.toolCalls.some((tc) => tc.name === "get_weather"), "should call get_weather")
+      assert(result.toolCalls.some((tc) => JSON.stringify(tc.arguments).toLowerCase().includes("texas")), "should include Texas")
+      assert(firstStat(s).nPastBeforeTools > 0, `nPastBeforeTools should be > 0, got ${firstStat(s).nPastBeforeTools}`)
+
+      const last = lastStat(s)
+      assert(last.toolsTrimmed, "final round should trim tools")
+
+      return { passed: true, detail: `nPBT=${firstStat(s).nPastBeforeTools}, trimmed=${last.toolsTrimmed}` }
     },
   },
 ]
@@ -473,6 +577,13 @@ async function main() {
   console.log(`\n  ${passed}/${total} scenarios passed`)
 
   await unloadModel({ modelId, clearStorage: false })
+
+  if (passed < total) {
+    process.exit(1)
+  }
 }
 
-main().catch(console.error)
+main().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})
