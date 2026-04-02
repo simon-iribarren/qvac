@@ -23,19 +23,24 @@ export const EXAMPLE_PROFILE_MANIFEST: ExampleProfileManifestEntry[] = [
   },
   { relativePath: "default-config-usage.ts", mode: "harness", tier: "smoke" },
   {
+    relativePath: "delegated-inference/composite.ts",
+    mode: "harness",
+    tier: "heavy",
+  },
+  {
     relativePath: "delegated-inference/consumer-profiled.ts",
     mode: "skip",
-    reason: "Requires topic and provider public key argv",
+    reason: "Needs running provider; use composite.ts instead",
   },
   {
     relativePath: "delegated-inference/consumer.ts",
     mode: "skip",
-    reason: "Requires topic, provider key, and optional consumer seed argv",
+    reason: "Needs running provider; use composite.ts instead",
   },
   {
     relativePath: "delegated-inference/provider.ts",
     mode: "skip",
-    reason: "Long-running service (stdin resume + SIGINT)",
+    reason: "Long-running service; used as subprocess by composite.ts",
   },
   {
     relativePath: "download-with-blind-relays.ts",
@@ -90,8 +95,8 @@ export const EXAMPLE_PROFILE_MANIFEST: ExampleProfileManifestEntry[] = [
   },
   {
     relativePath: "mcp-websearch.ts",
-    mode: "skip",
-    reason: "Optional @modelcontextprotocol/sdk peer dependency",
+    mode: "harness",
+    tier: "heavy",
   },
   { relativePath: "multi-model-demo.ts", mode: "harness", tier: "heavy" },
   {
@@ -102,8 +107,8 @@ export const EXAMPLE_PROFILE_MANIFEST: ExampleProfileManifestEntry[] = [
   { relativePath: "parallel-download.ts", mode: "harness", tier: "heavy" },
   {
     relativePath: "plugins.ts",
-    mode: "skip",
-    reason: "Spawns npx @qvac/cli bundle (side effects, not a pure SDK import)",
+    mode: "harness",
+    tier: "heavy",
   },
   { relativePath: "profiling/basic.ts", mode: "harness", tier: "smoke" },
   { relativePath: "profiling/per-call.ts", mode: "harness", tier: "smoke" },
