@@ -658,10 +658,12 @@ const scenarios: Scenario[] = [
         const firstAnchor = firstStat(s).nPastBeforeTools
         assert(firstAnchor > 0, `nPastBeforeTools should be > 0, got ${firstAnchor}`)
 
-        // After sliding, anchor should be smaller than the original
+        // After sliding, anchor MUST be smaller than the original.
+        // If it's equal, nPastBeforeTools was not adjusted during sliding
+        // and tool tokens leaked into the KV cache.
         const last = lastStat(s)
         assert(last.nPastBeforeTools > 0, `final nPastBeforeTools should be > 0, got ${last.nPastBeforeTools}`)
-        assert(last.nPastBeforeTools <= firstAnchor, `anchor should shrink or stay after sliding: first=${firstAnchor}, last=${last.nPastBeforeTools}`)
+        assert(last.nPastBeforeTools < firstAnchor, `anchor must shrink after sliding: first=${firstAnchor}, last=${last.nPastBeforeTools} (if equal, adjustAfterSlide is missing)`)
 
         // Final round should trim, cache drops to adjusted anchor
         assert(last.toolsTrimmed, "final round should trim tools")
