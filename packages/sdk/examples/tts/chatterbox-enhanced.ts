@@ -70,45 +70,17 @@ try {
   const sampleRate = (await result.sampleRate) ?? ENHANCED_SAMPLE_RATE;
   console.log(`TTS complete. ${audioBuffer.length} samples @ ${sampleRate}Hz`);
 
-  console.log("💾 Saving enhanced audio...");
+  console.log("💾 Saving audio to file...");
   createWav(audioBuffer, sampleRate, "tts-enhanced-output.wav");
   console.log("✅ Audio saved to tts-enhanced-output.wav");
 
-  console.log("🔊 Playing enhanced audio...");
+  console.log("🔊 Playing audio...");
   const audioData = int16ArrayToBuffer(audioBuffer);
   const wavBuffer = Buffer.concat([
     createWavHeader(audioData.length, sampleRate),
     audioData,
   ]);
   playAudio(wavBuffer);
-  console.log("✅ Audio playback complete");
-
-  // Per-request override: raw synthesis (24kHz, no enhancement)
-  console.log("\n🎵 Synthesizing without enhancement (per-request override)...");
-  const rawResult = textToSpeech({
-    modelId,
-    text: "This audio is raw, without any enhancement.",
-    inputType: "text",
-    stream: false,
-    enhance: false,
-    denoise: false,
-  });
-
-  const rawBuffer = await rawResult.buffer;
-  const rawSampleRate = (await rawResult.sampleRate) ?? 24000;
-  console.log(`Raw TTS complete. ${rawBuffer.length} samples @ ${rawSampleRate}Hz`);
-
-  console.log("💾 Saving raw audio...");
-  createWav(rawBuffer, rawSampleRate, "tts-raw-output.wav");
-  console.log("✅ Audio saved to tts-raw-output.wav");
-
-  console.log("🔊 Playing raw audio...");
-  const rawAudioData = int16ArrayToBuffer(rawBuffer);
-  const rawWavBuffer = Buffer.concat([
-    createWavHeader(rawAudioData.length, rawSampleRate),
-    rawAudioData,
-  ]);
-  playAudio(rawWavBuffer);
   console.log("✅ Audio playback complete");
 
   await unloadModel({ modelId });
