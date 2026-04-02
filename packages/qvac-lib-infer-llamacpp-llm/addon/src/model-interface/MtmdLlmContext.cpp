@@ -161,7 +161,8 @@ void MtmdLlmContext::tokenizeChat(
     isLastMessageFromUser = true;
     addSpecial = true;
   } else if (nPast_ > 0) {
-    isLastMessageFromUser = chatMsgs.back().role == "user";
+    const auto& lastRole = chatMsgs.back().role;
+    isLastMessageFromUser = lastRole == "user" || lastRole == "tool";
     common_sampler_reset(smpl_.get());
     addSpecial = false;
   }
