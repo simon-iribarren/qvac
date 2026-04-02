@@ -1,5 +1,34 @@
 import type { Tool, ToolCall, ToolCallError } from "@/schemas";
 
+function stableJsonStringifyForDedupe(value: unknown): string {
+  if (value === null || typeof value !== "object") {
+    return JSON.stringify(value);
+  }
+  if (Array.isArray(value)) {
+    return `[${value.map(stableJsonStringifyForDedupe).join(",")}]`;
+  }
+  const record = value as Record<string, unknown>;
+  const keys = Object.keys(record).sort();
+  const parts = keys.map(
+    (k) => `${JSON.stringify(k)}:${stableJsonStringifyForDedupe(record[k])}`,
+  );
+  return `{${parts.join(",")}}`;
+}
+
+function dedupeSemanticallyIdenticalToolCalls(calls: ToolCall[]): ToolCall[] {
+  const seenKeys = new Set<string>();
+  const out: ToolCall[] = [];
+  for (const call of calls) {
+    const key = `${call.name}\0${stableJsonStringifyForDedupe(call.arguments)}`;
+    if (seenKeys.has(key)) {
+      continue;
+    }
+    seenKeys.add(key);
+    out.push(call);
+  }
+  return out;
+}
+
 let toolCallSequence = 0;
 
 function generateStableToolCallId(name: string, args: Record<string, unknown>) {
@@ -277,17 +306,26 @@ export function parseToolCalls(
 
   let result = parseGemmaFormat(text, tools);
   if (result.toolCalls.length > 0) {
-    return result;
+    return {
+      toolCalls: dedupeSemanticallyIdenticalToolCalls(result.toolCalls),
+      errors: result.errors,
+    };
   }
 
   result = parseQwenFormat(text, tools);
   if (result.toolCalls.length > 0) {
-    return result;
+    return {
+      toolCalls: dedupeSemanticallyIdenticalToolCalls(result.toolCalls),
+      errors: result.errors,
+    };
   }
 
   result = parseLlamacppFormat(text, tools);
   if (result.toolCalls.length > 0) {
-    return result;
+    return {
+      toolCalls: dedupeSemanticallyIdenticalToolCalls(result.toolCalls),
+      errors: result.errors,
+    };
   }
 
   if (text.includes("<tool_call>")) {
@@ -295,7 +333,10 @@ export function parseToolCalls(
   }
 
   result = parseGenericFormat(text, tools);
-  return result;
+  return {
+    toolCalls: dedupeSemanticallyIdenticalToolCalls(result.toolCalls),
+    errors: result.errors,
+  };
 }
 
 export function convertToolsToGrammar(tools: Tool[]): string {
