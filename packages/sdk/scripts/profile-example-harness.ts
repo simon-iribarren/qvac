@@ -14,10 +14,12 @@ if (!exampleAbsPath || !outJsonPathArg) {
 }
 
 const outJsonPath = outJsonPathArg;
+const extraArgs = process.argv.slice(4);
 
-// Strip harness args so the example sees a clean argv
-// (some examples read process.argv[2] for optional params like URLs)
-process.argv = [process.argv[0]!, exampleAbsPath];
+// Strip harness args so the example sees a clean argv.
+// Extra args (argv[4+]) are forwarded so examples that read
+// process.argv[2] (e.g. WAV path, image path) receive them.
+process.argv = [process.argv[0]!, exampleAbsPath, ...extraArgs];
 
 profiler.enable({
   mode: "verbose",

@@ -5,6 +5,7 @@ export type ExampleProfileManifestEntry =
       relativePath: string;
       mode: "harness";
       tier: ProfileTier;
+      args?: string[];
     }
   | {
       relativePath: string;
@@ -16,8 +17,9 @@ export const EXAMPLE_PROFILE_MANIFEST: ExampleProfileManifestEntry[] = [
   { relativePath: "cache-management.ts", mode: "harness", tier: "standard" },
   {
     relativePath: "config-reload.ts",
-    mode: "skip",
-    reason: "Requires WAV file path as argv",
+    mode: "harness",
+    tier: "standard",
+    args: ["examples/audio/sample-16khz.wav"],
   },
   { relativePath: "default-config-usage.ts", mode: "harness", tier: "smoke" },
   {
@@ -65,8 +67,9 @@ export const EXAMPLE_PROFILE_MANIFEST: ExampleProfileManifestEntry[] = [
   },
   {
     relativePath: "llamacpp-multimodal.ts",
-    mode: "skip",
-    reason: "Requires image file path argv",
+    mode: "harness",
+    tier: "heavy",
+    args: ["examples/image/basic_test.bmp"],
   },
   {
     relativePath: "llamacpp-native-tools.ts",
@@ -93,8 +96,8 @@ export const EXAMPLE_PROFILE_MANIFEST: ExampleProfileManifestEntry[] = [
   { relativePath: "multi-model-demo.ts", mode: "harness", tier: "heavy" },
   {
     relativePath: "ocr-fasttext.ts",
-    mode: "skip",
-    reason: "Default sample image path is not bundled in the repo",
+    mode: "harness",
+    tier: "standard",
   },
   { relativePath: "parallel-download.ts", mode: "harness", tier: "heavy" },
   {
@@ -140,8 +143,9 @@ export const EXAMPLE_PROFILE_MANIFEST: ExampleProfileManifestEntry[] = [
   },
   {
     relativePath: "transcription/parakeet-ctc-filesystem.ts",
-    mode: "skip",
-    reason: "Requires WAV file argv (registry models alone are not enough)",
+    mode: "harness",
+    tier: "standard",
+    args: ["examples/audio/sample-16khz.wav"],
   },
   {
     relativePath: "transcription/parakeet-microphone-record.ts",
@@ -150,18 +154,20 @@ export const EXAMPLE_PROFILE_MANIFEST: ExampleProfileManifestEntry[] = [
   },
   {
     relativePath: "transcription/parakeet-sortformer.ts",
-    mode: "skip",
-    reason: "Requires WAV argv",
+    mode: "harness",
+    tier: "heavy",
   },
   {
     relativePath: "transcription/parakeet-tdt-filesystem.ts",
-    mode: "skip",
-    reason: "Requires WAV argv",
+    mode: "harness",
+    tier: "standard",
+    args: ["examples/audio/sample-16khz.wav"],
   },
   {
     relativePath: "transcription/whispercpp-filesystem.ts",
-    mode: "skip",
-    reason: "Requires WAV argv",
+    mode: "harness",
+    tier: "standard",
+    args: ["examples/audio/sample-16khz.wav"],
   },
   {
     relativePath: "transcription/whispercpp-microphone-record.ts",
@@ -170,9 +176,8 @@ export const EXAMPLE_PROFILE_MANIFEST: ExampleProfileManifestEntry[] = [
   },
   {
     relativePath: "transcription/whispercpp-prompt.ts",
-    mode: "skip",
-    reason:
-      "Hard-coded audio path examples/audio/sample-16khz.wav is not in repo",
+    mode: "harness",
+    tier: "standard",
   },
   {
     relativePath: "translation/translation-bergamot-batch.ts",
@@ -221,8 +226,9 @@ export const EXAMPLE_PROFILE_MANIFEST: ExampleProfileManifestEntry[] = [
   },
   {
     relativePath: "tts/chatterbox.ts",
-    mode: "skip",
-    reason: "Requires reference WAV argv for voice cloning",
+    mode: "harness",
+    tier: "heavy",
+    args: ["examples/audio/sample-16khz.wav"],
   },
   { relativePath: "tts/supertonic.ts", mode: "harness", tier: "heavy" },
 ];

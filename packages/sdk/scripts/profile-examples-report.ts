@@ -221,7 +221,11 @@ for (const entry of toRun) {
   }
 
   console.log(`\n→ Profiling ${entry.relativePath} …`);
-  const result = spawnSync("bun", ["run", harnessScript, absExample, outJson], {
+  const harnessArgs = ["run", harnessScript, absExample, outJson];
+  if (entry.args) {
+    harnessArgs.push(...entry.args);
+  }
+  const result = spawnSync("bun", harnessArgs, {
     cwd: packageRoot,
     encoding: "utf-8",
     stdio: ["inherit", "pipe", "pipe"],
