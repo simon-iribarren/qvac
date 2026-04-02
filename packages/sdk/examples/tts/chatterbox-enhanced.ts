@@ -9,12 +9,16 @@ import {
   TTS_CONDITIONAL_DECODER_EN_CHATTERBOX_FP32,
   TTS_LANGUAGE_MODEL_EN_CHATTERBOX_FP32,
 } from "@qvac/sdk";
-import { createWav } from "./utils";
+import {
+  createWav,
+  playAudio,
+  int16ArrayToBuffer,
+  createWavHeader,
+} from "./utils";
 
 // Chatterbox TTS with LavaSR neural speech enhancement.
 // Produces 48kHz enhanced audio from Chatterbox's native 24kHz output.
-// LavaSR model files must be provided as local paths.
-// Usage: node chatterbox-enhanced.js <referenceAudioSrc> <enhancerBackbonePath> <enhancerSpecHeadPath> [denoiserPath]
+// Usage: node chatterbox-enhanced.js <referenceAudioSrc> <enhancerBackbone> <enhancerSpecHead> [denoiserPath]
 const [referenceAudioSrc, enhancerBackbonePath, enhancerSpecHeadPath, denoiserPath] =
   process.argv.slice(2);
 
@@ -53,7 +57,8 @@ try {
 
   console.log(`Model loaded: ${modelId}`);
 
-  console.log("Synthesizing with LavaSR enhancement...");
+  // Enhanced synthesis (48kHz via LavaSR)
+  console.log("🎵 Synthesizing with LavaSR enhancement...");
   const result = textToSpeech({
     modelId,
     text: "Hello! This audio was synthesized with Chatterbox and enhanced with LavaSR neural bandwidth extension to 48 kilohertz.",
@@ -65,10 +70,21 @@ try {
   const sampleRate = (await result.sampleRate) ?? ENHANCED_SAMPLE_RATE;
   console.log(`TTS complete. ${audioBuffer.length} samples @ ${sampleRate}Hz`);
 
+  console.log("💾 Saving enhanced audio...");
   createWav(audioBuffer, sampleRate, "tts-enhanced-output.wav");
+  console.log("✅ Audio saved to tts-enhanced-output.wav");
 
-  // Per-request override: disable enhancement for this one call
-  console.log("\nSynthesizing without enhancement (per-request override)...");
+  console.log("🔊 Playing enhanced audio...");
+  const audioData = int16ArrayToBuffer(audioBuffer);
+  const wavBuffer = Buffer.concat([
+    createWavHeader(audioData.length, sampleRate),
+    audioData,
+  ]);
+  playAudio(wavBuffer);
+  console.log("✅ Audio playback complete");
+
+  // Per-request override: raw synthesis (24kHz, no enhancement)
+  console.log("\n🎵 Synthesizing without enhancement (per-request override)...");
   const rawResult = textToSpeech({
     modelId,
     text: "This audio is raw, without any enhancement.",
@@ -82,12 +98,23 @@ try {
   const rawSampleRate = (await rawResult.sampleRate) ?? 24000;
   console.log(`Raw TTS complete. ${rawBuffer.length} samples @ ${rawSampleRate}Hz`);
 
+  console.log("💾 Saving raw audio...");
   createWav(rawBuffer, rawSampleRate, "tts-raw-output.wav");
+  console.log("✅ Audio saved to tts-raw-output.wav");
+
+  console.log("🔊 Playing raw audio...");
+  const rawAudioData = int16ArrayToBuffer(rawBuffer);
+  const rawWavBuffer = Buffer.concat([
+    createWavHeader(rawAudioData.length, rawSampleRate),
+    rawAudioData,
+  ]);
+  playAudio(rawWavBuffer);
+  console.log("✅ Audio playback complete");
 
   await unloadModel({ modelId });
   console.log("Model unloaded");
   process.exit(0);
 } catch (error) {
-  console.error("Error:", error);
+  console.error("❌ Error:", error);
   process.exit(1);
 }
