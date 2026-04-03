@@ -73,11 +73,11 @@
     "./pear-pre": "./dist/pear/pre.js"
   },
   "imports": {
-    "#install-bare-globals": {
-      "bun": "./dist/client/install-bare-globals-noop.js",
-      "node": "./dist/client/install-bare-globals-noop.js",
-      "bare": "./dist/client/install-bare-globals-bare.js",
-      "default": "./dist/client/install-bare-globals-noop.js"
+    "#polyfill-bare-globals": {
+      "bun": "./dist/polyfills/bare-globals.noop.js",
+      "node": "./dist/polyfills/bare-globals.noop.js",
+      "bare": "./dist/polyfills/bare-globals.js",
+      "default": "./dist/polyfills/bare-globals.noop.js"
     },
     "#rpc": {
       "react-native": "./dist/client/rpc/expo-rpc-client.js",

@@ -1,4 +1,4 @@
-import "#install-bare-globals";
+import "#polyfill-bare-globals";
 
 // Public API exports only
 export {
