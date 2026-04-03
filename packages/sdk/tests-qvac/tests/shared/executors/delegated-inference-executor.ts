@@ -34,17 +34,12 @@ import {
 
 const DEFAULT_DELEGATE_TIMEOUT = 10_000;
 
-function randomHex(bytes: number): string {
-  let hex = "";
-  for (let i = 0; i < bytes; i++) {
-    hex += Math.floor(Math.random() * 256).toString(16).padStart(2, "0");
-  }
-  return hex;
-}
+const randomHex = (bytes: number): string =>
+  Array.from({ length: bytes }, () =>
+    Math.floor(Math.random() * 256).toString(16).padStart(2, "0"),
+  ).join("");
 
-function generateTopic(): string {
-  return randomHex(32);
-}
+const generateTopic = (): string => randomHex(32);
 
 export class DelegatedInferenceExecutor extends BaseExecutor<typeof delegatedInferenceTests> {
   pattern = /^delegated-/;
@@ -74,9 +69,11 @@ export class DelegatedInferenceExecutor extends BaseExecutor<typeof delegatedInf
   ): Promise<T> {
     const topic = generateTopic();
     const response = await startQVACProvider({ topic, firewall });
-    const publicKey = response.publicKey!;
+    if (!response.publicKey) {
+      throw new Error(`startQVACProvider returned no publicKey: ${JSON.stringify(response)}`);
+    }
     try {
-      return await fn({ topic, publicKey });
+      return await fn({ topic, publicKey: response.publicKey });
     } finally {
       try {
         await stopQVACProvider({ topic });
@@ -223,10 +220,9 @@ export class DelegatedInferenceExecutor extends BaseExecutor<typeof delegatedInf
 
   async completionBasic(params: typeof delegatedCompletionBasic.params): Promise<TestResult> {
     return this.withDelegatedModel(async ({ modelId }) => {
-      const p = params as { history: Array<{ role: string; content: string }>; stream: boolean };
       const result = completion({
         modelId,
-        history: p.history,
+        history: params.history as Array<{ role: string; content: string }>,
         stream: false,
       });
       const text = await result.text;
@@ -239,10 +235,9 @@ export class DelegatedInferenceExecutor extends BaseExecutor<typeof delegatedInf
 
   async completionStreaming(params: typeof delegatedCompletionStreaming.params): Promise<TestResult> {
     return this.withDelegatedModel(async ({ modelId }) => {
-      const p = params as { history: Array<{ role: string; content: string }>; stream: boolean };
       const result = completion({
         modelId,
-        history: p.history,
+        history: params.history as Array<{ role: string; content: string }>,
         stream: true,
       });
 
@@ -290,7 +285,7 @@ export class DelegatedInferenceExecutor extends BaseExecutor<typeof delegatedInf
   async connectionFailure(params: typeof delegatedConnectionFailure.params): Promise<TestResult> {
     const bogusProvider = randomHex(32);
     const bogusTopic = generateTopic();
-    const timeout = (params.timeout as number) || 3000;
+    const timeout = (params.timeout ?? 3000) as number;
 
     try {
       await loadModel({
@@ -337,7 +332,7 @@ export class DelegatedInferenceExecutor extends BaseExecutor<typeof delegatedInf
         delegate: {
           topic: bogusTopic,
           providerPublicKey: bogusProvider,
-          timeout: (params.timeout as number) || 3000,
+          timeout: (params.timeout ?? 3000) as number,
         },
       });
       return { passed: false, output: "Should have thrown for unreachable provider" };
