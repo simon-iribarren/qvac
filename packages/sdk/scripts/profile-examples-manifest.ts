@@ -107,8 +107,10 @@ export const EXAMPLE_PROFILE_MANIFEST: ExampleProfileManifestEntry[] = [
   { relativePath: "parallel-download.ts", mode: "harness", tier: "heavy" },
   {
     relativePath: "plugins.ts",
-    mode: "harness",
-    tier: "heavy",
+    mode: "skip",
+    reason:
+      "CLI bundle looks for bare-imports.json in node_modules/@qvac/sdk; " +
+      "cannot run from within the SDK package itself",
   },
   { relativePath: "profiling/basic.ts", mode: "harness", tier: "smoke" },
   { relativePath: "profiling/per-call.ts", mode: "harness", tier: "smoke" },
