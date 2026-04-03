@@ -8,39 +8,53 @@ import {
   LLAMA_3_2_1B_INST_Q4_0,
 } from "@qvac/sdk";
 
+// ── Config ──────────────────────────────────────────────────────────
+// Any 64-char hex string works as a topic — it's a shared secret that
+// lets the consumer discover the provider on Hyperswarm.
+const TOPIC =
+  "66646f696865726f6569686a726530776a66646f696865726f6569686a726530";
+const PROVIDER_STARTUP_TIMEOUT_MS = 30_000;
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const providerScript = join(__dirname, "provider.ts");
-const topic =
-  "66646f696865726f6569686a726530776a66646f696865726f6569686a726530";
 
-let provider: ChildProcess | undefined;
+// ── Provider lifecycle ──────────────────────────────────────────────
 
-function killProvider(): void {
-  if (provider && !provider.killed) {
+function spawnProviderProcess(): ChildProcess {
+  const child = spawn("bun", ["run", providerScript, TOPIC], {
+    stdio: ["pipe", "pipe", "pipe"],
+  });
+
+  child.stderr?.on("data", (chunk: Buffer) => {
+    process.stderr.write(chunk);
+  });
+
+  return child;
+}
+
+function terminateProvider(provider: ChildProcess): void {
+  if (!provider.killed) {
     provider.kill("SIGTERM");
   }
 }
 
-try {
-  console.log("🔧 Spawning provider as child process...");
-  provider = spawn("bun", ["run", providerScript, topic], {
-    stdio: ["pipe", "pipe", "pipe"],
-  });
-
-  provider.stderr?.on("data", (chunk: Buffer) => {
-    process.stderr.write(chunk);
-  });
-
-  const publicKey = await new Promise<string>((resolve, reject) => {
+// The provider's Hyperswarm identity (and therefore its public key) is
+// generated at startup — it can't be known ahead of time. We parse it
+// from the provider's stdout where it prints:
+//   "🆔 Provider Public Key (unique): <hex>"
+function waitForProviderPublicKey(provider: ChildProcess): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
     let output = "";
-    const timeout = setTimeout(
-      () => reject(new Error("Provider startup timeout (30 s)")),
-      30_000,
-    );
-    provider!.stdout!.on("data", (chunk: Buffer) => {
+
+    const timeout = setTimeout(() => {
+      reject(new Error("Provider did not emit its public key in time"));
+    }, PROVIDER_STARTUP_TIMEOUT_MS);
+
+    provider.stdout!.on("data", (chunk: Buffer) => {
       const str = chunk.toString();
       output += str;
       process.stdout.write(str);
+
       const match = output.match(
         /Provider Public Key \(unique\): ([a-f0-9]+)/i,
       );
@@ -49,36 +63,41 @@ try {
         resolve(match[1]!);
       }
     });
-    provider!.on("error", (err) => {
+
+    provider.on("error", (err) => {
       clearTimeout(timeout);
       reject(err);
     });
-    provider!.on("close", (code) => {
+
+    provider.on("close", (code) => {
       clearTimeout(timeout);
-      reject(new Error(`Provider exited with code ${String(code)}`));
+      reject(new Error(`Provider exited unexpectedly (code ${String(code)})`));
     });
   });
+}
 
-  console.log(`\n📡 Provider ready — public key: ${publicKey}`);
-  console.log(`📡 Topic: ${topic}\n`);
+// ── Consumer: delegated model load + completion ─────────────────────
 
-  console.log("→ Loading delegated model...");
+async function runDelegatedCompletion(
+  topic: string,
+  providerPublicKey: string,
+): Promise<void> {
+  console.log("→ Loading model via delegation...");
   const modelId = await loadModel({
     modelSrc: LLAMA_3_2_1B_INST_Q4_0,
     modelType: "llm",
     delegate: {
       topic,
-      providerPublicKey: publicKey,
+      providerPublicKey,
       timeout: 30_000,
     },
     onProgress: (progress) => {
       console.log(`  Download: ${progress.percentage.toFixed(1)}%`);
     },
   });
-
   console.log(`✅ Model loaded: ${modelId}\n`);
 
-  console.log("→ Running delegated completion...");
+  console.log("→ Running delegated completion (streamed)...");
   const response = completion({
     modelId,
     history: [{ role: "user", content: "Say hello in exactly 5 words." }],
@@ -92,10 +111,23 @@ try {
 
   const stats = await response.stats;
   console.log(`\n📊 Stats: ${JSON.stringify(stats)}`);
+}
 
+// ── Main ────────────────────────────────────────────────────────────
+
+const provider = spawnProviderProcess();
+
+try {
+  console.log("🔧 Waiting for provider to start and announce its key...\n");
+  const publicKey = await waitForProviderPublicKey(provider);
+
+  console.log(`\n📡 Provider ready — key: ${publicKey}`);
+  console.log(`📡 Topic: ${TOPIC}\n`);
+
+  await runDelegatedCompletion(TOPIC, publicKey);
   void close();
 } finally {
-  killProvider();
+  terminateProvider(provider);
 }
 
 process.exit(0);
