@@ -1,5 +1,4 @@
 dist
-examples/.profiler-report/
 .DS_Store
 node_modules
 *.gguf
