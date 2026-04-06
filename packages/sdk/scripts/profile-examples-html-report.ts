@@ -39,7 +39,7 @@ interface ExampleRow {
   name: string;
   tier: string;
   ok: boolean;
-  errorMessage?: string;
+  errorMessage: string | undefined;
   totalClientTimeMs: number;
   inferenceTimeMs: number;
   sdkOverheadMs: number;
