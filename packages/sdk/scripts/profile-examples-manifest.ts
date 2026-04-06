@@ -22,6 +22,9 @@ export const EXAMPLE_PROFILE_MANIFEST: ExampleProfileManifestEntry[] = [
     args: ["examples/audio/sample-16khz.wav"],
   },
   { relativePath: "default-config-usage.ts", mode: "harness", tier: "smoke" },
+  { relativePath: "diffusion-flux2-klein.ts", mode: "harness", tier: "heavy" },
+  { relativePath: "diffusion-simple.ts", mode: "harness", tier: "heavy" },
+  { relativePath: "diffusion-txt2img.ts", mode: "harness", tier: "heavy" },
   {
     relativePath: "delegated-inference/composite.ts",
     mode: "harness",
@@ -169,6 +172,11 @@ export const EXAMPLE_PROFILE_MANIFEST: ExampleProfileManifestEntry[] = [
     mode: "harness",
     tier: "standard",
     args: ["examples/audio/sample-16khz.wav"],
+  },
+  {
+    relativePath: "transcription/whispercpp-filesystem-streaming.ts",
+    mode: "harness",
+    tier: "standard",
   },
   {
     relativePath: "transcription/whispercpp-filesystem.ts",

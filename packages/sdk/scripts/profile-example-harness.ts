@@ -40,7 +40,7 @@ process.stderr.write = (
   } else {
     stderrChunks.push(Buffer.from(chunk).toString("utf-8"));
   }
-  return (origStderrWrite as Function)(chunk, ...args);
+  return (origStderrWrite as (...a: unknown[]) => boolean)(chunk, ...args);
 };
 
 function formatError(error: unknown): Record<string, unknown> | undefined {
