@@ -187,8 +187,8 @@ export const EXAMPLE_PROFILE_MANIFEST: ExampleProfileManifestEntry[] = [
   },
   {
     relativePath: "transcription/whispercpp-filesystem-streaming.ts",
-    mode: "harness",
-    tier: "standard",
+    mode: "skip",
+    reason: "Requires FFmpeg to convert WAV to raw f32le stream",
   },
   {
     relativePath: "transcription/whispercpp-filesystem.ts",
