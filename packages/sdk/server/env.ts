@@ -1,4 +1,4 @@
-import { runtimeProcess as workerProcess } from "@/server/utils/runtime-bare-io";
+import process from "bare-process";
 import { isBareKit } from "which-runtime";
 import { z } from "zod";
 
@@ -16,25 +16,23 @@ let validatedEnv: WorkerEnv | null = null;
  * Returns whether RPC config was parsed from arguments.
  */
 export function initEnv(): { hasRPCConfig: boolean } {
-  /* eslint-disable @typescript-eslint/no-unsafe-assignment -- env index + zod merge */
   const defaultHomeDir =
-    workerProcess.env["HOME"] ??
-    workerProcess.env["USERPROFILE"] ??
+    process.env["HOME"] ??
+    process.env["USERPROFILE"] ??
     "/tmp";
   let envConfig: Record<string, string | undefined> = {
     HOME_DIR: defaultHomeDir,
   };
-  /* eslint-enable @typescript-eslint/no-unsafe-assignment */
   let hasRPCConfig = false;
 
-  if (isBareKit && workerProcess.argv[0]) {
-    envConfig["HOME_DIR"] = workerProcess.argv[0];
+  if (isBareKit && process.argv[0]) {
+    envConfig["HOME_DIR"] = process.argv[0];
   }
 
   // Try to parse any argument as JSON config (fail gracefully)
-  if (workerProcess.argv[2]) {
+  if (process.argv[2]) {
     try {
-      const rpcArgs = JSON.parse(workerProcess.argv[2]) as Record<
+      const rpcArgs = JSON.parse(process.argv[2]) as Record<
         string,
         string
       >;
@@ -58,7 +56,7 @@ export function getEnv() {
     initEnv();
   }
   return {
-    ...workerProcess.env,
+    ...process.env,
     ...validatedEnv!,
   };
 }

@@ -1,4 +1,4 @@
-import { runtimePath as path } from "@/server/utils/runtime-bare-io";
+import path from "bare-path";
 import { PathTraversalError } from "@/utils/errors-server";
 import {
   sanitizePathComponent,
