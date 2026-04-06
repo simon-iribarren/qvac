@@ -80,7 +80,8 @@ protected:
          {session1_path,
           session2_path,
           temp_session_path,
-          std::string("test_large_cache_qwen3.bin")}) {
+          std::string("test_large_cache_qwen3.bin"),
+          std::string("test_firstmsg_qwen3.bin")}) {
       if (fs::exists(session_file)) {
         fs::remove(session_file);
       }
@@ -444,4 +445,78 @@ TEST_F(CacheManagementQwen3Test, CacheToolsAtEndModeRestoresNPastBeforeTools) {
 
   llama_pos nPastBeforeTools2 = model2->getNPastBeforeTools();
   EXPECT_EQ(nPastBeforeTools2, -1);
+}
+
+// ---------------------------------------------------------------------------
+// Regression: firstMsgTokens_ must be capped after tools_at_end trim
+//
+// WHY (PR #706 review): After the KV cache trim in processPromptImpl,
+// firstMsgTokens_ stayed inflated (M+T+A instead of M). This breaks the
+// sliding-window discard when context fills up: leftTokens goes negative,
+// the normal discard path doesn't fire, and the emergency path wastes T+A
+// tokens of context window. The fix caps firstMsgTokens_ to nPast_ after
+// the trim, but no test guarded the regression.
+//
+// Strategy: use small context (512), run turn 1 with a large tool payload
+// to set firstMsgTokens_, then continue prompting until context overflows.
+// If firstMsgTokens_ is correctly capped, the sliding window kicks in and
+// subsequent turns succeed. If incorrectly inflated, discard fails or throws.
+// ---------------------------------------------------------------------------
+TEST_F(
+    CacheManagementQwen3Test,
+    FirstMsgTokensCappedAfterToolsTrim) {
+  if (!isQwen3ModelPath(test_model_path)) {
+    GTEST_SKIP() << "Test requires Qwen3 model for tools_at_end feature";
+  }
+
+  if (!hasValidModel()) {
+    FAIL() << "Test model not found";
+  }
+
+  config_files["tools_at_end"] = "true";
+  config_files["ctx_size"] = "512";
+  config_files["n_predict"] = "64";
+  config_files["n_discarded"] = "64";
+  auto model = createModel();
+  if (!model) {
+    FAIL() << "Model failed to load";
+  }
+
+  std::string input1 =
+      R"([{"role": "session", "content": "test_firstmsg_qwen3.bin"}, {"role": "user", "content": "Hi"}, {"type": "function", "name": "get_weather", "description": "Get detailed weather forecast data with temperature humidity wind speed precipitation UV index visibility atmospheric pressure sunrise sunset times weather alerts air quality pollen count road conditions marine forecast", "parameters": {"type": "object", "properties": {"city": {"type": "string", "description": "The name of the city to get weather for"}, "country": {"type": "string", "description": "Country code or name"}, "lat": {"type": "number", "description": "Latitude coordinate"}, "lon": {"type": "number", "description": "Longitude coordinate"}, "zip": {"type": "string", "description": "ZIP postal code"}, "units": {"type": "string", "description": "Temperature units metric imperial or kelvin"}, "lang": {"type": "string", "description": "Language code for localized descriptions"}, "forecast_days": {"type": "integer", "description": "Number of days to forecast from 1 to 7"}, "hourly": {"type": "boolean", "description": "Include hourly forecast data"}, "alerts": {"type": "boolean", "description": "Include weather alerts and warnings"}}, "required": ["city"]}}])";
+
+  EXPECT_NO_THROW({
+    std::string output = processPromptString(model, input1);
+    EXPECT_GE(output.length(), 0);
+  });
+
+  auto stats1 = model->runtimeStats();
+  double cacheTokens1 = getStatValue(stats1, "CacheTokens");
+  EXPECT_GT(cacheTokens1, 0.0);
+
+  for (int turn = 2; turn <= 6; ++turn) {
+    std::string followUp =
+        R"([{"role": "session", "content": "test_firstmsg_qwen3.bin"}, {"role": "user", "content": "Tell me more about turn )" +
+        std::to_string(turn) +
+        R"( please. What else can you say about the weather and related topics?"}])";
+
+    EXPECT_NO_THROW({
+      std::string output = processPromptString(model, followUp);
+      EXPECT_GE(output.length(), 0);
+    }) << "Turn "
+       << turn << " should not throw — firstMsgTokens_ must be correctly "
+                  "capped after tools trim for sliding window to work";
+
+    auto stats = model->runtimeStats();
+    double cacheTokens = getStatValue(stats, "CacheTokens");
+    EXPECT_GT(cacheTokens, 0.0)
+        << "Turn " << turn << " must have non-zero cache tokens";
+  }
+
+  auto finalStats = model->runtimeStats();
+  double finalCache = getStatValue(finalStats, "CacheTokens");
+
+  EXPECT_LT(finalCache, 512.0)
+      << "Final cache (" << finalCache
+      << ") should be within context window (512)";
 }
