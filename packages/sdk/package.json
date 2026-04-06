@@ -79,6 +79,10 @@
       "bare": "./dist/polyfills/bare-globals.js",
       "default": "./dist/polyfills/bare-globals.noop.js"
     },
+    "#create-require": {
+      "bare": "./dist/polyfills/create-require.bare.js",
+      "default": "./dist/polyfills/create-require.node.js"
+    },
     "#rpc": {
       "react-native": "./dist/client/rpc/expo-rpc-client.js",
       "bare": "./dist/client/rpc/bare-client.js",

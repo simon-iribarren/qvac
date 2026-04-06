@@ -1,23 +1,12 @@
 import type * as nodeFs from "node:fs";
 import type * as nodePath from "node:path";
-import type { createRequire as CreateRequireFn } from "node:module";
-
-type RequireFn = (id: string) => unknown;
+import { createRuntimeRequire } from "#create-require";
 
 const isBare =
   typeof (globalThis as { Bun?: unknown }).Bun === "undefined" &&
   typeof (globalThis as { Bare?: unknown }).Bare !== "undefined";
 
-function getRequire(): RequireFn {
-  if (isBare) {
-    return require;
-  }
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const mod = require("node:module") as { createRequire: typeof CreateRequireFn };
-  return mod.createRequire(import.meta.url);
-}
-
-const req = getRequire();
+const req = createRuntimeRequire(import.meta.url);
 
 export const runtimeFs = req(isBare ? "bare-fs" : "node:fs") as typeof nodeFs;
 
