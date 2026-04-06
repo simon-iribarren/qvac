@@ -1,27 +1,26 @@
-import * as nodeFs from "node:fs";
-import * as nodePath from "node:path";
-import nodeProcess from "node:process";
-import { createRequire } from "node:module";
+import type * as nodeFs from "node:fs";
+import type * as nodePath from "node:path";
+import type { createRequire as CreateRequireFn } from "node:module";
 
-const requireBare = createRequire(import.meta.url);
+type RequireFn = (id: string) => unknown;
 
-function useBareNativeIo(): boolean {
-  return (
-    typeof (globalThis as { Bun?: unknown }).Bun === "undefined" &&
-    typeof (globalThis as { Bare?: unknown }).Bare !== "undefined"
-  );
+const isBare =
+  typeof (globalThis as { Bun?: unknown }).Bun === "undefined" &&
+  typeof (globalThis as { Bare?: unknown }).Bare !== "undefined";
+
+function getRequire(): RequireFn {
+  if (isBare) {
+    return require;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const mod = require("node:module") as { createRequire: typeof CreateRequireFn };
+  return mod.createRequire(import.meta.url);
 }
 
-const useBare = useBareNativeIo();
+const req = getRequire();
 
-export const runtimeFs: typeof nodeFs = useBare
-  ? (requireBare("bare-fs") as unknown as typeof nodeFs)
-  : nodeFs;
+export const runtimeFs = req(isBare ? "bare-fs" : "node:fs") as typeof nodeFs;
 
-export const runtimePath: typeof nodePath = useBare
-  ? (requireBare("bare-path") as unknown as typeof nodePath)
-  : nodePath;
+export const runtimePath = req(isBare ? "bare-path" : "node:path") as typeof nodePath;
 
-export const runtimeProcess: NodeJS.Process = useBare
-  ? (requireBare("bare-process") as unknown as NodeJS.Process)
-  : nodeProcess;
+export const runtimeProcess = req(isBare ? "bare-process" : "node:process") as NodeJS.Process;
