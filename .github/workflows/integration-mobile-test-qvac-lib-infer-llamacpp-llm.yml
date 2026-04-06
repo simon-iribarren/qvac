@@ -57,7 +57,7 @@ jobs:
     steps:
       # Validate input data to prevent "Artifact Poisoning"
       - name: Validate Dispatch Inputs
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.package != ''
         run: |
           if [[ ! "${{ github.event.inputs.package }}" =~ ^@qvac/ ]]; then
             echo "::error::Invalid package scope. Only @qvac/* is allowed."
@@ -380,7 +380,7 @@ jobs:
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Display build summary
-        if: always()
+        if: always() && hashFiles('test-framework/**') != ''
         working-directory: ${{ github.workspace }}/test-framework
         run: |
           echo ""
