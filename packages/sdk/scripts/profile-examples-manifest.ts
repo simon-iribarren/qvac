@@ -22,9 +22,21 @@ export const EXAMPLE_PROFILE_MANIFEST: ExampleProfileManifestEntry[] = [
     args: ["examples/audio/sample-16khz.wav"],
   },
   { relativePath: "default-config-usage.ts", mode: "harness", tier: "smoke" },
-  { relativePath: "diffusion-flux2-klein.ts", mode: "harness", tier: "heavy" },
-  { relativePath: "diffusion-simple.ts", mode: "harness", tier: "heavy" },
-  { relativePath: "diffusion-txt2img.ts", mode: "harness", tier: "heavy" },
+  {
+    relativePath: "diffusion-flux2-klein.ts",
+    mode: "skip",
+    reason: "Experimental diffusion support; not stable for automated profiling",
+  },
+  {
+    relativePath: "diffusion-simple.ts",
+    mode: "skip",
+    reason: "Experimental diffusion support; not stable for automated profiling",
+  },
+  {
+    relativePath: "diffusion-txt2img.ts",
+    mode: "skip",
+    reason: "Experimental diffusion support; not stable for automated profiling",
+  },
   {
     relativePath: "delegated-inference/composite.ts",
     mode: "harness",
