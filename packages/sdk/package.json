@@ -120,7 +120,8 @@
     "update-models": "tsx ./models/update-models/index.ts",
     "changelog:generate": "node ../../scripts/sdk/generate-changelog-sdk-pod.cjs --package=sdk && prettier --write changelog",
     "profile-examples-report": "bun run scripts/profile-examples-report.ts",
-    "profile-examples-report:list": "bun run scripts/profile-examples-report.ts -- --list"
+    "profile-examples-report:list": "bun run scripts/profile-examples-report.ts -- --list",
+    "profile-examples-report:html": "bun run scripts/profile-examples-html-report.ts"
   },
   "dependencies": {
     "@qvac/decoder-audio": "^0.3.3",
