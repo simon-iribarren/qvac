@@ -210,7 +210,7 @@ function prepareMessagesForCache(
           break;
         }
       }
-    } else if (toolsMode === ToolsModeType.compact) {
+    } else if (toolsMode === ToolsModeType.dynamic) {
       const prevMsg = history[history.length - 2];
       if (prevMsg?.role === 'assistant') {
         lastMessages = [prevMsg, lastMsg];
@@ -357,7 +357,7 @@ export async function* completion(
     historyWithTools = insertToolsIntoHistory({
       history,
       tools,
-      append: toolsMode === ToolsModeType.compact,
+      append: toolsMode === ToolsModeType.dynamic,
     });
     setupToolGrammar(modelConfig as Record<string, unknown>, tools);
   }
@@ -369,11 +369,11 @@ export async function* completion(
     const modelConfig = getModelConfig(modelId);
     const systemPromptFromHistory = extractSystemPrompt(history);
     const toolsModeForHash = (modelConfig as { toolsMode?: string }).toolsMode;
-    const systemTools = !!(toolsMode !== ToolsModeType.compact && tools?.length && toolsEnabled);
-    const compactTools = !!(toolsMode === ToolsModeType.compact && tools?.length && toolsEnabled);
+    const systemTools = !!(toolsMode !== ToolsModeType.dynamic && tools?.length && toolsEnabled);
+    const dynamicTools = !!(toolsMode === ToolsModeType.dynamic && tools?.length && toolsEnabled);
     const configHash = generateConfigHash(
       systemPromptFromHistory,
-      toolsModeForHash !== ToolsModeType.compact ? tools : undefined,
+      toolsModeForHash !== ToolsModeType.dynamic ? tools : undefined,
     );
 
     const systemPromptToUse =
@@ -403,7 +403,7 @@ export async function* completion(
         cachePathToUse,
         cacheExists,
         history,
-        compactTools ? tools : undefined,
+        dynamicTools ? tools : undefined,
         toolsMode,
       );
       logMessagesToAddon(messagesToSend, "PROMPT_SEND");
@@ -452,7 +452,7 @@ export async function* completion(
         cachePathToUse,
         cacheExists,
         history,
-        compactTools ? tools : undefined,
+        dynamicTools ? tools : undefined,
         toolsMode,
       );
       logMessagesToAddon(messagesToSend, "PROMPT_SEND");
