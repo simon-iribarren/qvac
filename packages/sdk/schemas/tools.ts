@@ -1,13 +1,14 @@
 import { z } from "zod";
 
 /**
- * "static" tools is when a set of tools is provided to the whole chat session,
- * in "dynamic" mode tools are attached with each message,
+ * "default" tools is when a set of tools is provided to the whole chat session,
+ * in "compact" mode tools are attached with each message,
  * so in a long conversation next message can have it's own tools
+ * and the llm addon would compact 'tool' response with 'assistant' messages
  */
 export const ToolsModeType = {
-  static: "static",
-  dynamic: "dynamic",
+  default: "default",
+  compact: "compact",
 } as const;
 
 export const toolSchema = z.object({

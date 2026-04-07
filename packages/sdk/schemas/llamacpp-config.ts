@@ -42,8 +42,8 @@ export const llmConfigBaseSchema = z.object({
   stop_sequences: z.array(z.string()).optional(),
   n_discarded: z.number().optional(),
   tools: z.boolean().optional(),
-  toolsMode: z.enum([ToolsModeType.static, ToolsModeType.dynamic])
-    .describe('"static" is a default way where tools belong to a chat session; "dynamic" mode allows to provide specific tools for each user prompt')
+  toolsMode: z.enum([ToolsModeType.default, ToolsModeType.compact])
+    .describe('"default" is when tools belong to a chat session; "compact" mode allows to provide specific tools for each user prompt')
     .optional(),
   projectionModelSrc: modelSrcInputSchema.optional(),
 });
@@ -56,7 +56,7 @@ export const LLM_CONFIG_DEFAULTS = {
   gpu_layers: 99,
   device: "gpu",
   system_prompt: "You are a helpful assistant.",
-  toolsMode: ToolsModeType.static,
+  toolsMode: ToolsModeType.default,
 } as const satisfies Partial<LlmConfigInput>;
 
 // Full schema - applies defaults via transform (no duplication)

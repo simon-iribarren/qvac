@@ -109,10 +109,10 @@ resources.define("tools", {
   config: { ctx_size: 4096, tools: true },
 });
 
-resources.define("tools-dynamic", {
+resources.define("tools-compact", {
   constant: QWEN3_1_7B_INST_Q4,
   type: "llm",
-  config: { ctx_size: 4096, tools: true, toolsMode: 'dynamic' },
+  config: { ctx_size: 4096, tools: true, toolsMode: 'compact' },
 });
 
 resources.define("ocr", {

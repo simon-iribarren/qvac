@@ -26,7 +26,7 @@ export class ToolsExecutor extends AbstractModelExecutor<typeof toolsTests> {
       toolsMode: string,
       stream?: boolean;
     };
-    const resourceDep = p.toolsMode  === ToolsModeType.dynamic ? "tools-dynamic" : "tools"
+    const resourceDep = p.toolsMode  === ToolsModeType.compact ? "tools-compact" : "tools"
     const toolsModelId = await this.resources.ensureLoaded(resourceDep);
 
     try {
