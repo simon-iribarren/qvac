@@ -50,7 +50,7 @@ function transformLlmConfig(llmConfig: LlmConfig) {
   }
 
   if ("tools_mode" in transformed) {
-    transformed["tools_at_end"] = transformed["tools_mode"] === ToolsModeType.dynamic ? "true" : "false";
+    transformed["tools_compact"] = transformed["tools_mode"] === ToolsModeType.dynamic ? "true" : "false";
     delete transformed["tools_mode"];
   }
 

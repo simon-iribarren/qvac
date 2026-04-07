@@ -47,9 +47,6 @@ type DebugStats = {
   promptTokens: number;
   generatedTokens: number;
   contextSlides: number;
-  nPastBeforeTools: number;
-  firstMsgTokens: number;
-  toolsTrimmed: number;
 }
 
 interface ResponseWithStats {
@@ -320,9 +317,6 @@ async function* processModelResponse(
     promptTokens: responseWithStats.stats?.promptTokens ?? 0,
     generatedTokens: responseWithStats.stats?.generatedTokens ?? 0,
     contextSlides: responseWithStats.stats?.contextSlides ?? 0,
-    nPastBeforeTools: responseWithStats.stats?.nPastBeforeTools ?? 0,
-    firstMsgTokens: responseWithStats.stats?.firstMsgTokens ?? 0,
-    toolsTrimmed: (responseWithStats.stats?.toolsTrimmed ?? 0) === 1,
   } as CompletionStats;
 
   return {

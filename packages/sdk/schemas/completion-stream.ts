@@ -54,9 +54,6 @@ export const completionStatsSchema = z.object({
   promptTokens: z.number().optional(),
   generatedTokens: z.number().optional(),
   contextSlides: z.number().optional(),
-  nPastBeforeTools: z.number().optional(),
-  firstMsgTokens: z.number().optional(),
-  toolsTrimmed: z.boolean().optional(),
 });
 
 export const completionStreamResponseSchema = z.object({
