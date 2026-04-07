@@ -60,6 +60,14 @@ interface ChatHistory {
 
 const cachedMessageCounts = new Map<string, number>();
 
+export function clearCachedMessageCounts(cachePath?: string): void {
+  if (cachePath) {
+    cachedMessageCounts.delete(cachePath);
+  } else {
+    cachedMessageCounts.clear();
+  }
+}
+
 function transformMessage(
   message:
     | {
@@ -169,10 +177,14 @@ function prepareMessagesForCache(
 ): ChatHistory[] {
   if (cacheExists && history.length > 0) {
     const savedCount = cachedMessageCounts.get(cachePathToUse) ?? 0;
-    const newMessages =
-      savedCount > 0
-        ? history.slice(savedCount)
-        : history.filter((msg) => msg.role !== "system");
+    const canSlice = savedCount > 0 && savedCount <= history.length;
+    const newMessages = canSlice
+      ? history.slice(savedCount)
+      : history.filter((msg) => msg.role !== "system");
+
+    if (!canSlice && savedCount > 0) {
+      cachedMessageCounts.delete(cachePathToUse);
+    }
 
     const transformedNewMessages = transformMessages(newMessages);
     return [
