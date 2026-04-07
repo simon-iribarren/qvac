@@ -527,7 +527,8 @@ TEST_F(
       R"( {"role": "user", "content": ")" + userMsg + R"("}, )" + toolJson + R"(])";
   processPromptString(baselineModel, turn2Input);
   auto baselineStats = baselineModel->runtimeStats();
-  double baselineNPBT = getStatValue(baselineStats, "nPastBeforeTools");
+  auto baselineDebug = baselineModel->runtimeDebugStats();
+  double baselineNPBT = getStatValue(baselineDebug, "nPastBeforeTools");
   double baselineSlides = getStatValue(baselineStats, "contextSlides");
 
   EXPECT_EQ(baselineSlides, 0)
@@ -556,9 +557,10 @@ TEST_F(
   });
 
   auto slideStats = slideModel->runtimeStats();
-  double slideNPBT = getStatValue(slideStats, "nPastBeforeTools");
+  auto slideDebug = slideModel->runtimeDebugStats();
+  double slideNPBT = getStatValue(slideDebug, "nPastBeforeTools");
   double slideSlides = getStatValue(slideStats, "contextSlides");
-  double slideTrimmed = getStatValue(slideStats, "toolsTrimmed");
+  double slideTrimmed = getStatValue(slideDebug, "toolsTrimmed");
 
   EXPECT_GT(slideSlides, 0)
       << "Context sliding must occur (if not, increase user message "
@@ -567,8 +569,8 @@ TEST_F(
   // The first slide discards min(nDiscarded, nPastBeforeTools - firstMsgTokens)
   // tokens. With a session, firstMsgTokens is the system prompt tokens (small).
   // Subsequent slides have a smaller safeLimit as the anchor shrinks.
-  // We use firstMsgTokens from baseline stats to compute exact expected values.
-  double baselineFirstMsg = getStatValue(baselineStats, "firstMsgTokens");
+  // We use firstMsgTokens from baseline debug stats to compute exact expected values.
+  double baselineFirstMsg = getStatValue(baselineDebug, "firstMsgTokens");
   double safeLimit = baselineNPBT - baselineFirstMsg;
   EXPECT_GT(safeLimit, 0)
       << "safeLimit (nPBT - firstMsg = " << baselineNPBT << " - "
@@ -683,8 +685,9 @@ TEST_F(
       R"( {"role": "user", "content": ")" + userMsg + R"("}, )" + toolJson + R"(])";
   processPromptString(baselineModel, input);
   auto baselineStats = baselineModel->runtimeStats();
-  double baselineNPBT = getStatValue(baselineStats, "nPastBeforeTools");
-  double baselineFirstMsg = getStatValue(baselineStats, "firstMsgTokens");
+  auto baselineDebug = baselineModel->runtimeDebugStats();
+  double baselineNPBT = getStatValue(baselineDebug, "nPastBeforeTools");
+  double baselineFirstMsg = getStatValue(baselineDebug, "firstMsgTokens");
   double baselineSlides = getStatValue(baselineStats, "contextSlides");
 
   EXPECT_EQ(baselineSlides, 0) << "Baseline must not slide";
@@ -719,7 +722,8 @@ TEST_F(
   });
 
   auto slideStats = slideModel->runtimeStats();
-  double slideNPBT = getStatValue(slideStats, "nPastBeforeTools");
+  auto slideDebug = slideModel->runtimeDebugStats();
+  double slideNPBT = getStatValue(slideDebug, "nPastBeforeTools");
   double slideSlides = getStatValue(slideStats, "contextSlides");
 
   EXPECT_GT(slideSlides, 0) << "Sliding must occur";

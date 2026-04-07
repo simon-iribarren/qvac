@@ -180,6 +180,7 @@ public:
   common_params& getCommonParams();
 
   qvac_lib_inference_addon_cpp::RuntimeStats runtimeStats() const final;
+  qvac_lib_inference_addon_cpp::RuntimeStats runtimeDebugStats() const;
   static void
   llamaLogCallback(ggml_log_level level, const char* text, void* userData);
 
