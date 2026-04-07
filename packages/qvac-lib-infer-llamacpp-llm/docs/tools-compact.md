@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `tools_compact` configuration option places tool definitions at the end of the prompt (after the conversation history) instead of the default position (typically inside the system prompt). This enables KV cache optimization for multi-turn conversations with dynamic tool sets.
+The `tools_compact` configuration option anchors tool definitions after the last user message and automatically compacts completed tool chains from the KV cache. After a tool chain completes, the entire round-trip — tool definitions, intermediate assistant tool-call messages, and tool response messages — is trimmed, leaving only the user prompt and the final assistant answer in the cache.
 
 ## Configuration
 
@@ -17,39 +17,77 @@ const config = {
 
 Currently `tools_compact` is only supported for **Qwen3** models. If enabled on a non-Qwen3 model, the flag is silently ignored and a warning is logged.
 
-## Usage Requirements
+## How It Works
 
-### Multi-turn Conversation Pattern
+### Tool Chain Lifecycle
 
-When using `tools_compact`, consumers must follow a specific pattern:
-
-1. **Include prior response**: Pass the assistant's previous response (including any `<tool_call>` or `<think>` blocks) back alongside the new user message.
-
-2. **Full history each turn**: Since the KV cache is trimmed after each turn, the full conversation history must be re-provided.
+During a tool chain, tools stay anchored in the KV cache. Trimming only happens when the chain completes (the model's output contains no `<tool_call>` tag):
 
 ```
-Turn 1: [user-q-1] + [tools-1] → [response-1]
-Turn 2: [response-1] + [user-q-2] + [tools-2] → [response-2]
-        (tools-1 is automatically trimmed from cache)
+Round 1 (tool call):
+  KV: [system] [user-q] [<tools-def>] → assistant emits <tool_call>
+  → tools kept in cache, no trim
+
+Round 2 (tool response + another call):
+  KV: [system] [user-q] [<tools-def>] [assistant-tool-ask] [tool-resp] → assistant emits <tool_call>
+  → tools still kept, no trim
+
+Round 3 (final answer):
+  KV: [system] [user-q] [<tools-def>] [asst-tool-ask] [tool-resp] [asst-tool-ask] [tool-resp] → assistant emits final text
+  → chain complete, everything after [user-q] is trimmed
+  KV: [system] [user-q]
 ```
 
-3. **Strip stale tool blocks**: Remove `<tool_call>` blocks from prior responses when tools have changed to prevent model from pattern-matching on removed tools.
+### What Gets Compacted
+
+The full multi-round tool invocation:
+
+```
+[user] → <tools-def> → [assistant-tool-ask] → [tool-resp] → [assistant-tool-ask] → [tool-resp] → [assistant-final]
+```
+
+is compacted to:
+
+```
+[user] → [assistant-final]
+```
+
+where `[assistant-final]` is passed back by the caller on the next turn and re-evaluated from the cache boundary.
+
+### What to Pass Each Turn
+
+The KV cache preserves earlier conversation history. Only pass:
+
+1. **Previous assistant response** (if any) — the `assistant-final` text from the last completed turn
+2. **All `tool` responses** for parallel tool calls within the current chain round
+3. **New `user` prompt**
+
+Earlier history does not need to be re-provided; it is already in the KV cache.
 
 ## Performance Characteristics
 
 | Overhead Type | Impact | Note |
 |---------------|--------|------|
-| Double tokenization | ~2% | Required to calculate tool token boundary |
-| Tools prefill | Up to 100% | Tools re-evaluated every turn regardless of change |
+| Double tokenization | ~2% | Only for the `assistant-final` message (end of chain), needed to calculate tool token boundary |
+| Tools prefill | Proportional to tool definition size | Tools re-evaluated every turn; anchored across chain rounds |
 
 ## When to Use
 
 **Use `tools_compact` when:**
 - Long conversations with many turns (cache hit on history saves significant compute)
 - Frequent tool replacement between turns (e.g., tools A → tools B → tools A)
+- Tool responses are self-contained and not needed for reasoning in subsequent turns
 
 **Use standard `tools` config when:**
 - Short conversations or single-turn tool calls
 - Tools remain the same across many turns
+- The model must reason about prior tool responses in future turns (e.g., a fetched file or web page whose content is needed later)
 
-The feature provides net benefit when conversation history cache savings outweigh the tools prefill overhead.
+### Important: Tool Responses Are Discarded
+
+After compaction, all intermediate tool responses are removed from the KV cache. This means the model **cannot** reference prior tool output when answering the next user prompt. If a tool fetched external content (a file, a web page, an API response) that the model may need later, the consumer must either:
+
+- Re-invoke the tool on the next turn so the content is fresh in context, or
+- Embed the relevant data into the user message itself
+
+The feature provides net benefit when conversation history cache savings outweigh the tools prefill overhead and tool responses are ephemeral.

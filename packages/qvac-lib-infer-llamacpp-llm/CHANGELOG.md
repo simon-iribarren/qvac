@@ -1,6 +1,22 @@
 # Changelog
 
-## [0.14.2] - 2026-04-07
+## [0.15.0] - 2026-04-07
+
+### Changed
+
+#### `tools_at_end` renamed to `tools_compact`
+
+**Breaking**: The `tools_at_end` configuration option has been renamed to `tools_compact`. The old key is no longer recognized.
+
+#### Anchored tool placement for multi-round tool chains
+
+Tools are now anchored after the **last user message** (via a two-pass Jinja2 template that tracks `last_user_idx`) instead of being appended at the very end of the prompt. The tool boundary is set once on the first round and preserved across chain rounds, so tools stay in the KV cache while the model is still calling tools. Trimming now only happens when the chain completes (output contains no `<tool_call>` tag), instead of after every turn.
+
+This eliminates redundant tokenize → eval → trim cycles during multi-round tool chains and matches the model's expected prompt layout more closely.
+
+#### `<think>` blocks stripped from assistant history
+
+The Qwen3 tools-dynamic template no longer re-injects `<think>…</think>` reasoning blocks into assistant history. Prior assistant messages are replayed with the thinking content stripped, which reduces token waste and avoids the model treating stale reasoning as context.
 
 ### Fixed
 
@@ -8,18 +24,29 @@
 
 When context sliding (token discard) occurred during generation or prefill with `tools_compact` enabled, the `nPastBeforeTools` boundary was not adjusted. This caused the post-generation trim to use a stale boundary, leaving tool tokens in the KV cache across turns.
 
-**The bug**: The sliding window removes N tokens from the middle of the KV cache and shifts everything after them left. But `nPastBeforeTools` (which marks where conversation ends and tools begin) was not shifted, so it pointed past the actual boundary.
-
-**The fix**:
-- Limit discard to conversation-only tokens — never eat into the tool region
-- After sliding, adjust `nPastBeforeTools` by the same delta so the trim boundary stays accurate
-- Reset `DynamicToolsState` in the fallback discard path (full conversation wipe)
+The fix extracts sliding helpers into `DynamicToolsState`:
+- `clampDiscard()` limits discard to conversation-only tokens — never eats into the tool region
+- `adjustAfterSlide()` shifts `nPastBeforeTools` left by the same delta so the trim boundary stays accurate
+- `DynamicToolsState` is reset in the fallback discard path (full conversation wipe)
 - Applied to both `TextLlmContext` and `MtmdLlmContext`
+
+#### Output duplication in streaming mode with `tools_compact`
+
+In streaming mode the captured output buffer was being returned as the final result, causing the SDK to see every token twice (once streamed, once in the result). The captured buffer is now used only for internal `<tool_call>` detection.
+
+#### Generation prompt added on system-only prefill
+
+When `nPast=0` and the only message was a system prompt, `add_generation_prompt` was hardcoded to `true`, injecting a stale `<|im_start|>assistant` token into the cache. Now checks the actual last message role.
+
+#### `"tool"` role not treated as turn-ending for generation prompt
+
+Messages with role `"tool"` (tool call results) were not triggering `add_generation_prompt`, causing empty responses on tool chain continuation. Now treated the same as `"user"` for generation prompt purposes.
 
 ### Added
 
-- `runtimeDebugStats()` method on `LlamaModel` exposing internal debug stats (`nPastBeforeTools`, `firstMsgTokens`, `toolsTrimmed`)
-- Regression test `CacheToolsAtEndSlidingDuringGenDoesNotLeakToolTokens` that triggers sliding during generation with a large tool definition in a small (512-token) context
+- `runtimeDebugStats()` internal method on `LlamaModel` exposing `nPastBeforeTools`, `firstMsgTokens`, and `toolsTrimmed`
+- Comprehensive C++ unit tests for Qwen3 tools-dynamic template and cache management with tools_compact
+- Regression tests for context sliding with anchored tools: clamped discard, `adjustAfterSlide`, unclamped sliding with long conversations, and sliding during generation
 
 ## [0.14.1] - 2026-04-02
 
