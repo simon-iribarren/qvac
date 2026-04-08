@@ -373,7 +373,7 @@ TEST_F(TextLlmContextTest, ProcessWithMultipleTools) {
   });
 }
 
-TEST_F(TextLlmContextTest, DoubleTokenizeWithoutToolsAtEnd) {
+TEST_F(TextLlmContextTest, DoubleTokenizeWithoutToolsCompact) {
   if (!hasValidModel()) {
     FAIL() << "Test model not found";
   }
@@ -413,7 +413,7 @@ TEST_F(TextLlmContextTest, DoubleTokenizeWithoutToolsAtEnd) {
   EXPECT_GT(promptTokens, 200);
 }
 
-TEST_F(TextLlmContextTest, DoubleTokenizeWithToolsAtEndNoTools) {
+TEST_F(TextLlmContextTest, DoubleTokenizeWithToolsCompactNoTools) {
   if (!hasValidModel()) {
     FAIL() << "Test model not found";
   }
@@ -670,7 +670,7 @@ TEST_F(TextLlmContextTest, NPastBeforeToolsMinusOneWithoutTools) {
   EXPECT_EQ(nPastBeforeTools, -1);
 }
 
-TEST_F(TextLlmContextTest, NPastBeforeToolsMinusOneWhenToolsAtEndFalse) {
+TEST_F(TextLlmContextTest, NPastBeforeToolsMinusOneWhenToolsCompactFalse) {
   if (!hasValidModel()) {
     FAIL() << "Test model not found";
   }

@@ -113,7 +113,7 @@ protected:
   std::string temp_session_path;
 };
 
-TEST_F(CacheManagementQwen3Test, CacheWithToolsAtEndTrueTrimsToolTokens) {
+TEST_F(CacheManagementQwen3Test, CacheWithToolsCompactTrueTrimsToolTokens) {
   if (!isQwen3ModelPath(test_model_path)) {
     GTEST_SKIP() << "Test requires Qwen3 model for tools_compact feature";
   }
@@ -133,7 +133,7 @@ TEST_F(CacheManagementQwen3Test, CacheWithToolsAtEndTrueTrimsToolTokens) {
 
   EXPECT_NO_THROW({
     std::string output = processPromptString(model, inputWithTools);
-    EXPECT_GE(output.length(), 0);
+    EXPECT_FALSE(output.empty());
   });
 
   auto statsBeforeSave = model->runtimeStats();
@@ -153,7 +153,7 @@ TEST_F(CacheManagementQwen3Test, CacheWithToolsAtEndTrueTrimsToolTokens) {
   EXPECT_TRUE(fs::exists(session1_path));
 }
 
-TEST_F(CacheManagementQwen3Test, CacheReloadWithToolsAtEndTrue) {
+TEST_F(CacheManagementQwen3Test, CacheReloadWithToolsCompactTrue) {
   if (!isQwen3ModelPath(test_model_path)) {
     GTEST_SKIP() << "Test requires Qwen3 model for tools_compact feature";
   }
@@ -173,7 +173,7 @@ TEST_F(CacheManagementQwen3Test, CacheReloadWithToolsAtEndTrue) {
 
   EXPECT_NO_THROW({
     std::string output = processPromptString(model1, inputWithTools);
-    EXPECT_GE(output.length(), 0);
+    EXPECT_FALSE(output.empty());
   });
 
   llama_pos nPastBeforeTools1 = model1->getNPastBeforeTools();
@@ -199,7 +199,7 @@ TEST_F(CacheManagementQwen3Test, CacheReloadWithToolsAtEndTrue) {
     std::string output = processPromptString(
         model2,
         R"([{"role": "session", "content": "test_session1_qwen3.bin"}, {"role": "user", "content": "What is the weather in London?"}])");
-    EXPECT_GE(output.length(), 0);
+    EXPECT_FALSE(output.empty());
   });
 
   auto statsAfterReload = model2->runtimeStats();
@@ -210,7 +210,7 @@ TEST_F(CacheManagementQwen3Test, CacheReloadWithToolsAtEndTrue) {
   EXPECT_EQ(nPastBeforeTools2, -1);
 }
 
-TEST_F(CacheManagementQwen3Test, CacheWithoutToolsWithToolsAtEndTrue) {
+TEST_F(CacheManagementQwen3Test, CacheWithoutToolsWithToolsCompactTrue) {
   if (!isQwen3ModelPath(test_model_path)) {
     GTEST_SKIP() << "Test requires Qwen3 model for tools_compact feature";
   }
@@ -230,7 +230,7 @@ TEST_F(CacheManagementQwen3Test, CacheWithoutToolsWithToolsAtEndTrue) {
 
   EXPECT_NO_THROW({
     std::string output = processPromptString(model, inputNoTools);
-    EXPECT_GE(output.length(), 0);
+    EXPECT_FALSE(output.empty());
   });
 
   auto statsBeforeSave = model->runtimeStats();
@@ -250,7 +250,7 @@ TEST_F(CacheManagementQwen3Test, CacheWithoutToolsWithToolsAtEndTrue) {
   EXPECT_TRUE(fs::exists(session1_path));
 }
 
-TEST_F(CacheManagementQwen3Test, CacheToolsAtEndModeWithMultiplePrompts) {
+TEST_F(CacheManagementQwen3Test, CacheToolsCompactModeWithMultiplePrompts) {
   if (!isQwen3ModelPath(test_model_path)) {
     GTEST_SKIP() << "Test requires Qwen3 model for tools_compact feature";
   }
@@ -270,7 +270,7 @@ TEST_F(CacheManagementQwen3Test, CacheToolsAtEndModeWithMultiplePrompts) {
 
   EXPECT_NO_THROW({
     std::string output = processPromptString(model, input1);
-    EXPECT_GE(output.length(), 0);
+    EXPECT_FALSE(output.empty());
   });
 
   auto stats1 = model->runtimeStats();
@@ -290,7 +290,7 @@ TEST_F(CacheManagementQwen3Test, CacheToolsAtEndModeWithMultiplePrompts) {
 
   EXPECT_NO_THROW({
     std::string output = processPromptString(model, input2);
-    EXPECT_GE(output.length(), 0);
+    EXPECT_FALSE(output.empty());
   });
 
   auto stats2 = model->runtimeStats();
@@ -323,7 +323,7 @@ TEST_F(CacheManagementQwen3Test, CacheToolsAtEndModeWithMultiplePrompts) {
 
   EXPECT_NO_THROW({
     std::string output = processPromptString(model2, input3);
-    EXPECT_GE(output.length(), 0);
+    EXPECT_FALSE(output.empty());
   });
 
   auto stats3 = model2->runtimeStats();
@@ -352,7 +352,7 @@ TEST_F(CacheManagementQwen3Test, CacheToolsAtEndModeWithMultiplePrompts) {
 
 TEST_F(
     CacheManagementQwen3Test,
-    CacheToolsAtEndModeTrimOnlyWhenNPastBeforeToolsPositive) {
+    CacheToolsCompactModeTrimOnlyWhenNPastBeforeToolsPositive) {
   if (!isQwen3ModelPath(test_model_path)) {
     GTEST_SKIP() << "Test requires Qwen3 model for tools_compact feature";
   }
@@ -372,7 +372,7 @@ TEST_F(
 
   EXPECT_NO_THROW({
     std::string output = processPromptString(model, inputNoTools);
-    EXPECT_GE(output.length(), 0);
+    EXPECT_FALSE(output.empty());
   });
 
   llama_pos nPastBeforeTools = model->getNPastBeforeTools();
@@ -394,7 +394,7 @@ TEST_F(
   EXPECT_EQ(cacheTokensAfterSave, cacheTokensBeforeSave);
 }
 
-TEST_F(CacheManagementQwen3Test, CacheToolsAtEndModeRestoresNPastBeforeTools) {
+TEST_F(CacheManagementQwen3Test, CacheToolsCompactModeRestoresNPastBeforeTools) {
   if (!isQwen3ModelPath(test_model_path)) {
     GTEST_SKIP() << "Test requires Qwen3 model for tools_compact feature";
   }
@@ -414,7 +414,7 @@ TEST_F(CacheManagementQwen3Test, CacheToolsAtEndModeRestoresNPastBeforeTools) {
 
   EXPECT_NO_THROW({
     std::string output = processPromptString(model, input1);
-    EXPECT_GE(output.length(), 0);
+    EXPECT_FALSE(output.empty());
   });
 
   llama_pos nPastBeforeTools1 = model->getNPastBeforeTools();
@@ -439,7 +439,7 @@ TEST_F(CacheManagementQwen3Test, CacheToolsAtEndModeRestoresNPastBeforeTools) {
 
   EXPECT_NO_THROW({
     std::string output = processPromptString(model2, input2);
-    EXPECT_GE(output.length(), 0);
+    EXPECT_FALSE(output.empty());
   });
 
   llama_pos nPastBeforeTools2 = model2->getNPastBeforeTools();
@@ -453,7 +453,7 @@ TEST_F(CacheManagementQwen3Test, CacheToolsAtEndModeRestoresNPastBeforeTools) {
 // Strategy: two-phase comparison.
 //   Phase 1 (baseline): large context, n_predict=0 → no generation,
 //     no sliding. nPastBeforeTools is the original boundary.
-//   Phase 2 (sliding): small context, n_predict=-2 → generation fills
+//   Phase 2 (sliding): small context, n_predict=200 → generation fills
 //     context, sliding fires. After trim, nPastBeforeTools should be
 //     smaller than baseline because adjustAfterSlide reduced it.
 //
@@ -461,7 +461,7 @@ TEST_F(CacheManagementQwen3Test, CacheToolsAtEndModeRestoresNPastBeforeTools) {
 //   Without fix: nPastBeforeTools == baseline (stale) → FAIL
 TEST_F(
     CacheManagementQwen3Test,
-    CacheToolsAtEndSlidingDuringGenDoesNotLeakToolTokens) {
+    CacheToolsCompactSlidingDuringGenDoesNotLeakToolTokens) {
   if (!isQwen3ModelPath(test_model_path)) {
     GTEST_SKIP() << "Test requires Qwen3 model for tools_compact feature";
   }
@@ -541,7 +541,7 @@ TEST_F(
   constexpr int nDiscarded = 100;
   config_files["ctx_size"] = "256";
   config_files["n_discarded"] = std::to_string(nDiscarded);
-  config_files["n_predict"] = "-2";
+  config_files["n_predict"] = "200";
   auto slideModel = createModel();
   if (!slideModel) {
     FAIL() << "Sliding model failed to load";
@@ -552,7 +552,7 @@ TEST_F(
       R"( {"role": "user", "content": ")" + userMsg + R"("}, )" + toolJson + R"(])";
   EXPECT_NO_THROW({
     std::string output = processPromptString(slideModel, slideInput);
-    EXPECT_GE(output.length(), 0);
+    EXPECT_FALSE(output.empty());
   });
 
   auto slideStats = slideModel->runtimeStats();
@@ -609,7 +609,7 @@ TEST_F(
 // anchor moves by exactly that amount per slide.
 TEST_F(
     CacheManagementQwen3Test,
-    CacheToolsAtEndSlidingUnclampedFullDiscard) {
+    CacheToolsCompactSlidingUnclampedFullDiscard) {
   if (!isQwen3ModelPath(test_model_path)) {
     GTEST_SKIP() << "Test requires Qwen3 model for tools_compact feature";
   }
@@ -704,12 +704,12 @@ TEST_F(
 
   // ── Phase 3: sliding ──
   // Prefill ≈ 350 tokens (300 user + 50 tools). ctx=512 leaves
-  // ~160 tokens for generation before first slide. n_predict=-2
+  // ~160 tokens for generation before first slide. n_predict=200
   // fills context. Each slide discards exactly 100 tokens (unclamped
   // because safeLimit ≈ 300 >> 100).
   config_files["ctx_size"] = "512";
   config_files["n_discarded"] = std::to_string(nDiscarded);
-  config_files["n_predict"] = "-2";
+  config_files["n_predict"] = "200";
   auto slideModel = createModel();
   if (!slideModel) {
     FAIL() << "Sliding model failed to load";
@@ -717,7 +717,7 @@ TEST_F(
 
   EXPECT_NO_THROW({
     std::string output = processPromptString(slideModel, input);
-    EXPECT_GE(output.length(), 0);
+    EXPECT_FALSE(output.empty());
   });
 
   auto slideStats = slideModel->runtimeStats();
