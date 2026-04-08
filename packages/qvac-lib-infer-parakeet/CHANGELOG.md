@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- Fixed a race condition when a new job was requested right after canceling in windows
+
 ## [0.3.1]
 
 ### Added
@@ -12,9 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Session options are now built via `onnx_addon::buildSessionOptions()` from `@qvac/onnx`, replacing manual `Ort::SessionOptions` construction. This aligns Parakeet with the same EP registration logic used by the OCR package.
-
-### Fixed
-- Fixed an issue with canceling and starting a new job immediately in Windows
 
 ## [0.3.0]
 
