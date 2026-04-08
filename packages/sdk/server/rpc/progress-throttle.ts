@@ -6,7 +6,7 @@ export type ProgressThrottle<T> = {
 };
 
 export function createProgressThrottle<T>(
-  write: (update: T) => void,
+  writeBatch: (updates: T[]) => void,
   clock: () => number = Date.now,
   throttleMs: number = PROGRESS_THROTTLE_MS,
 ): ProgressThrottle<T> {
@@ -17,17 +17,16 @@ export function createProgressThrottle<T>(
   function flushPending() {
     if (pending.length === 0) return;
     lastWrite = clock();
-    for (const update of pending) {
-      write(update);
-    }
+    const batch = pending;
     pending = [];
+    writeBatch(batch);
   }
 
   function push(update: T) {
     const now = clock();
     if (now - lastWrite >= throttleMs) {
       lastWrite = now;
-      write(update);
+      writeBatch([update]);
     } else {
       pending.push(update);
       if (!flushTimer) {

@@ -134,11 +134,14 @@ async function executeProgressHandler(
   const stream = req.createResponseStream();
   profiler.startHandler();
 
-  const writeProgress = (update: Response) => {
-    stream.write(profiler.serialize(update, false) + "\n", "utf-8");
+  const writeBatch = (updates: Response[]) => {
+    const payload = updates
+      .map((u) => profiler.serialize(u, false))
+      .join("\n");
+    stream.write(payload + "\n", "utf-8");
   };
 
-  const throttle = createProgressThrottle<Response>(writeProgress);
+  const throttle = createProgressThrottle<Response>(writeBatch);
 
   try {
     let response: Response;
