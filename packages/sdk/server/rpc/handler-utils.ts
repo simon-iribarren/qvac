@@ -137,30 +137,34 @@ async function executeProgressHandler(
   profiler.startHandler();
 
   let lastProgressWrite = 0;
-  let pendingUpdate: Response | null = null;
+  let pendingUpdates: Response[] = [];
   let flushTimer: ReturnType<typeof setTimeout> | null = null;
 
   const writeProgress = (update: Response) => {
     stream.write(profiler.serialize(update, false) + "\n", "utf-8");
   };
 
+  const flushPending = () => {
+    if (pendingUpdates.length === 0) return;
+    lastProgressWrite = nowMs();
+    for (const update of pendingUpdates) {
+      writeProgress(update);
+    }
+    pendingUpdates = [];
+  };
+
   const progressCallback = (update: Response) => {
     const now = nowMs();
     if (now - lastProgressWrite >= PROGRESS_THROTTLE_MS) {
       lastProgressWrite = now;
-      pendingUpdate = null;
       writeProgress(update);
     } else {
-      pendingUpdate = update;
+      pendingUpdates.push(update);
       if (!flushTimer) {
         flushTimer = setTimeout(
           () => {
             flushTimer = null;
-            if (pendingUpdate) {
-              lastProgressWrite = nowMs();
-              writeProgress(pendingUpdate);
-              pendingUpdate = null;
-            }
+            flushPending();
           },
           PROGRESS_THROTTLE_MS - (now - lastProgressWrite),
         );
@@ -187,10 +191,7 @@ async function executeProgressHandler(
       clearTimeout(flushTimer);
       flushTimer = null;
     }
-    if (pendingUpdate) {
-      writeProgress(pendingUpdate);
-      pendingUpdate = null;
-    }
+    flushPending();
     profiler.endHandler();
     stream.write(profiler.serialize(response, true) + "\n", "utf-8");
     stream.end();
@@ -199,10 +200,7 @@ async function executeProgressHandler(
       clearTimeout(flushTimer);
       flushTimer = null;
     }
-    if (pendingUpdate) {
-      writeProgress(pendingUpdate);
-      pendingUpdate = null;
-    }
+    flushPending();
     profiler.endHandler();
     sendStreamErrorResponse(stream, error, profiler);
   }
