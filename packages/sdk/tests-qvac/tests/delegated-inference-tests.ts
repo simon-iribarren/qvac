@@ -15,21 +15,21 @@ const createDelegatedTest = (
 });
 
 export const delegatedProviderStart = createDelegatedTest(
-  "delegated-provider-start", {}, { validation: "custom", validator: () => true },
+  "delegated-provider-start", {}, { validation: "function", fn: () => true },
 );
 
 export const delegatedProviderStop = createDelegatedTest(
-  "delegated-provider-stop", {}, { validation: "custom", validator: () => true },
+  "delegated-provider-stop", {}, { validation: "function", fn: () => true },
 );
 
 export const delegatedProviderFirewall = createDelegatedTest(
   "delegated-provider-firewall",
   { firewall: { mode: "allow", publicKeys: [] } },
-  { validation: "custom", validator: () => true },
+  { validation: "function", fn: () => true },
 );
 
 export const delegatedProviderRestart = createDelegatedTest(
-  "delegated-provider-restart", {}, { validation: "custom", validator: () => true }, 20000,
+  "delegated-provider-restart", {}, { validation: "function", fn: () => true }, 20000,
 );
 
 export const delegatedLoadModelFallbackLocal = createDelegatedTest(
@@ -40,11 +40,11 @@ export const delegatedLoadModelFallbackLocal = createDelegatedTest(
 );
 
 export const delegatedHeartbeatProvider = createDelegatedTest(
-  "delegated-heartbeat-provider", {}, { validation: "custom", validator: () => true },
+  "delegated-heartbeat-provider", {}, { validation: "function", fn: () => true },
 );
 
 export const delegatedCancelDownload = createDelegatedTest(
-  "delegated-cancel-download", {}, { validation: "custom", validator: () => true }, 30000,
+  "delegated-cancel-download", {}, { validation: "function", fn: () => true }, 30000,
 );
 
 export const delegatedConnectionFailure = createDelegatedTest(
