@@ -3,8 +3,7 @@ import type { Metadata } from 'next';
 /**
  * Whether the static export should declare `robots: index` in HTML.
  * Defaults to **noindex** so crawlers that never run JavaScript still omit
- * preview, PR, and local builds. Pair with the root layout hostname script so
- * a production artifact served on a non-production host stays non-indexable.
+ * preview, PR, and local builds.
  *
  * Enable indexing only for the deploy that serves `https://docs.qvac.tether.io`.
  * On Sevalla, set **`DOCS_ALLOW_INDEXING=1`** for that application at **build time**

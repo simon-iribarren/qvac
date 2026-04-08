@@ -6,9 +6,6 @@
 
 export const DOCS_SITE_ORIGIN = 'https://docs.qvac.tether.io';
 
-/** Hostname for production docs; non-matching hosts (preview, staging, localhost) get `noindex` via root layout script. */
-export const DOCS_PRODUCTION_HOSTNAME = new URL(DOCS_SITE_ORIGIN).hostname;
-
 const VERSION_SLUG_RE = /^v\d+\.\d+\.\d+$/;
 
 /**
