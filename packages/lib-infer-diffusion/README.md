@@ -156,6 +156,7 @@ Source: [`examples/generate-image.js`](./examples/generate-image.js)
 -   [Runtime Stats](./examples/runtime-stats-sd2.js) – Run SD2.1 inference and report runtime statistics.
 -   [img2img FLUX2](./examples/img2img-flux2.js) – Transform an image with FLUX2-klein (Q8_0, in-context conditioning).
 -   [img2img FLUX2 F16](./examples/img2img-flux2-f16.js) – Transform an image with FLUX2-klein (F16 full precision).
+-   [img2img SD3](./examples/img2img-sd3.js) – Transform an image with SD3 Medium (SDEdit, flow-matching).
 
 ---
 
@@ -284,9 +285,16 @@ require('bare-fs').writeFileSync('output.png', images[0])
 
 #### Image-to-image (`init_image`)
 
-Pass `init_image` (a `Uint8Array` of PNG or JPEG bytes) to transform an existing image with a text prompt. Width and height are auto-detected from the image header.
+Pass `init_image` (a `Uint8Array` of PNG or JPEG bytes) to transform an existing image with a text prompt. Width and height are auto-detected from the image header and rounded to the nearest multiple of 8.
 
-Under the hood this uses FLUX in-context conditioning: the input image is VAE-encoded into separate latent tokens that the transformer attends to via joint attention with distinct RoPE positions. The target starts from pure noise, so the model preserves features (skin tone, structure, etc.) while generating a fully new image.
+The addon automatically selects the correct img2img strategy based on the model's prediction type:
+
+| Model family | Prediction type | Strategy | How it works |
+|-------------|----------------|----------|-------------|
+| FLUX.2 | `flux2_flow` / `flux_flow` | In-context conditioning (`ref_images`) | Input image is VAE-encoded into separate latent tokens; the transformer attends to them via joint attention with distinct RoPE positions. The target starts from pure noise, so the model preserves features while generating a fully new image. |
+| SD1.x / SD2.x / SDXL / SD3 | All others | SDEdit (`init_image`) | Input image is noised according to `strength` (0.0–1.0), then denoised with the text prompt. Lower strength preserves more of the original; higher strength allows more creative freedom. |
+
+**FLUX.2 example (in-context conditioning):**
 
 ```js
 const fs = require('bare-fs')
@@ -302,6 +310,31 @@ const response = await model.run({
   seed: 42
 })
 ```
+
+**SD3 example (SDEdit):**
+
+```js
+const inputImage = fs.readFileSync('headshot.jpeg')
+
+const response = await model.run({
+  prompt: 'anime portrait, same pose, studio ghibli style, soft cel shading',
+  negative_prompt: 'photorealistic, blurry, low quality',
+  init_image: inputImage,
+  cfg_scale: 4.5,
+  steps: 30,
+  strength: 0.75,
+  sampling_method: 'euler',
+  seed: 42
+})
+```
+
+> **SDEdit img2img limitations:**
+>
+> - **Black-and-white input images** produce weaker results because the model must hallucinate all color information. Consider colorizing the image before feeding it in.
+> - **Low-resolution images** (below ~512×512) give the model less detail to preserve identity. Upscaling beforehand helps.
+> - **High `strength` values** (≥ 0.7) allow the model to deviate significantly from the input, including changing facial features, gender, or ethnicity. Use `strength` 0.35–0.55 for identity-preserving edits.
+> - **Style prompts** like "anime" or "studio ghibli" carry training-data biases that can alter the subject's appearance. Anchor the prompt with terms like "same person, same face" and use the negative prompt to block unwanted changes.
+> - **Non-multiple-of-8 images** are automatically aligned (nearest-neighbor resize to the next multiple of 8) before processing. For best quality, provide images with dimensions that are already multiples of 8.
 
 The bundled test image (`assets/von-neumann.jpg`) is a 1956 portrait of John von Neumann sourced from the U.S. Department of Energy (Public Domain). See the [Credits](#credits) section for details.
 

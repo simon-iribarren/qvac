@@ -14,8 +14,8 @@ const ImgStableDiffusion = require('../index')
 
 async function main () {
   const modelDir = path.join(__dirname, '../models')
-  const inputImagePath = path.join(__dirname, '../assets/von-neumann.jpg')
-  const outputImagePath = path.join(__dirname, '../temp/von-neumann_transformed.png')
+  const inputImagePath = path.join(__dirname, '../temp/von-neumann_transformed.png')
+  const outputImagePath = path.join(__dirname, '../temp/von-neumann_transformed_flux2.png')
 
   if (!fs.existsSync(inputImagePath)) {
     console.error(`Error: Input image not found at ${inputImagePath}`)
@@ -48,9 +48,9 @@ async function main () {
     const initImage = fs.readFileSync(inputImagePath)
     console.log(`Input image: ${initImage.length} bytes`)
 
-    const STEPS = 20
-    const GUIDANCE = 3.5
-    const SEED = 42
+    const STEPS = 10
+    const GUIDANCE = 5.0
+    const SEED = -1
 
     console.log('\n=== FLUX2-klein img2img ===')
     console.log('  Model    : flux-2-klein-4b-Q8_0.gguf')
@@ -63,7 +63,11 @@ async function main () {
     let lastStepTime = tGenStart
 
     const response = await model.run({
-      prompt: 'same person, color photograph, modern tech CEO of this version, wearing a gray zip up vest, black studio background',
+
+      prompt: 'same person, studio lighting, professional corporate blazer, keep everything the same except add the jacket, same position',
+
+      // prompt: 'same person, change my hair into an orange spiky-blonde hair with blue eyes, and put me in an orange/blue tracksuit, black studio background, studio lighting',
+      // prompt: 'same person, a mountain climber posing for a magazine photo, with a climbing backpack, and climbing axes, black studio background, studio lighting',
       negative_prompt: 'blurry, low quality, NSFW, distorted, different person, different face',
       init_image: initImage,
       cfg_scale: 1.0,

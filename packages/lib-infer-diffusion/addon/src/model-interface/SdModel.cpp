@@ -510,49 +510,128 @@ std::any SdModel::process(const std::any& input) {
   if (gen.cacheEnd > 0.0f)
     genParams.cache.end_percent = gen.cacheEnd;
 
-  // ── img2img — in-context conditioning ────────────────────────────────────
+  // ── img2img ──────────────────────────────────────────────────────────────
   //
-  // The input image is VAE-encoded into separate latent tokens that are
-  // concatenated with the target (which starts as pure noise). The FLUX
-  // transformer attends to these tokens via joint attention with distinct
-  // RoPE positions, preserving features (skin tone, structure, etc.) while
-  // generating a fully new image.
+  // Two code paths depending on model architecture:
   //
-  sd_image_t refImg{};
-  std::vector<uint8_t> refPng;
+  //   FLUX2 (FLUX2_FLOW_PRED):
+  //     Uses ref_images — in-context conditioning. The input image is
+  //     VAE-encoded into separate latent tokens that the FLUX transformer
+  //     attends to via joint attention with distinct RoPE positions. The
+  //     target starts from pure noise, so the model preserves features
+  //     (skin tone, structure, etc.) while generating a fully new image.
+  //
+  //   All other models (SD1.x, SD2.x, SDXL, SD3):
+  //     Uses init_image — traditional SDEdit. The input image is noised to
+  //     the level specified by `strength`, then denoised for the remaining
+  //     steps. Lower strength = closer to the original image.
+  //
+  sd_image_t initImg{};
+  std::vector<uint8_t> initPng;
 
   if (gen.mode == "img2img") {
     // Decode image bytes from JSON (serialised by the JS layer as
-    // ref_image_bytes).
-    if (auto it = v.get<picojson::object>().find("ref_image_bytes");
+    // init_image_bytes).
+    if (auto it = v.get<picojson::object>().find("init_image_bytes");
         it != v.get<picojson::object>().end() &&
         it->second.is<picojson::array>()) {
       const auto& arr = it->second.get<picojson::array>();
-      refPng.reserve(arr.size());
+      initPng.reserve(arr.size());
       for (const auto& el : arr)
-        refPng.push_back(static_cast<uint8_t>(el.get<double>()));
+        initPng.push_back(static_cast<uint8_t>(el.get<double>()));
     }
-    if (!refPng.empty())
-      refImg = decodePng(refPng);
+    if (!initPng.empty())
+      initImg = decodePng(initPng);
 
-    if (refImg.data) {
-      const int imgW = static_cast<int>(refImg.width);
-      const int imgH = static_cast<int>(refImg.height);
+    if (initImg.data) {
+      const int imgW = static_cast<int>(initImg.width);
+      const int imgH = static_cast<int>(initImg.height);
 
-      QLOG_IF(
-          qvac_lib_inference_addon_cpp::logger::Priority::INFO,
-          "img2img: init_image " + std::to_string(imgW) + "x" +
-              std::to_string(imgH) +
-              " — using in-context conditioning (pure noise target)");
+      const bool useRefImages =
+          config_.prediction == FLUX2_FLOW_PRED ||
+          config_.prediction == FLUX_FLOW_PRED;
 
-      if (gen.width == 512 && gen.height == 512) {
-        genParams.width = imgW;
-        genParams.height = imgH;
+      if (useRefImages) {
+        // FLUX in-context conditioning: ref_images handles its own resizing
+        // via auto_resize_ref_image, so only override genParams dimensions
+        // when they are still at the 512×512 default.
+        if (gen.width == 512 && gen.height == 512) {
+          genParams.width = imgW;
+          genParams.height = imgH;
+        }
+
+        QLOG_IF(
+            qvac_lib_inference_addon_cpp::logger::Priority::INFO,
+            "img2img: " + std::to_string(imgW) + "x" +
+                std::to_string(imgH) +
+                " — FLUX in-context conditioning (ref_images)");
+
+        genParams.ref_images = &initImg;
+        genParams.ref_images_count = 1;
+        genParams.auto_resize_ref_image = true;
+      } else {
+        // SDEdit path — the vcpkg version of generate_image() rounds
+        // width/height UP to a spatial multiple (typically 8) before
+        // creating tensors, then asserts init_image matches those aligned
+        // dimensions.  We must align here too and resize the decoded image
+        // if its pixel dimensions aren't already a multiple of 8.
+        constexpr int kAlign = 8;
+        const int alignedW = (imgW + kAlign - 1) / kAlign * kAlign;
+        const int alignedH = (imgH + kAlign - 1) / kAlign * kAlign;
+
+        genParams.width = alignedW;
+        genParams.height = alignedH;
+
+        // Resize init_image to aligned dimensions if they differ.
+        if (imgW != alignedW || imgH != alignedH) {
+          QLOG_IF(
+              qvac_lib_inference_addon_cpp::logger::Priority::INFO,
+              "img2img: resizing " + std::to_string(imgW) + "x" +
+                  std::to_string(imgH) + " → " + std::to_string(alignedW) +
+                  "x" + std::to_string(alignedH) + " (align to " +
+                  std::to_string(kAlign) + ")");
+
+          const uint32_t ch = initImg.channel;
+          auto* resized = static_cast<uint8_t*>(
+              malloc(static_cast<size_t>(alignedW) * alignedH * ch));
+          for (int y = 0; y < alignedH; ++y) {
+            const int srcY = y * imgH / alignedH;
+            for (int x = 0; x < alignedW; ++x) {
+              const int srcX = x * imgW / alignedW;
+              for (uint32_t c = 0; c < ch; ++c) {
+                resized[(y * alignedW + x) * ch + c] =
+                    initImg.data[(srcY * imgW + srcX) * ch + c];
+              }
+            }
+          }
+          free(initImg.data);
+          initImg = {static_cast<uint32_t>(alignedW),
+                     static_cast<uint32_t>(alignedH), ch, resized};
+        }
+
+        QLOG_IF(
+            qvac_lib_inference_addon_cpp::logger::Priority::INFO,
+            "img2img: " + std::to_string(alignedW) + "x" +
+                std::to_string(alignedH) +
+                " — SDEdit (init_image, strength=" +
+                std::to_string(gen.strength) + ")");
+
+        genParams.init_image = initImg;
+
+        // The vcpkg version of generate_image() unconditionally calls
+        // sd_image_to_ggml_tensor() on mask_image (even when no mask was
+        // provided), which asserts mask_image dimensions match the tensor.
+        // Provide an all-white mask (= denoise everywhere) to satisfy it.
+        if (!genParams.mask_image.data) {
+          const size_t maskSize =
+              static_cast<size_t>(alignedW) * static_cast<size_t>(alignedH);
+          auto* maskData = static_cast<uint8_t*>(malloc(maskSize));
+          memset(maskData, 255, maskSize);
+          genParams.mask_image = {static_cast<uint32_t>(alignedW),
+                                  static_cast<uint32_t>(alignedH), 1,
+                                  maskData};
+        }
       }
-
-      genParams.ref_images = &refImg;
-      genParams.ref_images_count = 1;
-      genParams.auto_resize_ref_image = true;
     }
   }
 
@@ -562,8 +641,11 @@ std::any SdModel::process(const std::any& input) {
   SdImageBatch results(
       generate_image(sdCtx_.get(), &genParams), gen.batchCount);
 
-  if (refImg.data) {
-    free(refImg.data);
+  if (initImg.data) {
+    free(initImg.data);
+  }
+  if (genParams.mask_image.data) {
+    free(genParams.mask_image.data);
   }
 
   const bool wasCancelled = cancelRequested_.load();

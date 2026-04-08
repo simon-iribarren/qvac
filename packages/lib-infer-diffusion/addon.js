@@ -114,7 +114,7 @@ class SdInterface {
       const imgBuf = serializable.init_image
       delete serializable.init_image
 
-      serializable.ref_image_bytes = Array.from(imgBuf)
+      serializable.init_image_bytes = Array.from(imgBuf)
 
       if (!serializable.width || !serializable.height) {
         const dims = readImageDimensions(imgBuf)
