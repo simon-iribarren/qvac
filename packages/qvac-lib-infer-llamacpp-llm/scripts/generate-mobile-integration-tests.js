@@ -32,8 +32,14 @@ function buildFileContents (files) {
   lines.push('')
   lines.push('// AUTO-GENERATED FILE. Run `npm run test:mobile:generate` to update.')
   lines.push('// Each function mirrors a single file under test/integration/.')
+  lines.push('// Functions are invoked dynamically by the mobile test runner framework.')
   lines.push('')
   lines.push('/* global runIntegrationModule */')
+  lines.push('')
+
+  lines.push('/* global __shouldRunTest */')
+  lines.push('')
+  lines.push('const __FILTERED = { modulePath: \'filtered\', summary: { total: 0, passed: 0, failed: 0 } }')
   lines.push('')
 
   for (let i = 0; i < files.length; i++) {
@@ -41,9 +47,9 @@ function buildFileContents (files) {
     const fnName = toFunctionName(file)
     const relativePath = `../integration/${file}`
     lines.push(`async function ${fnName} (options = {}) { // eslint-disable-line no-unused-vars`)
+    lines.push(`  if (typeof __shouldRunTest === 'function' && !__shouldRunTest('${fnName}')) return __FILTERED`)
     lines.push(`  return runIntegrationModule('${relativePath}', options)`)
     lines.push('}')
-    // Only add blank line between functions, not after the last one
     if (i < files.length - 1) {
       lines.push('')
     }
