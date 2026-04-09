@@ -3,6 +3,7 @@ import test from "brittle";
 import {
   createProgressThrottle,
   PROGRESS_THROTTLE_MS,
+  PROGRESS_MAX_PENDING,
 } from "@/server/rpc/progress-throttle";
 
 type BrittleT = {
@@ -13,7 +14,11 @@ type BrittleT = {
 
 const T0 = 1_000_000;
 
-function createTestThrottle(clock: () => number, throttleMs?: number) {
+function createTestThrottle(
+  clock: () => number,
+  throttleMs?: number,
+  maxPending?: number,
+) {
   const written: number[] = [];
   const batchSizes: number[] = [];
   const throttle = createProgressThrottle<number>(
@@ -23,6 +28,7 @@ function createTestThrottle(clock: () => number, throttleMs?: number) {
     },
     clock,
     throttleMs,
+    maxPending,
   );
   return { written, batchSizes, throttle };
 }
@@ -116,7 +122,7 @@ test("simulates rapid finetune-like progress: no events lost", (t: BrittleT) => 
   t.ok(totalBatchCalls < 8, "fewer batch calls than events (throttled)");
 });
 
-test("high-volume download-like burst: all events in few batch calls", (t: BrittleT) => {
+test("high-volume download-like burst: all events in bounded batch calls", (t: BrittleT) => {
   let time = T0;
   const { written, batchSizes, throttle } = createTestThrottle(() => time);
 
@@ -131,8 +137,31 @@ test("high-volume download-like burst: all events in few batch calls", (t: Britt
   t.is(written[0], 0, "first event present");
   t.is(written[written.length - 1], 999, "last event present");
 
-  const totalBatchCalls = batchSizes.length;
-  t.ok(totalBatchCalls <= 3, `only ${totalBatchCalls} batch writes for 1000 events`);
+  for (const size of batchSizes) {
+    t.ok(size <= PROGRESS_MAX_PENDING, `batch size ${size} <= maxPending ${PROGRESS_MAX_PENDING}`);
+  }
+});
+
+test("maxPending cap triggers early flush", (t: BrittleT) => {
+  let time = T0;
+  const maxPending = 5;
+  const { written, batchSizes, throttle } = createTestThrottle(() => time, undefined, maxPending);
+
+  throttle.push(0);
+  time += 1;
+
+  for (let i = 1; i <= 12; i++) {
+    throttle.push(i);
+    time += 1;
+  }
+
+  throttle.flush();
+
+  t.is(written.length, 13, "all 13 events delivered");
+
+  for (const size of batchSizes) {
+    t.ok(size <= maxPending, `batch size ${size} <= maxPending ${maxPending}`);
+  }
 });
 
 test("flush on error path delivers pending events", (t: BrittleT) => {
