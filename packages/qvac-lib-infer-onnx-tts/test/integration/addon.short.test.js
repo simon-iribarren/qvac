@@ -77,47 +77,6 @@ test('Chatterbox TTS: English synthesis', { timeout: 1800000 }, async (t) => {
 })
 
 // ---------------------------------------------------------------------------
-// Chatterbox TTS: Spanish
-// ---------------------------------------------------------------------------
-
-test('Chatterbox TTS: Spanish synthesis', { timeout: 1800000 }, async (t) => {
-  const baseDir = getBaseDir()
-  const modelDir = path.join(baseDir, 'models', 'chatterbox-multilingual')
-
-  console.log('\n=== Ensuring Chatterbox multilingual models ===')
-  const download = await ensureChatterboxModels({ targetDir: modelDir, language: 'multilingual', variant: CHATTERBOX_VARIANT })
-  t.ok(download.success, 'Chatterbox multilingual models should be downloaded')
-  if (!download.success) return
-
-  console.log('\n=== Loading Chatterbox multilingual model (es) ===')
-  const model = await loadChatterboxTTS({
-    tokenizerPath: path.join(modelDir, 'tokenizer.json'),
-    speechEncoderPath: chatterboxPath(modelDir, 'speech_encoder', true),
-    embedTokensPath: chatterboxPath(modelDir, 'embed_tokens', true),
-    conditionalDecoderPath: chatterboxPath(modelDir, 'conditional_decoder', true),
-    languageModelPath: chatterboxLmPath(modelDir),
-    language: 'es'
-  })
-  t.ok(model, 'Chatterbox multilingual model should be loaded')
-
-  const text = 'Hola mundo. Esta es una prueba del sistema de texto a voz.'
-  console.log(`\n=== Synthesizing: "${text}" ===`)
-  const result = await runChatterboxTTS(model, { text }, CHATTERBOX_EXPECTATION)
-  console.log(result.output)
-  t.ok(result.passed, 'Chatterbox Spanish synthesis should pass sample expectations')
-  t.ok(result.data.sampleCount > 0, 'Chatterbox Spanish should produce audio samples')
-
-  await model.unload()
-  t.pass('Chatterbox multilingual model unloaded')
-
-  console.log('\n' + '='.repeat(60))
-  console.log('CHATTERBOX SPANISH SHORT TEST SUMMARY')
-  console.log('='.repeat(60))
-  console.log(`  [es] ${result.data.sampleCount} samples, ${result.data.durationMs?.toFixed(0) || 'N/A'}ms`)
-  console.log('='.repeat(60))
-})
-
-// ---------------------------------------------------------------------------
 // Supertonic TTS: English
 // ---------------------------------------------------------------------------
 

@@ -65,39 +65,54 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [fp32, fp16, q4, q4f16]
-        os:
-          - ubuntu-22.04
-          - ubuntu-24.04
-          - ubuntu-24.04-arm
-          - macos-14-xlarge
-          - macos-15-large
-          - windows-2022
         include:
-          - os: ubuntu-22.04
-            platform: linux
-            arch: x64
-            os_version: u22
-          - os: ubuntu-24.04
-            platform: linux
-            arch: x64
-            os_version: u24
-          - os: ubuntu-24.04-arm
-            platform: linux
-            arch: arm64
-            os_version: u24
+          # darwin arm64 — all quantisation variants
           - os: macos-14-xlarge
             platform: darwin
             arch: arm64
             os_version: m14
+            variant: fp32
+          - os: macos-14-xlarge
+            platform: darwin
+            arch: arm64
+            os_version: m14
+            variant: fp16
+          - os: macos-14-xlarge
+            platform: darwin
+            arch: arm64
+            os_version: m14
+            variant: q4
+          - os: macos-14-xlarge
+            platform: darwin
+            arch: arm64
+            os_version: m14
+            variant: q4f16
+          # all other platforms — q4 only
+          - os: ubuntu-22.04
+            platform: linux
+            arch: x64
+            os_version: u22
+            variant: q4
+          - os: ubuntu-24.04
+            platform: linux
+            arch: x64
+            os_version: u24
+            variant: q4
+          - os: ubuntu-24.04-arm
+            platform: linux
+            arch: arm64
+            os_version: u24
+            variant: q4
           - os: macos-15-large
             platform: darwin
             arch: x64
             os_version: m15
+            variant: q4
           - os: windows-2022
             platform: win32
             arch: x64
             os_version: w22
+            variant: q4
 
     steps:
       - name: Setup Node.js

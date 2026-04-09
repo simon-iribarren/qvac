@@ -15,7 +15,7 @@
     "lint:fix": "standard --fix \"test/**/*.js\" \"*.js\" \"lib/*.js\"",
     "test:unit": "brittle-bare test/unit/**/*.test.js",
     "test": "npm run test:unit && npm run test:integration",
-    "test:integration": "brittle-bare test/integration/addon.short.test.js",
+    "test:integration": "brittle-bare test/integration/addon.long.test.js",
     "test:integration:short": "brittle-bare test/integration/addon.short.test.js",
     "test:integration:long": "brittle-bare test/integration/addon.long.test.js",
     "test:mobile:generate": "node scripts/generate-mobile-integration-tests.js",
