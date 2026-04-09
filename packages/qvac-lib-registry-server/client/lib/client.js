@@ -27,6 +27,7 @@ class QVACRegistryClient extends ReadyResource {
 
     this.storage = this.registryConfig.getRegistryStorage(opts.storage)
     this.registryCoreKey = this.registryConfig.getRegistryCoreKey(opts.registryCoreKey)
+    this._corestoreOpts = opts.corestoreOpts || {}
 
     this.logger.debug('Initializing QVAC Registry Client', {
       mode: 'read',
@@ -40,7 +41,7 @@ class QVACRegistryClient extends ReadyResource {
     this.logger.debug('_open called')
 
     this.logger.debug('Creating corestore for open')
-    this.corestore = new Corestore(this.storage)
+    this.corestore = new Corestore(this.storage, this._corestoreOpts)
     await this.corestore.ready()
 
     this.logger.debug('Creating Hyperswarm for open')
