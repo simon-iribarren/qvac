@@ -24,6 +24,14 @@ on:
         type: string
         required: false
         default: "packages/qvac-lib-infer-onnx-tts"
+      test_type:
+        description: "Integration test type"
+        required: false
+        type: choice
+        options:
+          - short
+          - long
+        default: "short"
   workflow_call:
     inputs:
       ref:
@@ -37,6 +45,11 @@ on:
         description: "Relative path to package directory in monorepo"
         required: false
         default: "packages/qvac-lib-infer-onnx-tts"
+        type: string
+      test_type:
+        description: "Integration test type (short or long)"
+        required: false
+        default: "short"
         type: string
 
 jobs:
@@ -170,7 +183,7 @@ jobs:
 
       - name: Run integration test
         working-directory: ${{ inputs.workdir }}
-        run: npm run test:integration
+        run: npm run test:integration:${{ inputs.test_type }}
         env:
           CHATTERBOX_VARIANT: ${{ matrix.variant }}
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
