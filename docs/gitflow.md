@@ -86,7 +86,7 @@ This repo assumes a **fork-first** workflow:
 
 ```bash
 # Fork in GitHub UI, then:
-git clone git@github.com:<you>/<repo>.git
+git clone https://github.com/<you>/<repo>.git
 cd <repo>
 
 git remote add upstream https://github.com/tetherto/<repo>.git

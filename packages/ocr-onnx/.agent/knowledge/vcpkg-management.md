@@ -60,7 +60,7 @@ Every addon package uses two registries configured in `vcpkg-configuration.json`
 
 Hosts QVAC-specific packages: `qvac-fabric`, `qvac-lib-inference-addon-cpp`, `qvac-lint-cpp`, `onnxruntime`, `whisper-cpp`, `tokenizers-cpp`, `bergamot-translator`, `sentencepiece`, `ssplit`, and others.
 
-**Authentication**: Requires `GH_TOKEN` (GitHub PAT) with read access to `tetherto/qvac-registry-vcpkg`. In CI, git credentials are configured automatically. Locally, SSH key access to the repo is needed (note the `git@github.com:` URL).
+**Authentication**: Requires `GH_TOKEN` (GitHub PAT) with read access to `tetherto/qvac-registry-vcpkg`. In CI, git credentials are configured automatically. Locally, HTTPS access works with token-based auth or credential helpers.
 
 ### 2. Microsoft Upstream Registry
 
