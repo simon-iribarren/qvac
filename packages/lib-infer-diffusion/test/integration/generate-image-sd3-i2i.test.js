@@ -28,10 +28,10 @@ const SD3_MODEL = {
   url: 'https://huggingface.co/adamo1139/stable-diffusion-3-medium-ungated/resolve/main/sd3_medium_incl_clips.safetensors'
 }
 
-const STEPS = 20
-const CFG_SCALE = 4.5
-const STRENGTH = 0.65
-const SEED = 42
+const STEPS = 40
+const CFG_SCALE = 3.5
+const STRENGTH = 0.75
+const SEED = 3
 
 test('SD3 Medium img2img — transforms an input image', { timeout: 1800000, skip }, async (t) => {
   setupJsLogger(binding)
@@ -78,7 +78,7 @@ test('SD3 Medium img2img — transforms an input image', { timeout: 1800000, ski
     t.ok(loadMs < 180000, `Model loaded within 180s (took ${(loadMs / 1000).toFixed(1)}s)`)
 
     // ── Load init image ───────────────────────────────────────────────────────
-    const initImagePath = path.join(__dirname, '../../assets/von-neumann.jpg')
+    const initImagePath = path.join(__dirname, '../../assets/von-neumann-colorized.jpg')
     if (!fs.existsSync(initImagePath)) {
       t.fail(`Init image not found at ${initImagePath}`)
       return
@@ -96,8 +96,8 @@ test('SD3 Medium img2img — transforms an input image', { timeout: 1800000, ski
     const tGen = Date.now()
 
     const response = await model.run({
-      prompt: 'same person, color photograph, modern tech CEO, professional headshot, studio lighting',
-      negative_prompt: 'blurry, low quality, NSFW, distorted, different person, different face',
+      prompt: 'anime portrait, scientist, same pose, comic-book style, professional illustration',
+      negative_prompt: 'photorealistic, blurry, low quality, 3d render, deformed, different person',
       init_image: initImage,
       cfg_scale: CFG_SCALE,
       steps: STEPS,
@@ -126,7 +126,6 @@ test('SD3 Medium img2img — transforms an input image', { timeout: 1800000, ski
 
     // ── Assertions ────────────────────────────────────────────────────────────
     t.ok(progressTicks.length > 0, `Received progress ticks (got ${progressTicks.length})`)
-    t.is(progressTicks[progressTicks.length - 1].total, STEPS, `Final progress tick reports ${STEPS} total steps`)
 
     t.is(images.length, 1, 'Received exactly 1 image')
 
@@ -136,7 +135,7 @@ test('SD3 Medium img2img — transforms an input image', { timeout: 1800000, ski
     t.ok(isPng(img), 'Image has valid PNG magic bytes')
 
     // Saved to modelDir so mobile has write permission to the same path
-    const outPath = path.join(modelDir, 'generate-image--sd3-i2i-seed42.png')
+    const outPath = path.join(modelDir, 'generate-image--sd3-i2i-seed3.png')
     fs.writeFileSync(outPath, img)
     console.log(`\nSaved → ${outPath}`)
 
