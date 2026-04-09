@@ -38,6 +38,8 @@ import {
 } from "@/utils/errors-server";
 import { getServerLogger } from "@/logging";
 import { getPlugin } from "@/server/plugins";
+import { getPlatformInfo } from "@/server/bare/utils/platform";
+import { promises as fsPromises } from "bare-fs";
 
 const logger = getServerLogger();
 
@@ -140,6 +142,25 @@ export async function handleLoadModel(
 
     if (!resolvedModelPath) {
       throw new ModelLoadFailedError("modelPath resolution failed");
+    }
+
+    if (plugin.validateBeforeLoad) {
+      let modelFileSize = 0;
+      try {
+        const stat = await fsPromises.stat(resolvedModelPath);
+        modelFileSize = stat.size;
+      } catch {
+        logger.debug("Could not stat model file for memory validation");
+      }
+
+      if (modelFileSize > 0) {
+        const platform = getPlatformInfo();
+        plugin.validateBeforeLoad({
+          modelConfig: resolvedModelConfig,
+          modelFileSize,
+          availableMemory: platform.availableMemory,
+        });
+      }
     }
 
     const loadResult = await loadModel(
