@@ -2,9 +2,10 @@ import './global.css';
 import { Inter } from 'next/font/google';
 import type { Metadata } from 'next';
 import { GoogleTagManager } from '@next/third-parties/google';
-import { InkeepScript } from "@/components/inkeep-script";
+import { InkeepScript } from '@/components/inkeep-script';
 import { Provider } from "./provider";
 import 'katex/dist/katex.css';
+import { docsRootMetadataRobots } from '@/lib/docs-indexing';
 import { DOCS_SITE_ORIGIN } from '@/lib/docs-open-graph';
 
 const inter = Inter({
@@ -24,6 +25,7 @@ export const metadata: Metadata = {
       { url: '/favicon.png', type: 'image/png', sizes: '96x96' },
     ],
   },
+  robots: docsRootMetadataRobots(),
 };
 
 const gtmId = process.env.NEXT_PUBLIC_GTM_ID ?? 'GTM-WDD9NCZ4';
