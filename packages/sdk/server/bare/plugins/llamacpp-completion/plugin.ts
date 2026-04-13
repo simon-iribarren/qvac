@@ -11,10 +11,12 @@ import {
   translateResponseSchema,
   ModelType,
   llmConfigBaseSchema,
+  LLM_CONFIG_DEFAULTS,
   ADDON_LLM,
   type CreateModelParams,
   type PluginModelResult,
   type ResolveContext,
+  type ValidateBeforeLoadParams,
   type LlmConfig,
   type LlmConfigInput,
 } from "@/schemas";
@@ -26,6 +28,9 @@ import { completion } from "@/server/bare/plugins/llamacpp-completion/ops/comple
 import { finetune } from "@/server/bare/plugins/llamacpp-completion/ops/finetune";
 import { translate } from "@/server/bare/ops/translate";
 import { attachModelExecutionMs } from "@/profiling/model-execution";
+import { validateMemoryForModel } from "@/server/bare/plugins/llamacpp-completion/memory-estimator";
+import { ModelMemoryExceededError } from "@/utils/errors-server";
+import { getServerLogger } from "@/logging";
 
 function transformLlmConfig(llmConfig: LlmConfig) {
   const transformed = JSON.parse(
@@ -107,6 +112,34 @@ export const llmPlugin = definePlugin({
       config: llmConfig,
       artifacts: { projectionModelPath },
     };
+  },
+
+  validateBeforeLoad(params: ValidateBeforeLoadParams) {
+    const ctxSize =
+      (params.modelConfig["ctx_size"] as number | undefined) ??
+      LLM_CONFIG_DEFAULTS.ctx_size;
+    const result = validateMemoryForModel(
+      params.modelFileSize,
+      ctxSize,
+      params.availableMemory,
+      params.kvBytesPerToken,
+    );
+
+    if (!result.safe) {
+      throw new ModelMemoryExceededError(
+        result.estimatedBytes,
+        result.availableBytes,
+        result.requestedCtxSize,
+        result.suggestedCtxSize,
+      );
+    }
+
+    if (result.estimatedBytes > result.availableBytes * 0.6) {
+      getServerLogger().warn(
+        `Memory usage will be high: estimated ${Math.round(result.estimatedBytes / (1024 * 1024))} MB ` +
+          `with ${Math.round(result.availableBytes / (1024 * 1024))} MB available`,
+      );
+    }
   },
 
   createModel(params: CreateModelParams): PluginModelResult {

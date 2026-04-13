@@ -23,6 +23,7 @@ const configRegistry: QvacConfig = {
   httpDownloadConcurrency: undefined,
   registryDownloadMaxRetries: undefined,
   deviceDefaults: undefined,
+  unsafeDisableMemoryValidation: undefined,
 };
 
 let configIsSet = false;
@@ -116,6 +117,19 @@ export function setSDKConfig(config: QvacConfig) {
     );
   }
 
+  if (
+    config.unsafeDisableMemoryValidation !== undefined &&
+    config.unsafeDisableMemoryValidation !== null
+  ) {
+    configRegistry.unsafeDisableMemoryValidation =
+      config.unsafeDisableMemoryValidation;
+    if (config.unsafeDisableMemoryValidation) {
+      logger.warn(
+        "Memory validation disabled via unsafeDisableMemoryValidation — OOM crashes may occur",
+      );
+    }
+  }
+
   // Mark config as set - now it's immutable
   configIsSet = true;
 }
@@ -130,4 +144,8 @@ function getDefaultCacheDir() {
 
 export function getConfiguredCacheDir(): string {
   return configRegistry.cacheDirectory || getDefaultCacheDir();
+}
+
+export function isMemoryValidationEnabled(): boolean {
+  return configRegistry.unsafeDisableMemoryValidation !== true;
 }
