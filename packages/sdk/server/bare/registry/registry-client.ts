@@ -15,6 +15,7 @@ const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 500;
 
 let registryClient: QVACRegistryClient | null = null;
+let inflightInit: Promise<QVACRegistryClient> | null = null;
 
 function isFdLockError(error: unknown): boolean {
   if (error instanceof Error) {
@@ -27,14 +28,7 @@ async function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function getRegistryClient(): Promise<QVACRegistryClient> {
-  if (registryClient) {
-    logger.debug("Registry client reused");
-    return registryClient;
-  }
-
-  logger.info("🔗 Creating new registry client...");
-
+async function initRegistryClient(): Promise<QVACRegistryClient> {
   let lastError: unknown;
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
@@ -63,7 +57,7 @@ export async function getRegistryClient(): Promise<QVACRegistryClient> {
       }
 
       logger.info("✅ Registry client ready");
-      return registryClient;
+      return client;
     } catch (error) {
       lastError = error;
       if (isFdLockError(error) && attempt < MAX_RETRIES) {
@@ -79,6 +73,26 @@ export async function getRegistryClient(): Promise<QVACRegistryClient> {
   }
 
   throw lastError;
+}
+
+export async function getRegistryClient(): Promise<QVACRegistryClient> {
+  if (registryClient) {
+    logger.debug("Registry client reused");
+    return registryClient;
+  }
+
+  if (inflightInit) {
+    logger.debug("Registry client init already in progress, waiting...");
+    return inflightInit;
+  }
+
+  logger.info("🔗 Creating new registry client...");
+
+  inflightInit = initRegistryClient().finally(() => {
+    inflightInit = null;
+  });
+
+  return inflightInit;
 }
 
 export async function closeRegistryClient(): Promise<void> {
