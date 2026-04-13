@@ -122,6 +122,7 @@ export const llmPlugin = definePlugin({
       params.modelFileSize,
       ctxSize,
       params.availableMemory,
+      params.kvBytesPerToken,
     );
 
     if (!result.safe) {
