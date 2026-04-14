@@ -2,6 +2,7 @@ import fs from "bare-fs";
 import path from "bare-path";
 import process from "bare-process";
 import { getServerLogger } from "@/logging";
+import { getEnv } from "@/server/env";
 
 const logger = getServerLogger();
 
@@ -12,8 +13,8 @@ interface LockFileContent {
   startedAt: string;
 }
 
-function getLockFilePath(homeDir: string): string {
-  return path.join(homeDir, ".qvac", LOCK_FILENAME);
+function getLockFilePath(): string {
+  return path.join(getEnv().HOME_DIR, ".qvac", LOCK_FILENAME);
 }
 
 function isProcessAlive(pid: number): boolean {
@@ -35,8 +36,8 @@ function readLockFile(lockPath: string): LockFileContent | null {
   }
 }
 
-export function acquireWorkerLock(homeDir: string): void {
-  const lockPath = getLockFilePath(homeDir);
+export function acquireWorkerLock(): void {
+  const lockPath = getLockFilePath();
   const existing = readLockFile(lockPath);
 
   if (existing) {
@@ -68,8 +69,8 @@ export function acquireWorkerLock(homeDir: string): void {
   }
 }
 
-export function releaseWorkerLock(homeDir: string): void {
-  const lockPath = getLockFilePath(homeDir);
+export function releaseWorkerLock(): void {
+  const lockPath = getLockFilePath();
 
   try {
     const existing = readLockFile(lockPath);

@@ -4,7 +4,7 @@ import {
   createIPCClient,
 } from "@/server/rpc/create-server";
 import { destroySwarm } from "@/server/bare/hyperswarm";
-import { initEnv, getEnv, getValidatedEnv } from "@/server/env";
+import { initEnv, getValidatedEnv } from "@/server/env";
 import { closeAllRagInstances } from "@/server/bare/rag-hyperdb";
 import { cleanupDownloads } from "@/server/rpc/handlers/load-model/download-manager";
 import { unloadAllModels } from "@/server/bare/registry/model-registry";
@@ -36,7 +36,7 @@ export function initializeWorkerCore(): { hasRPCConfig: boolean } {
 
   const { hasRPCConfig } = initEnv();
 
-  acquireWorkerLock(getEnv().HOME_DIR);
+  acquireWorkerLock();
   setupShutdownHandlers();
 
   coreInitialized = true;
@@ -125,7 +125,7 @@ export async function shutdownBareDirectWorker(
     logger.error("❌ Error during shutdown cleanup:", error);
   }
 
-  releaseWorkerLock(getEnv().HOME_DIR);
+  releaseWorkerLock();
 
   const isGraceful = reason === "signal" || reason === "rpc-close";
   process.exit(isGraceful ? 0 : 1);
