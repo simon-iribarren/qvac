@@ -81,10 +81,3 @@ export function releaseWorkerLock(homeDir: string): void {
     // Best-effort — may already be gone
   }
 }
-
-export function isStaleWorkerLock(homeDir: string): boolean {
-  const lockPath = getLockFilePath(homeDir);
-  const existing = readLockFile(lockPath);
-  if (!existing) return false;
-  return !isProcessAlive(existing.pid);
-}

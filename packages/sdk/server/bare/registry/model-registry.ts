@@ -213,21 +213,19 @@ export async function unloadAllModels(): Promise<void> {
 
   for (const modelId of modelIds) {
     const entry = modelRegistry.get(modelId);
-    if (entry?.local) {
-      try {
-        if (entry.local.loader) {
-          await entry.local.loader.close();
-        }
-        if (entry.local.model && entry.local.model.unload) {
-          await entry.local.model.unload();
-        }
-        logger.debug(`Model unloaded: ${modelId}`);
-      } catch (error) {
-        logger.error(
-          `Error unloading model ${modelId}:`,
-          error instanceof Error ? error.message : String(error),
-        );
+    try {
+      if (entry?.local?.loader) {
+        await entry.local.loader.close();
       }
+      if (entry?.local?.model?.unload) {
+        await entry.local.model.unload();
+      }
+      if (entry?.local) logger.debug(`Model unloaded: ${modelId}`);
+    } catch (error) {
+      logger.error(
+        `Error unloading model ${modelId}:`,
+        error instanceof Error ? error.message : String(error),
+      );
     }
     modelRegistry.delete(modelId);
   }
