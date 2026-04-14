@@ -2,7 +2,7 @@ import fs from "bare-fs";
 import path from "bare-path";
 import process from "bare-process";
 import { getServerLogger } from "@/logging";
-import { getEnv } from "@/server/env";
+import { getQvacPath } from "@/server/utils/qvac-paths";
 
 const logger = getServerLogger();
 
@@ -14,7 +14,7 @@ interface LockFileContent {
 }
 
 function getLockFilePath(): string {
-  return path.join(getEnv().HOME_DIR, ".qvac", LOCK_FILENAME);
+  return getQvacPath(LOCK_FILENAME);
 }
 
 function isProcessAlive(pid: number): boolean {
