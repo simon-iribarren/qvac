@@ -30,11 +30,13 @@ import {
   RegistryDownloadFailedError,
 } from "@/utils/errors-server";
 import { getServerLogger } from "@/logging";
+import { getSDKConfig } from "@/server/bare/registry/config-registry";
 import type { DownloadMetricsHooks } from "./types";
 
 const logger = getServerLogger();
 
 const REGISTRY_STREAM_TIMEOUT_MS = 60_000;
+const REGISTRY_DOWNLOAD_MAX_RETRIES_DEFAULT = 3;
 
 function buildBlobBinding(meta: {
   blobCoreKey: string;
@@ -152,12 +154,31 @@ async function downloadSingleFileFromRegistry(
     ...(signal && { signal: signal as unknown as globalThis.AbortSignal }),
   };
 
-  if (blobBinding) {
-    logger.info(`📥 Downloading blob directly: ${modelFileName}`);
-    await client.downloadBlob(blobBinding, clientOptions);
-  } else {
-    logger.info(`📥 Downloading from registry: ${registryPath}`);
-    await client.downloadModel(registryPath, registrySource, clientOptions);
+  const maxRetries =
+    getSDKConfig().registryDownloadMaxRetries ?? REGISTRY_DOWNLOAD_MAX_RETRIES_DEFAULT;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      if (blobBinding) {
+        logger.info(`📥 Downloading blob directly: ${modelFileName}`);
+        await client.downloadBlob(blobBinding, clientOptions);
+      } else {
+        logger.info(`📥 Downloading from registry: ${registryPath}`);
+        await client.downloadModel(registryPath, registrySource, clientOptions);
+      }
+      break;
+    } catch (error) {
+      const isTimeout = (error as { code?: string })?.code === "REQUEST_TIMEOUT";
+      const isCancelled =
+        error instanceof DownloadCancelledError || signal?.aborted;
+      if (!isTimeout || isCancelled || attempt >= maxRetries) {
+        throw error;
+      }
+      logger.warn(
+        `⏱️ Download timeout for ${modelFileName} (attempt ${attempt}/${maxRetries}), retrying...`,
+      );
+      await fsPromises.unlink(modelPath).catch(() => {});
+    }
   }
 
   logger.info(`✅ Downloaded to ${modelPath}`);
