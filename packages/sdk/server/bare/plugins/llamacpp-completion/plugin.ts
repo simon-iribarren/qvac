@@ -20,8 +20,7 @@ import {
 } from "@/schemas";
 import { createStreamLogger, registerAddonLogger } from "@/logging";
 import { parseModelPath } from "@/server/utils";
-import FilesystemDL from "@qvac/dl-filesystem";
-import { asLoader } from "@/server/bare/utils/loader-adapter";
+import { createFilesystemLoader } from "@/server/bare/utils/filesystem-loader";
 import { completion } from "@/server/bare/plugins/llamacpp-completion/ops/completion-stream";
 import { finetune } from "@/server/bare/plugins/llamacpp-completion/ops/finetune";
 import { translate } from "@/server/bare/ops/translate";
@@ -66,13 +65,13 @@ function createLlmModel(
   projectionModelPath?: string,
 ) {
   const { dirPath, basePath } = parseModelPath(modelPath);
-  const loader = new FilesystemDL({ dirPath });
+  const loader = createFilesystemLoader(dirPath);
   const logger = createStreamLogger(modelId, ModelType.llamacppCompletion);
   registerAddonLogger(modelId, ModelType.llamacppCompletion, logger);
   const llmConfigStrings = transformLlmConfig(llmConfig);
 
   const args = {
-    loader: asLoader<LlmLoader>(loader),
+    loader: loader as LlmLoader,
     opts: { stats: true },
     logger,
     diskPath: dirPath,

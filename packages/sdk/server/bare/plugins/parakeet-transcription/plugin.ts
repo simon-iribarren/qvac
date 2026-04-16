@@ -24,7 +24,7 @@ import {
   ModelLoadFailedError,
   ParakeetArtifactsRequiredError,
 } from "@/utils/errors-server";
-import FilesystemDL from "@qvac/dl-filesystem";
+import { createFilesystemLoader } from "@/server/bare/utils/filesystem-loader";
 import { transcribe } from "@/server/bare/ops/transcribe";
 import { attachModelExecutionMs } from "@/profiling/model-execution";
 
@@ -170,7 +170,7 @@ function createParakeetModel(
   }
 
   const { dirPath } = parseModelPath(primaryPath);
-  const loader = new FilesystemDL({ dirPath });
+  const loader = createFilesystemLoader(dirPath);
   const logger = createStreamLogger(params.modelId, ModelType.parakeetTranscription);
   registerAddonLogger(params.modelId, ModelType.parakeetTranscription, logger);
 

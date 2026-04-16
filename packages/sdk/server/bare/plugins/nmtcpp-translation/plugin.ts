@@ -20,9 +20,8 @@ import {
 } from "@/schemas";
 import { createStreamLogger, registerAddonLogger } from "@/logging";
 import { parseModelPath } from "@/server/utils";
-import FilesystemDL from "@qvac/dl-filesystem";
+import { createFilesystemLoader } from "@/server/bare/utils/filesystem-loader";
 import { ModelLoadFailedError } from "@/utils/errors-server";
-import { asLoader } from "@/server/bare/utils/loader-adapter";
 import { translate } from "@/server/bare/ops/translate";
 import { attachModelExecutionMs } from "@/profiling/model-execution";
 
@@ -73,7 +72,7 @@ function createNmtModel(
   pivotDstVocabPath?: string,
 ) {
   const { dirPath, basePath } = parseModelPath(modelPath);
-  const loader = new FilesystemDL({ dirPath });
+  const loader = createFilesystemLoader(dirPath);
   const logger = createStreamLogger(modelId, ModelType.nmtcppTranslation);
   registerAddonLogger(modelId, ModelType.nmtcppTranslation, logger);
 
@@ -93,7 +92,7 @@ function createNmtModel(
   } = nmtConfig;
 
   const args = {
-    loader: asLoader<Loader>(loader),
+    loader: loader as Loader,
     logger,
     modelName: basePath,
     diskPath: dirPath,
@@ -132,7 +131,7 @@ function createNmtModel(
           const {modelSrc, dstVocabSrc, srcVocabSrc, ...config} = nmtConfig.pivotModel
           const { dirPath, basePath } = parseModelPath(pivotModelPath!);
           return {
-            loader: asLoader<Loader>(new FilesystemDL({ dirPath })),
+            loader: createFilesystemLoader(dirPath) as Loader,
             modelName: basePath,
             diskPath: dirPath,
             config: {

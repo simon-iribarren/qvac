@@ -27,7 +27,7 @@ import {
   ModelFileLocateFailedError,
 } from "@/utils/errors-server";
 import { getPlugin } from "@/server/plugins";
-import type FilesystemDL from "@qvac/dl-filesystem";
+import type { FilesystemLoader } from "@/server/bare/utils/filesystem-loader";
 import { promises as fsPromises } from "bare-fs";
 import path from "bare-path";
 import { getServerLogger } from "@/logging";
@@ -107,7 +107,7 @@ export async function loadModel(
       modelConfig: modelConfig as Record<string, unknown>,
       modelName,
       artifacts,
-    }) as { model: AnyModel; loader: FilesystemDL };
+    }) as { model: AnyModel; loader: FilesystemLoader };
 
     await result.model.load(false);
 

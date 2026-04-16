@@ -17,8 +17,7 @@ import {
 } from "@/schemas";
 import { createStreamLogger, registerAddonLogger } from "@/logging";
 import { parseModelPath } from "@/server/utils";
-import FilesystemDL from "@qvac/dl-filesystem";
-import { asLoader } from "@/server/bare/utils/loader-adapter";
+import { createFilesystemLoader } from "@/server/bare/utils/filesystem-loader";
 import { embed } from "@/server/bare/ops/embed";
 import { forwardModelExecution } from "@/profiling/model-execution";
 
@@ -69,14 +68,14 @@ function createEmbeddingsModel(
   embedConfig: EmbedConfig,
 ) {
   const { dirPath, basePath } = parseModelPath(modelPath);
-  const loader = new FilesystemDL({ dirPath });
+  const loader = createFilesystemLoader(dirPath);
   const logger = createStreamLogger(modelId, ModelType.llamacppEmbedding);
   registerAddonLogger(modelId, ModelType.llamacppEmbedding, logger);
 
   const config = transformEmbedConfig(embedConfig);
 
   const args = {
-    loader: asLoader<EmbedLoader>(loader),
+    loader: loader as EmbedLoader,
     opts: { stats: true },
     logger,
     diskPath: dirPath,
