@@ -28,10 +28,33 @@ locally; subsequent runs work offline.
 ## Requirements
 
 - **FFmpeg** installed and on `PATH` (used to capture raw mic audio).
+  See [Installing FFmpeg](#installing-ffmpeg) below.
 - **Microphone** access (on macOS, Terminal / your shell needs mic
   permission in _System Settings → Privacy & Security → Microphone_).
 - **Speakers** — uses the platform default player (`afplay` on macOS,
   `aplay` on Linux, `powershell` on Windows).
+
+### Installing FFmpeg
+
+| Platform             | Command                                                                                              |
+| -------------------- | ---------------------------------------------------------------------------------------------------- |
+| macOS (Homebrew)     | `brew install ffmpeg`                                                                                |
+| Debian / Ubuntu      | `sudo apt update && sudo apt install ffmpeg`                                                         |
+| Fedora / RHEL        | `sudo dnf install ffmpeg` (enable [RPM Fusion](https://rpmfusion.org/Configuration) first if needed) |
+| Arch Linux           | `sudo pacman -S ffmpeg`                                                                              |
+| Windows (winget)     | `winget install Gyan.FFmpeg`                                                                         |
+| Windows (Chocolatey) | `choco install ffmpeg`                                                                               |
+
+Verify the install with:
+
+```bash
+ffmpeg -version
+```
+
+If `ffmpeg` is not on your `PATH` after install (common on Windows when
+installed manually), download a static build from
+[ffmpeg.org/download.html](https://ffmpeg.org/download.html) and add its
+`bin/` directory to your `PATH`.
 
 ## Models used
 
