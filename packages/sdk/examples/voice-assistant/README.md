@@ -67,22 +67,44 @@ installed manually), download a static build from
 
 ## VAD tuning
 
-The VAD parameters are tuned for natural conversation and match the
-values used in `examples/transcription/whispercpp-filesystem-streaming.ts`:
+The defaults are deliberately conservative to prevent the assistant from
+hearing its own TTS output and looping on itself (a classic failure
+mode when mic and speakers share the same room):
 
 ```ts
 {
-  threshold: 0.5,              // Silero default sensitivity
-  min_speech_duration_ms: 250, // drop short clicks / breaths
-  min_silence_duration_ms: 500,// responsive without cutting mid-phrase
-  max_speech_duration_s: 15.0, // cap runaway utterances
+  threshold: 0.6,              // less sensitive than Silero's default
+  min_speech_duration_ms: 300, // drops short clicks / breaths / stray words
+  min_silence_duration_ms: 700,// long quiet tail before committing a segment
+  max_speech_duration_s: 15.0, // caps runaway utterances
   speech_pad_ms: 200,          // edge padding improves accuracy
 }
 ```
 
-If you find the assistant cutting you off, increase
-`min_silence_duration_ms` (e.g. to `700`). If it feels slow to respond
-after you stop talking, lower it.
+Two other safeguards against the self-hearing loop:
+
+- **Mic gate during TTS** — incoming audio is dropped while the assistant
+  speaks, so it cannot transcribe its own output.
+- **Post-playback cooldown** (`POST_PLAYBACK_COOLDOWN_MS = 300`) — keeps
+  the mic gated for a moment after playback so speaker/room reverb
+  doesn't bleed into the next VAD segment.
+- **Minimum utterance length** (`MIN_UTTERANCE_CHARS = 3`) — drops
+  single-character or two-letter phantom transcripts like `"you"` or
+  `"."` that Whisper commonly hallucinates from near-silent audio.
+
+### Troubleshooting
+
+| Symptom                                     | Fix                                                                                                              |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Assistant cuts you off mid-sentence         | Raise `min_silence_duration_ms` to `900–1000`                                                                    |
+| Assistant talks over itself / loops forever | Raise `threshold` to `0.7`; raise `min_silence_duration_ms` to `900`; raise `POST_PLAYBACK_COOLDOWN_MS` to `500` |
+| Slow to respond after you stop talking      | Lower `min_silence_duration_ms` to `500`                                                                         |
+| Picks up background typing / keyboard       | Raise `threshold` to `0.7` and `min_speech_duration_ms` to `400`                                                 |
+| Short commands (“yes”, “no”) are ignored    | Lower `MIN_UTTERANCE_CHARS` to `2`                                                                               |
+
+If you're running with headphones (mic cannot hear the speaker),
+you can loosen everything: `threshold: 0.5`,
+`min_silence_duration_ms: 500`, `POST_PLAYBACK_COOLDOWN_MS: 0`.
 
 ## Customizing
 

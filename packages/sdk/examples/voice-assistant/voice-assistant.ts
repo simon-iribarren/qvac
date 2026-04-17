@@ -38,20 +38,37 @@ const SYSTEM_PROMPT =
   "You are a concise, friendly voice assistant. Keep responses under two sentences. " +
   "Never use markdown, lists, or code blocks — your output will be spoken aloud.";
 
-// VAD parameters tuned for conversational speech. These values are consistent
-// across the mic and file-based streaming examples so behavior is predictable:
-//   - threshold 0.5: Silero default; sensitive enough for normal speaking volume.
-//   - min_speech_duration_ms 250: drops short noises (clicks, breaths).
-//   - min_silence_duration_ms 500: feels responsive without cutting mid-phrase.
+// VAD parameters tuned for conversational speech without the assistant looping
+// on its own echo. These defaults are deliberately conservative:
+//   - threshold 0.6: less sensitive than Silero's default; avoids triggering
+//     on TTS reverb bleeding into the mic or low-level background noise.
+//   - min_speech_duration_ms 300: drops short clicks/breaths and stray words.
+//   - min_silence_duration_ms 700: requires a longer quiet tail before
+//     committing a segment. Crucial for preventing self-hearing feedback loops
+//     where Whisper hallucinates content from near-silent audio.
 //   - max_speech_duration_s 15: caps runaway utterances.
 //   - speech_pad_ms 200: padding improves accuracy on utterance edges.
+// If the assistant cuts you off mid-sentence, raise min_silence_duration_ms.
+// If it keeps hallucinating / talking to itself, raise threshold to 0.7 and/or
+// min_silence_duration_ms to 900.
 const VAD_PARAMS = {
-  threshold: 0.5,
-  min_speech_duration_ms: 250,
-  min_silence_duration_ms: 500,
+  threshold: 0.6,
+  min_speech_duration_ms: 300,
+  min_silence_duration_ms: 700,
   max_speech_duration_s: 15.0,
   speech_pad_ms: 200,
 };
+
+// Short grace period after TTS playback before we start listening again.
+// Gives the speaker amp / room reverb a moment to fully settle so the first
+// post-playback mic frames don't get transcribed as the tail of our own voice.
+const POST_PLAYBACK_COOLDOWN_MS = 300;
+
+// Minimum characters for an utterance to be considered meaningful. Whisper
+// frequently hallucinates single words like "you", ".", or "Thanks." from
+// silence or faint noise; these short phantoms are the main driver of the
+// self-hearing feedback loop, so we drop them.
+const MIN_UTTERANCE_CHARS = 3;
 
 function getAudioInputArgs(): string[] {
   switch (platform()) {
@@ -98,7 +115,14 @@ function isMeaningfulTranscript(text: string): boolean {
   if (trimmed.includes("[No speech detected]")) return false;
   // Whisper sometimes emits non-linguistic cues on silence, e.g. "[BLANK_AUDIO]".
   if (/^\[[^\]]+\]$/.test(trimmed)) return false;
+  // Strip punctuation/whitespace for the length check so ". . ." is rejected.
+  const letters = trimmed.replace(/[^\p{L}\p{N}]/gu, "");
+  if (letters.length < MIN_UTTERANCE_CHARS) return false;
   return true;
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // ── Main ──
@@ -243,6 +267,9 @@ for await (const rawText of session) {
         audioData,
       ]);
       playAudio(wavBuffer);
+      // Cooldown keeps the mic gated briefly so speaker tail / room reverb
+      // doesn't feed into the next VAD segment.
+      await sleep(POST_PLAYBACK_COOLDOWN_MS);
     }
   } catch (turnError) {
     console.error(
