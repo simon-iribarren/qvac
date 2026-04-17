@@ -56,6 +56,43 @@ installed manually), download a static build from
 [ffmpeg.org/download.html](https://ffmpeg.org/download.html) and add its
 `bin/` directory to your `PATH`.
 
+## Selecting a microphone (`MIC_DEVICE`)
+
+By default the example picks the system default microphone on each OS:
+
+- **macOS:** AVFoundation audio device `:0` (default mic).
+- **Linux:** PulseAudio source `default`.
+- **Windows:** the first DirectShow audio device reported by ffmpeg.
+
+To use a different mic, set the `MIC_DEVICE` environment variable:
+
+```bash
+# macOS — pick by index (list with `ffmpeg -f avfoundation -list_devices true -i ""`)
+MIC_DEVICE=":1" bun run examples/voice-assistant/voice-assistant.ts
+
+# Linux — pick a PulseAudio source (list with `pactl list short sources`)
+MIC_DEVICE="alsa_input.usb-Blue_Microphones_Yeti-00" \
+  bun run examples/voice-assistant/voice-assistant.ts
+
+# Windows (PowerShell) — pick by device name
+#   List devices first:
+#     ffmpeg -hide_banner -list_devices true -f dshow -i dummy
+#   Then run with the exact name from that list:
+$env:MIC_DEVICE = "Microphone (Realtek(R) Audio)"
+bun run examples/voice-assistant/voice-assistant.ts
+```
+
+If Windows auto-detection can't find a device, the script prints the
+`ffmpeg -list_devices` command for you.
+
+## Mobile / Expo
+
+This example is **desktop-only** — it relies on spawning `ffmpeg` as a
+subprocess and on Node's `child_process`, neither of which exist in
+React Native / Expo. On mobile you'd feed PCM from `expo-av` (or a
+native audio module) straight into `transcribeStream`. A dedicated
+Expo example is tracked separately.
+
 ## Models used
 
 | Stage | Model                    | Notes                                              |
