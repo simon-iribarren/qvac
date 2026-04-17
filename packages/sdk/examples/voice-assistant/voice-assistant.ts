@@ -27,8 +27,8 @@ import {
   TTS_SUPERTONIC2_OFFICIAL_TTS_CONFIG_SUPERTONE,
   TTS_SUPERTONIC2_OFFICIAL_VOICE_STYLE_SUPERTONE,
 } from "@qvac/sdk";
-import { spawn, spawnSync } from "child_process";
-import { platform } from "os";
+import { spawnSync } from "child_process";
+import { startMicrophone } from "../audio/mic-input";
 import { createWavHeader, int16ArrayToBuffer, playAudio } from "../tts/utils";
 
 const MIC_SAMPLE_RATE = 16000;
@@ -69,93 +69,6 @@ const POST_PLAYBACK_COOLDOWN_MS = 300;
 // silence or faint noise; these short phantoms are the main driver of the
 // self-hearing feedback loop, so we drop them.
 const MIN_UTTERANCE_CHARS = 3;
-
-// Parses the DirectShow audio device list printed by:
-//   ffmpeg -hide_banner -list_devices true -f dshow -i dummy
-// Output goes to stderr; ffmpeg always exits non-zero because `-i dummy`
-// isn't a real device — that's expected.
-function listWindowsAudioDevices(): string[] {
-  const result = spawnSync(
-    "ffmpeg",
-    ["-hide_banner", "-list_devices", "true", "-f", "dshow", "-i", "dummy"],
-    { encoding: "utf8" },
-  );
-  const stderr = result.stderr ?? "";
-  const devices: string[] = [];
-  let inAudioSection = false;
-  for (const line of stderr.split(/\r?\n/)) {
-    if (line.includes("DirectShow audio devices")) {
-      inAudioSection = true;
-      continue;
-    }
-    if (line.includes("DirectShow video devices")) {
-      inAudioSection = false;
-      continue;
-    }
-    if (!inAudioSection) continue;
-    // Modern ffmpeg: `  "Microphone (Realtek Audio)" (audio)`
-    // Older ffmpeg:  `  "Microphone (Realtek Audio)"`
-    const match = line.match(/"([^"]+)"/);
-    if (!match) continue;
-    const name = match[1];
-    if (!name) continue;
-    // Skip the alternative-name line that starts with `@device_...`
-    if (name.startsWith("@device")) continue;
-    devices.push(name);
-  }
-  return devices;
-}
-
-function getAudioInputArgs(): string[] {
-  const env = process.env as Record<string, string | undefined>;
-  const override = env["MIC_DEVICE"];
-  switch (platform()) {
-    case "darwin":
-      // AVFoundation device spec is `<video>:<audio>`. `:0` = default audio.
-      // Override with e.g. MIC_DEVICE=":1" to pick another device, or run
-      // `ffmpeg -f avfoundation -list_devices true -i ""` to enumerate.
-      return ["-f", "avfoundation", "-i", override ?? ":0"];
-    case "linux":
-      // PulseAudio source name. `default` follows the system default mic.
-      // Override with MIC_DEVICE="alsa_input.pci-..." etc.; list with
-      // `pactl list short sources`.
-      return ["-f", "pulse", "-i", override ?? "default"];
-    case "win32": {
-      const deviceName = override ?? listWindowsAudioDevices()[0];
-      if (!deviceName) {
-        throw new Error(
-          "No Windows audio input device found. List devices with:\n" +
-            "  ffmpeg -hide_banner -list_devices true -f dshow -i dummy\n" +
-            'Then set MIC_DEVICE="Your Device Name" and retry.',
-        );
-      }
-      return ["-f", "dshow", "-i", `audio=${deviceName}`];
-    }
-    default:
-      throw new Error(`Unsupported platform: ${platform()}`);
-  }
-}
-
-function startMicrophone() {
-  const ffmpeg = spawn(
-    "ffmpeg",
-    [
-      ...getAudioInputArgs(),
-      "-ar",
-      String(MIC_SAMPLE_RATE),
-      "-ac",
-      "1",
-      "-sample_fmt",
-      "flt",
-      "-f",
-      "f32le",
-      "pipe:1",
-    ],
-    { stdio: ["ignore", "pipe", "ignore"] },
-  );
-  if (!ffmpeg.stdout) throw new Error("Failed to open microphone");
-  return ffmpeg;
-}
 
 function isMeaningfulTranscript(text: string): boolean {
   const trimmed = text.trim();
@@ -235,7 +148,10 @@ const ttsModelId = await loadModel({
 
 console.log("All models loaded.\n");
 
-const ffmpeg = startMicrophone();
+const ffmpeg = startMicrophone({
+  sampleRate: MIC_SAMPLE_RATE,
+  format: "f32le",
+});
 const session = await transcribeStream({ modelId: asrModelId });
 
 const history: Array<{
