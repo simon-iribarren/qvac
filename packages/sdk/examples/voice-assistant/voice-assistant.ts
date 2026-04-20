@@ -88,12 +88,14 @@ function sleep(ms: number) {
 
 // ── Main ──
 
-try {
-  const r = spawnSync("ffmpeg", ["-version"], { stdio: "ignore" });
-  if (r.error || r.status !== 0) throw new Error("FFmpeg not found");
-} catch {
-  console.error("FFmpeg is required. Install it and try again.");
-  process.exit(1);
+for (const tool of ["ffmpeg", "ffplay"]) {
+  const r = spawnSync(tool, ["-version"], { stdio: "ignore" });
+  if (r.error || r.status !== 0) {
+    console.error(
+      `${tool} not found on PATH. Install ffmpeg (ffplay ships with it) and retry.`,
+    );
+    process.exit(1);
+  }
 }
 
 console.log("Loading whisper-tiny + Silero VAD...");

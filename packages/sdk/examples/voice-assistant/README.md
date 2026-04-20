@@ -27,12 +27,12 @@ locally; subsequent runs work offline.
 
 ## Requirements
 
-- **FFmpeg** installed and on `PATH` (used to capture raw mic audio).
-  See [Installing FFmpeg](#installing-ffmpeg) below.
+- **FFmpeg** (and **ffplay**, which ships with it) on `PATH` — `ffmpeg`
+  captures mic audio, `ffplay` streams the TTS WAV buffer back out to
+  the speakers. See [Installing FFmpeg](#installing-ffmpeg) below.
 - **Microphone** access (on macOS, Terminal / your shell needs mic
   permission in _System Settings → Privacy & Security → Microphone_).
-- **Speakers** — uses the platform default player (`afplay` on macOS,
-  `aplay` on Linux, `powershell` on Windows).
+- **Speakers** connected and selected as the default output device.
 
 ### Installing FFmpeg
 
@@ -76,14 +76,16 @@ MIC_DEVICE="alsa_input.usb-Blue_Microphones_Yeti-00" \
 
 # Windows (PowerShell) — pick by device name
 #   List devices first:
-#     ffmpeg -hide_banner -list_devices true -f dshow -i dummy
+#     ffmpeg -hide_banner -f dshow -list_devices true -i dummy
 #   Then run with the exact name from that list:
 $env:MIC_DEVICE = "Microphone (Realtek(R) Audio)"
 bun run examples/voice-assistant/voice-assistant.ts
 ```
 
 If Windows auto-detection can't find a device, the script prints the
-`ffmpeg -list_devices` command for you.
+`ffmpeg -list_devices` command for you. Auto-detection handles both the
+old-format ("DirectShow audio devices" header) and new-format
+("(audio)" per-line tag) ffmpeg output.
 
 ## Mobile / Expo
 
