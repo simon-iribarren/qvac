@@ -15,7 +15,7 @@ import {
   checkSdkInstalled,
   collectCheckSections,
   isReportOk
-} from '../src/check-system/checks.js'
+} from '../src/doctor/checks.js'
 
 describe('checkNodeVersion', () => {
   it('fails on Node < 18', () => {

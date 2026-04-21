@@ -94,17 +94,17 @@ http_status() {
   [[ "${output}" =~ "--sdk-path" ]]
 }
 
-# ── CLI: check-system ─────────────────────────────────────────────────
+# ── CLI: doctor ───────────────────────────────────────────────────────
 
-@test "qvac check-system --help shows options" {
-  run ${QVAC} check-system --help
+@test "qvac doctor --help shows options" {
+  run ${QVAC} doctor --help
   [[ "${status}" -eq 0 ]]
   [[ "${output}" =~ "--json" ]]
   [[ "${output}" =~ "QVAC SDK system requirements" ]]
 }
 
-@test "qvac check-system --json emits valid JSON with ok boolean" {
-  run ${QVAC} check-system --json
+@test "qvac doctor --json emits valid JSON with ok boolean" {
+  run ${QVAC} doctor --json
   [[ "${status}" -eq 0 || "${status}" -eq 1 ]]
   echo "${output}" | jq -e '.ok | type == "boolean"' >/dev/null
   echo "${output}" | jq -e '.sections | length >= 1' >/dev/null

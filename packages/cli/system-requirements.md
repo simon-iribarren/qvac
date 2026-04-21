@@ -4,7 +4,7 @@ Minimum host requirements for running `@qvac/sdk` and `@qvac/cli`. You can
 validate your environment against this list with:
 
 ```bash
-qvac check-system
+qvac doctor
 ```
 
 Use `--json` for machine-readable output and `--quiet` to only set the exit
@@ -44,7 +44,7 @@ they are missing but does not fail.
 ## JSON schema
 
 ```ts
-interface SystemCheckReport {
+interface DoctorReport {
   ok: boolean;
   platform: string;       // e.g. "darwin"
   arch: string;           // e.g. "arm64"

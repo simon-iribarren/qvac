@@ -58,7 +58,7 @@ function setupCli (): void {
     })
 
   program
-    .command('check-system')
+    .command('doctor')
     .description('Validate that the host satisfies QVAC SDK system requirements')
     .option('--json', 'Output the report as JSON')
     .option('-q, --quiet', 'Suppress human-readable output (only set exit code)')
@@ -69,8 +69,8 @@ function setupCli (): void {
       verbose?: boolean
     }) => {
       try {
-        const { runSystemCheck } = await import('./check-system/index.js')
-        const report = await runSystemCheck({
+        const { runDoctor } = await import('./doctor/index.js')
+        const report = await runDoctor({
           projectRoot: process.cwd(),
           json: options.json,
           quiet: options.quiet,

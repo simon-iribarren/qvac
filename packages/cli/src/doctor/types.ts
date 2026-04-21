@@ -18,7 +18,7 @@ export interface CheckSection {
   checks: CheckResult[]
 }
 
-export interface SystemCheckReport {
+export interface DoctorReport {
   ok: boolean
   platform: string
   arch: string
@@ -26,7 +26,7 @@ export interface SystemCheckReport {
   sections: CheckSection[]
 }
 
-export interface RunCheckSystemOptions {
+export interface RunDoctorOptions {
   projectRoot?: string | undefined
   json?: boolean | undefined
   quiet?: boolean | undefined

@@ -1,4 +1,4 @@
-import type { CheckResult, CheckStatus, SystemCheckReport } from './types.js'
+import type { CheckResult, CheckStatus, DoctorReport } from './types.js'
 
 const STATUS_ICON: Record<CheckStatus, string> = {
   pass: '✅',
@@ -13,9 +13,9 @@ function formatCheckLine (check: CheckResult): string {
   return `  ${icon} ${check.label}${value}`
 }
 
-export function formatReport (report: SystemCheckReport): string {
+export function formatReport (report: DoctorReport): string {
   const lines: string[] = []
-  lines.push('🩺 QVAC system check')
+  lines.push('🩺 QVAC doctor')
   lines.push('')
   lines.push(
     `  Host: ${report.platform}-${report.arch}, Node ${report.nodeVersion}`
@@ -42,6 +42,6 @@ export function formatReport (report: SystemCheckReport): string {
   return lines.join('\n')
 }
 
-export function formatJsonReport (report: SystemCheckReport): string {
+export function formatJsonReport (report: DoctorReport): string {
   return JSON.stringify(report, null, 2)
 }

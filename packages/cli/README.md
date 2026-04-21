@@ -8,7 +8,7 @@ This package is published to npm as **`@qvac/cli`** and lives in the QVAC monore
 
 - [Installation](#installation)
 - [Command Reference](#command-reference)
-  - [`check-system`](#check-system)
+  - [`doctor`](#doctor)
   - [`bundle sdk`](#bundle-sdk)
 - [Configuration](#configuration)
 - [System Requirements](#system-requirements)
@@ -37,14 +37,14 @@ npx @qvac/cli <command>
 
 ## Command Reference
 
-### `check-system`
+### `doctor`
 
 Validate that the current host can run `@qvac/sdk` + `@qvac/cli` before you
 hit runtime errors. The command prints a human-readable report by default and
 exits `1` when any required check fails.
 
 ```bash
-qvac check-system [options]
+qvac doctor [options]
 ```
 
 **Options:**
@@ -71,13 +71,13 @@ thresholds and rationale.
 
 ```bash
 # Human-readable report
-qvac check-system
+qvac doctor
 
 # JSON for CI / scripts
-qvac check-system --json
+qvac doctor --json
 
 # Fail-fast in a script (exit 1 on any required check)
-qvac check-system --quiet || exit 1
+qvac doctor --quiet || exit 1
 ```
 
 ### `bundle sdk`
@@ -190,7 +190,7 @@ required and recommended host dependencies. You can validate your environment
 at any time with:
 
 ```bash
-qvac check-system
+qvac doctor
 ```
 
 ## Development
