@@ -2,16 +2,21 @@ import fs from 'node:fs'
 import path from 'node:path'
 import os from 'node:os'
 import { spawnSync } from 'node:child_process'
+import { createRequire } from 'node:module'
+import { DEFAULT_HOSTS, DEFAULT_SDK_NAME } from '../bundle-sdk/constants.js'
 import type { CheckResult, CheckSection } from './types.js'
 
 const MIN_NODE_MAJOR = 18
 const RECOMMENDED_NODE_MAJOR = 20
 const MIN_TOTAL_MEMORY_GB = 2
 const RECOMMENDED_TOTAL_MEMORY_GB = 4
-const RECOMMENDED_FREE_MEMORY_GB = 2
+const RECOMMENDED_AVAILABLE_MEMORY_GB = 2
 const RECOMMENDED_FREE_DISK_GB = 5
 
-const SUPPORTED_HOSTS: ReadonlyArray<string> = [
+// Where the `qvac` CLI itself can run. This is NOT the set of SDK deploy
+// targets — the SDK additionally targets Android and iOS via Expo/BareKit,
+// which are reported in the "Deploy targets" section.
+const SUPPORTED_CLI_HOSTS: ReadonlyArray<string> = [
   'darwin-arm64',
   'darwin-x64',
   'linux-arm64',
@@ -75,27 +80,27 @@ export function checkNodeVersion (version: string = process.versions.node): Chec
   }
 }
 
-export function checkPlatformArch (
+export function checkCliHost (
   platform: NodeJS.Platform = process.platform,
   arch: string = process.arch
 ): CheckResult {
   const host = `${platform}-${arch}`
-  if (SUPPORTED_HOSTS.includes(host)) {
+  if (SUPPORTED_CLI_HOSTS.includes(host)) {
     return {
-      id: 'platform-arch',
-      label: 'Platform / architecture',
+      id: 'cli-host',
+      label: 'CLI host',
       status: 'pass',
       severity: 'required',
       value: host
     }
   }
   return {
-    id: 'platform-arch',
-    label: 'Platform / architecture',
+    id: 'cli-host',
+    label: 'CLI host',
     status: 'fail',
     severity: 'required',
     value: host,
-    hint: `Unsupported host "${host}". Supported: ${SUPPORTED_HOSTS.join(', ')}.`
+    hint: `The 'qvac' CLI cannot run on "${host}". Supported CLI hosts: ${SUPPORTED_CLI_HOSTS.join(', ')}. (Android/iOS are supported as SDK deploy targets, not as CLI hosts.)`
   }
 }
 
@@ -130,36 +135,69 @@ export function checkTotalMemory (totalBytes: number = os.totalmem()): CheckResu
   }
 }
 
-export function checkFreeMemory (freeBytes: number = os.freemem()): CheckResult {
-  const gb = toGB(freeBytes)
-  if (gb < RECOMMENDED_FREE_MEMORY_GB) {
+// Prefer os.availableMemory() (Node 22+) which reports memory actually
+// available for allocation. os.freemem() is known to be misleading on Linux
+// and macOS because it excludes reclaimable page cache, which causes noisy
+// false warnings on otherwise healthy systems.
+function readAvailableMemoryBytes (): number {
+  const available = (os as unknown as { availableMemory?: () => number }).availableMemory
+  if (typeof available === 'function') return available()
+  return os.freemem()
+}
+
+export function checkAvailableMemory (
+  availableBytes: number = readAvailableMemoryBytes()
+): CheckResult {
+  const gb = toGB(availableBytes)
+  if (gb < RECOMMENDED_AVAILABLE_MEMORY_GB) {
     return {
-      id: 'memory-free',
-      label: 'Free RAM',
+      id: 'memory-available',
+      label: 'Available RAM',
       status: 'warn',
       severity: 'recommended',
-      value: fmtGB(freeBytes),
-      hint: `Less than ${RECOMMENDED_FREE_MEMORY_GB} GB free; close other applications before loading large models.`
+      value: fmtGB(availableBytes),
+      hint: `Less than ${RECOMMENDED_AVAILABLE_MEMORY_GB} GB available; close other applications before loading large models.`
     }
   }
   return {
-    id: 'memory-free',
-    label: 'Free RAM',
+    id: 'memory-available',
+    label: 'Available RAM',
     status: 'pass',
     severity: 'recommended',
-    value: fmtGB(freeBytes)
+    value: fmtGB(availableBytes)
   }
 }
 
+interface StatfsLike { bsize: number, bavail: number }
+
 function readFreeDiskBytes (dir: string): number | null {
-  const statfs = (fs as unknown as { statfsSync?: (p: string) => { bsize: number, bavail: number } }).statfsSync
-  if (typeof statfs !== 'function') return null
-  try {
-    const info = statfs(dir)
-    return info.bsize * info.bavail
-  } catch {
-    return null
+  const statfs = (fs as unknown as { statfsSync?: (p: string) => StatfsLike }).statfsSync
+  if (typeof statfs === 'function') {
+    try {
+      const info = statfs(dir)
+      return info.bsize * info.bavail
+    } catch {
+      // fall through to shell fallback
+    }
   }
+  // Fallback for Node 18.0–18.14 on unix (statfsSync was added in 18.15).
+  if (process.platform !== 'win32') {
+    try {
+      const r = spawnSync('df', ['-Pk', dir], { stdio: ['ignore', 'pipe', 'pipe'] })
+      if (r.error || r.status !== 0) return null
+      const lines = r.stdout.toString('utf8').trim().split('\n')
+      const row = lines[1]
+      if (!row) return null
+      const cols = row.trim().split(/\s+/)
+      // Columns: Filesystem 1024-blocks Used Available Capacity Mounted
+      const kb = cols.length >= 4 && cols[3] !== undefined ? Number.parseInt(cols[3], 10) : NaN
+      if (!Number.isFinite(kb)) return null
+      return kb * 1024
+    } catch {
+      return null
+    }
+  }
+  return null
 }
 
 export function checkFreeDiskSpace (dir: string = process.cwd()): CheckResult {
@@ -170,7 +208,7 @@ export function checkFreeDiskSpace (dir: string = process.cwd()): CheckResult {
       label: `Free disk space (${dir})`,
       status: 'skip',
       severity: 'recommended',
-      hint: 'Disk space check requires Node.js v19.6.0 or newer (fs.statfsSync).'
+      hint: 'Disk space check requires Node.js v18.15+ (fs.statfsSync) or a POSIX `df` on PATH.'
     }
   }
   if (toGB(free) < RECOMMENDED_FREE_DISK_GB) {
@@ -197,6 +235,8 @@ export interface ProbeResult {
   version?: string
 }
 
+export type ProbeFn = (command: string, args: string[]) => ProbeResult
+
 function probeBinary (command: string, args: string[]): ProbeResult {
   try {
     const r = spawnSync(command, args, { stdio: ['ignore', 'pipe', 'pipe'] })
@@ -208,9 +248,7 @@ function probeBinary (command: string, args: string[]): ProbeResult {
   }
 }
 
-export function checkFfmpeg (
-  probe: (c: string, a: string[]) => ProbeResult = probeBinary
-): CheckResult {
+export function checkFfmpeg (probe: ProbeFn = probeBinary): CheckResult {
   const r = probe('ffmpeg', ['-version'])
   if (!r.ok) {
     return {
@@ -231,9 +269,7 @@ export function checkFfmpeg (
   }
 }
 
-export function checkBareRuntime (
-  probe: (c: string, a: string[]) => ProbeResult = probeBinary
-): CheckResult {
+export function checkBareRuntime (probe: ProbeFn = probeBinary): CheckResult {
   const r = probe('bare', ['--version'])
   if (!r.ok) {
     return {
@@ -254,9 +290,7 @@ export function checkBareRuntime (
   }
 }
 
-export function checkBun (
-  probe: (c: string, a: string[]) => ProbeResult = probeBinary
-): CheckResult {
+export function checkBun (probe: ProbeFn = probeBinary): CheckResult {
   const r = probe('bun', ['--version'])
   if (!r.ok) {
     return {
@@ -277,16 +311,116 @@ export function checkBun (
   }
 }
 
+// Deploy targets — the full matrix of platforms the SDK can deploy to,
+// which is a superset of CLI hosts (adds Android + iOS via BareKit).
+// Informational by default: bare-pack ships prebuilts for every target,
+// so bundling is always available. What's checked here is the host
+// toolchain needed to *deploy* to each target class.
+
+function desktopTargetsLine (hostPlatform: NodeJS.Platform, hostArch: string): string {
+  const nativeHost = `${hostPlatform}-${hostArch}`
+  const desktops = DEFAULT_HOSTS.filter((h) => !h.startsWith('android') && !h.startsWith('ios'))
+  return desktops.map((h) => (h === nativeHost ? `${h} (native)` : h)).join(', ')
+}
+
+export function checkDesktopTargets (
+  platform: NodeJS.Platform = process.platform,
+  arch: string = process.arch
+): CheckResult {
+  return {
+    id: 'target-desktop',
+    label: 'Desktop',
+    status: 'pass',
+    severity: 'informational',
+    value: desktopTargetsLine(platform, arch),
+    hint: 'bare-pack ships prebuilts for every desktop target; cross-bundling is always available.'
+  }
+}
+
+export function checkAndroidTarget (probe: ProbeFn = probeBinary): CheckResult {
+  const r = probe('adb', ['--version'])
+  if (!r.ok) {
+    return {
+      id: 'target-android',
+      label: 'Android (android-arm64)',
+      status: 'warn',
+      severity: 'recommended',
+      value: 'adb not found',
+      hint: 'Install Android platform tools to deploy QVAC apps to Android devices: https://developer.android.com/tools/releases/platform-tools'
+    }
+  }
+  return {
+    id: 'target-android',
+    label: 'Android (android-arm64)',
+    status: 'pass',
+    severity: 'recommended',
+    value: r.version ?? 'adb installed'
+  }
+}
+
+export function checkIosTarget (
+  platform: NodeJS.Platform = process.platform,
+  probe: ProbeFn = probeBinary
+): CheckResult {
+  if (platform !== 'darwin') {
+    return {
+      id: 'target-ios',
+      label: 'iOS (ios-arm64 + simulators)',
+      status: 'info',
+      severity: 'informational',
+      value: 'requires macOS host',
+      hint: 'iOS apps can only be built/deployed from a macOS host with Xcode installed.'
+    }
+  }
+  const r = probe('xcodebuild', ['-version'])
+  if (!r.ok) {
+    return {
+      id: 'target-ios',
+      label: 'iOS (ios-arm64 + simulators)',
+      status: 'warn',
+      severity: 'recommended',
+      value: 'Xcode not found',
+      hint: 'Install Xcode from the App Store (Command Line Tools alone are not sufficient for iOS builds).'
+    }
+  }
+  return {
+    id: 'target-ios',
+    label: 'iOS (ios-arm64 + simulators)',
+    status: 'pass',
+    severity: 'recommended',
+    value: r.version ?? 'Xcode installed'
+  }
+}
+
+// Locate @qvac/sdk the same way a consumer project's runtime would, so we
+// correctly find the package whether installed locally, hoisted in a
+// monorepo, or linked via workspaces.
+function resolveSdkPackageJson (projectRoot: string): string | null {
+  try {
+    const req = createRequire(path.join(projectRoot, 'package.json'))
+    for (const spec of [`${DEFAULT_SDK_NAME}/package.json`, `${DEFAULT_SDK_NAME}/package`]) {
+      try {
+        return req.resolve(spec)
+      } catch {
+        // try the next spec
+      }
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
 export function checkSdkInstalled (projectRoot: string = process.cwd()): CheckResult {
-  const pkgPath = path.join(projectRoot, 'node_modules', '@qvac', 'sdk', 'package.json')
-  if (!fs.existsSync(pkgPath)) {
+  const pkgPath = resolveSdkPackageJson(projectRoot)
+  if (pkgPath === null) {
     return {
       id: 'project-sdk',
-      label: '@qvac/sdk in node_modules',
+      label: `${DEFAULT_SDK_NAME} resolvable from project`,
       status: 'warn',
       severity: 'recommended',
       value: 'not found',
-      hint: `Run 'npm install @qvac/sdk' in ${projectRoot} to install the SDK.`
+      hint: `Run 'npm install ${DEFAULT_SDK_NAME}' in ${projectRoot} to install the SDK.`
     }
   }
   try {
@@ -294,15 +428,15 @@ export function checkSdkInstalled (projectRoot: string = process.cwd()): CheckRe
     const pkg = JSON.parse(raw) as { version?: string }
     return {
       id: 'project-sdk',
-      label: '@qvac/sdk in node_modules',
+      label: `${DEFAULT_SDK_NAME} resolvable from project`,
       status: 'pass',
       severity: 'recommended',
-      value: pkg.version ? `v${pkg.version}` : 'installed'
+      value: pkg.version !== undefined ? `v${pkg.version}` : 'installed'
     }
   } catch {
     return {
       id: 'project-sdk',
-      label: '@qvac/sdk in node_modules',
+      label: `${DEFAULT_SDK_NAME} resolvable from project`,
       status: 'warn',
       severity: 'recommended',
       value: 'unreadable',
@@ -313,7 +447,7 @@ export function checkSdkInstalled (projectRoot: string = process.cwd()): CheckRe
 
 export interface CollectChecksOptions {
   projectRoot: string
-  probe?: (c: string, a: string[]) => ProbeResult
+  probe?: ProbeFn
 }
 
 export function collectCheckSections (options: CollectChecksOptions): CheckSection[] {
@@ -323,12 +457,17 @@ export function collectCheckSections (options: CollectChecksOptions): CheckSecti
     {
       id: 'runtime',
       title: 'Runtime',
-      checks: [checkNodeVersion(), checkPlatformArch()]
+      checks: [checkNodeVersion(), checkCliHost()]
     },
     {
       id: 'hardware',
       title: 'Hardware',
-      checks: [checkTotalMemory(), checkFreeMemory(), checkFreeDiskSpace(projectRoot)]
+      checks: [checkTotalMemory(), checkAvailableMemory(), checkFreeDiskSpace(projectRoot)]
+    },
+    {
+      id: 'targets',
+      title: 'Deploy targets (SDK)',
+      checks: [checkDesktopTargets(), checkAndroidTarget(probe), checkIosTarget(process.platform, probe)]
     },
     {
       id: 'tools',

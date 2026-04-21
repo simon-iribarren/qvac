@@ -1,6 +1,6 @@
-export type CheckStatus = 'pass' | 'warn' | 'fail' | 'skip'
+export type CheckStatus = 'pass' | 'warn' | 'fail' | 'skip' | 'info'
 
-export type CheckSeverity = 'required' | 'recommended'
+export type CheckSeverity = 'required' | 'recommended' | 'informational'
 
 export interface CheckResult {
   id: string
@@ -13,7 +13,7 @@ export interface CheckResult {
 }
 
 export interface CheckSection {
-  id: 'runtime' | 'hardware' | 'tools' | 'project'
+  id: 'runtime' | 'hardware' | 'targets' | 'tools' | 'project'
   title: string
   checks: CheckResult[]
 }

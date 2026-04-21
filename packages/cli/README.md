@@ -57,12 +57,18 @@ qvac doctor [options]
 
 **What it checks:**
 
-- **Runtime** — Node.js version (`>= 18`), supported platform/arch.
-- **Hardware** — total RAM, free RAM, and free disk space in the current
-  working directory.
+- **Runtime** — Node.js version (`>= 18`) and supported CLI host
+  (desktop platforms only; Android/iOS are SDK deploy targets reported
+  separately below).
+- **Hardware** — total RAM, available RAM (via `os.availableMemory()` on
+  Node 22+), and free disk space in the current working directory.
+- **Deploy targets (SDK)** — desktop target matrix, Android (`adb`), and
+  iOS (`xcodebuild` on macOS). Missing mobile toolchains produce
+  warnings, not failures.
 - **Optional tools** — `ffmpeg` (microphone/transcription), Bare runtime,
   Bun.
-- **Project** — whether `@qvac/sdk` is installed under `node_modules`.
+- **Project** — whether `@qvac/sdk` is resolvable from the current
+  working directory (works for hoisted monorepo installs too).
 
 See [`system-requirements.md`](./system-requirements.md) for the full list of
 thresholds and rationale.

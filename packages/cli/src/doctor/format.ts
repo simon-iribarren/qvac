@@ -4,7 +4,8 @@ const STATUS_ICON: Record<CheckStatus, string> = {
   pass: '✅',
   warn: '⚠️ ',
   fail: '❌',
-  skip: '•'
+  skip: '•',
+  info: 'ℹ️ '
 }
 
 function formatCheckLine (check: CheckResult): string {
