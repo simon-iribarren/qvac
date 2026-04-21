@@ -8,8 +8,10 @@ This package is published to npm as **`@qvac/cli`** and lives in the QVAC monore
 
 - [Installation](#installation)
 - [Command Reference](#command-reference)
+  - [`check-system`](#check-system)
   - [`bundle sdk`](#bundle-sdk)
 - [Configuration](#configuration)
+- [System Requirements](#system-requirements)
 - [Development](#development)
 - [License](#license)
 
@@ -34,6 +36,49 @@ npx @qvac/cli <command>
 ```
 
 ## Command Reference
+
+### `check-system`
+
+Validate that the current host can run `@qvac/sdk` + `@qvac/cli` before you
+hit runtime errors. The command prints a human-readable report by default and
+exits `1` when any required check fails.
+
+```bash
+qvac check-system [options]
+```
+
+**Options:**
+
+| Flag | Description |
+|------|-------------|
+| `--json` | Output the report as JSON. |
+| `-q, --quiet` | Suppress stdout — only set the exit code. |
+| `-v, --verbose` | Detailed output. |
+
+**What it checks:**
+
+- **Runtime** — Node.js version (`>= 18`), supported platform/arch.
+- **Hardware** — total RAM, free RAM, and free disk space in the current
+  working directory.
+- **Optional tools** — `ffmpeg` (microphone/transcription), Bare runtime,
+  Bun.
+- **Project** — whether `@qvac/sdk` is installed under `node_modules`.
+
+See [`system-requirements.md`](./system-requirements.md) for the full list of
+thresholds and rationale.
+
+**Examples:**
+
+```bash
+# Human-readable report
+qvac check-system
+
+# JSON for CI / scripts
+qvac check-system --json
+
+# Fail-fast in a script (exit 1 on any required check)
+qvac check-system --quiet || exit 1
+```
 
 ### `bundle sdk`
 
@@ -136,6 +181,16 @@ This file is primarily the SDK runtime config, but `qvac bundle sdk` also reads 
     "@qvac/sdk/nmtcpp-translation/plugin"
   ]
 }
+```
+
+## System Requirements
+
+See [`system-requirements.md`](./system-requirements.md) for the full list of
+required and recommended host dependencies. You can validate your environment
+at any time with:
+
+```bash
+qvac check-system
 ```
 
 ## Development
