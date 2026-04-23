@@ -102,6 +102,12 @@ describe('checkTotalMemory', () => {
     const r = checkTotalMemory(8 * 1024 ** 3)
     assert.equal(r.status, 'pass')
   })
+
+  it("reports severity 'required' across fail/warn/pass branches (severity describes the check, not the outcome)", () => {
+    assert.equal(checkTotalMemory(1 * 1024 ** 3).severity, 'required')
+    assert.equal(checkTotalMemory(3 * 1024 ** 3).severity, 'required')
+    assert.equal(checkTotalMemory(8 * 1024 ** 3).severity, 'required')
+  })
 })
 
 describe('checkAvailableMemory', () => {

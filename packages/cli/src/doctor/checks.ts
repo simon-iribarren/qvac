@@ -104,6 +104,10 @@ export function checkCliHost (
   }
 }
 
+// Total RAM has a hard gate (<2 GB fails the report) with a recommended
+// band on top, so the check is 'required' as a whole — the same pattern
+// as checkNodeVersion. Severity describes the check itself, not the
+// outcome of a particular branch.
 export function checkTotalMemory (totalBytes: number = os.totalmem()): CheckResult {
   const gb = toGB(totalBytes)
   if (gb < MIN_TOTAL_MEMORY_GB) {
@@ -121,7 +125,7 @@ export function checkTotalMemory (totalBytes: number = os.totalmem()): CheckResu
       id: 'memory-total',
       label: 'Total RAM',
       status: 'warn',
-      severity: 'recommended',
+      severity: 'required',
       value: fmtGB(totalBytes),
       hint: `Less than ${RECOMMENDED_TOTAL_MEMORY_GB} GB RAM detected; most LLMs will fail to load.`
     }
@@ -130,7 +134,7 @@ export function checkTotalMemory (totalBytes: number = os.totalmem()): CheckResu
     id: 'memory-total',
     label: 'Total RAM',
     status: 'pass',
-    severity: 'recommended',
+    severity: 'required',
     value: fmtGB(totalBytes)
   }
 }
