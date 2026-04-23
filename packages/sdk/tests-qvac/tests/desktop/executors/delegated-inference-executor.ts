@@ -74,12 +74,12 @@ export class DelegatedInferenceExecutor extends SharedDelegatedInferenceExecutor
   }
 
   private async withRemoteProvider<T>(
-    fn: (ctx: { topic: string; publicKey: string }) => Promise<T>,
+    fn: (ctx: { publicKey: string }) => Promise<T>,
   ): Promise<T> {
     const topic = generateTopic();
     const provider = await this.spawnProvider(topic);
     try {
-      return await fn({ topic, publicKey: provider.publicKey });
+      return await fn({ publicKey: provider.publicKey });
     } finally {
       provider.process.kill("SIGTERM");
     }
@@ -89,11 +89,11 @@ export class DelegatedInferenceExecutor extends SharedDelegatedInferenceExecutor
     history: Array<{ role: string; content: string }>,
     stream: boolean,
   ): Promise<TestResult> {
-    return this.withRemoteProvider(async ({ topic, publicKey }) => {
+    return this.withRemoteProvider(async ({ publicKey }) => {
       const modelId = await loadModel({
         modelSrc: LLAMA_3_2_1B_INST_Q4_0,
         modelType: "llm",
-        delegate: { topic, providerPublicKey: publicKey, timeout: E2E_DELEGATION_TIMEOUT, fallbackToLocal: false },
+        delegate: { providerPublicKey: publicKey, timeout: E2E_DELEGATION_TIMEOUT, fallbackToLocal: false },
       });
       try {
         const result = completion({ modelId, history, stream });

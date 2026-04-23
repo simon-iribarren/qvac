@@ -9,8 +9,10 @@ import {
 } from "@qvac/sdk";
 
 // ── Config ──────────────────────────────────────────────────────────
-// Any 64-char hex string works as a topic — it's a shared secret that
-// lets the consumer discover the provider on Hyperswarm.
+// The consumer connects to the provider directly via its public key over
+// the DHT, so no topic discovery is required. The topic is only used on
+// the provider side to keep its swarm announce alive (any stable 64-char
+// hex string works).
 const TOPIC =
   "66646f696865726f6569686a726530776a66646f696865726f6569686a726530";
 const PROVIDER_STARTUP_TIMEOUT_MS = 30_000;
@@ -79,7 +81,6 @@ function waitForProviderPublicKey(provider: ChildProcess): Promise<string> {
 // ── Consumer: delegated model load + completion ─────────────────────
 
 async function runDelegatedCompletion(
-  topic: string,
   providerPublicKey: string,
 ): Promise<void> {
   console.log("→ Loading model via delegation...");
@@ -87,7 +88,6 @@ async function runDelegatedCompletion(
     modelSrc: LLAMA_3_2_1B_INST_Q4_0,
     modelType: "llm",
     delegate: {
-      topic,
       providerPublicKey,
       timeout: 30_000,
     },
@@ -122,9 +122,9 @@ try {
   const publicKey = await waitForProviderPublicKey(provider);
 
   console.log(`\n📡 Provider ready — key: ${publicKey}`);
-  console.log(`📡 Topic: ${TOPIC}\n`);
+  console.log(`📡 Provider topic (provider-side only): ${TOPIC}\n`);
 
-  await runDelegatedCompletion(TOPIC, publicKey);
+  await runDelegatedCompletion(publicKey);
   void close();
 } finally {
   terminateProvider(provider);

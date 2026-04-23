@@ -20,7 +20,7 @@ import {
   delegatedHeartbeatProvider,
   delegatedCancelDownload,
   delegatedConnectionFailure,
-  delegatedInvalidTopic,
+  delegatedInvalidProviderKey,
   delegatedProviderNotFound,
 } from "../../delegated-inference-tests.js";
 import { randomHex, generateTopic } from "../../utils/random.js";
@@ -39,7 +39,7 @@ const allTests = [
   delegatedHeartbeatProvider,
   delegatedCancelDownload,
   delegatedConnectionFailure,
-  delegatedInvalidTopic,
+  delegatedInvalidProviderKey,
   delegatedProviderNotFound,
 ] as const;
 
@@ -58,13 +58,13 @@ export class DelegatedInferenceExecutor extends BaseExecutor<typeof allTests> {
       [delegatedHeartbeatProvider.testId]: this.heartbeatProvider.bind(this),
       [delegatedCancelDownload.testId]: this.cancelDelegatedDownload.bind(this),
       [delegatedConnectionFailure.testId]: this.connectionFailure.bind(this),
-      [delegatedInvalidTopic.testId]: this.invalidTopic.bind(this),
+      [delegatedInvalidProviderKey.testId]: this.invalidProviderKey.bind(this),
       [delegatedProviderNotFound.testId]: this.providerNotFound.bind(this),
     };
   }
 
   private async withProvider<T>(
-    fn: (ctx: { topic: string; publicKey: string }) => Promise<T>,
+    fn: (ctx: { publicKey: string }) => Promise<T>,
   ): Promise<T> {
     const topic = generateTopic();
     const response = await startQVACProvider({ topic });
@@ -72,7 +72,7 @@ export class DelegatedInferenceExecutor extends BaseExecutor<typeof allTests> {
       throw new Error(`startQVACProvider returned no publicKey: ${JSON.stringify(response)}`);
     }
     try {
-      return await fn({ topic, publicKey: response.publicKey });
+      return await fn({ publicKey: response.publicKey });
     } finally {
       try { await stopQVACProvider({ topic }); } catch {}
     }
@@ -148,7 +148,6 @@ export class DelegatedInferenceExecutor extends BaseExecutor<typeof allTests> {
       modelSrc: LLAMA_3_2_1B_INST_Q4_0,
       modelType: "llm",
       delegate: {
-        topic: generateTopic(),
         providerPublicKey: randomHex(32),
         timeout: 3000,
         fallbackToLocal: true,
@@ -165,10 +164,10 @@ export class DelegatedInferenceExecutor extends BaseExecutor<typeof allTests> {
   }
 
   async heartbeatProvider(): Promise<TestResult> {
-    return this.withProvider(async ({ topic, publicKey }) => {
+    return this.withProvider(async ({ publicKey }) => {
       try {
         const response = await heartbeat({
-          delegate: { topic, providerPublicKey: publicKey, timeout: DEFAULT_DELEGATE_TIMEOUT },
+          delegate: { providerPublicKey: publicKey, timeout: DEFAULT_DELEGATE_TIMEOUT },
         });
         if (response.type !== "heartbeat") {
           return { passed: false, output: `Invalid heartbeat response: ${JSON.stringify(response)}` };
@@ -189,12 +188,12 @@ export class DelegatedInferenceExecutor extends BaseExecutor<typeof allTests> {
   }
 
   async cancelDelegatedDownload(): Promise<TestResult> {
-    return this.withProvider(async ({ topic, publicKey }) => {
+    return this.withProvider(async ({ publicKey }) => {
       try {
         await cancel({
           operation: "downloadAsset",
           downloadKey: "nonexistent-delegated-download",
-          delegate: { topic, providerPublicKey: publicKey, timeout: DEFAULT_DELEGATE_TIMEOUT },
+          delegate: { providerPublicKey: publicKey, timeout: DEFAULT_DELEGATE_TIMEOUT },
         });
         return { passed: true, output: "Cancel delegated download API accepted" };
       } catch (error) {
@@ -215,7 +214,6 @@ export class DelegatedInferenceExecutor extends BaseExecutor<typeof allTests> {
         modelSrc: LLAMA_3_2_1B_INST_Q4_0,
         modelType: "llm",
         delegate: {
-          topic: generateTopic(),
           providerPublicKey: randomHex(32),
           timeout,
           fallbackToLocal: false,
@@ -232,23 +230,22 @@ export class DelegatedInferenceExecutor extends BaseExecutor<typeof allTests> {
     }
   }
 
-  async invalidTopic(): Promise<TestResult> {
+  async invalidProviderKey(): Promise<TestResult> {
     try {
       await loadModel({
         modelSrc: LLAMA_3_2_1B_INST_Q4_0,
         modelType: "llm",
         delegate: {
-          topic: "not-a-valid-hex-topic!!!",
           providerPublicKey: "also-invalid",
           fallbackToLocal: false,
         },
       });
-      return { passed: false, output: "Should have thrown for invalid topic" };
+      return { passed: false, output: "Should have thrown for invalid provider key" };
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
 
       if (isDelegationError(msg) || msg.includes("Invalid input")) {
-        return { passed: true, output: `Invalid topic rejected: ${msg.substring(0, 120)}` };
+        return { passed: true, output: `Invalid provider key rejected: ${msg.substring(0, 120)}` };
       }
       return { passed: false, output: `Unexpected error (expected delegation/validation error): ${msg.substring(0, 120)}` };
     }
@@ -258,7 +255,6 @@ export class DelegatedInferenceExecutor extends BaseExecutor<typeof allTests> {
     try {
       await heartbeat({
         delegate: {
-          topic: generateTopic(),
           providerPublicKey: randomHex(32),
           timeout: (params.timeout ?? 3000) as number,
         },
