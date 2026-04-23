@@ -105,6 +105,73 @@ function readFreeDiskBytes (dir: string): number | null {
   return null
 }
 
+// QVAC inference backends rely on Metal on macOS and Vulkan on Linux/Windows
+// (see the ggml-metal / whisper-cpp+vulkan CMake configs). Running LLM or
+// Whisper inference without a GPU backend falls back to CPU, which is
+// roughly an order of magnitude slower — worth flagging in the report.
+function parseVulkanDeviceNames (stdout: string): string[] {
+  const names: string[] = []
+  for (const line of stdout.split('\n')) {
+    const m = /deviceName\s*=\s*(.+)/.exec(line)
+    if (m && m[1] !== undefined) names.push(m[1].trim())
+  }
+  return names
+}
+
+export const checkGpuAcceleration: Check = (ctx) => {
+  if (ctx.platform === 'darwin') {
+    return {
+      id: 'gpu-acceleration',
+      label: 'GPU acceleration',
+      status: 'pass',
+      severity: 'recommended',
+      value: 'Metal (native macOS backend)'
+    }
+  }
+  if (ctx.platform !== 'linux' && ctx.platform !== 'win32') {
+    return {
+      id: 'gpu-acceleration',
+      label: 'GPU acceleration',
+      status: 'info',
+      severity: 'informational',
+      value: `not checked on ${ctx.platform}`,
+      hint: `'qvac doctor' does not validate GPU acceleration on ${ctx.platform}.`
+    }
+  }
+  const r = ctx.probe('vulkaninfo', ['--summary'])
+  if (!r.ok) {
+    const installHint = ctx.platform === 'win32'
+      ? 'Install the Vulkan runtime via the latest GPU drivers or the Vulkan SDK (https://vulkan.lunarg.com/).'
+      : 'Install a Vulkan loader and vulkan-tools (Debian/Ubuntu: `apt install libvulkan1 vulkan-tools`; Fedora: `dnf install vulkan-tools vulkan-loader`).'
+    return {
+      id: 'gpu-acceleration',
+      label: 'GPU acceleration',
+      status: 'warn',
+      severity: 'recommended',
+      value: 'Vulkan ICD not found',
+      hint: `${installHint} Without a Vulkan ICD, QVAC inference falls back to CPU and is significantly slower.`
+    }
+  }
+  const devices = parseVulkanDeviceNames(r.stdout ?? '')
+  if (devices.length === 0) {
+    return {
+      id: 'gpu-acceleration',
+      label: 'GPU acceleration',
+      status: 'pass',
+      severity: 'recommended',
+      value: 'Vulkan ICD present',
+      hint: 'vulkaninfo reported no GPU devices; ensure a GPU driver is installed if you expect hardware acceleration.'
+    }
+  }
+  return {
+    id: 'gpu-acceleration',
+    label: 'GPU acceleration',
+    status: 'pass',
+    severity: 'recommended',
+    value: `Vulkan: ${devices.join(', ')}`
+  }
+}
+
 export const checkFreeDiskSpace: Check = (ctx) => {
   const dir = ctx.projectRoot
   const free = readFreeDiskBytes(dir)

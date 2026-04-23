@@ -2,7 +2,7 @@ import type { CheckContext } from '../check.js'
 import { createDefaultContext } from '../check.js'
 import type { CheckSection } from '../types.js'
 import { checkNodeVersion, checkCliHost } from './runtime.js'
-import { checkTotalMemory, checkAvailableMemory, checkFreeDiskSpace } from './hardware.js'
+import { checkTotalMemory, checkAvailableMemory, checkGpuAcceleration, checkFreeDiskSpace } from './hardware.js'
 import { checkDesktopTargets, checkAndroidTarget, checkIosTarget } from './targets.js'
 import { checkFfmpeg, checkBareRuntime, checkBun } from './tools.js'
 import { checkSdkInstalled } from './project.js'
@@ -10,7 +10,7 @@ import { checkSdkInstalled } from './project.js'
 export type { Check, CheckContext, ProbeFn, ProbeResult } from '../check.js'
 export { createDefaultContext, probeBinary } from '../check.js'
 export { checkNodeVersion, checkCliHost } from './runtime.js'
-export { checkTotalMemory, checkAvailableMemory, checkFreeDiskSpace } from './hardware.js'
+export { checkTotalMemory, checkAvailableMemory, checkGpuAcceleration, checkFreeDiskSpace } from './hardware.js'
 export { checkDesktopTargets, checkAndroidTarget, checkIosTarget } from './targets.js'
 export { checkFfmpeg, checkBareRuntime, checkBun } from './tools.js'
 export { checkSdkInstalled } from './project.js'
@@ -31,7 +31,7 @@ export function collectCheckSections (options: CollectChecksOptions = {}): Check
     {
       id: 'hardware',
       title: 'Hardware',
-      checks: [checkTotalMemory(ctx), checkAvailableMemory(ctx), checkFreeDiskSpace(ctx)]
+      checks: [checkTotalMemory(ctx), checkAvailableMemory(ctx), checkGpuAcceleration(ctx), checkFreeDiskSpace(ctx)]
     },
     {
       id: 'targets',

@@ -8,6 +8,7 @@ import {
   checkCliHost,
   checkTotalMemory,
   checkAvailableMemory,
+  checkGpuAcceleration,
   checkFreeDiskSpace,
   checkFfmpeg,
   checkBareRuntime,
@@ -138,6 +139,63 @@ describe('checkAvailableMemory', () => {
   it('passes when available RAM is above recommended', () => {
     const r = checkAvailableMemory(makeCtx({ availableMemoryBytes: 4 * 1024 ** 3 }))
     assert.equal(r.status, 'pass')
+  })
+})
+
+describe('checkGpuAcceleration', () => {
+  it('passes with Metal on darwin (always available)', () => {
+    const r = checkGpuAcceleration(makeCtx({ platform: 'darwin', probe: () => ({ ok: false }) }))
+    assert.equal(r.status, 'pass')
+    assert.ok(r.value && r.value.toLowerCase().includes('metal'))
+  })
+
+  it('warns on linux when vulkaninfo is missing', () => {
+    const r = checkGpuAcceleration(makeCtx({ platform: 'linux', probe: () => ({ ok: false }) }))
+    assert.equal(r.status, 'warn')
+    assert.equal(r.severity, 'recommended')
+    assert.equal(r.value, 'Vulkan ICD not found')
+    assert.ok(r.hint && /vulkan-tools|libvulkan/i.test(r.hint))
+  })
+
+  it('warns on win32 when vulkaninfo is missing (with Windows-specific hint)', () => {
+    const r = checkGpuAcceleration(makeCtx({ platform: 'win32', probe: () => ({ ok: false }) }))
+    assert.equal(r.status, 'warn')
+    assert.ok(r.hint && /vulkan sdk|GPU drivers/i.test(r.hint))
+  })
+
+  it('passes on linux with a Vulkan ICD, extracting device names', () => {
+    const stdout = [
+      'VULKANINFO',
+      'Vulkan Instance Version: 1.3.268',
+      '',
+      'GPUs:',
+      '=====',
+      'GPU0:',
+      '\tapiVersion         = 1.3.268',
+      '\tdeviceName         = NVIDIA GeForce RTX 3080',
+      '\tdeviceType         = PHYSICAL_DEVICE_TYPE_DISCRETE_GPU'
+    ].join('\n')
+    const r = checkGpuAcceleration(makeCtx({
+      platform: 'linux',
+      probe: () => ({ ok: true, stdout })
+    }))
+    assert.equal(r.status, 'pass')
+    assert.ok(r.value && r.value.includes('NVIDIA GeForce RTX 3080'))
+  })
+
+  it('passes on linux but hints when vulkaninfo reports no devices', () => {
+    const r = checkGpuAcceleration(makeCtx({
+      platform: 'linux',
+      probe: () => ({ ok: true, stdout: 'VULKANINFO\n' })
+    }))
+    assert.equal(r.status, 'pass')
+    assert.ok(r.hint && /no GPU devices/i.test(r.hint))
+  })
+
+  it('is informational on unknown platforms', () => {
+    const r = checkGpuAcceleration(makeCtx({ platform: 'freebsd' as NodeJS.Platform, probe: () => ({ ok: false }) }))
+    assert.equal(r.status, 'info')
+    assert.equal(r.severity, 'informational')
   })
 })
 
@@ -283,6 +341,16 @@ describe('collectCheckSections + isReportOk', () => {
     assert.deepEqual(
       sections.map((s) => s.id),
       ['runtime', 'hardware', 'targets', 'tools', 'project']
+    )
+  })
+
+  it('includes RAM, GPU, and disk checks in the hardware section', () => {
+    const sections = collectCheckSections({ projectRoot: process.cwd() })
+    const hardware = sections.find((s) => s.id === 'hardware')
+    assert.ok(hardware)
+    assert.deepEqual(
+      hardware.checks.map((c) => c.id),
+      ['memory-total', 'memory-available', 'gpu-acceleration', 'disk-free']
     )
   })
 

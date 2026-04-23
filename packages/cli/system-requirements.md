@@ -36,6 +36,7 @@ and iOS. `qvac doctor` reports both, in two distinct sections of its output:
 | Requirement | When it is needed |
 |---|---|
 | Available RAM `>= 2 GB` | Needed when loading a model. Checked via `os.availableMemory()` on Node 22+, falling back to `os.freemem()` on older Nodes (freemem is known to under-report on Linux/macOS). |
+| GPU acceleration (Metal on macOS, Vulkan on Linux/Windows) | QVAC inference backends use Metal (always present on macOS) or Vulkan (`vulkaninfo --summary`) on Linux/Windows. Without a Vulkan ICD, LLM and Whisper inference fall back to CPU and are significantly slower. |
 | Free disk `>= 5 GB` in the working directory | Model artifacts are typically multi-GB per model. Uses `fs.statfsSync` (Node 18.15+) with a POSIX `df` fallback. |
 
 ## Deploy targets

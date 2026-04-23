@@ -61,7 +61,8 @@ qvac doctor [options]
   (desktop platforms only; Android/iOS are SDK deploy targets reported
   separately below).
 - **Hardware** — total RAM, available RAM (via `os.availableMemory()` on
-  Node 22+), and free disk space in the current working directory.
+  Node 22+), GPU acceleration (Metal on macOS, `vulkaninfo` on
+  Linux/Windows), and free disk space in the current working directory.
 - **Deploy targets (SDK)** — desktop target matrix, Android (`adb`), and
   iOS (`xcodebuild` on macOS). Missing mobile toolchains produce
   warnings, not failures.

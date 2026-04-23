@@ -5,6 +5,10 @@ import type { CheckResult } from './types.js'
 export interface ProbeResult {
   ok: boolean
   version?: string
+  // Full trimmed stdout. Checks that only need a version line use
+  // `version` (first line); checks that need to parse multi-line output
+  // — e.g. `vulkaninfo --summary` device names — read `stdout`.
+  stdout?: string
 }
 
 export type ProbeFn = (command: string, args: string[]) => ProbeResult
@@ -38,8 +42,12 @@ export const probeBinary: ProbeFn = (command, args) => {
       timeout: PROBE_TIMEOUT_MS
     })
     if (r.error || r.status !== 0 || r.signal === 'SIGTERM') return { ok: false }
-    const firstLine = r.stdout.toString('utf8').split('\n')[0]?.trim() ?? ''
-    return firstLine ? { ok: true, version: firstLine } : { ok: true }
+    const stdout = r.stdout.toString('utf8').trim()
+    const firstLine = stdout.split('\n')[0]?.trim() ?? ''
+    const result: ProbeResult = { ok: true }
+    if (firstLine) result.version = firstLine
+    if (stdout) result.stdout = stdout
+    return result
   } catch {
     return { ok: false }
   }
