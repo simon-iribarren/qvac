@@ -15,7 +15,9 @@ import {
 // hex string works).
 const TOPIC =
   "66646f696865726f6569686a726530776a66646f696865726f6569686a726530";
-const PROVIDER_STARTUP_TIMEOUT_MS = 30_000;
+// DHT bootstrap + topic announce on a cold swarm can take a while on
+// first run; the E2E suite uses 60s for the same reason.
+const PROVIDER_STARTUP_TIMEOUT_MS = 60_000;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const providerScript = join(__dirname, "provider.ts");
