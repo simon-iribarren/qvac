@@ -237,10 +237,18 @@ export interface ProbeResult {
 
 export type ProbeFn = (command: string, args: string[]) => ProbeResult
 
+// Cap probes at 3s so a hung/interactive binary (or an adb that is waiting
+// for a device) cannot make `qvac doctor` hang. 3s is generous for a
+// `--version` style call while still short enough to keep the command snappy.
+const PROBE_TIMEOUT_MS = 3000
+
 function probeBinary (command: string, args: string[]): ProbeResult {
   try {
-    const r = spawnSync(command, args, { stdio: ['ignore', 'pipe', 'pipe'] })
-    if (r.error || r.status !== 0) return { ok: false }
+    const r = spawnSync(command, args, {
+      stdio: ['ignore', 'pipe', 'pipe'],
+      timeout: PROBE_TIMEOUT_MS
+    })
+    if (r.error || r.status !== 0 || r.signal === 'SIGTERM') return { ok: false }
     const firstLine = r.stdout.toString('utf8').split('\n')[0]?.trim() ?? ''
     return firstLine ? { ok: true, version: firstLine } : { ok: true }
   } catch {
