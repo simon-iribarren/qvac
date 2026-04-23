@@ -1,14 +1,9 @@
 import { z } from "zod";
 
-export const stopProvideParamsSchema = z
-  .object({
-    topic: z.string(),
-  })
-  .strict();
+export const stopProvideParamsSchema = z.object({}).strict();
 
 export const stopProvideRequestSchema = stopProvideParamsSchema.extend({
   type: z.literal("stopProvide"),
-  topic: z.string(),
 });
 
 export const stopProvideResponseSchema = z.object({

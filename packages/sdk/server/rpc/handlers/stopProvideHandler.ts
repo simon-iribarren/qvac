@@ -1,23 +1,12 @@
-import type {
-  StopProvideRequest,
-  StopProvideResponse,
-} from "@/schemas/stop-provide";
-import { getSwarm, unregisterProviderTopic } from "@/server/bare/hyperswarm";
+import type { StopProvideResponse } from "@/schemas/stop-provide";
+import { unregisterProvider } from "@/server/bare/hyperswarm";
 import { getServerLogger } from "@/logging";
 
 const logger = getServerLogger();
 
-export function stopProvideHandler(
-  request: StopProvideRequest,
-): StopProvideResponse {
-  const swarm = getSwarm();
-
+export function stopProvideHandler(): StopProvideResponse {
   try {
-    const topic = Buffer.from(request.topic, "hex");
-    const topicHex = request.topic;
-
-    swarm.leave(topic);
-    unregisterProviderTopic(topicHex);
+    unregisterProvider();
 
     return {
       type: "stopProvide" as const,

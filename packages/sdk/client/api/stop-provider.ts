@@ -1,4 +1,4 @@
-import { type StopProvideParams, type StopProvideRequest } from "@/schemas";
+import { type StopProvideRequest } from "@/schemas";
 import { send } from "@/client/rpc/rpc-client";
 import {
   InvalidResponseError,
@@ -6,17 +6,14 @@ import {
 } from "@/utils/errors-client";
 
 /**
- * Stops a running provider service and leaves the specified topic.
+ * Stops the running provider service.
  *
- * @param options - Options object with required topic
- * @param options.topic - Topic hex string to leave
  * @returns A promise that resolves to the stop provide response containing success status
  * @throws {QvacErrorBase} When the response type is not "stopProvide" or the request fails
  */
-export async function stopQVACProvider(params: StopProvideParams) {
+export async function stopQVACProvider() {
   const request: StopProvideRequest = {
     type: "stopProvide",
-    topic: params.topic,
   };
 
   const response = await send(request);

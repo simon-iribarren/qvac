@@ -93,6 +93,8 @@ declare module "hyperswarm" {
 
     leave(topic: Buffer): void;
 
+    listen(): Promise<void>;
+
     flush(): Promise<void>;
 
     suspend(options?: { log?: (message: string) => void }): Promise<void>;

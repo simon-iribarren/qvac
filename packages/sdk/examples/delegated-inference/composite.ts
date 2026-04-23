@@ -8,24 +8,16 @@ import {
   LLAMA_3_2_1B_INST_Q4_0,
 } from "@qvac/sdk";
 
-// ── Config ──────────────────────────────────────────────────────────
-// The consumer connects to the provider directly via its public key over
-// the DHT, so no topic discovery is required. The topic is only used on
-// the provider side to keep its swarm announce alive (any stable 64-char
-// hex string works).
-const TOPIC =
-  "66646f696865726f6569686a726530776a66646f696865726f6569686a726530";
-// DHT bootstrap + topic announce on a cold swarm can take a while on
-// first run; the E2E suite uses 60s for the same reason.
+// The consumer connects to the provider directly via its public key over the
+// DHT (`dht.connect(publicKey)`). No topic or discovery step is involved —
+// the provider just needs its DHT server listening on its keyPair.
 const PROVIDER_STARTUP_TIMEOUT_MS = 60_000;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const providerScript = join(__dirname, "provider.ts");
 
-// ── Provider lifecycle ──────────────────────────────────────────────
-
 function spawnProviderProcess(): ChildProcess {
-  const child = spawn("bun", ["run", providerScript, TOPIC], {
+  const child = spawn("bun", ["run", providerScript], {
     stdio: ["pipe", "pipe", "pipe"],
   });
 
@@ -43,9 +35,9 @@ function terminateProvider(provider: ChildProcess): void {
 }
 
 // The provider's Hyperswarm identity (and therefore its public key) is
-// generated at startup — it can't be known ahead of time. We parse it
-// from the provider's stdout where it prints:
-//   "🆔 Provider Public Key (unique): <hex>"
+// generated at startup — it can't be known ahead of time. We parse it from
+// the provider's stdout where it prints:
+//   "🆔 Provider Public Key: <hex>"
 function waitForProviderPublicKey(provider: ChildProcess): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     let output = "";
@@ -59,9 +51,7 @@ function waitForProviderPublicKey(provider: ChildProcess): Promise<string> {
       output += str;
       process.stdout.write(str);
 
-      const match = output.match(
-        /Provider Public Key \(unique\): ([a-f0-9]+)/i,
-      );
+      const match = output.match(/Provider Public Key: ([a-f0-9]+)/i);
       if (match) {
         clearTimeout(timeout);
         resolve(match[1]!);
@@ -79,8 +69,6 @@ function waitForProviderPublicKey(provider: ChildProcess): Promise<string> {
     });
   });
 }
-
-// ── Consumer: delegated model load + completion ─────────────────────
 
 async function runDelegatedCompletion(
   providerPublicKey: string,
@@ -115,16 +103,13 @@ async function runDelegatedCompletion(
   console.log(`\n📊 Stats: ${JSON.stringify(stats)}`);
 }
 
-// ── Main ────────────────────────────────────────────────────────────
-
 const provider = spawnProviderProcess();
 
 try {
   console.log("🔧 Waiting for provider to start and announce its key...\n");
   const publicKey = await waitForProviderPublicKey(provider);
 
-  console.log(`\n📡 Provider ready — key: ${publicKey}`);
-  console.log(`📡 Provider topic (provider-side only): ${TOPIC}\n`);
+  console.log(`\n📡 Provider ready — key: ${publicKey}\n`);
 
   await runDelegatedCompletion(publicKey);
   void close();

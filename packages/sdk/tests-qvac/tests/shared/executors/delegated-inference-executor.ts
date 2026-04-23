@@ -23,7 +23,7 @@ import {
   delegatedInvalidProviderKey,
   delegatedProviderNotFound,
 } from "../../delegated-inference-tests.js";
-import { randomHex, generateTopic } from "../../utils/random.js";
+import { randomHex } from "../../utils/random.js";
 
 const DEFAULT_DELEGATE_TIMEOUT = 10_000;
 
@@ -66,50 +66,46 @@ export class DelegatedInferenceExecutor extends BaseExecutor<typeof allTests> {
   private async withProvider<T>(
     fn: (ctx: { publicKey: string }) => Promise<T>,
   ): Promise<T> {
-    const topic = generateTopic();
-    const response = await startQVACProvider({ topic });
+    const response = await startQVACProvider();
     if (!response.publicKey) {
       throw new Error(`startQVACProvider returned no publicKey: ${JSON.stringify(response)}`);
     }
     try {
       return await fn({ publicKey: response.publicKey });
     } finally {
-      try { await stopQVACProvider({ topic }); } catch {}
+      try { await stopQVACProvider(); } catch {}
     }
   }
 
   async providerStart(): Promise<TestResult> {
-    const topic = generateTopic();
-    const response = await startQVACProvider({ topic });
+    const response = await startQVACProvider();
     try {
       if (!response.publicKey || typeof response.publicKey !== "string") {
         return { passed: false, output: `Missing or invalid publicKey: ${JSON.stringify(response)}` };
       }
       return { passed: true, output: `Provider started, publicKey: ${response.publicKey.substring(0, 16)}...` };
     } finally {
-      try { await stopQVACProvider({ topic }); } catch {}
+      try { await stopQVACProvider(); } catch {}
     }
   }
 
   async providerStop(): Promise<TestResult> {
-    const topic = generateTopic();
-    await startQVACProvider({ topic });
+    await startQVACProvider();
     try {
-      const response = await stopQVACProvider({ topic });
+      const response = await stopQVACProvider();
       if (response.success !== true) {
         return { passed: false, output: `stopQVACProvider failed: ${JSON.stringify(response)}` };
       }
       return { passed: true, output: "Provider started and stopped successfully" };
     } catch (error) {
-      try { await stopQVACProvider({ topic }); } catch {}
+      try { await stopQVACProvider(); } catch {}
       throw error;
     }
   }
 
   async providerFirewall(params: typeof delegatedProviderFirewall.params): Promise<TestResult> {
-    const topic = generateTopic();
     const firewall = params.firewall as { mode: "allow" | "deny"; publicKeys: string[] };
-    const response = await startQVACProvider({ topic, firewall });
+    const response = await startQVACProvider({ firewall });
     try {
       if (!response.publicKey) {
         return { passed: false, output: `Provider with firewall failed: ${JSON.stringify(response)}` };
@@ -119,27 +115,25 @@ export class DelegatedInferenceExecutor extends BaseExecutor<typeof allTests> {
         output: `Provider with firewall (mode=${firewall.mode}) started, publicKey: ${response.publicKey.substring(0, 16)}...`,
       };
     } finally {
-      try { await stopQVACProvider({ topic }); } catch {}
+      try { await stopQVACProvider(); } catch {}
     }
   }
 
   async providerRestart(): Promise<TestResult> {
-    const topic1 = generateTopic();
-    await startQVACProvider({ topic: topic1 });
-    await stopQVACProvider({ topic: topic1 });
+    await startQVACProvider();
+    await stopQVACProvider();
 
-    const topic2 = generateTopic();
-    const response = await startQVACProvider({ topic: topic2 });
+    const response = await startQVACProvider();
     try {
       if (!response.publicKey) {
-        return { passed: false, output: "Provider failed to restart on new topic" };
+        return { passed: false, output: "Provider failed to restart" };
       }
       return {
         passed: true,
         output: `Provider restarted successfully, publicKey: ${response.publicKey.substring(0, 16)}...`,
       };
     } finally {
-      try { await stopQVACProvider({ topic: topic2 }); } catch {}
+      try { await stopQVACProvider(); } catch {}
     }
   }
 

@@ -13,7 +13,6 @@ import {
   delegatedE2ECompletion,
   delegatedE2EStreaming,
 } from "../../delegated-inference-tests.js";
-import { generateTopic } from "../../utils/random.js";
 
 const E2E_DELEGATION_TIMEOUT = 60_000;
 const E2E_PROVIDER_STARTUP_TIMEOUT = 60_000;
@@ -35,9 +34,9 @@ export class DelegatedInferenceExecutor extends SharedDelegatedInferenceExecutor
     };
   }
 
-  private spawnProvider(topic: string): Promise<{ publicKey: string; process: ChildProcess }> {
+  private spawnProvider(): Promise<{ publicKey: string; process: ChildProcess }> {
     return new Promise((resolve, reject) => {
-      const child = spawn(process.execPath, [providerScriptPath, topic], {
+      const child = spawn(process.execPath, [providerScriptPath], {
         stdio: ["ignore", "pipe", "pipe"],
         env: { ...process.env },
       });
@@ -76,8 +75,7 @@ export class DelegatedInferenceExecutor extends SharedDelegatedInferenceExecutor
   private async withRemoteProvider<T>(
     fn: (ctx: { publicKey: string }) => Promise<T>,
   ): Promise<T> {
-    const topic = generateTopic();
-    const provider = await this.spawnProvider(topic);
+    const provider = await this.spawnProvider();
     try {
       return await fn({ publicKey: provider.publicKey });
     } finally {
