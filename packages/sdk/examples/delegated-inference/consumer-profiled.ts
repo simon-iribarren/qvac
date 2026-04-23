@@ -24,7 +24,7 @@ try {
     modelType: "llm",
     delegate: {
       providerPublicKey,
-      timeout: 30_000,
+      timeout: 60_000,
     },
   });
   console.log(`✓ Model loaded: ${modelId}\n`);
