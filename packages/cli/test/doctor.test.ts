@@ -17,71 +17,89 @@ import {
   checkIosTarget,
   checkSdkInstalled,
   collectCheckSections,
+  createDefaultContext,
   isReportOk
-} from '../src/doctor/checks.js'
+} from '../src/doctor/checks/index.js'
+import type { CheckContext } from '../src/doctor/checks/index.js'
+
+// Build a CheckContext with a minimal, deterministic baseline and spread
+// per-test overrides on top. Keeps each test assertion about a single
+// variable rather than mocking the whole host.
+function makeCtx (overrides: Partial<CheckContext> = {}): CheckContext {
+  return {
+    projectRoot: process.cwd(),
+    platform: 'linux',
+    arch: 'x64',
+    nodeVersion: '20.11.0',
+    totalMemoryBytes: 8 * 1024 ** 3,
+    availableMemoryBytes: 4 * 1024 ** 3,
+    probe: () => ({ ok: false }),
+    ...overrides
+  }
+}
 
 describe('checkNodeVersion', () => {
   it('fails on Node < 18', () => {
-    const r = checkNodeVersion('16.20.0')
+    const r = checkNodeVersion(makeCtx({ nodeVersion: '16.20.0' }))
     assert.equal(r.status, 'fail')
     assert.equal(r.severity, 'required')
   })
 
   it('warns on Node 18 (EOL but supported)', () => {
-    const r = checkNodeVersion('18.19.0')
+    const r = checkNodeVersion(makeCtx({ nodeVersion: '18.19.0' }))
     assert.equal(r.status, 'warn')
   })
 
   it('warns on Node 19 (below recommended)', () => {
-    const r = checkNodeVersion('19.9.0')
+    const r = checkNodeVersion(makeCtx({ nodeVersion: '19.9.0' }))
     assert.equal(r.status, 'warn')
   })
 
   it('passes on Node 20+', () => {
-    const r = checkNodeVersion('20.11.0')
+    const r = checkNodeVersion(makeCtx({ nodeVersion: '20.11.0' }))
     assert.equal(r.status, 'pass')
   })
 
   it('handles v-prefixed versions', () => {
-    const r = checkNodeVersion('v22.1.0')
+    const r = checkNodeVersion(makeCtx({ nodeVersion: 'v22.1.0' }))
     assert.equal(r.status, 'pass')
   })
 
   it('warns when version cannot be parsed', () => {
-    const r = checkNodeVersion('nightly')
+    const r = checkNodeVersion(makeCtx({ nodeVersion: 'nightly' }))
     assert.equal(r.status, 'warn')
   })
 })
 
 describe('checkCliHost', () => {
   it('passes on darwin-arm64', () => {
-    const r = checkCliHost('darwin', 'arm64')
+    const r = checkCliHost(makeCtx({ platform: 'darwin', arch: 'arm64' }))
     assert.equal(r.status, 'pass')
     assert.equal(r.value, 'darwin-arm64')
   })
 
   it('passes on linux-x64', () => {
-    const r = checkCliHost('linux', 'x64')
+    const r = checkCliHost(makeCtx({ platform: 'linux', arch: 'x64' }))
     assert.equal(r.status, 'pass')
   })
 
   it('passes on win32-x64', () => {
-    const r = checkCliHost('win32', 'x64')
+    const r = checkCliHost(makeCtx({ platform: 'win32', arch: 'x64' }))
     assert.equal(r.status, 'pass')
   })
 
   it('fails on unsupported CLI hosts', () => {
-    const r = checkCliHost('freebsd', 'x64')
+    const r = checkCliHost(makeCtx({ platform: 'freebsd' as NodeJS.Platform, arch: 'x64' }))
     assert.equal(r.status, 'fail')
   })
 
   it('fails on win32-arm64 (not in CLI host matrix)', () => {
-    const r = checkCliHost('win32', 'arm64')
+    const r = checkCliHost(makeCtx({ platform: 'win32', arch: 'arm64' }))
     assert.equal(r.status, 'fail')
   })
 
   it('fail hint clarifies that mobile is a deploy target, not a CLI host', () => {
-    const r = checkCliHost('android', 'arm64')
+    const r = checkCliHost(makeCtx({ platform: 'android' as NodeJS.Platform, arch: 'arm64' }))
     assert.equal(r.status, 'fail')
     assert.ok(r.hint && /deploy target/i.test(r.hint))
   })
@@ -89,43 +107,43 @@ describe('checkCliHost', () => {
 
 describe('checkTotalMemory', () => {
   it('fails when total RAM is below the hard minimum', () => {
-    const r = checkTotalMemory(1 * 1024 ** 3)
+    const r = checkTotalMemory(makeCtx({ totalMemoryBytes: 1 * 1024 ** 3 }))
     assert.equal(r.status, 'fail')
   })
 
   it('warns when total RAM is below recommended', () => {
-    const r = checkTotalMemory(3 * 1024 ** 3)
+    const r = checkTotalMemory(makeCtx({ totalMemoryBytes: 3 * 1024 ** 3 }))
     assert.equal(r.status, 'warn')
   })
 
   it('passes when total RAM meets recommended', () => {
-    const r = checkTotalMemory(8 * 1024 ** 3)
+    const r = checkTotalMemory(makeCtx({ totalMemoryBytes: 8 * 1024 ** 3 }))
     assert.equal(r.status, 'pass')
   })
 
   it("reports severity 'required' across fail/warn/pass branches (severity describes the check, not the outcome)", () => {
-    assert.equal(checkTotalMemory(1 * 1024 ** 3).severity, 'required')
-    assert.equal(checkTotalMemory(3 * 1024 ** 3).severity, 'required')
-    assert.equal(checkTotalMemory(8 * 1024 ** 3).severity, 'required')
+    assert.equal(checkTotalMemory(makeCtx({ totalMemoryBytes: 1 * 1024 ** 3 })).severity, 'required')
+    assert.equal(checkTotalMemory(makeCtx({ totalMemoryBytes: 3 * 1024 ** 3 })).severity, 'required')
+    assert.equal(checkTotalMemory(makeCtx({ totalMemoryBytes: 8 * 1024 ** 3 })).severity, 'required')
   })
 })
 
 describe('checkAvailableMemory', () => {
   it('warns when available RAM is below recommended', () => {
-    const r = checkAvailableMemory(1 * 1024 ** 3)
+    const r = checkAvailableMemory(makeCtx({ availableMemoryBytes: 1 * 1024 ** 3 }))
     assert.equal(r.status, 'warn')
     assert.equal(r.label, 'Available RAM')
   })
 
   it('passes when available RAM is above recommended', () => {
-    const r = checkAvailableMemory(4 * 1024 ** 3)
+    const r = checkAvailableMemory(makeCtx({ availableMemoryBytes: 4 * 1024 ** 3 }))
     assert.equal(r.status, 'pass')
   })
 })
 
 describe('checkFreeDiskSpace', () => {
   it('returns a result for the current working directory', () => {
-    const r = checkFreeDiskSpace(process.cwd())
+    const r = checkFreeDiskSpace(makeCtx({ projectRoot: process.cwd() }))
     assert.ok(['pass', 'warn', 'skip'].includes(r.status))
     assert.equal(r.severity, 'recommended')
   })
@@ -136,25 +154,25 @@ describe('optional tool probes', () => {
   const probeMissing = () => ({ ok: false })
 
   it('ffmpeg passes when probe reports installed', () => {
-    const r = checkFfmpeg(probePresent)
+    const r = checkFfmpeg(makeCtx({ probe: probePresent }))
     assert.equal(r.status, 'pass')
     assert.equal(r.value, '1.2.3')
   })
 
   it('ffmpeg warns when probe reports missing', () => {
-    const r = checkFfmpeg(probeMissing)
+    const r = checkFfmpeg(makeCtx({ probe: probeMissing }))
     assert.equal(r.status, 'warn')
     assert.ok(r.hint && r.hint.includes('ffmpeg'))
   })
 
   it('Bare runtime warns when missing (recommended only)', () => {
-    const r = checkBareRuntime(probeMissing)
+    const r = checkBareRuntime(makeCtx({ probe: probeMissing }))
     assert.equal(r.status, 'warn')
     assert.equal(r.severity, 'recommended')
   })
 
   it('Bun warns when missing (recommended only)', () => {
-    const r = checkBun(probeMissing)
+    const r = checkBun(makeCtx({ probe: probeMissing }))
     assert.equal(r.status, 'warn')
     assert.equal(r.severity, 'recommended')
   })
@@ -165,42 +183,42 @@ describe('deploy-target checks', () => {
   const probeMissing = () => ({ ok: false })
 
   it('desktop targets lists the native host first-class with (native) suffix', () => {
-    const r = checkDesktopTargets('linux', 'x64')
+    const r = checkDesktopTargets(makeCtx({ platform: 'linux', arch: 'x64' }))
     assert.equal(r.status, 'pass')
     assert.ok(r.value && r.value.includes('linux-x64 (native)'))
     assert.ok(r.value && r.value.includes('darwin-arm64'))
   })
 
   it('desktop targets still pass on non-desktop CLI hosts (bare-pack cross-bundles)', () => {
-    const r = checkDesktopTargets('freebsd' as NodeJS.Platform, 'x64')
+    const r = checkDesktopTargets(makeCtx({ platform: 'freebsd' as NodeJS.Platform, arch: 'x64' }))
     assert.equal(r.status, 'pass')
     assert.ok(r.value && !r.value.includes('(native)'))
   })
 
   it('android warns when adb is missing', () => {
-    const r = checkAndroidTarget(probeMissing)
+    const r = checkAndroidTarget(makeCtx({ probe: probeMissing }))
     assert.equal(r.status, 'warn')
     assert.ok(r.hint && /platform-tools|adb/i.test(r.hint))
   })
 
   it('android passes when adb is present', () => {
-    const r = checkAndroidTarget(probePresent)
+    const r = checkAndroidTarget(makeCtx({ probe: probePresent }))
     assert.equal(r.status, 'pass')
   })
 
   it('iOS is informational (not a warning) on non-darwin hosts', () => {
-    const r = checkIosTarget('linux', probeMissing)
+    const r = checkIosTarget(makeCtx({ platform: 'linux', probe: probeMissing }))
     assert.equal(r.status, 'info')
     assert.equal(r.severity, 'informational')
   })
 
   it('iOS warns on darwin when Xcode is missing', () => {
-    const r = checkIosTarget('darwin', probeMissing)
+    const r = checkIosTarget(makeCtx({ platform: 'darwin', probe: probeMissing }))
     assert.equal(r.status, 'warn')
   })
 
   it('iOS passes on darwin when Xcode is present', () => {
-    const r = checkIosTarget('darwin', probePresent)
+    const r = checkIosTarget(makeCtx({ platform: 'darwin', probe: probePresent }))
     assert.equal(r.status, 'pass')
     assert.equal(r.value, 'Xcode 15.2')
   })
@@ -210,7 +228,7 @@ describe('checkSdkInstalled', () => {
   it('warns when @qvac/sdk cannot be resolved from the project', () => {
     const emptyDir = fs.mkdtempSync(path.join(os.tmpdir(), 'qvac-check-'))
     try {
-      const r = checkSdkInstalled(emptyDir)
+      const r = checkSdkInstalled(makeCtx({ projectRoot: emptyDir }))
       assert.equal(r.status, 'warn')
       assert.equal(r.value, 'not found')
     } finally {
@@ -228,7 +246,7 @@ describe('checkSdkInstalled', () => {
     )
     fs.writeFileSync(path.join(sdkDir, 'index.js'), 'module.exports = {}')
     try {
-      const r = checkSdkInstalled(root)
+      const r = checkSdkInstalled(makeCtx({ projectRoot: root }))
       assert.equal(r.status, 'pass')
       assert.equal(r.value, 'v0.9.0')
     } finally {
@@ -250,7 +268,7 @@ describe('checkSdkInstalled', () => {
     fs.mkdirSync(nestedProject, { recursive: true })
     fs.writeFileSync(path.join(nestedProject, 'package.json'), JSON.stringify({ name: 'app' }))
     try {
-      const r = checkSdkInstalled(nestedProject)
+      const r = checkSdkInstalled(makeCtx({ projectRoot: nestedProject }))
       assert.equal(r.status, 'pass', `expected pass, got ${r.status} (value=${r.value ?? ''})`)
       assert.equal(r.value, 'v0.9.1')
     } finally {
@@ -276,6 +294,21 @@ describe('collectCheckSections + isReportOk', () => {
       targets.checks.map((c) => c.id),
       ['target-desktop', 'target-android', 'target-ios']
     )
+  })
+
+  it('accepts an explicit CheckContext override for deterministic test runs', () => {
+    const sections = collectCheckSections({ context: makeCtx({ probe: () => ({ ok: true, version: 'x' }) }) })
+    const tools = sections.find((s) => s.id === 'tools')
+    assert.ok(tools)
+    assert.ok(tools.checks.every((c) => c.status === 'pass'))
+  })
+
+  it('createDefaultContext reflects the live host', () => {
+    const ctx = createDefaultContext(process.cwd())
+    assert.equal(ctx.platform, process.platform)
+    assert.equal(ctx.arch, process.arch)
+    assert.equal(ctx.nodeVersion, process.versions.node)
+    assert.ok(ctx.totalMemoryBytes > 0)
   })
 
   it('isReportOk returns false when any check has failed', () => {

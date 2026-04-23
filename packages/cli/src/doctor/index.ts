@@ -1,4 +1,4 @@
-import { collectCheckSections, isReportOk } from './checks.js'
+import { collectCheckSections, isReportOk } from './checks/index.js'
 import { formatJsonReport, formatReport } from './format.js'
 import type { DoctorReport, RunDoctorOptions } from './types.js'
 
