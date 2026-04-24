@@ -32,6 +32,14 @@ import {
   type AnyModel,
 } from "@/server/bare/registry/model-registry";
 import {
+  cachedMessageCounts,
+  clearCachedMessageCounts as clearCachedMessageCountsFromState,
+  decideCachedHistorySlice,
+  noteCancelRequested as noteCancelRequestedFromState,
+  shouldRecordSavedCount,
+  snapshotCancelCount,
+} from "@/server/bare/plugins/llamacpp-completion/ops/kv-cache-state";
+import {
   checkForToolEvents,
   insertToolsIntoHistory,
   setupToolGrammar,
@@ -59,19 +67,13 @@ interface ChatHistory {
   parameters?: unknown;
 }
 
-const cachedMessageCounts = new Map<string, number>();
-
 type CompletionRunOptions = Pick<RunOptions, "cacheKey" | "saveCacheToDisk"> & {
   generationParams?: GenerationParams;
 };
 
-export function clearCachedMessageCounts(cachePath?: string): void {
-  if (cachePath) {
-    cachedMessageCounts.delete(cachePath);
-  } else {
-    cachedMessageCounts.clear();
-  }
-}
+// Re-export so existing callers keep their import surface intact.
+export const clearCachedMessageCounts = clearCachedMessageCountsFromState;
+export const noteCancelRequested = noteCancelRequestedFromState;
 
 // Verify the addon actually persisted the cache file before recording its
 // message count. The addon currently swallows write errors silently, so a
@@ -219,25 +221,39 @@ function prepareMessagesForCache(
     attachments?: { path: string }[] | undefined;
   }[],
 ): ChatHistory[] {
-  if (cacheExists && history.length > 0) {
-    const savedCount = cachedMessageCounts.get(cachePathToUse) ?? 0;
-    const canSlice = savedCount > 0 && savedCount <= history.length;
-    const newMessages = canSlice
-      ? history.slice(savedCount)
-      : history.filter((msg) => msg.role !== "system");
+  const savedCount = cachedMessageCounts.get(cachePathToUse) ?? 0;
+  const { messages, clearStaleCount } = decideCachedHistorySlice(
+    savedCount,
+    cacheExists,
+    history,
+  );
 
-    if (!canSlice && savedCount > 0) {
-      cachedMessageCounts.delete(cachePathToUse);
-    }
-
-    return transformMessages(newMessages);
+  if (clearStaleCount) {
+    cachedMessageCounts.delete(cachePathToUse);
   }
 
-  const historyWithoutSystem = history.filter((msg) => msg.role !== "system");
-  return transformMessages(historyWithoutSystem);
+  return transformMessages(messages);
 }
 
 type CacheRunOptions = Pick<RunOptions, "cacheKey" | "saveCacheToDisk">;
+
+interface CompletionInnerResult {
+  modelExecutionMs: number;
+  stats?: CompletionStats;
+  toolCalls: ToolCall[];
+}
+
+interface ProcessModelResponseResult extends CompletionInnerResult {
+  /**
+   * True if the model emitted at least one non-empty text token. Used by
+   * `completion()` to decide whether to record a `savedCount` for the
+   * kv-cache: a turn that produced nothing (legit early EOS or cancel
+   * before any decode) must not leave a `history.length + 1` entry
+   * behind, because that count will make the next turn slice its history
+   * to an empty payload.
+   */
+  producedTokens: boolean;
+}
 
 async function* processModelResponse(
   model: AnyModel,
@@ -247,7 +263,7 @@ async function* processModelResponse(
   cacheOptions?: CacheRunOptions,
 ): AsyncGenerator<
   { token: string; toolCallEvent?: ToolCallEvent },
-  { modelExecutionMs: number; stats?: CompletionStats; toolCalls: ToolCall[] },
+  ProcessModelResponseResult,
   unknown
 > {
   const runOptions: CacheRunOptions & { generationParams?: GenerationParams } =
@@ -270,11 +286,13 @@ async function* processModelResponse(
   );
 
   let accumulatedText = "";
+  let producedTokens = false;
   const emittedToolCallPositions = new Set<number>();
   let toolCallsResult: ToolCall[] = [];
 
   for await (const token of response.iterate()) {
     const tokenStr = token as string;
+    if (tokenStr.length > 0) producedTokens = true;
     accumulatedText += tokenStr;
 
     yield { token: tokenStr };
@@ -325,6 +343,7 @@ async function* processModelResponse(
       hasDefinedValues(stats) ? stats : undefined,
     ),
     toolCalls: toolCallsResult,
+    producedTokens,
   };
 }
 
@@ -335,7 +354,7 @@ export async function* completion(
   },
 ): AsyncGenerator<
   { token: string; toolCallEvent?: ToolCallEvent },
-  { modelExecutionMs: number; stats?: CompletionStats; toolCalls: ToolCall[] },
+  CompletionInnerResult,
   unknown
 > {
   const { history, modelId, kvCache, tools, generationParams } = params;
@@ -396,6 +415,7 @@ export async function* completion(
       );
       logMessagesToAddon(messagesToSend, "PROMPT_SEND");
 
+      const cancelCountBefore = snapshotCancelCount(modelId);
       const result = yield* processModelResponse(
         model,
         messagesToSend,
@@ -403,7 +423,18 @@ export async function* completion(
         generationParams,
         { cacheKey: cachePathToUse, saveCacheToDisk: true },
       );
-      await recordCacheSaveCount(cachePathToUse, history.length + 1);
+      const wasCancelled =
+        snapshotCancelCount(modelId) > cancelCountBefore;
+
+      // Only record the saved count when the turn actually completed and
+      // produced content. Recording `history.length + 1` on a cancelled or
+      // empty turn poisons `cachedMessageCounts` and causes the next turn
+      // to slice its history down to an empty payload (QVAC-17780).
+      if (shouldRecordSavedCount(wasCancelled, result.producedTokens)) {
+        await recordCacheSaveCount(cachePathToUse, history.length + 1);
+      } else {
+        cachedMessageCounts.delete(cachePathToUse);
+      }
       return result;
     } else {
       // Auto-generate cache key based on conversation history
@@ -451,6 +482,7 @@ export async function* completion(
       );
       logMessagesToAddon(messagesToSend, "PROMPT_SEND");
 
+      const cancelCountBefore = snapshotCancelCount(modelId);
       const result = yield* processModelResponse(
         model,
         messagesToSend,
@@ -458,6 +490,19 @@ export async function* completion(
         generationParams,
         { cacheKey: cachePathToUse, saveCacheToDisk: true },
       );
+      const wasCancelled =
+        snapshotCancelCount(modelId) > cancelCountBefore;
+
+      // See the matching block in the custom-key branch above for the
+      // rationale — we must not record a `savedCount` when the turn was
+      // cancelled or emitted no tokens. We also skip the existing-cache
+      // rename in that case: the on-disk cache state is not aligned with
+      // the current-history hash.
+      if (!shouldRecordSavedCount(wasCancelled, result.producedTokens)) {
+        cachedMessageCounts.delete(cachePathToUse);
+        return result;
+      }
+
       const saveVerified = await recordCacheSaveCount(
         cachePathToUse,
         history.length + 1,
