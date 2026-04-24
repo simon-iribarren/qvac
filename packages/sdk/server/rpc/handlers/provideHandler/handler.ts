@@ -22,7 +22,15 @@ export async function provideHandler(
     const pubKey = swarm.keyPair.publicKey;
     logger.debug("🔑 Provider public key:", pubKey.toString("hex"));
 
-    logger.info("🌐 Binding DHT server on provider keyPair...");
+    // We must wait for the DHT routing table to populate BEFORE announcing.
+    // `swarm.listen()` only does a single initial announce using whatever
+    // peers are in the routing table at that moment — if the DHT isn't
+    // bootstrapped yet, that announce reaches very few nodes and consumers
+    // won't be able to find us via dht.connect(publicKey).
+    logger.info("🌐 Waiting for DHT to fully bootstrap...");
+    await swarm.dht.fullyBootstrapped();
+
+    logger.info("🌐 Announcing provider on DHT (binding keyPair)...");
     await swarm.listen();
     logger.info("🎯 Provider is listening and ready to accept connections");
 

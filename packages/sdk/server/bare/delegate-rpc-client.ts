@@ -160,6 +160,17 @@ async function ensureRPCConnection(
       `🔗 Establishing direct DHT connection to peer: ${publicKey}${timeout ? `, timeout: ${timeout}ms` : ""}`,
     );
 
+    // Ensure the DHT routing table is populated before attempting to look up
+    // the peer. On a cold swarm the table is nearly empty and findPeer can
+    // return PEER_NOT_FOUND immediately even when the provider is reachable.
+    const bootstrapStart = nowMs();
+    const swarm = getSwarm();
+    logger.info(`⏳ Waiting for DHT to fully bootstrap before connect...`);
+    await withTimeout(swarm.dht.fullyBootstrapped(), getRemainingTimeout());
+    logger.info(
+      `✅ DHT bootstrapped in ${(nowMs() - bootstrapStart).toFixed(0)}ms`,
+    );
+
     conn = openDhtConnection(publicKey);
     await waitForOpen(conn, getRemainingTimeout());
 
