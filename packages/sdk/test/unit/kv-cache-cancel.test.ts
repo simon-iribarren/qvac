@@ -12,9 +12,9 @@ import {
 } from "@/server/bare/plugins/llamacpp-completion/ops/kv-cache-state";
 
 // -----------------------------------------------------------------------------
-// These tests are the unit-level regression gate for QVAC-17780.
+// Unit-level regression coverage for the kv-cache cancel/zero-token fix.
 //
-// They cover the two pure pieces of the fix:
+// These tests cover the two pure pieces of the fix:
 //   1. `decideCachedHistorySlice` never returns an empty message list when
 //      there is history to send (was the root cause of the "SDK returns
 //      nothing" symptom after a fast cancel).
@@ -22,10 +22,9 @@ import {
 //      record a `savedCount` for cancelled or zero-token turns (prevents
 //      the `cachedMessageCounts` map from being poisoned in the first place).
 //
-// Integration-level coverage (running the full `completion()` generator with
-// a real model) lives in `packages/sdk/examples/kv-cache-cancel-bug-repro.ts`
-// and is exercised manually during addon/SDK release validation — that
-// script can't run in this unit suite because it requires a loaded model.
+// Integration-level coverage (running the full `completion()` generator
+// against a real model) requires a loaded model and therefore lives outside
+// this unit suite.
 // -----------------------------------------------------------------------------
 
 const CACHE_PATH = "/tmp/kv-cache-cancel-test.bin";
@@ -62,7 +61,7 @@ test("decideCachedHistorySlice: baseline slice when savedCount is valid", (t: {
   t.is(clearStaleCount, false);
 });
 
-test("decideCachedHistorySlice: stale count (slice would be empty) falls back and flags clear (QVAC-17780)", (t: {
+test("decideCachedHistorySlice: stale count (slice would be empty) falls back and flags clear", (t: {
   alike: (actual: unknown, expected: unknown) => void;
   is: (actual: unknown, expected: unknown) => void;
 }) => {
@@ -160,10 +159,10 @@ test("decideCachedHistorySlice: savedCount = history.length slices to [] and fla
   alike: (actual: unknown, expected: unknown) => void;
   is: (actual: unknown, expected: unknown) => void;
 }) => {
-  // This is the exact shape seen in the QVAC-17780 repro: a cancelled turn
-  // records `history.length + 1` for a 2-message history, and the user's
-  // next turn then has 3 messages and a savedCount of 3 — slicing yields
-  // []. The fallback must fire.
+  // Exact shape of the reported bug: a cancelled turn records
+  // `history.length + 1` for a 2-message history; the user's next turn
+  // has 3 messages and a savedCount of 3 — slicing yields []. The
+  // fallback must fire.
   resetState();
   const history: HistoryMessage[] = [
     { role: "system", content: "sys" },
@@ -268,12 +267,12 @@ test("snapshot-before-snapshot-after sees no cancel when none was recorded", (t:
 });
 
 // -----------------------------------------------------------------------------
-// End-to-end sequence: the exact QVAC-17780 scenario, simulated at the state
-// layer. This verifies the state machine in isolation — what `completion()`
-// would see across a cancelled turn followed by a fresh prompt.
+// End-to-end sequence simulated at the state layer: verifies what
+// `completion()` would see across a cancelled turn followed by a fresh
+// prompt.
 // -----------------------------------------------------------------------------
 
-test("QVAC-17780 scenario: cancelled turn → next turn still has a non-empty payload", (t: {
+test("cancelled turn → next turn still has a non-empty payload", (t: {
   alike: (actual: unknown, expected: unknown) => void;
   is: (actual: unknown, expected: unknown) => void;
 }) => {
@@ -314,7 +313,7 @@ test("QVAC-17780 scenario: cancelled turn → next turn still has a non-empty pa
   );
 });
 
-test("QVAC-17780 regression: even if savedCount was somehow seeded by a prior bug, slice falls back", (t: {
+test("regression: an externally-seeded stale savedCount still triggers the fallback", (t: {
   alike: (actual: unknown, expected: unknown) => void;
   is: (actual: unknown, expected: unknown) => void;
 }) => {

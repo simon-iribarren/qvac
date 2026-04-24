@@ -18,7 +18,8 @@
  * considered trustworthy. On any turn where the SDK cannot prove the saved
  * count reflects the on-disk state (cancellation mid-decode, zero-token
  * reply, cache file missing after a save attempt), the entry MUST be
- * deleted. See QVAC-17780 for what happens when this invariant is broken.
+ * deleted; a stale entry causes the next turn to slice its history down to
+ * an empty payload and the model returns zero tokens.
  */
 export const cachedMessageCounts = new Map<string, number>();
 
@@ -101,10 +102,10 @@ export interface HistorySliceDecision {
  * calling `transformMessages` (which depends on `bare-fs` for attachment
  * probing). Kept here so the decision can be unit-tested in isolation.
  *
- * The key regression guard (QVAC-17780): when a non-zero `savedCount`
- * would slice the history down to an empty array, it is treated as stale
- * — the caller falls back to sending the system-stripped full history
- * rather than handing the model an empty payload.
+ * The key regression guard: when a non-zero `savedCount` would slice the
+ * history down to an empty array, it is treated as stale — the caller
+ * falls back to sending the system-stripped full history rather than
+ * handing the model an empty payload.
  */
 export function decideCachedHistorySlice(
   savedCount: number,

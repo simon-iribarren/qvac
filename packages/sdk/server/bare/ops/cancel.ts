@@ -18,7 +18,7 @@ export async function cancel(params: CancelInferenceBaseParams) {
   // `completion()` for this model sees the bumped counter when it
   // snapshots after `processModelResponse` returns. This is the signal
   // that tells `completion()` not to record a `savedCount` for the
-  // kv-cache — see QVAC-17780 for the bug it prevents.
+  // kv-cache on a cancelled turn.
   noteCancelRequested(modelId);
 
   if (model.addon && model.addon.cancel) {

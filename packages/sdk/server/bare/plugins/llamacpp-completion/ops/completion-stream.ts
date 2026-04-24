@@ -429,7 +429,7 @@ export async function* completion(
       // Only record the saved count when the turn actually completed and
       // produced content. Recording `history.length + 1` on a cancelled or
       // empty turn poisons `cachedMessageCounts` and causes the next turn
-      // to slice its history down to an empty payload (QVAC-17780).
+      // to slice its history down to an empty payload.
       if (shouldRecordSavedCount(wasCancelled, result.producedTokens)) {
         await recordCacheSaveCount(cachePathToUse, history.length + 1);
       } else {
