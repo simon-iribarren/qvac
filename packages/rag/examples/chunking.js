@@ -1,23 +1,20 @@
 'use strict'
 
-const path = require('bare-path')
 const Corestore = require('corestore')
 const EmbedderPlugin = require('@qvac/embed-llamacpp')
 const QvacLogger = require('@qvac/logging')
 
 const { RAG, HyperDBAdapter } = require('../index')
-const { downloadModel } = require('./utils')
-
-const EMBED_MODEL_URL = 'https://huggingface.co/ChristianAzinn/gte-large-gguf/resolve/main/gte-large_fp16.gguf'
+const { ensureModels } = require('./utils')
 
 const store = new Corestore('./local-store')
 
 async function main () {
-  // Download the embedder model
-  const [embedFile, embedDir] = await downloadModel(EMBED_MODEL_URL, 'gte-large_fp16.gguf')
+  // Fetch the embedder model from the QVAC registry (cached on disk after first run).
+  const models = await ensureModels(['embedder'])
 
   const embedder = new EmbedderPlugin({
-    files: { model: [path.join(embedDir, embedFile)] },
+    files: { model: [models.embedder.fullPath] },
     config: { device: 'gpu', gpu_layers: '25' },
     logger: console,
     opts: { stats: true }

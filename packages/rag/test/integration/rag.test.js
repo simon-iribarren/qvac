@@ -13,15 +13,11 @@ const HyperDB = require('hyperdb')
 const fs = require('bare-fs')
 const path = require('bare-path')
 
-const { downloadModel } = require('../../examples/utils')
-
-const EMBED_MODEL_URL = 'https://huggingface.co/ChristianAzinn/gte-large-gguf/resolve/main/gte-large_fp16.gguf'
-const LLM_MODEL_URL = 'https://huggingface.co/bartowski/Llama-3.2-1B-Instruct-GGUF/resolve/main/Llama-3.2-1B-Instruct-Q4_0.gguf'
+const { ensureModels, RAG_MODELS } = require('../../examples/utils')
 
 const store = new Corestore('./store')
 
-const modelName = 'gte-large_fp16.gguf'
-const llmModelName = 'Llama-3.2-1B-Instruct-Q4_0.gguf'
+const modelName = RAG_MODELS.embedder.filename
 
 // Global test state to share resources across tests
 let llm, embedder, embeddingFunction, llmAdapter, dbAdapter, rag
@@ -33,13 +29,12 @@ async function ensureSetup () {
 
   console.log('Setting up RAG environment...')
 
-  // Download model files (skipped if already present locally)
-  const [embedFile, embedDir] = await downloadModel(EMBED_MODEL_URL, modelName)
-  const [llmFile, llmDir] = await downloadModel(LLM_MODEL_URL, llmModelName)
+  // Fetch model files from the QVAC registry (skipped if already present locally)
+  const models = await ensureModels(['embedder', 'llm'])
 
   // Load embedder via the new files-based addon constructor
   embedder = new EmbedderPlugin({
-    files: { model: [path.join(embedDir, embedFile)] },
+    files: { model: [models.embedder.fullPath] },
     config: { device: 'gpu', gpu_layers: '99' },
     logger: console,
     opts: { stats: true }
@@ -61,7 +56,7 @@ async function ensureSetup () {
 
   // Load LLM via the new files-based addon constructor
   llm = new LlmPlugin({
-    files: { model: [path.join(llmDir, llmFile)] },
+    files: { model: [models.llm.fullPath] },
     config: { ctx_size: '2048', gpu_layers: '99', device: 'gpu' },
     logger: console,
     opts: { stats: true }

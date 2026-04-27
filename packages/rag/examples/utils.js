@@ -2,92 +2,72 @@
 
 const fs = require('bare-fs')
 const path = require('bare-path')
-const https = require('bare-https')
-const process = require('bare-process')
+const { QVACRegistryClient } = require('@qvac/registry-client')
 
-async function downloadModel (url, filename, modelDir) {
-  modelDir = modelDir || path.resolve('./models')
-  const modelPath = path.join(modelDir, filename)
+const DEFAULT_DISK_PATH = './models'
 
-  if (fs.existsSync(modelPath)) {
-    const stats = fs.statSync(modelPath)
-    console.log(`Found ${filename}: ${(stats.size / 1024 / 1024).toFixed(1)}MB`)
-    return [filename, modelDir]
+const RAG_MODELS = {
+  embedder: {
+    path: 'ChristianAzinn/gte-large-gguf/blob/f9fa5479908e72c2a8b9d6ba112911cd1e51be53/gte-large_fp16.gguf',
+    source: 'hf',
+    filename: 'gte-large_fp16.gguf'
+  },
+  llm: {
+    path: 'unsloth/Llama-3.2-1B-Instruct-GGUF/blob/b69aef112e9f895e6f98d7ae0949f72ff09aa401/Llama-3.2-1B-Instruct-Q4_0.gguf',
+    source: 'hf',
+    filename: 'Llama-3.2-1B-Instruct-Q4_0.gguf'
   }
-
-  fs.mkdirSync(modelDir, { recursive: true })
-  console.log(`Downloading ${filename}...`)
-
-  return new Promise((resolve, reject) => {
-    let resolved = false
-    const safeResolve = (val) => { if (!resolved) { resolved = true; resolve(val) } }
-    const safeReject = (err) => { if (!resolved) { resolved = true; reject(err) } }
-
-    const fileStream = fs.createWriteStream(modelPath)
-
-    fileStream.on('error', (err) => {
-      fileStream.destroy()
-      fs.unlink(modelPath, () => safeReject(err))
-    })
-
-    const req = https.request(url, response => {
-      if ([301, 302, 307, 308].includes(response.statusCode)) {
-        fileStream.destroy()
-        req.destroy()
-        response.destroy()
-        fs.unlink(modelPath, (unlinkErr) => {
-          if (unlinkErr && unlinkErr.code !== 'ENOENT') {
-            return safeReject(unlinkErr)
-          }
-
-          const redirectUrl = new URL(response.headers.location, url).href
-
-          downloadModel(redirectUrl, filename, modelDir)
-            .then(safeResolve).catch(safeReject)
-        })
-        return
-      }
-
-      if (response.statusCode !== 200) {
-        fileStream.destroy()
-        req.destroy()
-        response.destroy()
-        fs.unlink(modelPath, () => safeReject(new Error(`Download failed: ${response.statusCode}`)))
-        return
-      }
-
-      const total = parseInt(response.headers['content-length'], 10)
-      let downloaded = 0
-
-      response.on('data', chunk => {
-        downloaded += chunk.length
-        if (total) {
-          const percent = ((downloaded / total) * 100).toFixed(1)
-          const downloadedMB = (downloaded / 1024 / 1024).toFixed(1)
-          const totalMB = (total / 1024 / 1024).toFixed(1)
-          process.stdout.write(`\r    ${percent}% (${downloadedMB}/${totalMB}MB)`)
-        }
-      })
-
-      response.on('error', (err) => {
-        fileStream.destroy()
-        fs.unlink(modelPath, () => safeReject(err))
-      })
-
-      response.pipe(fileStream)
-      fileStream.on('close', () => {
-        console.log('\nDownload complete!')
-        safeResolve([filename, modelDir])
-      })
-    })
-
-    req.on('error', err => {
-      fileStream.destroy()
-      fs.unlink(modelPath, () => safeReject(err))
-    })
-
-    req.end()
-  })
 }
 
-module.exports = { downloadModel }
+async function ensureModels (keys, diskPath) {
+  diskPath = diskPath || DEFAULT_DISK_PATH
+
+  const requested = keys.map(key => {
+    const model = RAG_MODELS[key]
+    if (!model) {
+      throw new Error(`Unknown model key: ${key}. Available keys: ${Object.keys(RAG_MODELS).join(', ')}`)
+    }
+    return { key, ...model, fullPath: path.join(diskPath, model.filename) }
+  })
+
+  const missing = requested.filter(m => !fs.existsSync(m.fullPath))
+
+  if (missing.length === 0) {
+    console.log('Models already cached locally.')
+    return toResult(requested, diskPath)
+  }
+
+  fs.mkdirSync(diskPath, { recursive: true })
+
+  console.log('Downloading models from QVAC registry...')
+  const client = new QVACRegistryClient()
+
+  try {
+    await client.ready()
+
+    for (const m of missing) {
+      console.log(`  Downloading ${m.filename}...`)
+      await client.downloadModel(m.path, m.source, {
+        outputFile: m.fullPath,
+        timeout: 300000
+      })
+      console.log(`  Downloaded: ${m.filename}`)
+    }
+
+    console.log('Models ready.')
+  } finally {
+    await client.close()
+  }
+
+  return toResult(requested, diskPath)
+}
+
+function toResult (requested, diskPath) {
+  const out = {}
+  for (const m of requested) {
+    out[m.key] = { filename: m.filename, dir: diskPath, fullPath: m.fullPath }
+  }
+  return out
+}
+
+module.exports = { ensureModels, RAG_MODELS, DEFAULT_DISK_PATH }

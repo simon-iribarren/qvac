@@ -1,6 +1,5 @@
 'use strict'
 
-const path = require('bare-path')
 const Corestore = require('corestore')
 const EmbedderPlugin = require('@qvac/embed-llamacpp')
 const LlmPlugin = require('@qvac/llm-llamacpp')
@@ -8,22 +7,18 @@ const QvacLogger = require('@qvac/logging')
 
 const { RAG, HyperDBAdapter, QvacLlmAdapter } = require('../index')
 const knowledgeBase = require('./knowledge-base.json')
-const { downloadModel } = require('./utils')
-
-const EMBED_MODEL_URL = 'https://huggingface.co/ChristianAzinn/gte-large-gguf/resolve/main/gte-large_fp16.gguf'
-const LLM_MODEL_URL = 'https://huggingface.co/bartowski/Llama-3.2-1B-Instruct-GGUF/resolve/main/Llama-3.2-1B-Instruct-Q4_0.gguf'
+const { ensureModels } = require('./utils')
 
 const store = new Corestore('./store')
 const query = 'Who won the individual title in LIV Golf UK by JCB in 2025?'
 
 async function main () {
-  // 1. Download embedder + LLM model files
-  const [embedFile, embedDir] = await downloadModel(EMBED_MODEL_URL, 'gte-large_fp16.gguf')
-  const [llmFile, llmDir] = await downloadModel(LLM_MODEL_URL, 'Llama-3.2-1B-Instruct-Q4_0.gguf')
+  // 1. Fetch embedder + LLM model files from the QVAC registry (cached on disk after first run).
+  const models = await ensureModels(['embedder', 'llm'])
 
-  // 2. Construct embedder with the new files-based addon shape
+  // 2. Construct embedder with the new files-based addon shape.
   const embedder = new EmbedderPlugin({
-    files: { model: [path.join(embedDir, embedFile)] },
+    files: { model: [models.embedder.fullPath] },
     config: { device: 'gpu', gpu_layers: '99' },
     logger: console,
     opts: { stats: true }
@@ -41,9 +36,9 @@ async function main () {
     }
   }
 
-  // 3. Construct LLM with the new files-based addon shape
+  // 3. Construct LLM with the new files-based addon shape.
   const llm = new LlmPlugin({
-    files: { model: [path.join(llmDir, llmFile)] },
+    files: { model: [models.llm.fullPath] },
     config: { device: 'gpu', gpu_layers: '99', ctx_size: '1024' },
     logger: console,
     opts: { stats: true }
@@ -59,7 +54,7 @@ async function main () {
 
   const knowledgeBaseMapped = knowledgeBase.map(kb => kb.text)
 
-  const docs = await rag.ingest(knowledgeBaseMapped, embedFile)
+  const docs = await rag.ingest(knowledgeBaseMapped, models.embedder.filename)
 
   const response = await rag.infer(query)
 
