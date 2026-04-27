@@ -24,7 +24,6 @@ import {
   getCurrentCacheInfo,
   markCacheInitialized,
   renameCacheFile,
-  type CacheMessage,
 } from "@/server/bare/ops/kv-cache-utils";
 import {
   getModel,
@@ -45,6 +44,8 @@ import {
   setupToolGrammar,
 } from "@/server/utils/tool-integration";
 import { parseToolCalls } from "@/server/utils/tool-parser";
+import { buildAutoCacheSaveHistory, type CacheMessage } from "@/server/utils";
+import { getServerLogger } from "@/logging";
 import { AttachmentNotFoundError } from "@/utils/errors-server";
 import { nowMs } from "@/profiling";
 import {
@@ -54,8 +55,29 @@ import {
 import type { LlmStats } from "@/server/bare/types/addon-responses";
 import fs, { promises as fsPromises } from "bare-fs";
 
+const logger = getServerLogger();
+
 interface ResponseWithStats {
   stats?: LlmStats;
+}
+
+interface CompletionResult {
+  modelExecutionMs: number;
+  stats?: CompletionStats;
+  toolCalls: ToolCall[];
+}
+
+interface ProcessModelResponseResult extends CompletionResult {
+  responseText: string;
+  /**
+   * True if the model emitted at least one non-empty text token. Used by
+   * `completion()` to decide whether to record a `savedCount` for the
+   * kv-cache: a turn that produced nothing (legit early EOS or cancel
+   * before any decode) must not leave a `history.length + 1` entry
+   * behind, because that count will make the next turn slice its history
+   * to an empty payload.
+   */
+  producedTokens: boolean;
 }
 
 interface ChatHistory {
@@ -237,24 +259,6 @@ function prepareMessagesForCache(
 
 type CacheRunOptions = Pick<RunOptions, "cacheKey" | "saveCacheToDisk">;
 
-interface CompletionInnerResult {
-  modelExecutionMs: number;
-  stats?: CompletionStats;
-  toolCalls: ToolCall[];
-}
-
-interface ProcessModelResponseResult extends CompletionInnerResult {
-  /**
-   * True if the model emitted at least one non-empty text token. Used by
-   * `completion()` to decide whether to record a `savedCount` for the
-   * kv-cache: a turn that produced nothing (legit early EOS or cancel
-   * before any decode) must not leave a `history.length + 1` entry
-   * behind, because that count will make the next turn slice its history
-   * to an empty payload.
-   */
-  producedTokens: boolean;
-}
-
 async function* processModelResponse(
   model: AnyModel,
   messagesToSend: ChatHistory[],
@@ -343,6 +347,7 @@ async function* processModelResponse(
       hasDefinedValues(stats) ? stats : undefined,
     ),
     toolCalls: toolCallsResult,
+    responseText: accumulatedText,
     producedTokens,
   };
 }
@@ -354,7 +359,7 @@ export async function* completion(
   },
 ): AsyncGenerator<
   { token: string; toolCallEvent?: ToolCallEvent },
-  CompletionInnerResult,
+  CompletionResult,
   unknown
 > {
   const { history, modelId, kvCache, tools, generationParams } = params;
@@ -423,8 +428,7 @@ export async function* completion(
         generationParams,
         { cacheKey: cachePathToUse, saveCacheToDisk: true },
       );
-      const wasCancelled =
-        snapshotCancelCount(modelId) > cancelCountBefore;
+      const wasCancelled = snapshotCancelCount(modelId) > cancelCountBefore;
 
       // Only record the saved count when the turn actually completed and
       // produced content. Recording `history.length + 1` on a cancelled or
@@ -449,7 +453,7 @@ export async function* completion(
         configHash,
         cacheMessages,
       );
-      const currentCacheInfo = await getCurrentCacheInfo(
+      const preResponseCacheInfo = await getCurrentCacheInfo(
         modelId,
         configHash,
         cacheMessages,
@@ -458,7 +462,7 @@ export async function* completion(
       cachePathToUse =
         existingCache !== null
           ? existingCache.cachePath
-          : currentCacheInfo.cachePath;
+          : preResponseCacheInfo.cachePath;
 
       let cacheExists = existingCache !== null;
       logCacheStatus("auto", cacheExists);
@@ -471,7 +475,7 @@ export async function* completion(
           "auto",
           tools && toolsEnabled ? tools : undefined,
         );
-        markCacheInitialized(modelId, configHash, currentCacheInfo.cacheKey);
+        markCacheInitialized(modelId, configHash, preResponseCacheInfo.cacheKey);
         cacheExists = true;
       }
 
@@ -490,36 +494,81 @@ export async function* completion(
         generationParams,
         { cacheKey: cachePathToUse, saveCacheToDisk: true },
       );
-      const wasCancelled =
-        snapshotCancelCount(modelId) > cancelCountBefore;
+      const wasCancelled = snapshotCancelCount(modelId) > cancelCountBefore;
 
-      // See the matching block in the custom-key branch above for the
-      // rationale — we must not record a `savedCount` when the turn was
-      // cancelled or emitted no tokens. We also skip the existing-cache
-      // rename in that case: the on-disk cache state is not aligned with
-      // the current-history hash.
-      if (!shouldRecordSavedCount(wasCancelled, result.producedTokens)) {
+      // TODO: support auto-cache for tool-call turns by keying off the
+      // structured assistant/tool messages callers push into history,
+      // not result.responseText (which is raw tool-call markup here).
+      // Until then, remove any cache file the addon wrote so it doesn't
+      // leak on disk (the next turn would compute a different key and
+      // never reach it).
+      if (result.toolCalls.length > 0) {
+        logger.warn(
+          `[kv-cache] Auto cache tool-call turn; removing orphaned cache to avoid disk leak. path=${cachePathToUse}`,
+        );
+        try {
+          await fsPromises.unlink(cachePathToUse);
+        } catch (unlinkError) {
+          logger.warn(
+            `[kv-cache] Failed to remove orphaned tool-turn cache file; disk leak likely. path=${cachePathToUse} error=${unlinkError instanceof Error ? unlinkError.message : String(unlinkError)}`,
+          );
+        }
         cachedMessageCounts.delete(cachePathToUse);
         return result;
       }
 
-      const saveVerified = await recordCacheSaveCount(
-        cachePathToUse,
-        history.length + 1,
+      // A cancelled or zero-token turn cannot be promoted to a post-response
+      // cache: the post-response key is derived from `result.responseText`,
+      // which is empty/partial in those cases, and the on-disk cache the
+      // addon wrote is not aligned with the current-history hash. Treat it
+      // like the tool-call branch — drop the cache file and clear the count.
+      if (!shouldRecordSavedCount(wasCancelled, result.producedTokens)) {
+        try {
+          await fsPromises.unlink(cachePathToUse);
+        } catch (unlinkError) {
+          logger.warn(
+            `[kv-cache] Failed to remove cache file after cancelled or empty turn; disk leak possible. path=${cachePathToUse} error=${unlinkError instanceof Error ? unlinkError.message : String(unlinkError)}`,
+          );
+        }
+        cachedMessageCounts.delete(cachePathToUse);
+        return result;
+      }
+
+      const savedHistory = buildAutoCacheSaveHistory(
+        cacheMessages,
+        result.responseText,
+      );
+      const postResponseCacheInfo = await getCurrentCacheInfo(
+        modelId,
+        configHash,
+        savedHistory,
       );
 
       if (
-        saveVerified &&
-        existingCache !== null &&
-        existingCache.cachePath !== currentCacheInfo.cachePath
+        !(await renameCacheFile(
+          cachePathToUse,
+          postResponseCacheInfo.cachePath,
+        ))
       ) {
-        cachedMessageCounts.delete(existingCache.cachePath);
-        cachedMessageCounts.set(currentCacheInfo.cachePath, history.length + 1);
-        await renameCacheFile(
-          existingCache.cachePath,
-          currentCacheInfo.cachePath,
+        logger.warn(
+          `[kv-cache] Auto cache rename failed; removing stale cache to avoid disk leak. from=${cachePathToUse} to=${postResponseCacheInfo.cachePath}`,
         );
+        try {
+          await fsPromises.unlink(cachePathToUse);
+        } catch (unlinkError) {
+          logger.warn(
+            `[kv-cache] Failed to remove stale cache file; disk leak likely. path=${cachePathToUse} error=${unlinkError instanceof Error ? unlinkError.message : String(unlinkError)}`,
+          );
+        }
+        cachedMessageCounts.delete(cachePathToUse);
+        return result;
       }
+
+      cachedMessageCounts.delete(cachePathToUse);
+      await recordCacheSaveCount(
+        postResponseCacheInfo.cachePath,
+        savedHistory.length,
+      );
 
       return result;
     }

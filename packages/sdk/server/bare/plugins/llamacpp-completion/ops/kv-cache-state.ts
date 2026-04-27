@@ -32,11 +32,28 @@ export const cachedMessageCounts = new Map<string, number>();
  */
 const modelCancelCounters = new Map<string, number>();
 
-export function clearCachedMessageCounts(cachePath?: string): void {
-  if (cachePath) {
-    cachedMessageCounts.delete(cachePath);
-  } else {
+/**
+ * Clear bookkeeping entries. With no argument, clears the whole map. With a
+ * `prefix`, removes any entry whose path is equal to it OR sits beneath it
+ * as a directory (i.e. `key.startsWith(prefix + "/")`).
+ *
+ * Path separator is hardcoded to "/" because cache paths in the SDK are
+ * always built on POSIX (Bare runs on Linux/macOS/iOS/Android). If a Windows
+ * target is ever introduced, callers should pass the platform `path.sep`
+ * instead.
+ */
+export function clearCachedMessageCounts(prefix?: string, sep = "/"): void {
+  if (!prefix) {
     cachedMessageCounts.clear();
+    return;
+  }
+  for (const key of cachedMessageCounts.keys()) {
+    if (key === prefix) {
+      cachedMessageCounts.delete(key);
+      continue;
+    }
+    if (!key.startsWith(prefix + sep)) continue;
+    cachedMessageCounts.delete(key);
   }
 }
 
