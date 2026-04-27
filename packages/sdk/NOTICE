@@ -494,8 +494,10 @@ JavaScript Dependencies
   @qvac/diagnostics@0.1.1
   @qvac/diffusion-cpp@0.3.0
     https://github.com/tetherto/qvac
-  @qvac/dl-base@0.1.1
-  @qvac/dl-hyperdrive@0.1.1
+  @qvac/dl-base@0.2.1
+    https://github.com/tetherto/qvac
+  @qvac/dl-hyperdrive@0.2.1
+    https://github.com/tetherto/qvac
   @qvac/embed-llamacpp@0.14.0
     https://github.com/tetherto/qvac
   @qvac/error@0.1.1

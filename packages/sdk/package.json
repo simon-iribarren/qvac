@@ -285,5 +285,8 @@
       "optional": true
     }
   },
-  "patchedDependencies": {}
+  "patchedDependencies": {},
+  "overrides": {
+    "@qvac/dl-hyperdrive": "^0.2.0"
+  }
 }
