@@ -71,6 +71,7 @@ endif()
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/AsyncWeightsLoader.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/CacheManager.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/ContextSlider.cpp
+    ${PROJECT_SOURCE_DIR}/addon/src/model-interface/GenerationParamsApply.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/LlamaLazyInitializeBackend.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/LlamaModel.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/LlamaFinetuningHelpers.cpp
@@ -120,6 +121,7 @@ if(BUILD_CLI)
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/AsyncWeightsLoader.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/CacheManager.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/ContextSlider.cpp
+    ${PROJECT_SOURCE_DIR}/addon/src/model-interface/GenerationParamsApply.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/LlamaLazyInitializeBackend.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/LlamaModel.cpp
     ${PROJECT_SOURCE_DIR}/addon/src/model-interface/MtmdLlmContext.cpp
@@ -149,6 +151,7 @@ if(BUILD_CLI)
           llama::llama
           llama::common
           llama::mtmd
+          nlohmann_json::nlohmann_json
   )
   find_path(QVAC_LIB_INFERENCE_ADDON_CPP_INCLUDE_DIRS "qvac-lib-inference-addon-cpp/JsInterface.hpp")
   target_include_directories(cli_tool PRIVATE ${QVAC_LIB_INFERENCE_ADDON_CPP_INCLUDE_DIRS})

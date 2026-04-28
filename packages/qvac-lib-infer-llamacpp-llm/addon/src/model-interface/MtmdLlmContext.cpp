@@ -9,6 +9,7 @@
 #include <qvac-lib-inference-addon-cpp/Errors.hpp>
 
 #include "ContextSlider.hpp"
+#include "GenerationParamsApply.hpp"
 #include "addon/LlmErrors.hpp"
 #include "qvac-lib-inference-addon-cpp/Logger.hpp"
 #include "utils/ChatTemplateUtils.hpp"
@@ -487,21 +488,30 @@ MtmdLlmContext::applyGenerationParams(const GenerationParams& overrides) {
   common_params_sampling savedSampling = params_.sampling;
   int savedPredict = params_.n_predict;
 
-  auto setIf = [](const auto& src, auto& dst) {
-    if (src) {
-      dst = *src;
-    }
-  };
-  setIf(overrides.temp, params_.sampling.temp);
-  setIf(overrides.top_p, params_.sampling.top_p);
-  setIf(overrides.top_k, params_.sampling.top_k);
-  setIf(overrides.n_predict, params_.n_predict);
-  setIf(overrides.seed, params_.sampling.seed);
-  setIf(overrides.frequency_penalty, params_.sampling.penalty_freq);
-  setIf(overrides.presence_penalty, params_.sampling.penalty_present);
-  setIf(overrides.repeat_penalty, params_.sampling.penalty_repeat);
+  // Mutates `params_.sampling` / `params_.n_predict` in place. May throw
+  // `InvalidArgument` if `json_schema` fails to parse or convert; in that
+  // case `params_` is left untouched and the existing sampler stays valid.
+  applyGenerationOverridesToSampling(params_, overrides);
 
+  // `common_sampler_init` returns nullptr on bad inputs (most commonly an
+  // invalid GBNF grammar — `json_schema` is converted to GBNF above and
+  // can in principle produce a grammar that the sampler rejects). On
+  // failure restore the saved sampling block, re-init with the
+  // known-good params, and surface a clear `InvalidArgument` to the
+  // caller. Without this guard the addon would carry a null `smpl_` into
+  // the next sample call and crash.
   smpl_.reset(common_sampler_init(model_, params_.sampling));
+  if (!smpl_) {
+    params_.sampling = savedSampling;
+    params_.n_predict = savedPredict;
+    smpl_.reset(common_sampler_init(model_, params_.sampling));
+    throw qvac_errors::StatusError(
+        ADDON_ID,
+        qvac_errors::general_error::toString(
+            qvac_errors::general_error::InvalidArgument),
+        "failed to initialise sampler with per-request generationParams "
+        "(invalid grammar or json_schema?)");
+  }
 
   bool restored = false;
   return [this, savedSampling, savedPredict, restored]() mutable {
