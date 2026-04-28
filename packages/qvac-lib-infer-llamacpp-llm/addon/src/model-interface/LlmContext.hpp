@@ -34,8 +34,7 @@ struct GenerationParams {
 
   [[nodiscard]] bool hasOverrides() const {
     return n_predict || temp || top_p || top_k || frequency_penalty ||
-           presence_penalty || repeat_penalty || seed || grammar ||
-           json_schema;
+           presence_penalty || repeat_penalty || seed || grammar || json_schema;
   }
 };
 
