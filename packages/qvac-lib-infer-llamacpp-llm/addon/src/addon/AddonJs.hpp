@@ -346,6 +346,20 @@ inline js_value_t* runJob(js_env_t* env, js_callback_info_t* info) try {
       if (grammarStr.has_value() && !grammarStr->empty()) {
         ov.grammar = std::move(*grammarStr);
       }
+
+      auto jsonSchemaStr =
+          configObj->getOptionalPropertyAs<js::String, std::string>(
+              env, "json_schema");
+      if (jsonSchemaStr.has_value() && !jsonSchemaStr->empty()) {
+        ov.json_schema = std::move(*jsonSchemaStr);
+      }
+
+      if (ov.grammar && ov.json_schema) {
+        throw StatusError(
+            general_error::InvalidArgument,
+            "generationParams.grammar and generationParams.json_schema are "
+            "mutually exclusive");
+      }
     }
 
     prompt.cacheKey =

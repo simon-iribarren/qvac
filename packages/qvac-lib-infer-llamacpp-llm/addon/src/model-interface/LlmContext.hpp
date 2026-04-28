@@ -26,10 +26,16 @@ struct GenerationParams {
   // request and the prior grammar is restored afterwards. Mirrors the
   // load-time `--grammar` flag but scoped to a single completion call.
   std::optional<std::string> grammar;
+  // JSON-Schema applied per request. Converted to GBNF via llama.cpp's
+  // `json_schema_to_grammar()` and applied identically to `grammar`.
+  // Mutually exclusive with `grammar` — the JS wrapper rejects requests
+  // that set both. Mirrors the load-time `--json-schema` flag.
+  std::optional<std::string> json_schema;
 
   [[nodiscard]] bool hasOverrides() const {
     return n_predict || temp || top_p || top_k || frequency_penalty ||
-           presence_penalty || repeat_penalty || seed || grammar;
+           presence_penalty || repeat_penalty || seed || grammar ||
+           json_schema;
   }
 };
 
