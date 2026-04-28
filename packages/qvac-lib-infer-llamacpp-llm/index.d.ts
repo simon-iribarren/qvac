@@ -109,7 +109,10 @@ export interface GenerationParams {
    * GBNF grammar applied per request to constrain sampling. Equivalent to
    * the load-time `--grammar` config but scoped to a single `run()` call;
    * the sampler is re-initialized with this grammar for the request and
-   * the prior grammar is restored afterwards. Empty string disables.
+   * the prior grammar is restored afterwards.
+   *
+   * `undefined` or an empty string is treated as "no override" and falls
+   * through to whatever grammar was set at load time (typically none).
    *
    * Mutually exclusive with `json_schema` — passing both throws.
    */
