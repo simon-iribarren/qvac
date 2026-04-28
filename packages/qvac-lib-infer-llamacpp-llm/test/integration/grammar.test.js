@@ -180,10 +180,13 @@ test('generationParams | json_schema (string) is accepted', { timeout: 600_000 }
 test('generationParams | grammar + json_schema together throws', { timeout: 600_000 }, async t => {
   const { model } = await setupModel(t, { seed: '42' })
 
-  // Pass the run() promise directly to t.exception (no async-wrapper IIFE)
-  // so brittle attaches its catch handler before Bare's runtime-level
-  // unhandled-rejection guard sees the rejection and aborts the process.
-  await t.exception(
+  // `normalizeGenerationParams` throws a `TypeError` for the mutually
+  // exclusive case, and brittle's plain `t.exception` deliberately
+  // re-raises native error subclasses (TypeError / RangeError / etc.)
+  // — the rejection bypasses the catch and trips Bare's
+  // unhandled-rejection guard, aborting with exit 134. `t.exception.all`
+  // is the documented escape hatch for native-error rejections.
+  await t.exception.all(
     () => model.run(PERSON_PROMPT, {
       generationParams: {
         grammar: 'root ::= "x"',
