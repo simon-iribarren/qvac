@@ -3,9 +3,12 @@
 #include "LlmContext.hpp"
 #include "common/common.h"
 
-// Apply per-request `generationParams` overrides onto a `common_params`
-// sampling block in place. Mutates `params.sampling` and `params.n_predict`
-// for fields that are set on `overrides`; leaves the rest untouched.
+// Apply per-request `generationParams` overrides onto a sampling block
+// + `n_predict` value in place. Operates on the two mutable fields the
+// helper actually needs so callers can pass *copies* and only commit
+// them to live state once the whole call (including json_schema parse
+// and `common_sampler_init`) has succeeded — avoiding partial mutation
+// of the live `common_params` if this throws.
 //
 // If `overrides.json_schema` is set, parses the JSON Schema and converts
 // it to GBNF via llama.cpp's `json_schema_to_grammar()`, mirroring what
@@ -18,4 +21,5 @@
 // fails to parse or convert. Caller is responsible for re-initialising
 // the sampler after this call so the new sampling block takes effect.
 void applyGenerationOverridesToSampling(
-    common_params& params, const GenerationParams& overrides);
+    common_params_sampling& sampling, int& nPredict,
+    const GenerationParams& overrides);

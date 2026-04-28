@@ -10,21 +10,22 @@
 #include "common/json-schema-to-grammar.h"
 
 void applyGenerationOverridesToSampling(
-    common_params& params, const GenerationParams& overrides) {
+    common_params_sampling& sampling, int& nPredict,
+    const GenerationParams& overrides) {
   auto setIf = [](const auto& src, auto& dst) {
     if (src) {
       dst = *src;
     }
   };
 
-  setIf(overrides.temp, params.sampling.temp);
-  setIf(overrides.top_p, params.sampling.top_p);
-  setIf(overrides.top_k, params.sampling.top_k);
-  setIf(overrides.n_predict, params.n_predict);
-  setIf(overrides.seed, params.sampling.seed);
-  setIf(overrides.frequency_penalty, params.sampling.penalty_freq);
-  setIf(overrides.presence_penalty, params.sampling.penalty_present);
-  setIf(overrides.repeat_penalty, params.sampling.penalty_repeat);
+  setIf(overrides.temp, sampling.temp);
+  setIf(overrides.top_p, sampling.top_p);
+  setIf(overrides.top_k, sampling.top_k);
+  setIf(overrides.n_predict, nPredict);
+  setIf(overrides.seed, sampling.seed);
+  setIf(overrides.frequency_penalty, sampling.penalty_freq);
+  setIf(overrides.presence_penalty, sampling.penalty_present);
+  setIf(overrides.repeat_penalty, sampling.penalty_repeat);
 
   // `json_schema` and `grammar` are mutually exclusive at the JS boundary
   // and in `AddonJs::runJob::parseText`. Defensive precedence here just in
@@ -33,7 +34,7 @@ void applyGenerationOverridesToSampling(
   if (overrides.json_schema) {
     try {
       auto parsed = nlohmann::ordered_json::parse(*overrides.json_schema);
-      params.sampling.grammar = json_schema_to_grammar(parsed);
+      sampling.grammar = json_schema_to_grammar(parsed);
     } catch (const std::exception& ex) {
       throw qvac_errors::StatusError(
           ADDON_ID,
@@ -42,6 +43,6 @@ void applyGenerationOverridesToSampling(
           std::string("invalid generationParams.json_schema: ") + ex.what());
     }
   } else if (overrides.grammar) {
-    params.sampling.grammar = *overrides.grammar;
+    sampling.grammar = *overrides.grammar;
   }
 }
