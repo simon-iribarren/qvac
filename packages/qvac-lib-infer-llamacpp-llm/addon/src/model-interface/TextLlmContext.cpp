@@ -6,11 +6,13 @@
 #include <cstddef>
 
 #include <llama.h>
+#include <nlohmann/json.hpp>
 #include <qvac-lib-inference-addon-cpp/Errors.hpp>
 
 #include "ContextSlider.hpp"
 #include "addon/LlmErrors.hpp"
 #include "common/common.h"
+#include "common/json-schema-to-grammar.h"
 #include "common/log.h"
 #include "qvac-lib-inference-addon-cpp/Logger.hpp"
 #include "utils/ChatTemplateUtils.hpp"
@@ -557,11 +559,28 @@ TextLlmContext::applyGenerationParams(const GenerationParams& overrides) {
   setIf(overrides.frequency_penalty, params_.sampling.penalty_freq);
   setIf(overrides.presence_penalty, params_.sampling.penalty_present);
   setIf(overrides.repeat_penalty, params_.sampling.penalty_repeat);
-  // Per-request grammar overrides any load-time grammar; the sampler is
-  // re-initialized below so the new grammar takes effect for this run, and
-  // the saved sampling snapshot above ensures the prior grammar is
-  // re-applied when the restore lambda runs.
-  setIf(overrides.grammar, params_.sampling.grammar);
+  // Per-request grammar / json_schema override any load-time grammar; the
+  // sampler is re-initialized below so the new grammar takes effect for
+  // this run, and the saved sampling snapshot above ensures the prior
+  // grammar is re-applied when the restore lambda runs. `grammar` and
+  // `json_schema` are mutually exclusive (validated at the JS boundary
+  // and again in `parseText`); when `json_schema` is set we convert it to
+  // GBNF here using llama.cpp's converter, mirroring the load-time
+  // `--json-schema` flag.
+  if (overrides.json_schema) {
+    try {
+      auto parsed = nlohmann::ordered_json::parse(*overrides.json_schema);
+      params_.sampling.grammar = json_schema_to_grammar(parsed);
+    } catch (const std::exception& ex) {
+      throw qvac_errors::StatusError(
+          ADDON_ID,
+          qvac_errors::general_error::toString(
+              qvac_errors::general_error::InvalidArgument),
+          std::string("invalid generationParams.json_schema: ") + ex.what());
+    }
+  } else {
+    setIf(overrides.grammar, params_.sampling.grammar);
+  }
 
   smpl_.reset(common_sampler_init(model_, params_.sampling));
 

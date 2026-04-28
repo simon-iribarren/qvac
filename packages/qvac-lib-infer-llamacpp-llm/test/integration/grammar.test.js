@@ -129,3 +129,68 @@ test('generationParams | grammar overrides load-time grammar', { timeout: 600_00
     `per-request grammar wins over load-time grammar (got "${output}")`
   )
 })
+
+const PERSON_SCHEMA = {
+  type: 'object',
+  properties: {
+    name: { type: 'string' },
+    age: { type: 'integer' }
+  },
+  required: ['name', 'age'],
+  additionalProperties: false
+}
+
+const PERSON_PROMPT = [
+  { role: 'system', content: 'Extract the person info as JSON. /no_think' },
+  { role: 'user', content: "Hi, I'm Alice and I'm 30 years old." }
+]
+
+test('generationParams | json_schema (object) constrains output to schema-valid JSON', { timeout: 600_000 }, async t => {
+  const { model } = await setupModel(t, { seed: '42' })
+
+  const response = await model.run(PERSON_PROMPT, {
+    generationParams: { json_schema: PERSON_SCHEMA, predict: 64, seed: 42 }
+  })
+  const output = (await collectResponse(response)).trim()
+
+  let parsed
+  t.execution(() => { parsed = JSON.parse(output) }, `output "${output}" parses as JSON`)
+  t.ok(parsed && typeof parsed.name === 'string', `name is a string (got ${JSON.stringify(parsed?.name)})`)
+  t.ok(parsed && Number.isInteger(parsed.age), `age is an integer (got ${JSON.stringify(parsed?.age)})`)
+  t.is(Object.keys(parsed || {}).sort().join(','), 'age,name', 'no extra properties beyond schema')
+})
+
+test('generationParams | json_schema (string) is accepted', { timeout: 600_000 }, async t => {
+  const { model } = await setupModel(t, { seed: '42' })
+
+  const response = await model.run(PERSON_PROMPT, {
+    generationParams: {
+      json_schema: JSON.stringify(PERSON_SCHEMA),
+      predict: 64,
+      seed: 42
+    }
+  })
+  const output = (await collectResponse(response)).trim()
+
+  let parsed
+  t.execution(() => { parsed = JSON.parse(output) }, `output "${output}" parses as JSON`)
+  t.ok(parsed && typeof parsed.name === 'string' && Number.isInteger(parsed.age), 'matches schema shape')
+})
+
+test('generationParams | grammar + json_schema together throws', { timeout: 600_000 }, async t => {
+  const { model } = await setupModel(t, { seed: '42' })
+
+  await t.exception(
+    async () => {
+      await model.run(PERSON_PROMPT, {
+        generationParams: {
+          grammar: 'root ::= "x"',
+          json_schema: PERSON_SCHEMA,
+          predict: 4
+        }
+      })
+    },
+    /mutually exclusive/i,
+    'rejects requests that set both grammar and json_schema'
+  )
+})
