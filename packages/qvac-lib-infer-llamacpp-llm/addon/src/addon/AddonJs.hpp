@@ -339,6 +339,13 @@ inline js_value_t* runJob(js_env_t* env, js_callback_info_t* info) try {
       readNum("frequency_penalty", ov.frequency_penalty);
       readNum("presence_penalty", ov.presence_penalty);
       readNum("repeat_penalty", ov.repeat_penalty);
+
+      auto grammarStr =
+          configObj->getOptionalPropertyAs<js::String, std::string>(
+              env, "grammar");
+      if (grammarStr.has_value() && !grammarStr->empty()) {
+        ov.grammar = std::move(*grammarStr);
+      }
     }
 
     prompt.cacheKey =

@@ -557,6 +557,11 @@ TextLlmContext::applyGenerationParams(const GenerationParams& overrides) {
   setIf(overrides.frequency_penalty, params_.sampling.penalty_freq);
   setIf(overrides.presence_penalty, params_.sampling.penalty_present);
   setIf(overrides.repeat_penalty, params_.sampling.penalty_repeat);
+  // Per-request grammar overrides any load-time grammar; the sampler is
+  // re-initialized below so the new grammar takes effect for this run, and
+  // the saved sampling snapshot above ensures the prior grammar is
+  // re-applied when the restore lambda runs.
+  setIf(overrides.grammar, params_.sampling.grammar);
 
   smpl_.reset(common_sampler_init(model_, params_.sampling));
 

@@ -105,6 +105,13 @@ export interface GenerationParams {
   frequency_penalty?: number
   presence_penalty?: number
   repeat_penalty?: number
+  /**
+   * GBNF grammar applied per request to constrain sampling. Equivalent to
+   * the load-time `--grammar` config but scoped to a single `run()` call;
+   * the sampler is re-initialized with this grammar for the request and
+   * the prior grammar is restored afterwards. Empty string disables.
+   */
+  grammar?: string
 }
 
 export interface RunOptions {
