@@ -180,16 +180,17 @@ test('generationParams | json_schema (string) is accepted', { timeout: 600_000 }
 test('generationParams | grammar + json_schema together throws', { timeout: 600_000 }, async t => {
   const { model } = await setupModel(t, { seed: '42' })
 
+  // Pass the run() promise directly to t.exception (no async-wrapper IIFE)
+  // so brittle attaches its catch handler before Bare's runtime-level
+  // unhandled-rejection guard sees the rejection and aborts the process.
   await t.exception(
-    async () => {
-      await model.run(PERSON_PROMPT, {
-        generationParams: {
-          grammar: 'root ::= "x"',
-          json_schema: PERSON_SCHEMA,
-          predict: 4
-        }
-      })
-    },
+    () => model.run(PERSON_PROMPT, {
+      generationParams: {
+        grammar: 'root ::= "x"',
+        json_schema: PERSON_SCHEMA,
+        predict: 4
+      }
+    }),
     /mutually exclusive/i,
     'rejects requests that set both grammar and json_schema'
   )
