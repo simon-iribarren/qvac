@@ -191,8 +191,24 @@ jobs:
         if: ${{ matrix.platform != 'win32' }}
         working-directory: ${{ env.WORKDIR }}
         run: |
+          set +e
+          # Stream + capture so we can inspect the TAP summary on non-zero exit.
+          # Some GPU configurations (linux-x64 ai-run-linux-gpu w/ Tesla T4 +
+          # Vulkan) crash with SIGSEGV (exit 139) during ggml-vulkan static
+          # destructor teardown AFTER all tests have passed. Tolerate exit 139
+          # IFF the captured TAP output shows tests passed; surface every other
+          # non-zero exit. Same pattern as commit 1091827ed in
+          # integration-test-qvac-lib-infer-vla.yml.
           npm run test:integration 2>&1 | tee test-output.log
-          exit ${PIPESTATUS[0]}
+          EXIT=${PIPESTATUS[0]}
+          if [ "$EXIT" -eq 0 ]; then
+            exit 0
+          fi
+          if [ "$EXIT" -eq 139 ] && grep -qE '^# ok$' test-output.log && grep -qE '^# tests = [0-9]+/[0-9]+ pass$' test-output.log; then
+            echo "::warning::Tests all passed but process crashed at teardown with SIGSEGV (exit 139). Known ggml/Vulkan static-destructor issue on ai-run-linux-gpu; treating as pass."
+            exit 0
+          fi
+          exit "$EXIT"
         shell: bash
         env:
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
