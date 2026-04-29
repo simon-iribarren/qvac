@@ -538,56 +538,7 @@ bool TextLlmContext::generateResponse(
 
 std::function<void()>
 TextLlmContext::applyGenerationParams(const GenerationParams& overrides) {
-  if (!overrides.hasOverrides()) {
-    return []() {};
-  }
-
-  // Apply overrides to *local copies* first. Only commit them onto the
-  // live `params_` and `smpl_` after both the json_schema parse/convert
-  // and `common_sampler_init` have succeeded — otherwise a partially
-  // applied override (e.g. temp/seed already written, then json_schema
-  // throws) would leak into subsequent requests because no restore
-  // lambda gets returned to the caller's `ScopeGuard`.
-  common_params_sampling nextSampling = params_.sampling;
-  int nextPredict = params_.n_predict;
-
-  // May throw `InvalidArgument` for malformed `json_schema`. `params_`
-  // and `smpl_` remain untouched in that case.
-  applyGenerationOverridesToSampling(nextSampling, nextPredict, overrides);
-
-  // `common_sampler_init` returns nullptr on bad inputs (most commonly an
-  // invalid GBNF grammar — `json_schema` is converted to GBNF above and
-  // can in principle produce a grammar that the sampler rejects). Build
-  // the new sampler before touching live state so a failure here also
-  // leaves `params_` / `smpl_` intact.
-  CommonSamplerPtr nextSmpl(common_sampler_init(model_, nextSampling));
-  if (!nextSmpl) {
-    throw qvac_errors::StatusError(
-        ADDON_ID,
-        qvac_errors::general_error::toString(
-            qvac_errors::general_error::InvalidArgument),
-        "failed to initialise sampler with per-request generationParams "
-        "(invalid grammar or json_schema?)");
-  }
-
-  // Snapshot the live values before committing so the restore lambda
-  // can roll the request's mutations back at the end of the call.
-  common_params_sampling savedSampling = params_.sampling;
-  int savedPredict = params_.n_predict;
-
-  params_.sampling = std::move(nextSampling);
-  params_.n_predict = nextPredict;
-  smpl_ = std::move(nextSmpl);
-
-  bool restored = false;
-  return [this, savedSampling, savedPredict, restored]() mutable {
-    if (restored)
-      return;
-    restored = true;
-    params_.sampling = savedSampling;
-    params_.n_predict = savedPredict;
-    smpl_.reset(common_sampler_init(model_, params_.sampling));
-  };
+  return applyGenerationParamsToContext(params_, smpl_, model_, overrides);
 }
 
 void TextLlmContext::stop() { stopGeneration_.store(true); }
