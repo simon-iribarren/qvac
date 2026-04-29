@@ -103,7 +103,6 @@ interface ChatHistory {
 // dep bump propagates and is harmless once it has.
 type CompletionGenerationParams = GenerationParams & { json_schema?: string };
 
-
 type CompletionRunOptions = Pick<RunOptions, "cacheKey" | "saveCacheToDisk"> & {
   generationParams?: CompletionGenerationParams;
 };
