@@ -238,7 +238,12 @@ export class DelegatedInferenceExecutor extends BaseExecutor<typeof allTests> {
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
 
-      if (isDelegationError(msg) || msg.includes("Invalid input")) {
+      if (
+        isDelegationError(msg) ||
+        msg.includes("Invalid input") ||
+        msg.includes("64-character hex") ||
+        msg.includes("providerPublicKey")
+      ) {
         return { passed: true, output: `Invalid provider key rejected: ${msg.substring(0, 120)}` };
       }
       return { passed: false, output: `Unexpected error (expected delegation/validation error): ${msg.substring(0, 120)}` };

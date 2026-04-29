@@ -13,7 +13,6 @@ export const provideParamsSchema = z
 
 export const provideRequestSchema = provideParamsSchema.extend({
   type: z.literal("provide"),
-  firewall: firewallConfigSchema.optional(),
 });
 
 export const provideResponseSchema = z.object({

@@ -22,6 +22,12 @@ type PeerPublicKey = string;
 const activeRPCs = new Map<PeerPublicKey, RPC>();
 const activeConnections = new Map<PeerPublicKey, Connection>();
 
+// In-flight `ensureRPCConnection` promises keyed by peer. Concurrent
+// `getRPC(publicKey)` callers (without `forceNewConnection`) join the same
+// promise instead of each running their own bootstrap+connect, which would
+// open multiple sockets, clobber the active maps, and leak the loser.
+const inflightConnections = new Map<PeerPublicKey, Promise<RPC>>();
+
 const HEALTH_CHECK_TIMEOUT_MS = 1500;
 
 function isHeartbeatResponse(payload: unknown): payload is { type: "heartbeat" } {
@@ -106,18 +112,35 @@ function openDhtConnection(publicKey: string): Connection {
   });
 }
 
+// Resolve when the DHT connection emits "open"; reject promptly on "error"
+// or "close" so firewall-rejected / abruptly-closed connects fail fast
+// instead of dragging out the full delegate timeout (60s on cold paths).
 function waitForOpen(conn: Connection, timeout?: number): Promise<void> {
   const opened = new Promise<void>((resolve, reject) => {
-    const onOpen = (): void => {
+    const cleanup = (): void => {
+      conn.removeListener("open", onOpen);
       conn.removeListener("error", onError);
+      conn.removeListener("close", onClose);
+    };
+    const onOpen = (): void => {
+      cleanup();
       resolve();
     };
     const onError = (err: Error): void => {
-      conn.removeListener("open", onOpen);
+      cleanup();
       reject(err);
+    };
+    const onClose = (): void => {
+      cleanup();
+      reject(
+        new DelegateConnectionFailedError(
+          "Connection closed before open (peer unreachable or rejected by firewall)",
+        ),
+      );
     };
     conn.once("open", onOpen);
     conn.once("error", onError);
+    conn.once("close", onClose);
   });
 
   return withTimeout(opened, timeout);
@@ -203,19 +226,44 @@ async function ensureRPCConnection(
 // Create an RPC instance for a specific HyperSwarm peer.
 // Connects directly via the DHT using the peer's public key — no topic
 // discovery required.
+//
+// Concurrent calls for the same peer share a single in-flight bootstrap +
+// connect operation, but each caller still gets its own `timeout` enforced
+// against the shared promise (via `withTimeout`) — so a fast caller that
+// gives up at 5s does not block a slow caller waiting up to 60s.
+//
+// `forceNewConnection` always tears down the existing socket first and
+// starts a fresh attempt outside the shared promise.
 export async function getRPC(
   publicKey: string,
   options: RPCOptions = {},
 ): Promise<RPC> {
   if (options.forceNewConnection) {
     await closeConnection(publicKey);
+    return await ensureRPCConnection(
+      publicKey,
+      options.timeout,
+      options.healthCheckTimeout,
+    );
   }
 
-  return await ensureRPCConnection(
-    publicKey,
-    options.timeout,
-    options.healthCheckTimeout,
-  );
+  let inflight = inflightConnections.get(publicKey);
+  if (!inflight) {
+    inflight = ensureRPCConnection(
+      publicKey,
+      options.timeout,
+      options.healthCheckTimeout,
+    );
+    const tracked = inflight;
+    inflightConnections.set(publicKey, tracked);
+    void tracked.finally(() => {
+      if (inflightConnections.get(publicKey) === tracked) {
+        inflightConnections.delete(publicKey);
+      }
+    });
+  }
+
+  return await withTimeout(inflight, options.timeout);
 }
 
 /**
