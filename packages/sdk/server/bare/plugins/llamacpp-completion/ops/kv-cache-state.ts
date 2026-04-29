@@ -12,7 +12,9 @@
 /**
  * Number of chat messages the kv-cache file on disk is known to cover, keyed
  * by cache path. Written after a successful completion records a save, read
- * by `prepareMessagesForCache` to slice the history on the next turn.
+ * by `prepareMessagesForCache` to slice the history on the next turn so a
+ * consumer can stage multiple messages between completions (e.g. an
+ * `[assistant, user]` recovery sequence) without resending the whole history.
  *
  * INVARIANT: an entry is only present if the corresponding kv-cache file is
  * considered trustworthy. On any turn where the SDK cannot prove the saved
@@ -20,6 +22,18 @@
  * reply, cache file missing after a save attempt), the entry MUST be
  * deleted; a stale entry causes the next turn to slice its history down to
  * an empty payload and the model returns zero tokens.
+ *
+ * Mode notes:
+ *   - Static-mode turns are the only readers of this map. `clearStaleCount`
+ *     in `decideCachedHistorySlice` exists so a stale-but-non-zero entry
+ *     can be detected and dropped on the next read.
+ *   - Dynamic-mode turns do NOT consume this map — the addon trims tools
+ *     and the chain output from the kv-cache after each round, so the
+ *     SDK falls back to role-based dispatch in `prepareMessagesForCache`.
+ *     Writes still happen on dynamic-mode turns, but the recorded count
+ *     reflects the messages the SDK shipped, not the (possibly trimmed)
+ *     on-disk cache shape. The map is internally consistent within a
+ *     single mode; a `kvCache` key should not be reused across modes.
  */
 export const cachedMessageCounts = new Map<string, number>();
 
