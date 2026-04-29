@@ -16,6 +16,7 @@ import {
   logMessagesToAddon,
 } from "@/server/bare/plugins/llamacpp-completion/ops/cache-logger";
 import {
+  clearCacheRegistry,
   customCacheExists,
   extractSystemPrompt,
   findMatchingCache,
@@ -513,13 +514,28 @@ export async function* completion(
       );
       const wasCancelled = snapshotCancelCount(modelId) > cancelCountBefore;
 
-      // Only record the saved count when the turn actually completed and
-      // produced content. Recording `history.length + 1` on a cancelled or
-      // empty turn poisons `cachedMessageCounts` and causes the next turn
-      // to slice its history down to an empty payload.
       if (shouldRecordSavedCount(wasCancelled, result.producedTokens)) {
+        // Turn ran to completion and produced content — record the new
+        // boundary so the next turn can slice its history.
         await recordCacheSaveCount(cachePathToUse, history.length + 1);
       } else {
+        // The addon writes the cache file unconditionally on
+        // `saveCacheToDisk` turns, including cancellations and zero-token
+        // exits, so what's left on disk holds partial decode state that
+        // does not correspond to a clean turn boundary. Mirror the
+        // auto-key handling: drop the file, clear the in-memory init
+        // flag (otherwise `customCacheExists` would still report true),
+        // and forget the saved count. Next turn re-primes the system
+        // prompt cleanly — a one-turn perf hit, but no risk of the
+        // addon loading the stale KV state.
+        try {
+          await fsPromises.unlink(cachePathToUse);
+        } catch (unlinkError) {
+          logger.warn(
+            `[kv-cache] Failed to remove cache file after cancelled or empty custom-key turn; next turn may load stale KV state. path=${cachePathToUse} error=${unlinkError instanceof Error ? unlinkError.message : String(unlinkError)}`,
+          );
+        }
+        clearCacheRegistry({ cacheKey: kvCache, modelId });
         cachedMessageCounts.delete(cachePathToUse);
       }
       return result;
