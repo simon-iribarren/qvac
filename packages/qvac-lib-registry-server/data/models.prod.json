@@ -10741,5 +10741,35 @@
     ],
     "notes": "",
     "link": "https://huggingface.co/LiquidAI/LFM2-VL-450M-GGUF"
+  },
+  {
+    "source": "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/resolve/047e06635fbe71469926b35ea414537245218200/LFM2.5-1.2B-Instruct-Q4_0.gguf",
+    "engine": "@qvac/llm-llamacpp",
+    "description": "Instruction-tuned text generation model for on-device deployment",
+    "quantization": "q4_0",
+    "params": "1.2B",
+    "licenseId": "lfm1.0",
+    "tags": [
+      "generation",
+      "instruct",
+      "lfm2.5"
+    ],
+    "notes": "",
+    "link": "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF"
+  },
+  {
+    "source": "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF/resolve/047e06635fbe71469926b35ea414537245218200/LFM2.5-1.2B-Instruct-Q4_K_M.gguf",
+    "engine": "@qvac/llm-llamacpp",
+    "description": "Instruction-tuned text generation model for on-device deployment",
+    "quantization": "q4_K_M",
+    "params": "1.2B",
+    "licenseId": "lfm1.0",
+    "tags": [
+      "generation",
+      "instruct",
+      "lfm2.5"
+    ],
+    "notes": "",
+    "link": "https://huggingface.co/LiquidAI/LFM2.5-1.2B-Instruct-GGUF"
   }
 ]
