@@ -49,12 +49,14 @@ const modelCancelCounters = new Map<string, number>();
 /**
  * Clear bookkeeping entries. With no argument, clears the whole map. With a
  * `prefix`, removes any entry whose path is equal to it OR sits beneath it
- * as a directory (i.e. `key.startsWith(prefix + "/")`).
+ * as a directory (i.e. `key.startsWith(prefix + sep)`).
  *
- * Path separator is hardcoded to "/" because cache paths in the SDK are
- * always built on POSIX (Bare runs on Linux/macOS/iOS/Android). If a Windows
- * target is ever introduced, callers should pass the platform `path.sep`
- * instead.
+ * Runtime callers MUST pass the platform path separator (e.g. `path.sep`
+ * from `bare-path`) so directory-prefix matches are correct on every
+ * target. The "/" default exists only for unit tests under `bun`, where
+ * cache paths are POSIX-shaped and importing `bare-path` would pull in
+ * the Bare runtime. The exported wrapper in `completion-stream.ts`
+ * injects the real separator for in-process use.
  */
 export function clearCachedMessageCounts(prefix?: string, sep = "/"): void {
   if (!prefix) {

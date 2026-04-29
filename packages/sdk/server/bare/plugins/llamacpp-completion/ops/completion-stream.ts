@@ -55,6 +55,7 @@ import {
 } from "@/profiling/model-execution";
 import type { LlmStats } from "@/server/bare/types/addon-responses";
 import fs, { promises as fsPromises } from "bare-fs";
+import path from "bare-path";
 
 const logger = getServerLogger();
 
@@ -94,8 +95,13 @@ type CompletionRunOptions = Pick<RunOptions, "cacheKey" | "saveCacheToDisk"> & {
   generationParams?: GenerationParams;
 };
 
-// Re-export so existing callers keep their import surface intact.
-export const clearCachedMessageCounts = clearCachedMessageCountsFromState;
+// Re-export so existing callers keep their import surface intact. The pure
+// state module has no `bare-*` imports, so we inject the platform path
+// separator here — without this, prefix-based clears would miss entries
+// under directory keys on Windows.
+export function clearCachedMessageCounts(prefix?: string): void {
+  clearCachedMessageCountsFromState(prefix, path.sep);
+}
 export const noteCancelRequested = noteCancelRequestedFromState;
 
 // Verify the addon actually persisted the cache file before recording its
