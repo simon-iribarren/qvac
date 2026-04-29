@@ -77,10 +77,22 @@ export const responseFormatSchema = z.discriminatedUnion("type", [
       type: z.literal("json_schema"),
       json_schema: z
         .object({
-          name: z.string().min(1),
-          description: z.string().optional(),
-          schema: jsonSchemaObjectSchema,
-          strict: z.boolean().optional(),
+          name: z.string().min(1).describe("Schema identifier; OpenAI-compatibility only — not used by the addon."),
+          description: z
+            .string()
+            .optional()
+            .describe(
+              "Free-form schema description. Accepted for OpenAI compatibility only — not forwarded to the addon and does not affect generation.",
+            ),
+          schema: jsonSchemaObjectSchema.describe(
+            "JSON Schema the model output must validate against. Forwarded to the addon as-is and converted to GBNF natively by llama.cpp's `json_schema_to_grammar()`.",
+          ),
+          strict: z
+            .boolean()
+            .optional()
+            .describe(
+              "Accepted for OpenAI compatibility but does NOT trigger OpenAI's auto-tightening semantics (implicit `additionalProperties: false`, all properties required). The schema is forwarded to the addon verbatim, so callers wanting strict validation must encode it explicitly in `schema`.",
+            ),
         })
         .strict(),
     })

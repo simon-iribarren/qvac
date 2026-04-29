@@ -54,12 +54,19 @@ const JSON_OBJECT_HISTORY = [
   },
 ];
 
-async function streamToString(
-  result: ReturnType<typeof completion>,
+// Drains the run via the canonical `events` / `final` surface and returns the
+// content text. `tokenStream` / `text` / `stats` still work but are legacy and
+// will be deprecated, so new code should consume `events` for streaming and
+// await `final.contentText` for the aggregated result.
+async function runToContent(
+  run: ReturnType<typeof completion>,
 ): Promise<string> {
-  const chunks: string[] = [];
-  for await (const token of result.tokenStream) chunks.push(token);
-  return chunks.join("");
+  for await (const event of run.events) {
+    if (event.type === "contentDelta") process.stdout.write(event.text);
+  }
+  const final = await run.final;
+  process.stdout.write("\n");
+  return final.contentText;
 }
 
 try {
@@ -72,7 +79,7 @@ try {
   console.log(`\nModel loaded: ${modelId}\n`);
 
   console.log("--- 1. responseFormat: text (baseline, free-form) ---");
-  const textOut = await streamToString(
+  await runToContent(
     completion({
       modelId,
       history: HISTORY,
@@ -80,10 +87,9 @@ try {
       responseFormat: { type: "text" },
     }),
   );
-  console.log(textOut.trim(), "\n");
 
-  console.log("--- 2. responseFormat: json_object (any valid JSON) ---");
-  const jsonObjectOut = await streamToString(
+  console.log("\n--- 2. responseFormat: json_object (any valid JSON) ---");
+  const jsonObjectOut = await runToContent(
     completion({
       modelId,
       history: JSON_OBJECT_HISTORY,
@@ -91,11 +97,10 @@ try {
       responseFormat: { type: "json_object" },
     }),
   );
-  console.log(jsonObjectOut.trim());
-  console.log("parsed:", JSON.parse(jsonObjectOut.trim()), "\n");
+  console.log("parsed:", JSON.parse(jsonObjectOut.trim()));
 
-  console.log("--- 3. responseFormat: json_schema (strict shape) ---");
-  const jsonSchemaOut = await streamToString(
+  console.log("\n--- 3. responseFormat: json_schema (strict shape) ---");
+  const jsonSchemaOut = await runToContent(
     completion({
       modelId,
       history: HISTORY,
@@ -116,7 +121,6 @@ try {
     age: number;
     occupation: string;
   };
-  console.log(jsonSchemaOut.trim());
   console.log("parsed:", parsed);
   console.log(
     "schema-valid:",
