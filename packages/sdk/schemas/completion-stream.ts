@@ -67,6 +67,26 @@ export const generationParamsSchema = z
   })
   .strict();
 
+const jsonSchemaObjectSchema = z.record(z.string(), z.unknown());
+
+export const responseFormatSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("text") }).strict(),
+  z.object({ type: z.literal("json_object") }).strict(),
+  z
+    .object({
+      type: z.literal("json_schema"),
+      json_schema: z
+        .object({
+          name: z.string().min(1),
+          description: z.string().optional(),
+          schema: jsonSchemaObjectSchema,
+          strict: z.boolean().optional(),
+        })
+        .strict(),
+    })
+    .strict(),
+]);
+
 export const completionParamsSchema = z.object({
   history: z
     .array(
@@ -94,7 +114,7 @@ export const completionParamsSchema = z.object({
     ),
 });
 
-export const completionClientParamsSchema = completionParamsSchema.extend({
+const completionClientParamsBaseSchema = completionParamsSchema.extend({
   tools: z
     .array(toolSchema)
     .optional()
@@ -127,12 +147,45 @@ export const completionClientParamsSchema = completionParamsSchema.extend({
     .describe(
       "Override auto-detected tool-call dialect. Use when the SDK's name-based detection picks the wrong parser chain for your model.",
     ),
+  responseFormat: responseFormatSchema
+    .optional()
+    .describe(
+      "Optional structured-output constraint: `text` (default, free-form), `json_object` (any valid JSON), or `json_schema` (output conforms to the provided JSON Schema). Mutually exclusive with `tools`.",
+    ),
 });
 
-export const completionStreamRequestSchema =
-  completionClientParamsSchema.extend({
+function refineNoToolsWithStructuredOutput(
+  data: {
+    tools?: { type: "function"; name: string }[] | undefined;
+    responseFormat?: z.infer<typeof responseFormatSchema> | undefined;
+  },
+  ctx: z.RefinementCtx,
+): void {
+  if (
+    data.responseFormat &&
+    data.responseFormat.type !== "text" &&
+    data.tools &&
+    data.tools.length > 0
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      message:
+        "responseFormat (json_object/json_schema) cannot be combined with tools; tools already constrain output via their parameter schema.",
+      path: ["responseFormat"],
+    });
+  }
+}
+
+export const completionClientParamsSchema =
+  completionClientParamsBaseSchema.superRefine(
+    refineNoToolsWithStructuredOutput,
+  );
+
+export const completionStreamRequestSchema = completionClientParamsBaseSchema
+  .extend({
     type: z.literal("completionStream"),
-  });
+  })
+  .superRefine(refineNoToolsWithStructuredOutput);
 
 export const completionStreamResponseSchema = z
   .object({
@@ -145,6 +198,7 @@ export const completionStreamResponseSchema = z
 export type GenerationParams = z.infer<typeof generationParamsSchema>;
 export type CompletionParams = z.infer<typeof completionParamsSchema>;
 export type ToolDialect = z.infer<typeof toolDialectSchema>;
+export type ResponseFormat = z.infer<typeof responseFormatSchema>;
 export type CompletionClientParams = z.input<
   typeof completionClientParamsSchema
 >;
