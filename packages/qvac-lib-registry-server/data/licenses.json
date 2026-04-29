@@ -43,5 +43,10 @@
     "spdxId": "openrail++",
     "name": "Open RAIL++-M License",
     "url": "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/raw/main/LICENSE.md"
+  },
+  {
+    "spdxId": "lfm1.0",
+    "name": "LFM Open License v1.0",
+    "url": "https://huggingface.co/LiquidAI/LFM2-VL-450M-GGUF/blob/main/LICENSE"
   }
 ]
