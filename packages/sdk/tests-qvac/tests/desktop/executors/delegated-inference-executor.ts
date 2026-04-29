@@ -130,11 +130,11 @@ export class DelegatedInferenceExecutor extends SharedDelegatedInferenceExecutor
   }
 
   async e2eLoadedModelInfo(): Promise<TestResult> {
-    return this.withRemoteProvider(async ({ topic, publicKey }) => {
+    return this.withRemoteProvider(async ({ publicKey }) => {
       const modelId = await loadModel({
         modelSrc: LLAMA_3_2_1B_INST_Q4_0,
         modelType: "llm",
-        delegate: { topic, providerPublicKey: publicKey, timeout: E2E_DELEGATION_TIMEOUT, fallbackToLocal: false },
+        delegate: { providerPublicKey: publicKey, timeout: E2E_DELEGATION_TIMEOUT, fallbackToLocal: false },
       });
       try {
         const info = await getLoadedModelInfo({ modelId });
@@ -149,12 +149,11 @@ export class DelegatedInferenceExecutor extends SharedDelegatedInferenceExecutor
         const checks = {
           modelIdMatches: info.modelId === modelId,
           handlersIsEmptyArray: Array.isArray(info.handlers) && info.handlers.length === 0,
-          providerInfoTopicMatches: info.providerInfo.topic === topic,
           providerInfoPublicKeyMatches: info.providerInfo.providerPublicKey === publicKey,
         };
 
         const allOk = Object.values(checks).every(Boolean);
-        const summary = `modelId=${info.modelId.substring(0, 8)}…, isDelegated=true, handlers=[], providerInfo.topic=${info.providerInfo.topic.substring(0, 8)}…, checks=${JSON.stringify(checks)}`;
+        const summary = `modelId=${info.modelId.substring(0, 8)}…, isDelegated=true, handlers=[], providerInfo.providerPublicKey=${info.providerInfo.providerPublicKey.substring(0, 8)}…, checks=${JSON.stringify(checks)}`;
 
         if (!allOk) {
           return { passed: false, output: `Delegated info mismatch: ${summary}` };
